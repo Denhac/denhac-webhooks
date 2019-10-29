@@ -66,7 +66,7 @@ class SetUpDenhacWebhooks extends Command
         ]);
 
 
-        $this->deliveryUrl = (string)url('webhooks/denhac-org');
+        $this->deliveryUrl = (string)url('webhooks/denhac-org', [], true);
     }
 
     /**
@@ -106,6 +106,7 @@ class SetUpDenhacWebhooks extends Command
                     "name" => $topicName,
                     "topic" => $topicKey,
                     "delivery_url" => $this->deliveryUrl,
+                    "secret" => env('DENHAC_ORG_SIGNING_SECRET'),
                 ]
             ]);
 
@@ -161,7 +162,7 @@ class SetUpDenhacWebhooks extends Command
     private function activateWebhook($id)
     {
         $response = $this->guzzleClient
-            ->put("/wp-json/wc/v3/webhook/{$id}", [
+            ->put("/wp-json/wc/v3/webhooks/{$id}", [
                 RequestOptions::JSON => [
                     "status" => "active",
                 ]
