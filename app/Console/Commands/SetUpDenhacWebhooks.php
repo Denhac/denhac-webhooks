@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\WooCommerce\Api\WooCommerceApi;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -47,13 +48,17 @@ class SetUpDenhacWebhooks extends Command
      * @var string
      */
     private $deliveryUrl;
+    /**
+     * @var WooCommerceApi
+     */
+    private $api;
 
     /**
      * Create a new command instance.
      *
-     * @return void
+     * @param WooCommerceApi $api
      */
-    public function __construct()
+    public function __construct(WooCommerceApi $api)
     {
         parent::__construct();
 
@@ -67,6 +72,7 @@ class SetUpDenhacWebhooks extends Command
 
 
         $this->deliveryUrl = (string)url('webhooks/denhac-org', [], true);
+        $this->api = $api;
     }
 
     /**
@@ -77,7 +83,7 @@ class SetUpDenhacWebhooks extends Command
      */
     public function handle()
     {
-        $existingWebhooks = $this->getExistingWebhooks();
+        $existingWebhooks = $this->api->webhooks->list();
 
         collect($this->topics)
             ->each(function ($topicName, $topicKey) use ($existingWebhooks) {
@@ -85,67 +91,38 @@ class SetUpDenhacWebhooks extends Command
             });
     }
 
-    private function getExistingWebhooks()
-    {
-        $response = $this->guzzleClient
-            ->get("/wp-json/wc/v3/webhooks");
-
-        if ($response->getStatusCode() != Response::HTTP_OK) {
-            $errorMessage = "Unable to read list of webhooks (Status: {$response->getStatusCode()})";
-            throw new Exception($errorMessage);
-        }
-
-        return collect(json_decode($response->getBody(), true));
-    }
-
-    private function createWebhook($topicKey, $topicName)
-    {
-        $response = $this->guzzleClient
-            ->post("/wp-json/wc/v3/webhooks", [
-                RequestOptions::JSON => [
-                    "name" => $topicName,
-                    "topic" => $topicKey,
-                    "delivery_url" => $this->deliveryUrl,
-                    "secret" => env('DENHAC_ORG_SIGNING_SECRET'),
-                ]
-            ]);
-
-        if ($response->getStatusCode() != Response::HTTP_CREATED) {
-            $errorMessage = "Unable to create Webhook (Status: {$response->getStatusCode()})";
-            throw new Exception($errorMessage);
-        }
-
-        return json_decode($response->getBody(), true);
-    }
-
     private function createOrActivateWebhook(Collection $existingWebhooks, $topicKey, $topicName)
     {
         $filtered = $existingWebhooks
-            ->filter(function($existingWebhook) use ($topicKey) {
+            ->filter(function ($existingWebhook) use ($topicKey) {
                 return $existingWebhook["topic"] == $topicKey &&
                     $existingWebhook["delivery_url"] = $this->deliveryUrl;
             });
 
         $count = $filtered->count();
-        if($count == 0) {
+        if ($count == 0) {
             $this->line("Creating hook for topic {$topicKey}");
             try {
-                $this->createWebhook($topicKey, $topicName);
+                $this->api->webhooks
+                    ->create($topicKey,
+                        $topicName,
+                        $this->deliveryUrl,
+                        config('denhac.webhook_secret'));
             } catch (Exception $e) {
                 $this->line("Creating hook failed!");
                 $this->line($e->getMessage());
             }
-        } else if($count == 1) {
+        } else if ($count == 1) {
             $this->line("Hook for topic {$topicKey} already exists");
             $hook = $filtered->first();
 
             // Active is fine, assume paused is for a good reason and disabled is an error
 
-            if($hook["status"] == "active") {
+            if ($hook["status"] == "active") {
                 $this->line("Hook is active. Woot!");
-            } else if($hook["status"] == "paused") {
+            } else if ($hook["status"] == "paused") {
                 $this->line("Hook is paused. We won't do anything");
-            } else if($hook["status"] == "disabled") {
+            } else if ($hook["status"] == "disabled") {
                 $this->line("Hook for topic {$topicKey} is disabled, trying to enable it");
                 try {
                     $this->activateWebhook($hook['id']);
