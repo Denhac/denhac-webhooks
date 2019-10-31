@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddTopicToWebhookCalls extends Migration
+class CreateSubscriptionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class AddTopicToWebhookCalls extends Migration
      */
     public function up()
     {
-        Schema::table('webhook_calls', function (Blueprint $table) {
-            $table->string("topic")->nullable();
+        Schema::create('subscriptions', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->integer("woo_id");
+            $table->string("customer_id");
+            $table->string("status");
+            $table->timestamps();
         });
     }
 
@@ -25,8 +29,6 @@ class AddTopicToWebhookCalls extends Migration
      */
     public function down()
     {
-        Schema::table('webhook_calls', function (Blueprint $table) {
-            $table->dropColumn("topic");
-        });
+        Schema::dropIfExists('subscriptions');
     }
 }

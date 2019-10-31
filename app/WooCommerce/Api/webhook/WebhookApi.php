@@ -4,18 +4,14 @@ namespace App\WooCommerce\Api\webhook;
 
 
 use App\WooCommerce\Api\ApiCallFailed;
+use App\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
-use Psr\Http\Message\ResponseInterface;
 
 class WebhookApi
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    use WooCommerceApiMixin;
 
     public function __construct(Client $client)
     {
@@ -23,30 +19,11 @@ class WebhookApi
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return Collection
-     * @throws ApiCallFailed
-     */
-    private function jsonOrError($response)
-    {
-        if ($response->getStatusCode() != Response::HTTP_CREATED &&
-            $response->getStatusCode() != Response::HTTP_OK) {
-            $errorMessage = "Unable to process webhook response (Status: {$response->getStatusCode()})";
-            throw new ApiCallFailed($errorMessage);
-        }
-
-        return collect(json_decode($response->getBody(), true));
-    }
-
-    /**
      * @throws ApiCallFailed
      */
     public function list()
     {
-        $response = $this->client
-            ->get("/wp-json/wc/v3/webhooks");
-
-        return $this->jsonOrError($response);
+        return $this->getWithPaging("/wp-json/wc/v3/webhooks");
     }
 
     /**
