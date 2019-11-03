@@ -2,8 +2,12 @@
 
 namespace App\Aggregates;
 
+use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
+use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardRemoved;
+use App\StorableEvents\CardSentForActivation;
+use App\StorableEvents\CardSentForDeactivation;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\MemberSubscriptionActivated;
 use App\StorableEvents\SubscriptionCreated;
@@ -14,8 +18,23 @@ use Spatie\EventSourcing\AggregateRoot;
 final class MembershipAggregate extends AggregateRoot
 {
     private $customerId;
-    private $cards = [];
+
+    private $cardsOnAccount;
+    private $cardsNeedingActivation; // They need activation only if this person is a confirmed member
+    private $cardsSentForActivation;
+    private $cardsSentForDeactivation;
+
     private $subscriptionStatus = null;
+
+    public function __construct()
+    {
+        $this->cardsOnAccount = collect();
+        $this->cardsNeedingActivation = collect();
+        $this->cardsSentForActivation = collect();
+        $this->activatedCards = collect();
+        $this->cardsSentForDeactivation = collect();
+        $this->deactivatedCards = collect();
+    }
 
     /**
      * @param string $customerId
@@ -73,28 +92,55 @@ final class MembershipAggregate extends AggregateRoot
 
         $cardField = $cardMetadata["value"];
 
-        $cardList = explode(",", $cardField);
+        $cardList = collect(explode(",", $cardField));
         foreach ($cardList as $card) {
-            if(!in_array($card, $this->cards)) {
+            if(!$this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
+
+                if($this->isActiveMember()) {
+                    $this->recordThat(new CardSentForActivation($this->customerId, $card));
+                }
             }
         }
 
-        foreach ($this->cards as $card) {
-            if(!in_array($card, $cardList)) {
+        foreach ($this->cardsOnAccount as $card) {
+            if(!$cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
+                $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
         }
     }
 
     protected function applyCardAdded(CardAdded $event)
     {
-        array_push($this->cards, $event->cardNumber);
+        $this->cardsOnAccount->push($event->cardNumber);
+        $this->cardsNeedingActivation->push($event->cardNumber);
+    }
+
+    protected function applyCardSentForActivation(CardSentForActivation $event)
+    {
+        $this->cardsNeedingActivation->pull($event->cardNumber);
+        $this->cardsSentForActivation->push($event->cardNumber);
+    }
+
+    protected function applyCardActivated(CardActivated $event)
+    {
+        $this->cardsSentForActivation->pull($event->cardNumber);
     }
 
     protected function applyCardRemoved(CardRemoved $event)
     {
-        $this->cards = array_diff($this->cards, [$event->cardNumber]);
+        $this->cardsOnAccount->push($event->cardNumber);
+    }
+
+    protected function applyCardSentForDeactivation(CardSentForDeactivation $event)
+    {
+        $this->cardsSentForDeactivation->push($event->cardNumber);
+    }
+
+    protected function applyCardDeactivated(CardDeactivated $event)
+    {
+        $this->cardsSentForDeactivation->pull($event->cardNumber);
     }
 
     private function handleSubscriptionStatus($subscriptionId, $newStatus)
@@ -107,14 +153,22 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         // TODO Figure out all the state transitions for subscriptions
-        // Also, potentially move this to a reactor
         if($oldStatus == "on-hold" && $newStatus == "active") {
             $this->recordThat(new MemberSubscriptionActivated($this->customerId));
+
+            foreach ($this->cardsNeedingActivation as $card) {
+                $this->recordThat(new CardSentForActivation($this->customerId, $card));
+            }
         }
     }
 
     protected function applySubscriptionStatusChanged(SubscriptionStatusChanged $event)
     {
         $this->subscriptionStatus = $event->newStatus;
+    }
+
+    private function isActiveMember()
+    {
+        return $this->subscriptionStatus == "active";
     }
 }
