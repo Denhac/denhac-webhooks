@@ -13,10 +13,14 @@ final class SubscriptionProjector implements Projector
 
     public function onSubscriptionUpdated(SubscriptionUpdated $event)
     {
-        Subscription::create([
-            "woo_id" => $event->wooId,
-            "customer_id" => $event->customerId,
-            "status" => $event->status,
-        ]);
+        $existingSubscription = Subscription::whereWooId($event->wooId)->first();
+
+        if($existingSubscription == null) {
+            Subscription::create([
+                "woo_id" => $event->wooId,
+                "customer_id" => $event->customerId,
+                "status" => $event->status,
+            ]);
+        }
     }
 }

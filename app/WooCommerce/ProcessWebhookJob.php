@@ -4,6 +4,7 @@ namespace App\WooCommerce;
 
 
 use App\StorableEvents\CustomerCreated;
+use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -25,6 +26,9 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
             case "customer.created":
                 $this->customerCreated();
                 return;
+            case "subscription.updated":
+                $this->subscriptionUpdated();
+                return;
         }
     }
 
@@ -37,5 +41,16 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
         $username = $payload["username"];
 
         event(new CustomerCreated($wooId, $email, $username));
+    }
+
+    private function subscriptionUpdated()
+    {
+        $payload = $this->webhookCall->payload;
+
+        $wooId = $payload["id"];
+        $customerId = $payload["customer_id"];
+        $status = $payload["status"];
+
+        event(new SubscriptionUpdated($wooId, $customerId, $status));
     }
 }
