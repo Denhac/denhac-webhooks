@@ -2,9 +2,9 @@
 
 namespace App\Projectors;
 
-use App\StorableEvents\SubscriptionUpdated;
+use App\StorableEvents\SubscriptionCreated;
+use App\StorableEvents\SubscriptionStatusChanged;
 use App\Subscription;
-use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\Projectors\Projector;
 use Spatie\EventSourcing\Projectors\ProjectsEvents;
 
@@ -12,16 +12,29 @@ final class SubscriptionProjector implements Projector
 {
     use ProjectsEvents;
 
-    public function onSubscriptionUpdated(SubscriptionUpdated $event)
+    public function onSubscriptionCreated(SubscriptionCreated $event)
     {
-        $existingSubscription = Subscription::whereWooId($event->wooId)->first();
+        $subscription = $event->subscription;
 
-        if($existingSubscription == null) {
-            Subscription::create([
-                "woo_id" => $event->wooId,
-                "customer_id" => $event->customerId,
-                "status" => $event->status,
-            ]);
-        }
+        $wooId = $subscription["id"];
+        $customerId = $subscription["customer_id"];
+        $status = $subscription["status"];
+
+        Subscription::create([
+            "woo_id" => $wooId,
+            "customer_id" => $customerId,
+            "status" => $status,
+        ]);
+    }
+
+    public function onSubscriptionStatusChanged(SubscriptionStatusChanged $event)
+    {
+
+        /** @var Subscription $subscription */
+        $subscription = Subscription::whereWooId($event->subscriptionId)->first();
+
+        $subscription->status = $event->newStatus;
+
+        $subscription->save();
     }
 }

@@ -6,6 +6,7 @@ namespace App\WooCommerce\Api\customer;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
 
 class CustomerApi
@@ -23,6 +24,10 @@ class CustomerApi
      */
     public function list()
     {
-        return $this->getWithPaging("/wp-json/wc/v3/customers");
+        return $this->getWithPaging("/wp-json/wc/v3/customers", [
+            RequestOptions::QUERY => [
+                "role" => "all"
+            ],
+        ]);
     }
 }

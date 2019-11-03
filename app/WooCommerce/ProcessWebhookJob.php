@@ -25,22 +25,22 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
 
         switch ($this->webhookCall->topic) {
             case "customer.created":
-                MembershipAggregate::retrieve($payload["id"])
+                MembershipAggregate::make($payload["id"])
                     ->createCustomer($payload)
                     ->persist();
                 break;
             case "customer.updated":
-                MembershipAggregate::retrieve($payload["id"])
+                MembershipAggregate::make($payload["id"])
                     ->updateCustomer($payload)
                     ->persist();
                 break;
             case "subscription.created":
-                MembershipAggregate::retrieve($payload["customer_id"])
+                MembershipAggregate::make($payload["customer_id"])
                     ->createSubscription($payload)
                     ->persist();
                 break;
             case "subscription.updated":
-                MembershipAggregate::retrieve($payload["customer_id"])
+                MembershipAggregate::make($payload["customer_id"])
                     ->updateSubscription($payload)
                     ->persist();
                 break;

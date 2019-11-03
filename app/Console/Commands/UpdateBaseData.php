@@ -4,13 +4,10 @@ namespace App\Console\Commands;
 
 use App\Aggregates\MembershipAggregate;
 use App\Customer;
-use App\StorableEvents\CustomerCreated;
-use App\StorableEvents\SubscriptionUpdated;
 use App\Subscription;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
-use function foo\func;
 
 class UpdateBaseData extends Command
 {
@@ -68,7 +65,7 @@ class UpdateBaseData extends Command
             if(!$customersInDB->contains("woo_id", $wooId)) {
                 $username = $customer["username"];
                 $this->line("{$username} was not in our internal store, adding.");
-                MembershipAggregate::retrieve($customer["id"])
+                MembershipAggregate::make($customer["id"])
                     ->createCustomer($customer)
                     ->persist();
             }
@@ -87,7 +84,7 @@ class UpdateBaseData extends Command
             if(!$subscriptionsInDB->contains("woo_id", $wooId)) {
                 $this->line("Subscription {$wooId} was not in our internal store, adding.");
 
-                MembershipAggregate::retrieve($subscription["customer_id"])
+                MembershipAggregate::make($subscription["customer_id"])
                     ->createSubscription($subscription)
                     ->persist();
             }

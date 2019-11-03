@@ -21,10 +21,10 @@ final class MembershipAggregate extends AggregateRoot
      * @param string $customerId
      * @return MembershipAggregate
      */
-    public static function retrieve(string $customerId): AggregateRoot
+    public static function make(string $customerId): AggregateRoot
     {
         $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customerId);
-        $aggregateRoot = AggregateRoot::retrieve($uuid);
+        $aggregateRoot = MembershipAggregate::retrieve($uuid);
         $aggregateRoot->customerId = $customerId;
 
         return $aggregateRoot;
@@ -50,14 +50,14 @@ final class MembershipAggregate extends AggregateRoot
     {
         $this->recordThat(new SubscriptionCreated($subscription));
 
-        $this->handleSubscriptionStatus($subscription["status"]);
+        $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
 
         return $this;
     }
 
     public function updateSubscription($subscription)
     {
-        $this->handleSubscriptionStatus($subscription["status"]);
+        $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
 
         return $this;
     }
@@ -65,11 +65,13 @@ final class MembershipAggregate extends AggregateRoot
     private function handleCards($customer)
     {
         $metadata = collect($customer["meta_data"]);
-        $cardField = $metadata->firstWhere('key', 'access_card_number');
+        $cardMetadata = $metadata->firstWhere('key', 'access_card_number');
 
-        if($cardField == null) {
+        if($cardMetadata == null) {
             return;
         }
+
+        $cardField = $cardMetadata["value"];
 
         $cardList = explode(",", $cardField);
         foreach ($cardList as $card) {
@@ -95,10 +97,10 @@ final class MembershipAggregate extends AggregateRoot
         $this->cards = array_diff($this->cards, [$event->cardNumber]);
     }
 
-    private function handleSubscriptionStatus($newStatus)
+    private function handleSubscriptionStatus($subscriptionId, $newStatus)
     {
         $oldStatus = $this->subscriptionStatus;
-        $this->recordThat(new SubscriptionStatusChanged($oldStatus, $newStatus));
+        $this->recordThat(new SubscriptionStatusChanged($subscriptionId, $oldStatus, $newStatus));
 
         if($oldStatus == null) {
             $oldStatus = $newStatus;
