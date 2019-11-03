@@ -4,6 +4,7 @@ namespace App\Projectors;
 
 use App\StorableEvents\SubscriptionUpdated;
 use App\Subscription;
+use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\Projectors\Projector;
 use Spatie\EventSourcing\Projectors\ProjectsEvents;
 

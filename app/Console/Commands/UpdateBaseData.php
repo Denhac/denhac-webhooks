@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Aggregates\MembershipAggregate;
 use App\Customer;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\SubscriptionUpdated;
@@ -53,8 +54,6 @@ class UpdateBaseData extends Command
         // TODO: Handle updates for email changes
 
         $this->updateSubscriptionsInDatabase();
-
-
     }
 
     /**
@@ -67,14 +66,18 @@ class UpdateBaseData extends Command
         $customersInWooCommerce->each(function ($customer) use ($customersInDB) {
             $wooId = $customer["id"];
             if(!$customersInDB->contains("woo_id", $wooId)) {
-                $email = $customer["email"];
                 $username = $customer["username"];
                 $this->line("{$username} was not in our internal store, adding.");
-                event(new CustomerCreated($wooId, $email, $username));
+                MembershipAggregate::retrieve($customer["id"])
+                    ->createCustomer($customer)
+                    ->persist();
             }
         });
     }
 
+    /**
+     * @throws ApiCallFailed
+     */
     private function updateSubscriptionsInDatabase()
     {
         $subscriptionsInDB = Subscription::all();
@@ -82,10 +85,11 @@ class UpdateBaseData extends Command
         $subscriptionsInWooCommerce->each(function ($subscription) use ($subscriptionsInDB) {
             $wooId = $subscription["id"];
             if(!$subscriptionsInDB->contains("woo_id", $wooId)) {
-                $customerId = $subscription["customer_id"];
-                $status = $subscription["status"];
                 $this->line("Subscription {$wooId} was not in our internal store, adding.");
-                event(new SubscriptionUpdated($wooId, $customerId, $status));
+
+                MembershipAggregate::retrieve($subscription["customer_id"])
+                    ->createSubscription($subscription)
+                    ->persist();
             }
         });
     }

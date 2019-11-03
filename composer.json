@@ -9,13 +9,14 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "ext-json": "*",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "^6.2",
+        "laravel/horizon": "^3.4",
         "laravel/tinker": "^1.0",
         "spatie/laravel-event-sourcing": "^1.0",
-        "spatie/laravel-webhook-client": "^2.2",
-        "ext-json": "*"
+        "spatie/laravel-webhook-client": "^2.2"
     },
     "require-dev": {
         "facade/ignition": "^1.4",

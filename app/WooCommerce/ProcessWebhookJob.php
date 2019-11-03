@@ -3,8 +3,7 @@
 namespace App\WooCommerce;
 
 
-use App\StorableEvents\CustomerCreated;
-use App\StorableEvents\SubscriptionUpdated;
+use App\Aggregates\MembershipAggregate;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -22,35 +21,29 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
             return;
         }
 
+        $payload = $this->webhookCall->payload;
+
         switch ($this->webhookCall->topic) {
             case "customer.created":
-                $this->customerCreated();
-                return;
+                MembershipAggregate::retrieve($payload["id"])
+                    ->createCustomer($payload)
+                    ->persist();
+                break;
+            case "customer.updated":
+                MembershipAggregate::retrieve($payload["id"])
+                    ->updateCustomer($payload)
+                    ->persist();
+                break;
+            case "subscription.created":
+                MembershipAggregate::retrieve($payload["customer_id"])
+                    ->createSubscription($payload)
+                    ->persist();
+                break;
             case "subscription.updated":
-                $this->subscriptionUpdated();
-                return;
+                MembershipAggregate::retrieve($payload["customer_id"])
+                    ->updateSubscription($payload)
+                    ->persist();
+                break;
         }
-    }
-
-    private function customerCreated()
-    {
-        $payload = $this->webhookCall->payload;
-
-        $wooId = $payload["id"];
-        $email = $payload["email"];
-        $username = $payload["username"];
-
-        event(new CustomerCreated($wooId, $email, $username));
-    }
-
-    private function subscriptionUpdated()
-    {
-        $payload = $this->webhookCall->payload;
-
-        $wooId = $payload["id"];
-        $customerId = $payload["customer_id"];
-        $status = $payload["status"];
-
-        event(new SubscriptionUpdated($wooId, $customerId, $status));
     }
 }
