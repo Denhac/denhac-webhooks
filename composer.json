@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-json": "*",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
@@ -16,7 +16,8 @@
         "laravel/horizon": "^3.4",
         "laravel/tinker": "^1.0",
         "spatie/laravel-event-sourcing": "^1.0",
-        "spatie/laravel-webhook-client": "^2.2"
+        "spatie/laravel-webhook-client": "^2.2",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "facade/ignition": "^1.4",

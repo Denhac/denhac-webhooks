@@ -6,4 +6,9 @@ return [
         'secret' => env('DENHAC_WOOCOMMERCE_CONSUMER_SECRET'),
     ],
     'webhook_secret' => env('DENHAC_ORG_SIGNING_SECRET'),
+    'google' => [
+        'key_path' => env('GOOGLE_API_KEY_PATH', storage_path('google-api.pem')),
+        'service_account' => env('GOOGLE_API_SERVICE_ACCOUNT'),
+        'auth_as' => env('GOOGLE_API_AUTH_AS_USER')
+    ]
 ];

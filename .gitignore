@@ -122,3 +122,5 @@ modules.xml
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/laravel,phpstorm+all
+
+storage/*.pem

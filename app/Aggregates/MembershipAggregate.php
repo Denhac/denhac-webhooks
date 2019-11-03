@@ -153,6 +153,7 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         // TODO Figure out all the state transitions for subscriptions
+        // TODO Double check that this doesn't happen on subscription renewal
         if($oldStatus == "on-hold" && $newStatus == "active") {
             $this->recordThat(new MemberSubscriptionActivated($this->customerId));
 
