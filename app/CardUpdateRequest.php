@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class CardUpdateRequest
  * @package App
  * @property string type
- * @property integer customerId
+ * @property integer customer_id
  */
 class CardUpdateRequest extends Model
 {
@@ -20,4 +20,9 @@ class CardUpdateRequest extends Model
         "customer_id",
         "card",
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, "customer_id", "woo_id");
+    }
 }
