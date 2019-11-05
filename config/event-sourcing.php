@@ -17,6 +17,7 @@ return [
      */
     'projectors' => [
         \App\Projectors\CustomerProjector::class,
+        \App\Projectors\SubscriptionProjector::class,
     ],
 
     /*
@@ -25,7 +26,7 @@ return [
      * Reactors can be registered in this array or a service provider.
      */
     'reactors' => [
-        // App\Reactors\YourReactor::class
+        \App\Reactors\GoogleGroupsReactor::class,
     ],
 
     /*

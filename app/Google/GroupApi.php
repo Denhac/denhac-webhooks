@@ -5,6 +5,7 @@ namespace App\Google;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\ResponseInterface;
 
 class GroupApi
 {
@@ -34,6 +35,7 @@ class GroupApi
     public function add(string $email)
     {
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
+        /** @var ResponseInterface $response */
         $response = $this->client->post($this->membersUrl, [
             RequestOptions::HEADERS => [
                 'Authorization' => "Bearer {$accessToken}"
@@ -41,9 +43,10 @@ class GroupApi
             RequestOptions::JSON => [
                 "email" => $email,
                 "role" => "MEMBER"
-            ]
+            ],
+            RequestOptions::HTTP_ERRORS => false,
         ]);
 
-        // TODO Handle conflict
+        // TODO Handle conflict/other errors
     }
 }

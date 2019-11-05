@@ -25,15 +25,14 @@ final class MembershipAggregate extends AggregateRoot
     private $cardsSentForDeactivation;
 
     private $subscriptionStatus = null;
+    private $currentlyAMember = null;
 
     public function __construct()
     {
         $this->cardsOnAccount = collect();
         $this->cardsNeedingActivation = collect();
         $this->cardsSentForActivation = collect();
-        $this->activatedCards = collect();
         $this->cardsSentForDeactivation = collect();
-        $this->deactivatedCards = collect();
     }
 
     /**
@@ -168,8 +167,13 @@ final class MembershipAggregate extends AggregateRoot
         $this->subscriptionStatus = $event->newStatus;
     }
 
+    protected function applyMemberSubscriptionActivated(MemberSubscriptionActivated $event)
+    {
+        $this->currentlyAMember = true;
+    }
+
     private function isActiveMember()
     {
-        return $this->subscriptionStatus == "active";
+        return $this->currentlyAMember;
     }
 }
