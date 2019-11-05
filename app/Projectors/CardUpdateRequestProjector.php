@@ -27,6 +27,7 @@ final class CardUpdateRequestProjector implements Projector
     {
         CardUpdateRequest::where('customer_id', $event->wooCustomerId)
             ->where('card', $event->cardNumber)
+            ->where('type', CardUpdateRequest::ACTIVATION_TYPE)
             ->delete();
     }
 
@@ -43,6 +44,7 @@ final class CardUpdateRequestProjector implements Projector
     {
         CardUpdateRequest::where('customer_id', $event->wooCustomerId)
             ->where('card', $event->cardNumber)
+            ->where('type', CardUpdateRequest::DEACTIVATION_TYPE)
             ->delete();
     }
 }
