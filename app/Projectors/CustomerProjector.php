@@ -15,16 +15,15 @@ final class CustomerProjector implements Projector
     {
         $customer = $event->customer;
 
-        $wooId = $customer["id"];
-        $email = $customer["email"];
-        $username = $customer["username"];
-
-        #TODO Add First and Last Name
         Customer::create([
-            "woo_id" => $wooId,
-            "email" => $email,
-            "username" => $username,
+            "woo_id" => $customer["id"],
+            "email" => $customer["email"],
+            "username" => $customer["username"],
+            "first_name" => $customer["first_name"],
+            "last_name" => $customer["last_name"],
             "member" => false,
         ]);
     }
+
+    // TODO Customer updated
 }

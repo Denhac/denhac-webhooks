@@ -10,6 +10,8 @@ class Customer extends Model
         "username",
         "email",
         "woo_id",
-        "member"
+        "member",
+        "first_name",
+        "last_name"
     ];
 }
