@@ -2,6 +2,7 @@
 
 namespace App\Aggregates;
 
+use App\CardUpdateRequest;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;
@@ -76,6 +77,23 @@ final class MembershipAggregate extends AggregateRoot
     public function updateSubscription($subscription)
     {
         $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
+
+        return $this;
+    }
+
+    public function updateCardStatus(CardUpdateRequest $cardUpdateRequest, $status)
+    {
+        if($status == CardUpdateRequest::STATUS_SUCCESS) {
+            if($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
+                $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
+            }
+            if($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
+                $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
+            }
+            // TODO error if it's not one of those
+        }
+
+        // TODO Handle other statuses
 
         return $this;
     }
