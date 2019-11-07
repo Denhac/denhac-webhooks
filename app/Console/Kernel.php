@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Console\Commands\BackupWinDSX;
+use App\Console\Commands\SetUpDenhacWebhooks;
+use App\Console\Commands\UpdateBaseData;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +16,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        BackupWinDSX::class,
+        SetUpDenhacWebhooks::class,
+        UpdateBaseData::class,
     ];
 
     /**
@@ -24,8 +29,17 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+//        $schedule
+//            ->command(SetUpDenhacWebhooks::class)
+//            ->hourly();
+
+        $schedule
+            ->command(BackupWinDSX::class, [
+                storage_path("backups/".date("Y/m/d/h/i"))
+            ])
+            ->hourly();
+
+        // TODO Clean up backups that are too old
     }
 
     /**
