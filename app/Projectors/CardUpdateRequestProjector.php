@@ -3,6 +3,7 @@
 namespace App\Projectors;
 
 use App\CardUpdateRequest;
+use App\Jobs\BackupAndIssueCardUpdateRequest;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardSentForActivation;
@@ -16,11 +17,8 @@ final class CardUpdateRequestProjector implements Projector
 
     public function onCardSentForActivation(CardSentForActivation $event)
     {
-        CardUpdateRequest::create([
-            "type" => CardUpdateRequest::ACTIVATION_TYPE,
-            "customer_id" => $event->wooCustomerId,
-            "card" => $event->cardNumber,
-        ]);
+        // TODO This should probably be in a reactor now
+        BackupAndIssueCardUpdateRequest::dispatch($event);
     }
 
     public function onCardActivated(CardActivated $event)
@@ -33,11 +31,8 @@ final class CardUpdateRequestProjector implements Projector
 
     public function onCardSentForDeactivation(CardSentForDeactivation $event)
     {
-        CardUpdateRequest::create([
-            "type" => CardUpdateRequest::DEACTIVATION_TYPE,
-            "customer_id" => $event->wooCustomerId,
-            "card" => $event->cardNumber,
-        ]);
+        // TODO This should probably be in a reactor now
+        BackupAndIssueCardUpdateRequest::dispatch($event);
     }
 
     public function onCardDeactivated(CardDeactivated $event)

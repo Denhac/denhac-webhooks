@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\WinDSX\BackupWinDSX;
 use Illuminate\Console\Command;
 
-class BackupWinDSX extends Command
+class BackupWinDSXCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -38,9 +39,8 @@ class BackupWinDSX extends Command
     public function handle()
     {
         $path = $this->argument("path");
-        mkdir($path, 0777, true);
-
-        $command = "scp -r denhac-access:/C:/WinDSX {$path}";
-        exec($command); # TODO Handle failures
+        /** @var BackupWinDSX $backupWinDSX */
+        $backupWinDSX = app(BackupWinDSX::class);
+        $backupWinDSX->backup($path);
     }
 }
