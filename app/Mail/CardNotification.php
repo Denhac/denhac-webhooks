@@ -2,12 +2,9 @@
 
 namespace App\Mail;
 
-use App\StorableEvents\CardNotificationEmailNeeded;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
 
 class CardNotification extends Mailable
 {

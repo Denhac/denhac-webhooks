@@ -9,6 +9,7 @@ use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardRemoved;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\CardStatusUpdated;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\MemberSubscriptionActivated;
 use App\StorableEvents\SubscriptionCreated;
@@ -83,6 +84,12 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateCardStatus(CardUpdateRequest $cardUpdateRequest, $status)
     {
+        $this->recordThat(new CardStatusUpdated(
+            $cardUpdateRequest->type,
+            $cardUpdateRequest->customer_id,
+            $cardUpdateRequest->card
+        ));
+
         if($status == CardUpdateRequest::STATUS_SUCCESS) {
             if($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
@@ -90,10 +97,13 @@ final class MembershipAggregate extends AggregateRoot
             if($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
                 $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
             }
-            // TODO error if it's not one of those
-        }
 
-        // TODO Handle other statuses
+            $message = "Card update request type wasn't one of the expected values: {$cardUpdateRequest->type}";
+            report(new \Exception($message));
+        } else {
+            $message = "Card update wasn't successful";
+            report(new \Exception($message));
+        }
 
         return $this;
     }

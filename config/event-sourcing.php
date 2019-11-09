@@ -28,7 +28,9 @@ return [
      * Reactors can be registered in this array or a service provider.
      */
     'reactors' => [
+        \App\Reactors\CardNotifierReactor::class,
         \App\Reactors\GoogleGroupsReactor::class,
+        \App\Reactors\CardUpdateRequestReactor::class,
     ],
 
     /*
