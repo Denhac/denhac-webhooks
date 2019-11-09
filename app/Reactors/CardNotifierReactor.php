@@ -3,7 +3,7 @@
 namespace App\Reactors;
 
 use App\Aggregates\CardNotifierAggregate;
-use App\Mail\CardNotification;
+use App\Mail\CardNotificationEmail;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardNotificationEmailNeeded;
@@ -31,6 +31,7 @@ final class CardNotifierReactor implements EventHandler
 
     public function onCardNotificationEmailNeeded(CardNotificationEmailNeeded $event)
     {
-        Mail::to("jnesselr@denhac.org")->send(new CardNotification($event->cardNotifications));
+        Mail::to("jnesselr@denhac.org")
+            ->send(new CardNotificationEmail($event->cardNotifications));
     }
 }

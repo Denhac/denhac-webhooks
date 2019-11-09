@@ -90,18 +90,20 @@ final class MembershipAggregate extends AggregateRoot
             $cardUpdateRequest->card
         ));
 
-        if($status == CardUpdateRequest::STATUS_SUCCESS) {
-            if($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
+        if ($status == CardUpdateRequest::STATUS_SUCCESS) {
+            if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
             }
-            if($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
+            if ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
                 $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
             }
 
             $message = "Card update request type wasn't one of the expected values: {$cardUpdateRequest->type}";
             report(new \Exception($message));
         } else {
-            $message = "Card update wasn't successful";
+            $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
+                . "Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
+                . "not successful";
             report(new \Exception($message));
         }
 
@@ -113,7 +115,7 @@ final class MembershipAggregate extends AggregateRoot
         $metadata = collect($customer["meta_data"]);
         $cardMetadata = $metadata->firstWhere('key', 'access_card_number');
 
-        if($cardMetadata == null) {
+        if ($cardMetadata == null) {
             return;
         }
 
@@ -121,17 +123,17 @@ final class MembershipAggregate extends AggregateRoot
 
         $cardList = collect(explode(",", $cardField));
         foreach ($cardList as $card) {
-            if(!$this->cardsOnAccount->contains($card)) {
+            if (!$this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
-                if($this->isActiveMember()) {
+                if ($this->isActiveMember()) {
                     $this->recordThat(new CardSentForActivation($this->customerId, $card));
                 }
             }
         }
 
         foreach ($this->cardsOnAccount as $card) {
-            if(!$cardList->contains($card)) {
+            if (!$cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
@@ -175,13 +177,13 @@ final class MembershipAggregate extends AggregateRoot
         $oldStatus = $this->subscriptionStatus;
         $this->recordThat(new SubscriptionStatusChanged($subscriptionId, $oldStatus, $newStatus));
 
-        if($oldStatus == null) {
+        if ($oldStatus == null) {
             $oldStatus = $newStatus;
         }
 
         // TODO Figure out all the state transitions for subscriptions
         // TODO Double check that this doesn't happen on subscription renewal
-        if($oldStatus == "on-hold" && $newStatus == "active") {
+        if ($oldStatus == "on-hold" && $newStatus == "active") {
             $this->recordThat(new MemberSubscriptionActivated($this->customerId));
 
             foreach ($this->cardsNeedingActivation as $card) {
