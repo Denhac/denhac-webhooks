@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Aggregates\CardNotifierAggregate;
 use App\Console\Commands\BackupWinDSXCommand;
 use App\Console\Commands\SetUpDenhacWebhooks;
 use App\Console\Commands\UpdateBaseData;
@@ -40,6 +41,14 @@ class Kernel extends ConsoleKernel
             ->hourly();
 
         // TODO Clean up backups that are too old
+
+        $schedule
+            ->call(function () {
+                CardNotifierAggregate::make()->sendNotificationEmail()->persist();
+            })
+            ->weekly()
+            ->saturdays()
+            ->at("13:00");
     }
 
     /**
