@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Google\TokenManager;
+use App\Slack\SlackApi;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
                 config('denhac.google.service_account'),
                 config('denhac.google.auth_as')
             );
+        });
+
+        $this->app->bind(SlackApi::class, function() {
+            return new SlackApi(config('denhac.slack.api_token'));
         });
     }
 

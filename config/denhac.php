@@ -10,5 +10,8 @@ return [
         'key_path' => env('GOOGLE_API_KEY_PATH', storage_path('google-api.pem')),
         'service_account' => env('GOOGLE_API_SERVICE_ACCOUNT'),
         'auth_as' => env('GOOGLE_API_AUTH_AS_USER')
+    ],
+    'slack' => [
+        'api_token' => env('SLACK_API_TOKEN')
     ]
 ];
