@@ -64,8 +64,10 @@ class CardNotificationEmail extends Mailable
             }
         });
 
+        $date = (new \DateTime())->format("m/d/Y");
+
         return $this
-            ->subject("Access Card Update")
+            ->subject("Access Card Update {$date}")
             ->view('emails.card_notification')
             ->with([
                 'activatedCards' => $activatedCards,
@@ -78,11 +80,11 @@ class CardNotificationEmail extends Mailable
     {
         $result = "";
         if ($activatedCards->count() == 0) {
-            $result .= "There were no new cards activated";
+            $result .= "There were no cards activated";
         } else if ($activatedCards->count() == 1) {
-            $result .= "There was 1 new card activated";
+            $result .= "There was 1 card activated";
         } else {
-            $result .= "There were {$activatedCards->count()} new cards activated";
+            $result .= "There were {$activatedCards->count()} new activated";
         }
 
         if ($deactivatedCards->count() == 0) {
