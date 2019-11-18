@@ -35,6 +35,7 @@ class GroupApi
     public function add(string $email)
     {
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
+
         /** @var ResponseInterface $response */
         $response = $this->client->post($this->membersUrl, [
             RequestOptions::HEADERS => [
@@ -44,7 +45,20 @@ class GroupApi
                 "email" => $email,
                 "role" => "MEMBER"
             ],
-            RequestOptions::HTTP_ERRORS => false,
+        ]);
+
+        // TODO Handle conflict/other errors
+    }
+
+    public function remove(string $email)
+    {
+        $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
+
+        /** @var ResponseInterface $response */
+        $response = $this->client->delete("{$this->membersUrl}/$email", [
+            RequestOptions::HEADERS => [
+                'Authorization' => "Bearer $accessToken"
+            ],
         ]);
 
         // TODO Handle conflict/other errors
