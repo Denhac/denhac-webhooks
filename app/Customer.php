@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @package App
  * @property string first_name
  * @property string last_name
+ * @property string email
  */
 class Customer extends Model
 {

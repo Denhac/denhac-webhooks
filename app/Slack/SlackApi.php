@@ -90,12 +90,57 @@ class SlackApi
         return json_decode($response->getBody(), true);
     }
 
+    public function users_admin_setRegular($slack_id)
+    {
+        $response = $this->adminClient
+            ->post("https://denhac.slack.com/api/users.admin.setRegular", [
+                RequestOptions::FORM_PARAMS => [
+                    "user" => $slack_id,
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true)["ok"];
+    }
+
+    public function users_admin_setUltraRestricted($slack_id, $channel_id)
+    {
+        $response = $this->adminClient
+            ->post("https://denhac.slack.com/api/users.admin.setUltraRestricted", [
+                RequestOptions::FORM_PARAMS => [
+                    "user" => $slack_id,
+                    "channel" => $channel_id,
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true)["ok"];
+    }
+
     public function users_list()
     {
         # TODO Make this handle errors/pagination
         return collect(json_decode($this->apiClient
             ->get("https://denhac.slack.com/api/users.list")
             ->getBody(), true)["members"]);
+    }
+
+    public function users_lookupByEmail($email)
+    {
+        // TODO Handle user not found/ok is false
+        $response = $this->apiClient->get("https://denhac.slack.com/api/users.lookupByEmail", [
+            RequestOptions::QUERY => [
+                "email" => $email,
+            ],
+        ]);
+
+        return json_decode($response->getBody(), true)["user"];
+    }
+
+    public function channels_list()
+    {
+        # TODO Make this handle errors/pagination
+        return collect(json_decode($this->apiClient
+            ->get("https://denhac.slack.com/api/conversations.list")
+            ->getBody(), true)["channels"]);
     }
 
     private function isValidToken($token)
@@ -128,6 +173,18 @@ class SlackApi
         preg_match($regex, $html, $matches);
 
         return $matches[1];
+    }
+
+    public function channelIdsByName($wantedChannels)
+    {
+        $wantedChannels = Arr::wrap($wantedChannels);
+        $channels = $this->channels_list();
+        return $channels
+            ->whereIn("name", $wantedChannels)
+            ->map(function ($channel) {
+                return $channel["id"];
+            })
+            ->all();
     }
 
 }

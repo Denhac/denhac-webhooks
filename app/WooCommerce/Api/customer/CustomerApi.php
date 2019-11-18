@@ -45,4 +45,16 @@ class CustomerApi
 
         return $this->jsonOrError($response);
     }
+
+    /**
+     * @param $woo_id
+     * @return Collection
+     * @throws ApiCallFailed
+     */
+    public function get($woo_id)
+    {
+        $response = $this->client->post("/wp-json/wc/v3/customers/$woo_id");
+
+        return $this->jsonOrError($response);
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Reactors;
 
 use App\Customer;
 use App\Google\GoogleApi;
-use App\StorableEvents\MemberSubscriptionActivated;
+use App\StorableEvents\MembershipActivated;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 
@@ -22,7 +22,7 @@ final class GoogleGroupsReactor implements EventHandler
         $this->googleApi = $googleApi;
     }
 
-    public function onMemberSubscriptionActivated(MemberSubscriptionActivated $event)
+    public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
