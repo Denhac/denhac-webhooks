@@ -59,7 +59,31 @@ final class CardNotifierAggregate extends AggregateRoot
 
     protected function applyCardNotificationNeeded(CardNotificationNeeded $event)
     {
-        $this->cardNotifications->push($event);
+        $existingNotifications = $this->cardNotifications
+            ->filter(function ($notification) use ($event) {
+                /** @var CardNotificationNeeded $notification */
+                return $notification->wooCustomerId == $event->wooCustomerId &&
+                    $notification->cardNumber == $event->cardNumber;
+            });
+
+        if ($existingNotifications->count() == 0) {
+            $this->cardNotifications->push($event);
+        } else if($existingNotifications->count() == 1) {
+            /** @var CardNotificationNeeded $notification */
+            $notification = $existingNotifications->first;
+
+            // If they're different, they cancel out.
+            // If not, they're a duplicate and we can ignore the new one
+            if($notification->notificationType != $event->notificationType) {
+                $this->cardNotifications->reject(function($notification) use($event) {
+                    /** @var CardNotificationNeeded $notification */
+                    return $notification->wooCustomerId == $event->wooCustomerId &&
+                        $notification->cardNumber == $event->cardNumber;
+                });
+            }
+        } else {
+            report(new \Exception("Multiple card notifications needed for same woo id/card ({$event->wooCustomerId}/{$event->cardNumber})"));
+        }
     }
 
     protected function applyCardNotificationEmailNeeded(CardNotificationEmailNeeded $event)

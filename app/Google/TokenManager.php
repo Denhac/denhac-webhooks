@@ -75,7 +75,6 @@ class TokenManager
             RequestOptions::HEADERS => [
                 "Content-Type" => "application/x-www-form-urlencoded;charset=UTF-8"
             ],
-            // TODO Double check if this is correct
             RequestOptions::BODY => http_build_query([
                 "grant_type" => "urn:ietf:params:oauth:grant-type:jwt-bearer",
                 "assertion" => $jwtToken,
