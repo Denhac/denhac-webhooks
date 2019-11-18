@@ -12,6 +12,8 @@ return [
         'auth_as' => env('GOOGLE_API_AUTH_AS_USER')
     ],
     'slack' => [
-        'api_token' => env('SLACK_API_TOKEN')
+        'api_token' => env('SLACK_API_TOKEN'),
+        'email' => env('SLACK_API_EMAIL'),
+        'password' => env('SLACK_API_PASSWORD'),
     ]
 ];

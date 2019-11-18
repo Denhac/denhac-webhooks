@@ -38,7 +38,7 @@ class GroupApi
         /** @var ResponseInterface $response */
         $response = $this->client->post($this->membersUrl, [
             RequestOptions::HEADERS => [
-                'Authorization' => "Bearer {$accessToken}"
+                'Authorization' => "Bearer $accessToken"
             ],
             RequestOptions::JSON => [
                 "email" => $email,
