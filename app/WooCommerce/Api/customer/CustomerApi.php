@@ -30,4 +30,19 @@ class CustomerApi
             ],
         ]);
     }
+
+    /**
+     * @param $woo_id
+     * @param array $json
+     * @return Collection
+     * @throws ApiCallFailed
+     */
+    public function update($woo_id, array $json)
+    {
+        $response = $this->client->post("/wp-json/wc/v3/customers/$woo_id", [
+            RequestOptions::JSON => $json,
+        ]);
+
+        return $this->jsonOrError($response);
+    }
 }

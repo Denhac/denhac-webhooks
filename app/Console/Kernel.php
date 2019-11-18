@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Aggregates\CardNotifierAggregate;
 use App\Console\Commands\BackupWinDSXCommand;
+use App\Console\Commands\MatchSlackUsers;
 use App\Console\Commands\SetUpDenhacWebhooks;
 use App\Console\Commands\UpdateBaseData;
 use Illuminate\Console\Scheduling\Schedule;
@@ -18,6 +19,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         BackupWinDSXCommand::class,
+        MatchSlackUsers::class,
         SetUpDenhacWebhooks::class,
         UpdateBaseData::class,
     ];
