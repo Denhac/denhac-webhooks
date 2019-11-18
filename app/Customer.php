@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string first_name
  * @property string last_name
  * @property string email
+ * @property string username
+ * @property boolean member
  */
 class Customer extends Model
 {
@@ -20,5 +22,9 @@ class Customer extends Model
         "member",
         "first_name",
         "last_name"
+    ];
+
+    protected $casts = [
+        "member" => "boolean",
     ];
 }

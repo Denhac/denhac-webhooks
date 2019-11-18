@@ -11,9 +11,11 @@ use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
 use App\StorableEvents\CardStatusUpdated;
 use App\StorableEvents\CustomerCreated;
+use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionStatusChanged;
+use App\StorableEvents\SubscriptionUpdated;
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoot;
 
@@ -61,6 +63,8 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateCustomer($customer)
     {
+        $this->recordThat(new CustomerUpdated($customer));
+
         $this->handleCards($customer);
 
         return $this;
@@ -77,6 +81,8 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateSubscription($subscription)
     {
+        $this->recordThat(new SubscriptionUpdated($subscription));
+
         $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
 
         return $this;
@@ -182,7 +188,6 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         // TODO Figure out all the state transitions for subscriptions
-        // TODO Double check that this doesn't happen on subscription renewal
         if ($oldStatus == "on-hold" && $newStatus == "active") {
             $this->recordThat(new MembershipActivated($this->customerId));
 
