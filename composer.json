@@ -19,6 +19,8 @@
         "laravel/framework": "^6.2",
         "laravel/horizon": "^3.4",
         "laravel/tinker": "^1.0",
+        "sentry/sentry-laravel": "1.5.0",
+        "php-http/curl-client": "^1.0",
         "spatie/laravel-event-sourcing": "^1.0",
         "spatie/laravel-webhook-client": "^2.2"
     },
