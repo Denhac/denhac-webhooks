@@ -30,6 +30,7 @@ return [
     'reactors' => [
         \App\Reactors\CardNotifierReactor::class,
         \App\Reactors\GoogleGroupsReactor::class,
+        \App\Reactors\SlackReactor::class,
         \App\Reactors\CardUpdateRequestReactor::class,
     ],
 

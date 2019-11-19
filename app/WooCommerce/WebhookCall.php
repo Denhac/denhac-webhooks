@@ -3,6 +3,7 @@
 namespace App\WooCommerce;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Spatie\WebhookClient\WebhookConfig;
 
 /**
