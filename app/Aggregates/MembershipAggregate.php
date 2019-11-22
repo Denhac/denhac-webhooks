@@ -31,7 +31,7 @@ final class MembershipAggregate extends AggregateRoot
     private $cardsSentForActivation;
     private $cardsSentForDeactivation;
 
-    private $subscriptionStatus = null;
+    private $subscriptions;
     private $currentlyAMember = null;
 
     public function __construct()
@@ -40,6 +40,7 @@ final class MembershipAggregate extends AggregateRoot
         $this->cardsNeedingActivation = collect();
         $this->cardsSentForActivation = collect();
         $this->cardsSentForDeactivation = collect();
+        $this->subscriptions = collect();
     }
 
     /**
@@ -201,7 +202,7 @@ final class MembershipAggregate extends AggregateRoot
 
     private function handleSubscriptionStatus($subscriptionId, $newStatus)
     {
-        $oldStatus = $this->subscriptionStatus;
+        $oldStatus = $this->subscriptions->get($subscriptionId);
 
         if ($oldStatus == "need-id-check" && $newStatus == "active") {
             $this->recordThat(new MembershipActivated($this->customerId));
@@ -212,6 +213,7 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         if ($newStatus == 'cancelled') {
+            // TODO Make sure there's NO currently active subscriptions
             $this->recordThat(new MembershipDeactivated($this->customerId));
 
             // TODO Handle removing cards
@@ -240,7 +242,7 @@ final class MembershipAggregate extends AggregateRoot
 
     protected function applySubscriptionStatusChanged(SubscriptionStatusChanged $event)
     {
-        $this->subscriptionStatus = $event->newStatus;
+        $this->subscriptions->put($event->subscriptionId, $event->newStatus);
     }
 
     protected function applyMembershipActivated(MembershipActivated $event)
