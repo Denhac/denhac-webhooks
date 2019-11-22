@@ -20,7 +20,7 @@ final class SlackReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        dispatch(new MakeCustomerRegularMemberInSlack($customer->email));
+        dispatch(new MakeCustomerRegularMemberInSlack($customer->woo_id));
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
@@ -28,6 +28,6 @@ final class SlackReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        dispatch(new MakeCustomerPublicOnlyMemberInSlack($customer->email));
+        dispatch(new MakeCustomerPublicOnlyMemberInSlack($customer->woo_id));
     }
 }

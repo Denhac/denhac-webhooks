@@ -19,7 +19,7 @@ trait MakeCustomerMemberInSlackMixin
     public function handle(WooCommerceApi $wooCommerceApi, SlackApi $slackApi)
     {
         $customer = $wooCommerceApi->customers->get($this->wooCustomerId);
-        $customer_email = $wooCommerceApi["email"];
+        $customer_email = $customer["email"];
 
         $slack_id = collect($customer["meta_data"])
                 ->firstWhere("key", "access_slack_id")["value"] ?? null;

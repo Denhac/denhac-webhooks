@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string first_name
  * @property string last_name
  * @property string email
+ * @property integer woo_id
  * @property string username
  * @property boolean member
  */

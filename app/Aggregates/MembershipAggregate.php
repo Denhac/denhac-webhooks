@@ -11,9 +11,12 @@ use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
 use App\StorableEvents\CardStatusUpdated;
 use App\StorableEvents\CustomerCreated;
+use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
+use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
+use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionStatusChanged;
 use App\StorableEvents\SubscriptionUpdated;
 use Ramsey\Uuid\Uuid;
@@ -70,6 +73,15 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
+    public function importCustomer($customer)
+    {
+        $this->recordThat(new CustomerImported($customer));
+
+        $this->handleCards($customer);
+
+        return $this;
+    }
+
     public function createSubscription($subscription)
     {
         $this->recordThat(new SubscriptionCreated($subscription));
@@ -82,6 +94,15 @@ final class MembershipAggregate extends AggregateRoot
     public function updateSubscription($subscription)
     {
         $this->recordThat(new SubscriptionUpdated($subscription));
+
+        $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
+
+        return $this;
+    }
+
+    public function importSubscription($subscription)
+    {
+        $this->recordThat(new SubscriptionImported($subscription));
 
         $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
 
@@ -181,19 +202,39 @@ final class MembershipAggregate extends AggregateRoot
     private function handleSubscriptionStatus($subscriptionId, $newStatus)
     {
         $oldStatus = $this->subscriptionStatus;
-        $this->recordThat(new SubscriptionStatusChanged($subscriptionId, $oldStatus, $newStatus));
 
-        if ($oldStatus == null) {
-            $oldStatus = $newStatus;
-        }
-
-        // TODO Figure out all the state transitions for subscriptions
-        if ($oldStatus == "on-hold" && $newStatus == "active") {
+        if ($oldStatus == "need-id-check" && $newStatus == "active") {
             $this->recordThat(new MembershipActivated($this->customerId));
 
             foreach ($this->cardsNeedingActivation as $card) {
                 $this->recordThat(new CardSentForActivation($this->customerId, $card));
             }
+        }
+
+        if ($newStatus == 'cancelled') {
+            $this->recordThat(new MembershipDeactivated($this->customerId));
+
+            // TODO Handle removing cards
+        }
+
+        $this->recordThat(new SubscriptionStatusChanged($subscriptionId, $oldStatus, $newStatus));
+
+        // TODO Handle $newStatus being "cancelled" or any other bad subscription
+    }
+
+    /**
+     * When a subscription is imported, we make the assumption that they are already in slack, groups,
+     * and the card access system. There won't be any MembershipActivated event because in the real
+     * world, that event would have already been emitted.
+     *
+     * @param SubscriptionImported $event
+     */
+    protected function applySubscriptionImported(SubscriptionImported $event)
+    {
+        $status = $event->subscription['status'];
+
+        if($status == 'active') {
+            $this->currentlyAMember = true;
         }
     }
 
@@ -202,9 +243,14 @@ final class MembershipAggregate extends AggregateRoot
         $this->subscriptionStatus = $event->newStatus;
     }
 
-    protected function applyMemberSubscriptionActivated(MembershipActivated $event)
+    protected function applyMembershipActivated(MembershipActivated $event)
     {
         $this->currentlyAMember = true;
+    }
+
+    protected function applyMembershipDeactivated(MembershipDeactivated $event)
+    {
+        $this->currentlyAMember = false;
     }
 
     private function isActiveMember()

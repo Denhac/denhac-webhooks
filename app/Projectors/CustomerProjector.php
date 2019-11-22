@@ -4,6 +4,7 @@ namespace App\Projectors;
 
 use App\Customer;
 use App\StorableEvents\CustomerCreated;
+use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -14,18 +15,14 @@ final class CustomerProjector implements Projector
 {
     use ProjectsEvents;
 
+    public function onCustomerImported(CustomerImported $event)
+    {
+        $this->addCustomerToDatabase($event->customer);
+    }
+
     public function onCustomerCreated(CustomerCreated $event)
     {
-        $customer = $event->customer;
-
-        Customer::create([
-            "woo_id" => $customer["id"],
-            "email" => $customer["email"],
-            "username" => $customer["username"],
-            "first_name" => $customer["first_name"],
-            "last_name" => $customer["last_name"],
-            "member" => false,
-        ]);
+        $this->addCustomerToDatabase($event->customer);
     }
 
     public function onCustomerUpdated(CustomerUpdated $event)
@@ -56,5 +53,21 @@ final class CustomerProjector implements Projector
 
         $customer->member = false;
         $customer->save();
+    }
+
+    /**
+     * @param $customer
+     * @return mixed
+     */
+    private function addCustomerToDatabase($customer)
+    {
+        return Customer::create([
+            "woo_id" => $customer["id"],
+            "email" => $customer["email"],
+            "username" => $customer["username"],
+            "first_name" => $customer["first_name"],
+            "last_name" => $customer["last_name"],
+            "member" => false,
+        ]);
     }
 }

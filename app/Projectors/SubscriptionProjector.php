@@ -3,6 +3,7 @@
 namespace App\Projectors;
 
 use App\StorableEvents\SubscriptionCreated;
+use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionStatusChanged;
 use App\Subscription;
 use Spatie\EventSourcing\Projectors\Projector;
@@ -12,19 +13,14 @@ final class SubscriptionProjector implements Projector
 {
     use ProjectsEvents;
 
+    public function onSubscriptionImported(SubscriptionImported $event)
+    {
+        $this->addSubscriptionToDatabase($event->subscription);
+    }
+
     public function onSubscriptionCreated(SubscriptionCreated $event)
     {
-        $subscription = $event->subscription;
-
-        $wooId = $subscription["id"];
-        $customerId = $subscription["customer_id"];
-        $status = $subscription["status"];
-
-        Subscription::create([
-            "woo_id" => $wooId,
-            "customer_id" => $customerId,
-            "status" => $status,
-        ]);
+        $this->addSubscriptionToDatabase($event->subscription);
     }
 
     public function onSubscriptionStatusChanged(SubscriptionStatusChanged $event)
@@ -35,5 +31,21 @@ final class SubscriptionProjector implements Projector
         $subscription->status = $event->newStatus;
 
         $subscription->save();
+    }
+
+    /**
+     * @param $subscription
+     */
+    private function addSubscriptionToDatabase($subscription): void
+    {
+        $wooId = $subscription["id"];
+        $customerId = $subscription["customer_id"];
+        $status = $subscription["status"];
+
+        Subscription::create([
+            "woo_id" => $wooId,
+            "customer_id" => $customerId,
+            "status" => $status,
+        ]);
     }
 }

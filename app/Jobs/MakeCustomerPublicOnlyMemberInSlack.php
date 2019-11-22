@@ -29,7 +29,7 @@ class MakeCustomerPublicOnlyMemberInSlack implements ShouldQueue
 
     protected function handleExistingMember(SlackApi $slackApi, $slack_id)
     {
-        $channel_id = $slackApi->channelIdsByName("public")[0];
+        $channel_id = collect($slackApi->channelIdsByName("public"))->first();
         // TODO Handle return code?
         $slackApi->users_admin_setUltraRestricted($slack_id, $channel_id);
     }

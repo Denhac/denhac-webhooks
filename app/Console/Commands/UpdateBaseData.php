@@ -66,7 +66,7 @@ class UpdateBaseData extends Command
                 $username = $customer["username"];
                 $this->line("{$username} was not in our internal store, adding.");
                 MembershipAggregate::make($customer["id"])
-                    ->createCustomer($customer)
+                    ->importCustomer($customer)
                     ->persist();
             }
         });
@@ -85,7 +85,7 @@ class UpdateBaseData extends Command
                 $this->line("Subscription {$wooId} was not in our internal store, adding.");
 
                 MembershipAggregate::make($subscription["customer_id"])
-                    ->createSubscription($subscription)
+                    ->importSubscription($subscription)
                     ->persist();
             }
         });
