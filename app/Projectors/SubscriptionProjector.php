@@ -29,7 +29,6 @@ final class SubscriptionProjector implements Projector
 
     public function onSubscriptionStatusChanged(SubscriptionStatusChanged $event)
     {
-
         /** @var Subscription $subscription */
         $subscription = Subscription::whereWooId($event->subscriptionId)->first();
 

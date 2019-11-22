@@ -15,11 +15,6 @@ final class SlackReactor implements EventHandler
 {
     use HandlesEvents;
 
-    public function onCustomerCreated(CustomerCreated $event)
-    {
-        dispatch(new MakeCustomerPublicOnlyMemberInSlack($event->customer["email"]));
-    }
-
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */

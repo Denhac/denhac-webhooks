@@ -28,10 +28,10 @@ trait MakeCustomerMemberInSlackMixin
             $this->handleExistingMember($slackApi, $slack_id);
         } else {
             $emails = [
-                $customer_email => "ultra_restricted",
+                $customer_email => $this->membershipType(),
             ];
             $channels = $slackApi->channelIdsByName(["general", "public", "random"]);
-            $slackApi->users_admin_inviteBulk($customer_email, $channels);
+            $slackApi->users_admin_inviteBulk($emails, $channels);
             // TODO Report exception if the overall request isn't okay or per user isn't okay
 
             $slackObject = $slackApi->users_lookupByEmail($customer_email);

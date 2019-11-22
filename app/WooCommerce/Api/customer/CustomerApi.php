@@ -53,7 +53,7 @@ class CustomerApi
      */
     public function get($woo_id)
     {
-        $response = $this->client->post("/wp-json/wc/v3/customers/$woo_id");
+        $response = $this->client->get("/wp-json/wc/v3/customers/$woo_id");
 
         return $this->jsonOrError($response);
     }
