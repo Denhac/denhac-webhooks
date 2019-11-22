@@ -6,6 +6,7 @@ use App\Google\TokenManager;
 use App\Slack\SlackApi;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Horizon\Horizon;
 
 class AppServiceProvider extends ServiceProvider
 {
