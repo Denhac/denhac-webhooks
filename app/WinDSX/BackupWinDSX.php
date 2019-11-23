@@ -14,6 +14,12 @@ class BackupWinDSX
         }
 
         $command = "scp -r denhac-access:/C:/WinDSX {$path}";
-        exec($command); # TODO Handle failures.
+        $output = [];
+        $return_value = 0;
+        exec($command, $output, $return_value);
+
+        if($return_value != 0) {
+            throw new \Exception("WinDSX backup failed (" . $return_value . "): " . implode(", ", $output));
+        }
     }
 }
