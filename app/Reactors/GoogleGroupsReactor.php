@@ -4,6 +4,8 @@ namespace App\Reactors;
 
 use App\Customer;
 use App\Google\GoogleApi;
+use App\Jobs\AddCustomerToGoogleGroup;
+use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -30,7 +32,7 @@ final class GoogleGroupsReactor implements EventHandler
     {
         $email = $event->customer["email"];
 
-        $this->googleApi->group(self::GROUP_DENHAC)->add($email);
+        dispatch(new AddCustomerToGoogleGroup($email, self::GROUP_DENHAC));
     }
 
     public function onMembershipActivated(MembershipActivated $event)
@@ -38,7 +40,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        $this->googleApi->group(self::GROUP_MEMBERS)->add($customer->email);
+        dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_MEMBERS));
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
@@ -47,6 +49,6 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        $this->googleApi->group(self::GROUP_MEMBERS)->remove($customer->email);
+        dispatch(new RemoveCustomerFromGoogleGroup($customer->email, self::GROUP_MEMBERS));
     }
 }

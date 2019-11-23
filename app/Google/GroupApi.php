@@ -5,6 +5,7 @@ namespace App\Google;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 
 class GroupApi
@@ -45,7 +46,14 @@ class GroupApi
                 "email" => $email,
                 "role" => "MEMBER"
             ],
+            RequestOptions::HTTP_ERRORS => false,
         ]);
+
+        if($response->getStatusCode() == Response::HTTP_CONFLICT && $this->errorsHasDuplicate($response)) {
+            // Not an issue, they've already been added
+        } else if($response->getStatusCode() != Response::HTTP_OK) {
+            throw new \Exception("Google api add failed: " . $response->getBody());
+        }
 
         // TODO Handle conflict/other errors
     }
@@ -62,5 +70,16 @@ class GroupApi
         ]);
 
         // TODO Handle conflict/other errors
+    }
+
+    /**
+     * @param $response ResponseInterface
+     * @return bool
+     */
+    private function errorsHasDuplicate($response)
+    {
+//        $json = json_decode($response->getBody());
+
+        return false;
     }
 }
