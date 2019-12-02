@@ -204,6 +204,11 @@ final class MembershipAggregate extends AggregateRoot
     {
         $oldStatus = $this->subscriptions->get($subscriptionId);
 
+        if($newStatus == $oldStatus) {
+            // Probably just a renewal, but there's nothing for us to do
+            return;
+        }
+
         if ($oldStatus == "need-id-check" && $newStatus == "active") {
             $this->recordThat(new MembershipActivated($this->customerId));
 

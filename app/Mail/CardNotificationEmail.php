@@ -84,14 +84,14 @@ class CardNotificationEmail extends Mailable
         } else if ($activatedCards->count() == 1) {
             $result .= "There was 1 card activated";
         } else {
-            $result .= "There were {$activatedCards->count()} new activated";
+            $result .= "There were {$activatedCards->count()} cards activated";
         }
 
         if ($deactivatedCards->count() == 0) {
             $result .= " and no cards deactivated";
         } else if ($deactivatedCards->count() == 1) {
             $result .= " and 1 card deactivated";
-} else {
+        } else {
             $result .= " and {$deactivatedCards->count()} cards deactivated";
         }
 
