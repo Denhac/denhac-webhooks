@@ -13,7 +13,7 @@ class BackupWinDSX
             report($errorException);
         }
 
-        $command = "scp -r denhac-access:/C:/WinDSX {$path}";
+        $command = "scp -r denhac-access:/C:/WinDSX {$path} 2>&1";
         $output = [];
         $return_value = 0;
         exec($command, $output, $return_value);
