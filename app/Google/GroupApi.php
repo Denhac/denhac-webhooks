@@ -6,6 +6,7 @@ namespace App\Google;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 
 class GroupApi
@@ -49,9 +50,9 @@ class GroupApi
             RequestOptions::HTTP_ERRORS => false,
         ]);
 
-        if($response->getStatusCode() == Response::HTTP_CONFLICT && $this->errorsHasDuplicate($response)) {
+        if ($response->getStatusCode() == Response::HTTP_CONFLICT && $this->errorsHasDuplicate($response)) {
             // Not an issue, they've already been added
-        } else if($response->getStatusCode() != Response::HTTP_OK) {
+        } else if ($response->getStatusCode() != Response::HTTP_OK) {
             throw new \Exception("Google api add failed: " . $response->getBody());
         }
 
@@ -78,8 +79,33 @@ class GroupApi
      */
     private function errorsHasDuplicate($response)
     {
-//        $json = json_decode($response->getBody());
+        $json = json_decode($response->getBody(), true);
 
-        return false;
+        if (!Arr::has($json, "error")) {
+            return false;
+        }
+        $error = $json["error"];
+
+        if (!Arr::has($error, "code")) {
+            return false;
+        }
+
+        $code = $error["code"];
+
+        if($code != 409) {
+            return false;
+        }
+
+        if (!Arr::has($error, "errors")) {
+            return false;
+        }
+
+        $errors = collect($error["errors"]);
+
+        return $errors
+            ->filter(function ($e) {
+                return Arr::has($e, "reason") && $e["reason"] === "duplicate";
+            })
+            ->isNotEmpty();
     }
 }

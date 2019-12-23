@@ -221,12 +221,16 @@ final class MembershipAggregate extends AggregateRoot
             // TODO Make sure there's NO currently active subscriptions
             $this->recordThat(new MembershipDeactivated($this->customerId));
 
-            // TODO Handle removing cards
+            $allCards = collect()
+                ->merge($this->cardsNeedingActivation)
+                ->merge($this->cardsSentForActivation)
+                ->merge($this->cardsOnAccount);
+            foreach ($allCards as $card) {
+                $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
+            }
         }
 
         $this->recordThat(new SubscriptionStatusChanged($subscriptionId, $oldStatus, $newStatus));
-
-        // TODO Handle $newStatus being "cancelled" or any other bad subscription
     }
 
     /**

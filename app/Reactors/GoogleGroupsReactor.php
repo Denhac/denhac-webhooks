@@ -45,10 +45,15 @@ final class GoogleGroupsReactor implements EventHandler
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
-        // TODO Handle removing them from ALL but the denhac list (and adding them back if they reactivate?)
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        dispatch(new RemoveCustomerFromGoogleGroup($customer->email, self::GROUP_MEMBERS));
+        $this->googleApi->groupsForMember($customer->email)
+            ->filter(function ($group) {
+                return $group != "denhac@denhac.org";
+            })
+            ->each(function ($group) use ($customer) {
+                dispatch(new RemoveCustomerFromGoogleGroup($customer->email, $group));
+            });
     }
 }
