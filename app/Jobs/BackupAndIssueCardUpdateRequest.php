@@ -39,7 +39,7 @@ class BackupAndIssueCardUpdateRequest implements ShouldQueue
     public function handle()
     {
         $path = storage_path("backups/on_cards/" . date("Y/m/d/h/i"));
-        /** @var BackupWinDSX $backupWinDSX */
+        /** @var BackupWinDSXJob $backupWinDSX */
         $backupWinDSX = app(BackupWinDSX::class);
         $backupWinDSX->backup($path);
 

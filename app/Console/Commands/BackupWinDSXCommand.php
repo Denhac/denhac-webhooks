@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\WinDSX\BackupWinDSX;
+use App\Jobs\BackupWinDSXJob;
 use Illuminate\Console\Command;
 
 class BackupWinDSXCommand extends Command
@@ -39,8 +39,6 @@ class BackupWinDSXCommand extends Command
     public function handle()
     {
         $path = $this->argument("path");
-        /** @var BackupWinDSX $backupWinDSX */
-        $backupWinDSX = app(BackupWinDSX::class);
-        $backupWinDSX->backup($path);
+        BackupWinDSXJob::dispatch($path);
     }
 }
