@@ -17,18 +17,18 @@ final class CustomerProjector implements Projector
 
     public function onCustomerImported(CustomerImported $event)
     {
-        $this->addCustomerToDatabase($event->customer);
+        $this->addOrGetCustomer($event->customer);
     }
 
     public function onCustomerCreated(CustomerCreated $event)
     {
-        $this->addCustomerToDatabase($event->customer);
+        $this->addOrGetCustomer($event->customer);
     }
 
     public function onCustomerUpdated(CustomerUpdated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customer["id"])->first();
+        $customer = $this->addOrGetCustomer($event->customer);
 
         $customer->email = $customer["email"];
         $customer->username = $customer["username"];
@@ -59,15 +59,22 @@ final class CustomerProjector implements Projector
      * @param $customer
      * @return mixed
      */
-    private function addCustomerToDatabase($customer)
+    private function addOrGetCustomer($customer)
     {
-        return Customer::create([
-            "woo_id" => $customer["id"],
-            "email" => $customer["email"],
-            "username" => $customer["username"],
-            "first_name" => $customer["first_name"],
-            "last_name" => $customer["last_name"],
-            "member" => false,
-        ]);
+        /** @var Customer $customer */
+        $customerModel = Customer::whereWooId($customer["id"])->first();
+
+        if(is_null($customerModel)) {
+            return Customer::create([
+                "woo_id" => $customer["id"],
+                "email" => $customer["email"],
+                "username" => $customer["username"],
+                "first_name" => $customer["first_name"],
+                "last_name" => $customer["last_name"],
+                "member" => false,
+            ]);
+        } else {
+            return $customerModel;
+        }
     }
 }

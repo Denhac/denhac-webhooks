@@ -15,12 +15,12 @@ final class SubscriptionProjector implements Projector
 
     public function onSubscriptionImported(SubscriptionImported $event)
     {
-        $this->addSubscriptionToDatabase($event->subscription);
+        $this->addOrGetSubscription($event->subscription);
     }
 
     public function onSubscriptionCreated(SubscriptionCreated $event)
     {
-        $this->addSubscriptionToDatabase($event->subscription);
+        $this->addOrGetSubscription($event->subscription);
     }
 
     public function onSubscriptionStatusChanged(SubscriptionStatusChanged $event)
@@ -36,7 +36,7 @@ final class SubscriptionProjector implements Projector
     /**
      * @param $subscription
      */
-    private function addSubscriptionToDatabase($subscription): void
+    private function addOrGetSubscription($subscription): void
     {
         $wooId = $subscription["id"];
         $customerId = $subscription["customer_id"];
