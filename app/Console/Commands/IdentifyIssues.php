@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\ActiveCardHolderUpdate;
+use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\Subscription;
 use App\WooCommerce\Api\ApiCallFailed;
@@ -79,11 +80,14 @@ class IdentifyIssues extends Command
     {
         collect($this->issues->keys())
             ->each(function ($key) {
-                $this->info($key);
-                collect($this->issues->get($key))
-                    ->map(function($issue) {
+                $knownIssues = collect($this->issues->get($key));
+                $this->info("$key ({$knownIssues->count()})");
+
+                $knownIssues
+                    ->map(function ($issue) {
                         $this->info(">>> $issue");
                     });
+                $this->info("");
             });
     }
 
@@ -96,7 +100,7 @@ class IdentifyIssues extends Command
 
         $subscriptions = $this->wooCommerceApi->subscriptions->list();
 
-        return $customers->map(function ($customer) use ($subscriptions) {
+        $members = $customers->map(function ($customer) use ($subscriptions) {
             $isMember = $subscriptions
                 ->where('customer_id', $customer['id'])
                 ->where('status', 'active')
@@ -112,13 +116,24 @@ class IdentifyIssues extends Command
             return [
                 "first_name" => $customer['first_name'],
                 "last_name" => $customer['last_name'],
-                "email" => $customer['email'],
-                "username" => $customer['username'],
                 "is_member" => $isMember,
                 "cards" => $cards,
                 "slack_id" => $meta_data->where('key', 'access_slack_id')->first()['value'],
             ];
         });
+
+        $members = $members->concat(PaypalBasedMember::all()
+            ->map(function ($member) {
+                return [
+                    "first_name" => $member->first_name,
+                    "last_name" => $member->last_name,
+                    "is_member" => $member->active,
+                    "cards" => collect([$member->card]),
+                    "slack_id" => $member->slack_id,
+                ];
+            }));
+
+        return $members;
     }
 
     /**
@@ -171,22 +186,23 @@ class IdentifyIssues extends Command
             });
     }
 
+    // TODO Add function for members who don't have a slack invite
     private function extraSlackUsers(Collection $members)
     {
         $users = $this->slackApi->users_list()
-            ->filter(function($user) {
-                if(array_key_exists("is_bot", $user) && $user["is_bot"]) {
+            ->filter(function ($user) {
+                if (array_key_exists("is_bot", $user) && $user["is_bot"]) {
                     return false;
                 }
 
-                if(array_key_exists("deleted", $user) && $user["deleted"]) {
+                if (array_key_exists("deleted", $user) && $user["deleted"]) {
                     return false;
                 }
 
-                if(array_key_exists("is_restricted", $user) && $user["is_restricted"]) {
+                if (array_key_exists("is_restricted", $user) && $user["is_restricted"]) {
                     return false;
                 }
-                if(array_key_exists("is_ultra_restricted", $user) && $user["is_ultra_restricted"]) {
+                if (array_key_exists("is_ultra_restricted", $user) && $user["is_ultra_restricted"]) {
                     return false;
                 }
 
@@ -196,13 +212,13 @@ class IdentifyIssues extends Command
             });
 
         $users
-            ->each(function($user) use ($members) {
+            ->each(function ($user) use ($members) {
                 $membersForSlackId = $members
-                    ->filter(function($member) use ($user) {
+                    ->filter(function ($member) use ($user) {
                         return $member["slack_id"] == $user["id"];
                     });
 
-                if($membersForSlackId->count() == 0) {
+                if ($membersForSlackId->count() == 0) {
                     $message = "{$user["name"]} with slack id ({$user["id"]}) is a full user in slack but I have no membership record of them.";
                     $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                     return;
@@ -210,7 +226,7 @@ class IdentifyIssues extends Command
 
                 $member = $membersForSlackId->first();
 
-                if(!$member["is_member"]) {
+                if (!$member["is_member"]) {
                     $message = "{$member["first_name"]} {$member["last_name"]} with slack id ({$user["id"]}) is not an active member but they have a full slack account.";
                     $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                 }
