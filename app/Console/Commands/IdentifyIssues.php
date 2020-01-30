@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 
 class IdentifyIssues extends Command
 {
-    const ISSUE_WITH_AN_ACTIVE_CARD = "Issue with an active card";
+    const ISSUE_WITH_A_CARD = "Issue with a card";
     const ISSUE_SLACK_ACCOUNT = "Issue with a Slack account";
     const ISSUE_GOOGLE_GROUPS = "Issue with google groups";
 
@@ -164,8 +164,8 @@ class IdentifyIssues extends Command
             return;
         }
 
-        $card_holders = $activeCardHolderUpdate->card_holders;
-        collect($card_holders)
+        $card_holders = collect($activeCardHolderUpdate->card_holders);
+        $card_holders
             ->each(function ($card_holder) use ($members) {
                 $membersWithCard = $members
                     ->filter(function ($member) use ($card_holder) {
@@ -174,14 +174,14 @@ class IdentifyIssues extends Command
 
                 if ($membersWithCard->count() == 0) {
                     $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but I have no membership record of them with that card.";
-                    $this->issues->add(self::ISSUE_WITH_AN_ACTIVE_CARD, $message);
+                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
 
                     return;
                 }
 
                 if ($membersWithCard->count() > 1) {
                     $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but is connected to multiple accounts.";
-                    $this->issues->add(self::ISSUE_WITH_AN_ACTIVE_CARD, $message);
+                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
 
                     return;
                 }
@@ -191,13 +191,29 @@ class IdentifyIssues extends Command
                 if ($card_holder["first_name"] != $member["first_name"] ||
                     $card_holder["last_name"] != $member["last_name"]) {
                     $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but is listed as {$member["first_name"]} {$member["last_name"]} in our records.";
-                    $this->issues->add(self::ISSUE_WITH_AN_ACTIVE_CARD, $message);
+                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
                 }
 
                 if (!$member["is_member"]) {
                     $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but is not currently a member.";
-                    $this->issues->add(self::ISSUE_WITH_AN_ACTIVE_CARD, $message);
+                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
                 }
+            });
+
+        $members
+            ->filter(function ($member) {
+                return !is_null($member["first_name"]) &&
+                    !is_null($member["last_name"]) &&
+                    $member["is_member"];
+            })
+            ->each(function ($member) use ($card_holders) {
+                $member["cards"]->each(function ($card) use ($member, $card_holders) {
+                    $cardActive = $card_holders->contains("card_num", $card);
+                    if (!$cardActive) {
+                        $message = "{$member["first_name"]} {$member["last_name"]} has the card $card but it doesn't appear to be active";
+                        $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
+                    }
+                });
             });
     }
 
