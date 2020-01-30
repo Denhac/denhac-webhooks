@@ -4,6 +4,7 @@ namespace App\Projectors;
 
 use App\PaypalBasedMember;
 use App\StorableEvents\PaypalMemberCardUpdated;
+use App\StorableEvents\PaypalMemberEmailUpdated;
 use App\StorableEvents\PaypalMemberImported;
 use App\StorableEvents\PaypalMemberNameUpdated;
 use App\StorableEvents\PaypalMemberSlackIdUpdated;
@@ -13,6 +14,11 @@ use Spatie\EventSourcing\Projectors\ProjectsEvents;
 final class PaypalMemberProjector implements Projector
 {
     use ProjectsEvents;
+
+    public function onStartingEventReplay()
+    {
+        PaypalBasedMember::truncate();
+    }
 
     public function onPaypalMemberImported(PaypalMemberImported $event)
     {
@@ -40,6 +46,13 @@ final class PaypalMemberProjector implements Projector
     {
         $member = PaypalBasedMember::wherePaypalId($event->paypal_id)->first();
         $member->slack_id = $event->slack_id;
+        $member->save();
+    }
+
+    public function onPaypalMemberEmailUpdated(PaypalMemberEmailUpdated $event)
+    {
+        $member = PaypalBasedMember::wherePaypalId($event->paypal_id)->first();
+        $member->email = $event->email;
         $member->save();
     }
 }

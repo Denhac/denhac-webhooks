@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\ActiveCardHolderUpdate;
+use App\Google\GoogleApi;
 use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\Subscription;
@@ -18,6 +19,7 @@ class IdentifyIssues extends Command
 {
     const ISSUE_WITH_AN_ACTIVE_CARD = "Issue with an active card";
     const ISSUE_SLACK_ACCOUNT = "Issue with a Slack account";
+    const ISSUE_GOOGLE_GROUPS = "Issue with google groups";
 
     /**
      * The name and signature of the console command.
@@ -45,19 +47,27 @@ class IdentifyIssues extends Command
      * @var SlackApi
      */
     private $slackApi;
+    /**
+     * @var GoogleApi
+     */
+    private $googleApi;
 
     /**
      * Create a new command instance.
      *
      * @param WooCommerceApi $wooCommerceApi
+     * @param SlackApi $slackApi
      */
-    public function __construct(WooCommerceApi $wooCommerceApi, SlackApi $slackApi)
+    public function __construct(WooCommerceApi $wooCommerceApi,
+                                SlackApi $slackApi,
+                                GoogleApi $googleApi)
     {
         parent::__construct();
 
         $this->issues = new MessageBag();
         $this->wooCommerceApi = $wooCommerceApi;
         $this->slackApi = $slackApi;
+        $this->googleApi = $googleApi;
     }
 
     /**
@@ -71,6 +81,7 @@ class IdentifyIssues extends Command
         $members = $this->getMembers();
         $this->unknownActiveCard($members);
         $this->extraSlackUsers($members);
+        $this->googleGroupIssues($members);
 
         $this->printIssues();
     }
@@ -78,6 +89,8 @@ class IdentifyIssues extends Command
 
     private function printIssues()
     {
+        $this->info("There are {$this->issues->count()} total issues.");
+        $this->info("");
         collect($this->issues->keys())
             ->each(function ($key) {
                 $knownIssues = collect($this->issues->get($key));
@@ -116,6 +129,7 @@ class IdentifyIssues extends Command
             return [
                 "first_name" => $customer['first_name'],
                 "last_name" => $customer['last_name'],
+                "email" => $customer["email"],
                 "is_member" => $isMember,
                 "cards" => $cards,
                 "slack_id" => $meta_data->where('key', 'access_slack_id')->first()['value'],
@@ -127,6 +141,7 @@ class IdentifyIssues extends Command
                 return [
                     "first_name" => $member->first_name,
                     "last_name" => $member->last_name,
+                    "email" => $member->email,
                     "is_member" => $member->active,
                     "cards" => collect([$member->card]),
                     "slack_id" => $member->slack_id,
@@ -189,7 +204,7 @@ class IdentifyIssues extends Command
     // TODO Add function for members who don't have a slack invite
     private function extraSlackUsers(Collection $members)
     {
-        $users = $this->slackApi->users_list()
+        $slackUsers = $this->slackApi->users_list()
             ->filter(function ($user) {
                 if (array_key_exists("is_bot", $user) && $user["is_bot"]) {
                     return false;
@@ -206,12 +221,19 @@ class IdentifyIssues extends Command
                     return false;
                 }
 
+                if (
+                    $user["id"] == "UNEA0SKK3" && // slack-api
+                    $user["id"] == "USLACKBOT" // slackbot
+                ) {
+                    return false;
+                }
+
                 // TODO Maybe move this down so we can handle the case where someone is a member but doesn't have a full privilege slack account?
 
                 return true;
             });
 
-        $users
+        $slackUsers
             ->each(function ($user) use ($members) {
                 $membersForSlackId = $members
                     ->filter(function ($member) use ($user) {
@@ -231,5 +253,62 @@ class IdentifyIssues extends Command
                     $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                 }
             });
+    }
+
+    private function googleGroupIssues(Collection $members)
+    {
+        $groups = $this->googleApi->groupsForDomain("denhac.org")
+            ->filter(function ($group) {
+                // TODO handle excluded groups in a better way
+                return $group != "denhac@denhac.org" &&
+                    $group != "lpfm@denhac.org" &&
+                    $group != "lpfmerrors@denhac.org" &&
+                    $group != "lowpowerfm@denhac.org";
+            });
+
+        $emailsToGroups = collect();
+
+        $groups->each(function ($group) use (&$emailsToGroups) {
+            $membersInGroup = $this->googleApi->group($group)->list();
+
+            $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
+                $groupsForEmail = $emailsToGroups->get($groupMember, collect());
+                $groupsForEmail->add($group);
+                $emailsToGroups->put($groupMember, $groupsForEmail);
+            });
+        });
+
+        $emailsToGroups->each(function ($groupsForEmail, $email) use ($groups, $members) {
+            /** @var Collection $groupsForEmail */
+
+            // Ignore groups of ours that are part of another group
+            if ($groups->contains($email)) {
+                return;
+            }
+
+            $membersForEmail = $members
+                ->filter(function ($member) use ($email) {
+                    return $member["email"] == $email;
+                });
+
+            if ($membersForEmail->count() > 1) {
+                $message = "More than 2 members exist for email address $email";
+                $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+                return;
+            }
+
+            if ($membersForEmail->count() == 0) {
+                $message = "No member found for email address $email in groups: {$groupsForEmail->implode(", ")}";
+                $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+                return;
+            }
+
+            $member = $membersForEmail->first();
+
+            if (!$member["is_member"]) {
+                $message = "{$member["first_name"]} {$member["last_name"]} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(", ")}";
+                $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+            }
+        });
     }
 }

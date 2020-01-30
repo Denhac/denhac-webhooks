@@ -73,6 +73,29 @@ class GroupApi
         // TODO Handle conflict/other errors
     }
 
+    public function list()
+    {
+        $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
+
+        /** @var ResponseInterface $response */
+        $response = $this->client->get("{$this->membersUrl}", [
+            RequestOptions::HEADERS => [
+                'Authorization' => "Bearer $accessToken"
+            ],
+        ]);
+
+        $json = json_decode($response->getBody(), true);
+
+        if (Arr::has($json, "members")) {
+            return collect($json["members"])
+                ->map(function ($group) {
+                    return $group["email"];
+                });
+        }
+
+        return collect();
+    }
+
     /**
      * @param $response ResponseInterface
      * @return bool
