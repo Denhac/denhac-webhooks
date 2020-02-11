@@ -199,7 +199,7 @@ final class MembershipAggregate extends AggregateRoot
         $this->cardsSentForDeactivation->pull($event->cardNumber);
     }
 
-    private function handleSubscriptionStatus($subscriptionId, $newStatus)
+    public function handleSubscriptionStatus($subscriptionId, $newStatus)
     {
         $oldStatus = $this->subscriptions->get($subscriptionId);
 
@@ -216,7 +216,8 @@ final class MembershipAggregate extends AggregateRoot
             }
         }
 
-        if ($newStatus == 'cancelled') {
+        // TODO figure out how to actually handle all of these individually and if they really are the same.
+        if ($newStatus == 'cancelled' || $newStatus == 'suspended-payment' || $newStatus == '"suspended-manual') {
             // TODO Make sure there's NO currently active subscriptions
             $this->recordThat(new MembershipDeactivated($this->customerId));
 

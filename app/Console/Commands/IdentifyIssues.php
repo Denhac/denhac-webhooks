@@ -6,11 +6,9 @@ use App\ActiveCardHolderUpdate;
 use App\Google\GoogleApi;
 use App\PaypalBasedMember;
 use App\Slack\SlackApi;
-use App\Subscription;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
@@ -57,6 +55,7 @@ class IdentifyIssues extends Command
      *
      * @param WooCommerceApi $wooCommerceApi
      * @param SlackApi $slackApi
+     * @param GoogleApi $googleApi
      */
     public function __construct(WooCommerceApi $wooCommerceApi,
                                 SlackApi $slackApi,
@@ -83,6 +82,7 @@ class IdentifyIssues extends Command
         $this->extraSlackUsers($members);
         $this->missingSlackUsers($members);
         $this->googleGroupIssues($members);
+//        $this->
 
         $this->printIssues();
     }
@@ -172,7 +172,7 @@ class IdentifyIssues extends Command
             ->each(function ($card_holder) use ($members) {
                 $membersWithCard = $members
                     ->filter(function ($member) use ($card_holder) {
-                        return $member['cards']->contains($card_holder["card_num"]);
+                        return $member['cards']->contains(ltrim($card_holder["card_num"], "0"));
                     });
 
                 if ($membersWithCard->count() == 0) {
