@@ -77,7 +77,6 @@ class GroupApi
     {
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
 
-        /** @var ResponseInterface $response */
         $response = $this->client->get("{$this->membersUrl}", [
             RequestOptions::HEADERS => [
                 'Authorization' => "Bearer $accessToken"

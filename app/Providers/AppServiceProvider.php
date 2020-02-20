@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Google\TokenManager;
+use App\Github\TokenManager as GithubTokenManager;
+use App\Google\TokenManager as GoogleTokenManager;
 use App\Slack\SlackApi;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Horizon\Horizon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,8 +25,8 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(TokenManager::class, function () {
-            return new TokenManager(
+        $this->app->bind(GoogleTokenManager::class, function () {
+            return new GoogleTokenManager(
                 file_get_contents(config('denhac.google.key_path')),
                 config('denhac.google.service_account'),
                 config('denhac.google.auth_as')
@@ -38,6 +38,14 @@ class AppServiceProvider extends ServiceProvider
                 config('denhac.slack.api_token'),
                 config('denhac.slack.email'),
                 config('denhac.slack.password')
+            );
+        });
+
+        $this->app->bind(GithubTokenManager::class, function () {
+            return new GithubTokenManager(
+                file_get_contents(config('denhac.github.key_path')),
+                config('denhac.github.app_id'),
+                config('denhac.github.installation_id')
             );
         });
     }

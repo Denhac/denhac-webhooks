@@ -15,5 +15,10 @@ return [
         'api_token' => env('SLACK_API_TOKEN'),
         'email' => env('SLACK_API_EMAIL'),
         'password' => env('SLACK_API_PASSWORD'),
+    ],
+    'github' => [
+        'key_path' => env('GITHUB_API_KEY_PATH', storage_path('github-api.pem')),
+        'app_id' => env('GITHUB_APP_ID'),
+        'installation_id' => env('GITHUB_INSTALLATION_ID'),
     ]
 ];

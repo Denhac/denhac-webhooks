@@ -9,13 +9,6 @@ use Illuminate\Support\Arr;
 
 class GoogleApi
 {
-    // I'm thinking this could be a class interface where I say $googleApi->groups and use it that way,
-    // or $googleApi->group("members@denhac.org")->add/remove/etc.
-    // Let's start by breaking the service key and private key path out into config variables.
-    // Next, I'm thinking about a token issuer type class that can be used to get tokens with the correct scope automatically.
-    // That class can be passed into whatever class is returned by the group method or whatever.
-
-
     /**
      * @var TokenManager
      */
