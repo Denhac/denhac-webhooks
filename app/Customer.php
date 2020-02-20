@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer woo_id
  * @property string username
  * @property boolean member
+ * @property string github_username
  */
 class Customer extends Model
 {
@@ -22,7 +23,8 @@ class Customer extends Model
         "woo_id",
         "member",
         "first_name",
-        "last_name"
+        "last_name",
+        "github_username",
     ];
 
     protected $casts = [

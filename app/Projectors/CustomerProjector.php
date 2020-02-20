@@ -34,6 +34,10 @@ final class CustomerProjector implements Projector
         $customer->username = $customer["username"];
         $customer->first_name = $customer["first_name"];
         $customer->last_name = $customer["last_name"];
+        $metadata = collect($customer["meta_data"]);
+        $customer->github_username = $metadata
+            ->where('key', 'github_username')
+            ->first()['value'];
         $customer->save();
     }
 

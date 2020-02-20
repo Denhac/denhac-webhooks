@@ -13,6 +13,7 @@ use App\StorableEvents\CardStatusUpdated;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
+use App\StorableEvents\GithubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
@@ -33,6 +34,7 @@ final class MembershipAggregate extends AggregateRoot
 
     private $subscriptions;
     private $currentlyAMember = null;
+    private $githubUsername = null;
 
     public function __construct()
     {
@@ -62,6 +64,8 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->handleCards($customer);
 
+        $this->handleGithub($customer);
+
         return $this;
     }
 
@@ -70,6 +74,8 @@ final class MembershipAggregate extends AggregateRoot
         $this->recordThat(new CustomerUpdated($customer));
 
         $this->handleCards($customer);
+
+        $this->handleGithub($customer);
 
         return $this;
     }
@@ -231,6 +237,23 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         $this->recordThat(new SubscriptionStatusChanged($subscriptionId, $oldStatus, $newStatus));
+    }
+
+    private function handleGithub($customer)
+    {
+        $metadata = collect($customer["meta_data"]);
+        $githubUsername = $metadata
+            ->where('key', 'github_username')
+            ->first()['value'];
+
+        if($this->githubUsername != $githubUsername) {
+            event(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));
+        }
+    }
+
+    public function applyGithubUsernameUpdated(GithubUsernameUpdated $event)
+    {
+        $this->githubUsername = $event->newUsername;
     }
 
     /**
