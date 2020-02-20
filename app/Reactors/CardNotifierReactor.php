@@ -31,7 +31,7 @@ final class CardNotifierReactor implements EventHandler
 
     public function onCardNotificationEmailNeeded(CardNotificationEmailNeeded $event)
     {
-        Mail::to("jnesselr@denhac.org")
+        Mail::to("access@denhac.org")
             ->send(new CardNotificationEmail($event->cardNotifications));
     }
 }
