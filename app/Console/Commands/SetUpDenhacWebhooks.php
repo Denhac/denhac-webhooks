@@ -96,7 +96,7 @@ class SetUpDenhacWebhooks extends Command
         $filtered = $existingWebhooks
             ->filter(function ($existingWebhook) use ($topicKey) {
                 return $existingWebhook["topic"] == $topicKey &&
-                    $existingWebhook["delivery_url"] = $this->deliveryUrl;
+                    $existingWebhook["delivery_url"] == $this->deliveryUrl;
             });
 
         $count = $filtered->count();
