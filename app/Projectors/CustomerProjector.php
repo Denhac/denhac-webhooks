@@ -37,7 +37,7 @@ final class CustomerProjector implements Projector
         $metadata = collect($customer["meta_data"]);
         $customer->github_username = $metadata
             ->where('key', 'github_username')
-            ->first()['value'];
+            ->first()['value'] ?? null;
         $customer->save();
     }
 

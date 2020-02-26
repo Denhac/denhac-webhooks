@@ -244,7 +244,7 @@ final class MembershipAggregate extends AggregateRoot
         $metadata = collect($customer["meta_data"]);
         $githubUsername = $metadata
             ->where('key', 'github_username')
-            ->first()['value'];
+            ->first()['value'] ?? null;
 
         if($this->githubUsername != $githubUsername) {
             event(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));

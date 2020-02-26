@@ -121,7 +121,7 @@ class IdentifyIssues extends Command
                 ->isNotEmpty();
 
             $meta_data = collect($customer['meta_data']);
-            $card_string = $meta_data->where('key', 'access_card_number')->first()['value'];
+            $card_string = $meta_data->where('key', 'access_card_number')->first()['value'] ?? null;
             $cards = is_null($card_string) ? collect() : collect(explode(",", $card_string))
                 ->map(function ($card) {
                     return ltrim($card, "0");
@@ -134,7 +134,7 @@ class IdentifyIssues extends Command
                 "email" => is_null($customer["email"]) ? null : Str::lower($customer["email"]),
                 "is_member" => $isMember,
                 "cards" => $cards,
-                "slack_id" => $meta_data->where('key', 'access_slack_id')->first()['value'],
+                "slack_id" => $meta_data->where('key', 'access_slack_id')->first()['value'] ?? null,
             ];
         });
 
