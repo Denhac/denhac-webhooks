@@ -6,7 +6,10 @@ use Spatie\EventSourcing\ShouldBeStored;
 
 final class PaypalMemberDeactivated implements ShouldBeStored
 {
-    public function __construct()
+    public $paypal_id;
+
+    public function __construct($paypal_id)
     {
+        $this->paypal_id = $paypal_id;
     }
 }

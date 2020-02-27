@@ -4,6 +4,7 @@ namespace App\Projectors;
 
 use App\PaypalBasedMember;
 use App\StorableEvents\PaypalMemberCardUpdated;
+use App\StorableEvents\PaypalMemberDeactivated;
 use App\StorableEvents\PaypalMemberEmailUpdated;
 use App\StorableEvents\PaypalMemberImported;
 use App\StorableEvents\PaypalMemberNameUpdated;
@@ -54,5 +55,15 @@ final class PaypalMemberProjector implements Projector
         $member = PaypalBasedMember::wherePaypalId($event->paypal_id)->first();
         $member->email = $event->email;
         $member->save();
+    }
+
+    /**
+     * It's safe to do this because we won't let someone sign up via paypal again
+     *
+     * @param PaypalMemberDeactivated $event
+     */
+    public function onPaypalMemberDeactivated(PaypalMemberDeactivated $event)
+    {
+        PaypalBasedMember::wherePaypalId($event->paypal_id)->delete();
     }
 }
