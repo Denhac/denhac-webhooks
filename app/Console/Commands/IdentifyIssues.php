@@ -116,7 +116,7 @@ class IdentifyIssues extends Command
         $members = $customers->map(function ($customer) use ($subscriptions) {
             $isMember = $subscriptions
                 ->where('customer_id', $customer['id'])
-                ->where('status', 'active')
+                ->whereIn('status', ['active', 'pending-cancel'])
                 ->isNotEmpty();
 
             $meta_data = collect($customer['meta_data']);
