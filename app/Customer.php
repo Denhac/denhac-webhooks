@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string username
  * @property boolean member
  * @property string github_username
+ * @property string slack_id
  */
 class Customer extends Model
 {

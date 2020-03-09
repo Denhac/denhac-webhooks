@@ -3,17 +3,24 @@
 namespace App\Projectors;
 
 use App\Customer;
+use App\PaypalBasedMember;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\SubscriptionImported;
 use Spatie\EventSourcing\Projectors\Projector;
 use Spatie\EventSourcing\Projectors\ProjectsEvents;
 
 final class CustomerProjector implements Projector
 {
     use ProjectsEvents;
+
+    public function onStartingEventReplay()
+    {
+        Customer::truncate();
+    }
 
     public function onCustomerImported(CustomerImported $event)
     {
@@ -34,11 +41,20 @@ final class CustomerProjector implements Projector
         $customer->username = $customer["username"];
         $customer->first_name = $customer["first_name"];
         $customer->last_name = $customer["last_name"];
-        $metadata = collect($customer["meta_data"]);
-        $customer->github_username = $metadata
-            ->where('key', 'github_username')
-            ->first()['value'] ?? null;
+        $customer->github_username = $this->getMetadataField($event->customer, 'github_username');
+        $customer->slack_id = $this->getMetadataField($event->customer, 'access_slack_id');
         $customer->save();
+    }
+
+    public function onSubscriptionImported(SubscriptionImported $event)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->subscription["customer_id"])->first();
+
+        if($event->subscription["status"] == "active") {
+            $customer->member = true;
+            $customer->save();
+        }
     }
 
     public function onMembershipActivated(MembershipActivated $event)
@@ -60,7 +76,7 @@ final class CustomerProjector implements Projector
     }
 
     /**
-     * @param $customer
+     * @param array $customer
      * @return mixed
      */
     private function addOrGetCustomer($customer)
@@ -68,7 +84,7 @@ final class CustomerProjector implements Projector
         /** @var Customer $customer */
         $customerModel = Customer::whereWooId($customer["id"])->first();
 
-        if(is_null($customerModel)) {
+        if (is_null($customerModel)) {
             return Customer::create([
                 "woo_id" => $customer["id"],
                 "email" => $customer["email"],
@@ -76,9 +92,23 @@ final class CustomerProjector implements Projector
                 "first_name" => $customer["first_name"],
                 "last_name" => $customer["last_name"],
                 "member" => false,
+                "github_username" => $this->getMetadataField($customer, 'github_username'),
+                "slack_id" => $this->getMetadataField($customer, 'access_slack_id'),
             ]);
         } else {
             return $customerModel;
         }
+    }
+
+    /**
+     * @param array $customer
+     * @param string $key The name of the metadata field to lookup
+     * @return mixed|null
+     */
+    private function getMetadataField($customer, $key)
+    {
+        return collect($customer['meta_data'])
+                ->where('key', $key)
+                ->first()['value'] ?? null;
     }
 }

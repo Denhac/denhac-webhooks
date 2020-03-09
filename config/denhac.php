@@ -20,5 +20,6 @@ return [
         'key_path' => env('GITHUB_API_KEY_PATH', storage_path('github-api.pem')),
         'app_id' => env('GITHUB_APP_ID'),
         'installation_id' => env('GITHUB_INSTALLATION_ID'),
-    ]
+    ],
+    'door_code' => env('DOOR_CODE'),
 ];

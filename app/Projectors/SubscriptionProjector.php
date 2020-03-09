@@ -13,6 +13,11 @@ final class SubscriptionProjector implements Projector
 {
     use ProjectsEvents;
 
+    public function onStartingEventReplay()
+    {
+        Subscription::truncate();
+    }
+
     public function onSubscriptionImported(SubscriptionImported $event)
     {
         $this->addOrGetSubscription($event->subscription);

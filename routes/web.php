@@ -14,3 +14,5 @@
 use Illuminate\Support\Facades\Route;
 
 Route::webhooks("webhooks/denhac-org", "denhac.org");
+
+Route::post("slack/door_code", "SlackCommandController@doorCode");
