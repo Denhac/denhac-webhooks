@@ -21,5 +21,11 @@ return [
         'app_id' => env('GITHUB_APP_ID'),
         'installation_id' => env('GITHUB_INSTALLATION_ID'),
     ],
+    'notifications' => [
+        'card_notification' => [
+            'to' => env('NOTIFICATION_CARD_TO'),
+            'cc' => env('NOTIFICATION_CARD_CC'),
+        ],
+    ],
     'door_code' => env('DOOR_CODE'),
 ];
