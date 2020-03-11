@@ -3,12 +3,14 @@
 namespace App\Console\Commands;
 
 use App\ActiveCardHolderUpdate;
+use App\Google\GmailEmailHelper;
 use App\Google\GoogleApi;
 use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
@@ -126,11 +128,20 @@ class IdentifyIssues extends Command
                     return ltrim($card, "0");
                 });
 
+            $emails = collect();
+            if(!is_null($customer["email"])) {
+                $emails->push(GmailEmailHelper::removePlusInGmail(Str::lower($customer["email"])));
+            }
+
+            $email_aliases_string = $meta_data->where('key', 'email_aliases')->first()['value'] ?? null;
+            $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(",", $email_aliases_string));
+            $emails = $emails->merge($email_aliases);
+
             return [
                 "id" => $customer["id"],
                 "first_name" => $customer['first_name'],
                 "last_name" => $customer['last_name'],
-                "email" => is_null($customer["email"]) ? null : Str::lower($customer["email"]),
+                "email" => $emails,
                 "is_member" => $isMember,
                 "cards" => $cards,
                 "slack_id" => $meta_data->where('key', 'access_slack_id')->first()['value'] ?? null,
@@ -139,11 +150,16 @@ class IdentifyIssues extends Command
 
         $members = $members->concat(PaypalBasedMember::all()
             ->map(function ($member) {
+                $emails = collect();
+                if(!is_null($member->email)) {
+                    $emails->push(GmailEmailHelper::removePlusInGmail(Str::lower($member->email)));
+                }
+
                 return [
                     "id" => $member->paypal_id,
                     "first_name" => $member->first_name,
                     "last_name" => $member->last_name,
-                    "email" => is_null($member->email) ? null : Str::lower($member->email),
+                    "email" => $emails,
                     "is_member" => $member->active,
                     "cards" => is_null($member->card) ? collect() : collect([$member->card]),
                     "slack_id" => $member->slack_id,
@@ -332,6 +348,7 @@ class IdentifyIssues extends Command
             $membersInGroup = $this->googleApi->group($group)->list();
 
             $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
+                $groupMember = Str::lower($groupMember);
                 $groupsForEmail = $emailsToGroups->get($groupMember, collect());
                 $groupsForEmail->add($group);
                 $emailsToGroups->put($groupMember, $groupsForEmail);
@@ -348,7 +365,9 @@ class IdentifyIssues extends Command
 
             $membersForEmail = $members
                 ->filter(function ($member) use ($email) {
-                    return $member["email"] == $email;
+                    /** @var Collection $memberEmails */
+                    $memberEmails = $member["email"];
+                    return $memberEmails->contains(Str::lower($email));
                 });
 
             if ($membersForEmail->count() > 1) {
@@ -372,9 +391,10 @@ class IdentifyIssues extends Command
         });
 
         $members->each(function ($member) use ($emailsToGroups) {
-            $memberEmail = $member["email"];
+            /** @var Collection $memberEmails */
+            $memberEmails = $member["email"];
 
-            if (is_null($memberEmail)) {
+            if ($memberEmails->isEmpty()) {
                 return;
             }
 
@@ -383,12 +403,18 @@ class IdentifyIssues extends Command
             }
 
             $membersGroupMailing = "members@denhac.org"; // TODO dedupe this
-            if ($emailsToGroups->has($memberEmail) &&
-                $emailsToGroups->get($memberEmail)->contains($membersGroupMailing)) {
+
+            $memberHasEmailInMembersList = $memberEmails
+                ->filter(function($memberEmail) use($emailsToGroups, $membersGroupMailing) {
+                    return $emailsToGroups->has($memberEmail) &&
+                        $emailsToGroups->get($memberEmail)->contains($membersGroupMailing);
+                })
+                ->isNotEmpty();
+            if ($memberHasEmailInMembersList) {
                 return;
             }
 
-            $message = "{$member["first_name"]} {$member["last_name"]} with email ($memberEmail) is an active member but is not part of $membersGroupMailing";
+            $message = "{$member["first_name"]} {$member["last_name"]} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
             $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
         });
     }
