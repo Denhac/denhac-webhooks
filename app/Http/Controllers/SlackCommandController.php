@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Http\Requests\SlackSlashCommandRequest;
 use App\WooCommerce\Api\WooCommerceApi;
-use Illuminate\Http\Request;
 
 class SlackCommandController extends Controller
 {
@@ -18,7 +18,7 @@ class SlackCommandController extends Controller
         $this->wooCommerceApi = $wooCommerceApi;
     }
 
-    public function doorCode(Request $request)
+    public function doorCode(SlackSlashCommandRequest $request)
     {
         $id = $request->get("user_id");
         /** @var Customer $member */

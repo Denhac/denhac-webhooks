@@ -13,6 +13,7 @@ return [
     ],
     'slack' => [
         'api_token' => env('SLACK_API_TOKEN'),
+        'api_signing_secret' => env('SLACK_API_SIGNING_SECRET'),
         'email' => env('SLACK_API_EMAIL'),
         'password' => env('SLACK_API_PASSWORD'),
     ],
