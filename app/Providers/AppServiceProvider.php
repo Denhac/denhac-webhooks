@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(SlackApi::class, function() {
+        $this->app->bind(SlackApi::class, function () {
             return new SlackApi(
                 config('denhac.slack.api_token'),
                 config('denhac.slack.email'),

@@ -2,7 +2,6 @@
 
 namespace App\WinDSX;
 
-
 class BackupWinDSX
 {
     public function backup($path)
@@ -18,8 +17,8 @@ class BackupWinDSX
         $return_value = 0;
         exec($command, $output, $return_value);
 
-        if($return_value != 0) {
-            throw new \Exception("WinDSX backup failed (" . $return_value . "): " . implode(", ", $output));
+        if ($return_value != 0) {
+            throw new \Exception('WinDSX backup failed ('.$return_value.'): '.implode(', ', $output));
         }
     }
 }

@@ -14,7 +14,7 @@ class AddEmailToPaypalMember extends Migration
     public function up()
     {
         Schema::table('paypal_based_members', function (Blueprint $table) {
-            $table->string("email")->nullable();
+            $table->string('email')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddEmailToPaypalMember extends Migration
     public function down()
     {
         Schema::table('paypal_based_members', function (Blueprint $table) {
-            $table->dropColumn("email");
+            $table->dropColumn('email');
         });
     }
 }

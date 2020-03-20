@@ -38,7 +38,7 @@ class BackupWinDSXCommand extends Command
      */
     public function handle()
     {
-        $path = $this->argument("path");
+        $path = $this->argument('path');
         BackupWinDSXJob::dispatch($path);
     }
 }

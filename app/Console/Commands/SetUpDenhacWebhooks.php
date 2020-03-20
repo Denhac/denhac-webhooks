@@ -28,16 +28,16 @@ class SetUpDenhacWebhooks extends Command
     protected $description = 'Set Up WooCommerce Webhooks';
 
     protected $topics = [
-        "customer.created" => "Customer Created",
-        "customer.updated" => "Customer Updated",
-        "customer.deleted" => "Customer Deleted",
-        "order.created" => "Order Created",
-        "order.updated" => "Order Updated",
-        "order.deleted" => "Order Deleted",
-        "subscription.created" => "Subscription Created",
-        "subscription.updated" => "Subscription Updated",
-        "subscription.deleted" => "Subscription Deleted",
-        "subscription.switched" => "Subscription Switched",
+        'customer.created' => 'Customer Created',
+        'customer.updated' => 'Customer Updated',
+        'customer.deleted' => 'Customer Deleted',
+        'order.created' => 'Order Created',
+        'order.updated' => 'Order Updated',
+        'order.deleted' => 'Order Deleted',
+        'subscription.created' => 'Subscription Created',
+        'subscription.updated' => 'Subscription Updated',
+        'subscription.deleted' => 'Subscription Deleted',
+        'subscription.switched' => 'Subscription Switched',
     ];
 
     /**
@@ -70,8 +70,7 @@ class SetUpDenhacWebhooks extends Command
             ],
         ]);
 
-
-        $this->deliveryUrl = (string)url('webhooks/denhac-org', [], true);
+        $this->deliveryUrl = (string) url('webhooks/denhac-org', [], true);
         $this->api = $api;
     }
 
@@ -95,8 +94,8 @@ class SetUpDenhacWebhooks extends Command
     {
         $filtered = $existingWebhooks
             ->filter(function ($existingWebhook) use ($topicKey) {
-                return $existingWebhook["topic"] == $topicKey &&
-                    $existingWebhook["delivery_url"] == $this->deliveryUrl;
+                return $existingWebhook['topic'] == $topicKey &&
+                    $existingWebhook['delivery_url'] == $this->deliveryUrl;
             });
 
         $count = $filtered->count();
@@ -109,25 +108,25 @@ class SetUpDenhacWebhooks extends Command
                         $this->deliveryUrl,
                         config('denhac.webhook_secret'));
             } catch (Exception $e) {
-                $this->line("Creating hook failed!");
+                $this->line('Creating hook failed!');
                 $this->line($e->getMessage());
             }
-        } else if ($count == 1) {
+        } elseif ($count == 1) {
             $this->line("Hook for topic {$topicKey} already exists");
             $hook = $filtered->first();
 
             // Active is fine, assume paused is for a good reason and disabled is an error
 
-            if ($hook["status"] == "active") {
-                $this->line("Hook is active. Woot!");
-            } else if ($hook["status"] == "paused") {
+            if ($hook['status'] == 'active') {
+                $this->line('Hook is active. Woot!');
+            } elseif ($hook['status'] == 'paused') {
                 $this->line("Hook is paused. We won't do anything");
-            } else if ($hook["status"] == "disabled") {
+            } elseif ($hook['status'] == 'disabled') {
                 $this->line("Hook for topic {$topicKey} is disabled, trying to enable it");
                 try {
                     $this->activateWebhook($hook['id']);
                 } catch (Exception $e) {
-                    $this->line("Enabling hook failed");
+                    $this->line('Enabling hook failed');
                     $this->line($e->getMessage());
                 }
             }
@@ -141,10 +140,9 @@ class SetUpDenhacWebhooks extends Command
         $response = $this->guzzleClient
             ->put("/wp-json/wc/v3/webhooks/{$id}", [
                 RequestOptions::JSON => [
-                    "status" => "active",
-                ]
+                    'status' => 'active',
+                ],
             ]);
-
 
         if ($response->getStatusCode() != Response::HTTP_OK) {
             $errorMessage = "Unable to set Webhook to active status (Status: {$response->getStatusCode()})";

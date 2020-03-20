@@ -21,5 +21,4 @@ final class CardUpdateRequestReactor implements EventHandler
     {
         BackupAndIssueCardUpdateRequest::dispatch($event);
     }
-
 }

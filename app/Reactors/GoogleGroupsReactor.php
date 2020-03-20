@@ -14,8 +14,8 @@ use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 
 final class GoogleGroupsReactor implements EventHandler
 {
-    private const GROUP_MEMBERS = "members@denhac.org";
-    private const GROUP_DENHAC = "denhac@denhac.org";
+    private const GROUP_MEMBERS = 'members@denhac.org';
+    private const GROUP_DENHAC = 'denhac@denhac.org';
     use HandlesEvents;
 
     /**
@@ -30,7 +30,7 @@ final class GoogleGroupsReactor implements EventHandler
 
     public function onCustomerCreated(CustomerCreated $event)
     {
-        $email = $event->customer["email"];
+        $email = $event->customer['email'];
 
         dispatch(new AddCustomerToGoogleGroup($email, self::GROUP_DENHAC));
     }
@@ -50,7 +50,7 @@ final class GoogleGroupsReactor implements EventHandler
 
         $this->googleApi->groupsForMember($customer->email)
             ->filter(function ($group) {
-                return $group != "denhac@denhac.org";
+                return $group != 'denhac@denhac.org';
             })
             ->each(function ($group) use ($customer) {
                 dispatch(new RemoveCustomerFromGoogleGroup($customer->email, $group));

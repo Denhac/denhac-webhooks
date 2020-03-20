@@ -52,7 +52,7 @@ final class MembershipAggregate extends AggregateRoot
     public static function make(string $customerId): AggregateRoot
     {
         $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customerId);
-        $aggregateRoot = MembershipAggregate::retrieve($uuid);
+        $aggregateRoot = self::retrieve($uuid);
         $aggregateRoot->customerId = $customerId;
 
         return $aggregateRoot;
@@ -93,7 +93,7 @@ final class MembershipAggregate extends AggregateRoot
     {
         $this->recordThat(new SubscriptionCreated($subscription));
 
-        $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
+        $this->handleSubscriptionStatus($subscription['id'], $subscription['status']);
 
         return $this;
     }
@@ -102,7 +102,7 @@ final class MembershipAggregate extends AggregateRoot
     {
         $this->recordThat(new SubscriptionUpdated($subscription));
 
-        $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
+        $this->handleSubscriptionStatus($subscription['id'], $subscription['status']);
 
         return $this;
     }
@@ -111,7 +111,7 @@ final class MembershipAggregate extends AggregateRoot
     {
         $this->recordThat(new SubscriptionImported($subscription));
 
-        $this->handleSubscriptionStatus($subscription["id"], $subscription["status"]);
+        $this->handleSubscriptionStatus($subscription['id'], $subscription['status']);
 
         return $this;
     }
@@ -127,7 +127,7 @@ final class MembershipAggregate extends AggregateRoot
         if ($status == CardUpdateRequest::STATUS_SUCCESS) {
             if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
-            } else if ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
+            } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
                 $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
             } else {
                 $message = "Card update request type wasn't one of the expected values: {$cardUpdateRequest->type}";
@@ -135,8 +135,8 @@ final class MembershipAggregate extends AggregateRoot
             }
         } else {
             $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
-                . "Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
-                . "not successful";
+                ."Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
+                .'not successful';
             report(new \Exception($message));
         }
 
@@ -145,18 +145,18 @@ final class MembershipAggregate extends AggregateRoot
 
     private function handleCards($customer)
     {
-        $metadata = collect($customer["meta_data"]);
+        $metadata = collect($customer['meta_data']);
         $cardMetadata = $metadata->firstWhere('key', 'access_card_number');
 
         if ($cardMetadata == null) {
             return;
         }
 
-        $cardField = $cardMetadata["value"];
+        $cardField = $cardMetadata['value'];
 
-        $cardList = collect(explode(",", $cardField));
+        $cardList = collect(explode(',', $cardField));
         foreach ($cardList as $card) {
-            if (!$this->cardsOnAccount->contains($card)) {
+            if (! $this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
                 if ($this->isActiveMember()) {
@@ -166,7 +166,7 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         foreach ($this->cardsOnAccount as $card) {
-            if (!$cardList->contains($card)) {
+            if (! $cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
@@ -209,12 +209,12 @@ final class MembershipAggregate extends AggregateRoot
     {
         $oldStatus = $this->subscriptions->get($subscriptionId);
 
-        if($newStatus == $oldStatus) {
+        if ($newStatus == $oldStatus) {
             // Probably just a renewal, but there's nothing for us to do
             return;
         }
 
-        if ($oldStatus == "need-id-check" && $newStatus == "active") {
+        if ($oldStatus == 'need-id-check' && $newStatus == 'active') {
             $this->recordThat(new MembershipActivated($this->customerId));
 
             foreach ($this->cardsNeedingActivation as $card) {
@@ -241,12 +241,12 @@ final class MembershipAggregate extends AggregateRoot
 
     private function handleGithub($customer)
     {
-        $metadata = collect($customer["meta_data"]);
+        $metadata = collect($customer['meta_data']);
         $githubUsername = $metadata
             ->where('key', 'github_username')
             ->first()['value'] ?? null;
 
-        if($this->githubUsername != $githubUsername) {
+        if ($this->githubUsername != $githubUsername) {
             event(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));
         }
     }
@@ -267,7 +267,7 @@ final class MembershipAggregate extends AggregateRoot
     {
         $status = $event->subscription['status'];
 
-        if($status == 'active') {
+        if ($status == 'active') {
             $this->currentlyAMember = true;
         }
     }

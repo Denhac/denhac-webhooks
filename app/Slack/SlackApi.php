@@ -2,7 +2,6 @@
 
 namespace App\Slack;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
@@ -10,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class SlackApi
 {
-    private const ADMIN_TOKEN_CACHE_KEY = "slack.admin.token";
+    private const ADMIN_TOKEN_CACHE_KEY = 'slack.admin.token';
     /**
      * @var Client
      */
@@ -35,7 +34,7 @@ class SlackApi
     {
         $token = Cache::get(self::ADMIN_TOKEN_CACHE_KEY);
 
-        if (is_null($token) || !$this->isValidToken($token)) {
+        if (is_null($token) || ! $this->isValidToken($token)) {
             $token = $this->makeAdminToken($email, $password);
             Cache::forever(self::ADMIN_TOKEN_CACHE_KEY, $token);
         }
@@ -62,28 +61,28 @@ class SlackApi
     public function users_admin_inviteBulk($emails, $channels)
     {
         $emails = Arr::wrap($emails);
-        if (!Arr::isAssoc($emails)) {
-            $emails = array_fill_keys($emails, "regular");
+        if (! Arr::isAssoc($emails)) {
+            $emails = array_fill_keys($emails, 'regular');
         }
 
         if (is_array($channels)) {
-            $channels = implode(",", $channels);
+            $channels = implode(',', $channels);
         }
 
         $invites = collect($emails)->map(function ($value, $key) {
             return [
-                "email" => $key,
-                "type" => $value,
-                "source" => "invite_modal",
-                "mode" => "manual",
+                'email' => $key,
+                'type' => $value,
+                'source' => 'invite_modal',
+                'mode' => 'manual',
             ];
         });
 
         $response = $this->adminClient
-            ->post("https://denhac.slack.com/api/users.admin.inviteBulk", [
+            ->post('https://denhac.slack.com/api/users.admin.inviteBulk', [
                 RequestOptions::FORM_PARAMS => [
-                    "invites" => json_encode($invites->all()),
-                    "channels" => $channels,
+                    'invites' => json_encode($invites->all()),
+                    'channels' => $channels,
                 ],
             ]);
 
@@ -93,69 +92,70 @@ class SlackApi
     public function users_admin_setRegular($slack_id)
     {
         $response = $this->adminClient
-            ->post("https://denhac.slack.com/api/users.admin.setRegular", [
+            ->post('https://denhac.slack.com/api/users.admin.setRegular', [
                 RequestOptions::FORM_PARAMS => [
-                    "user" => $slack_id,
+                    'user' => $slack_id,
                 ],
             ]);
 
-        return json_decode($response->getBody(), true)["ok"];
+        return json_decode($response->getBody(), true)['ok'];
     }
 
     public function users_admin_setUltraRestricted($slack_id, $channel_id)
     {
         $response = $this->adminClient
-            ->post("https://denhac.slack.com/api/users.admin.setUltraRestricted", [
+            ->post('https://denhac.slack.com/api/users.admin.setUltraRestricted', [
                 RequestOptions::FORM_PARAMS => [
-                    "user" => $slack_id,
-                    "channel" => $channel_id,
+                    'user' => $slack_id,
+                    'channel' => $channel_id,
                 ],
             ]);
 
-        return json_decode($response->getBody(), true)["ok"];
+        return json_decode($response->getBody(), true)['ok'];
     }
 
     public function users_list()
     {
-        # TODO Make this handle errors/pagination
+        // TODO Make this handle errors/pagination
         return collect(json_decode($this->apiClient
-            ->get("https://denhac.slack.com/api/users.list")
-            ->getBody(), true)["members"]);
+            ->get('https://denhac.slack.com/api/users.list')
+            ->getBody(), true)['members']);
     }
 
     public function users_lookupByEmail($email)
     {
         // TODO Handle user not found/ok is false
-        $response = $this->apiClient->get("https://denhac.slack.com/api/users.lookupByEmail", [
+        $response = $this->apiClient->get('https://denhac.slack.com/api/users.lookupByEmail', [
             RequestOptions::QUERY => [
-                "email" => $email,
+                'email' => $email,
             ],
         ]);
 
-        return json_decode($response->getBody(), true)["user"];
+        return json_decode($response->getBody(), true)['user'];
     }
 
     public function channels_list()
     {
-        # TODO Make this handle errors/pagination
+        // TODO Make this handle errors/pagination
         return collect(json_decode($this->apiClient
-            ->get("https://denhac.slack.com/api/conversations.list")
-            ->getBody(), true)["channels"]);
+            ->get('https://denhac.slack.com/api/conversations.list')
+            ->getBody(), true)['channels']);
     }
 
     private function isValidToken($token)
     {
         // TODO Handle errors/exceptions at some point if needed
         // I want it to throw an exception until I know all the ways it can fail.
-        $response = (new Client())->get("https://denhac.slack.com/api/api.test", [
+        $response = (new Client())->get('https://denhac.slack.com/api/api.test', [
             RequestOptions::HEADERS => [
-                'Authorization' => "Bearer $token"
+                'Authorization' => "Bearer $token",
             ],
 //            RequestOptions::HTTP_ERRORS => false,
         ]);
 
         $json = json_decode($response->getBody(), true);
-        return $json["ok"];
+
+        return $json['ok'];
     }
 
     private function makeAdminToken($email, $password)
@@ -163,10 +163,10 @@ class SlackApi
         $client = new \Goutte\Client();
         $crawler = $client->request('GET', 'https://denhac.slack.com/?no_sso=1');
         $form = $crawler->selectButton('Sign in')->form();
-        $client->submit($form, array('email' => $email, 'password' => $password));
+        $client->submit($form, ['email' => $email, 'password' => $password]);
         // TODO Handle the .alert_error class
 
-        $html = $client->request('GET', "https://denhac.slack.com/admin")->html();
+        $html = $client->request('GET', 'https://denhac.slack.com/admin')->html();
 
         $matches = [];
         $regex = '/"api_token"\s*:\s*"(xoxs-[^"]+)/';
@@ -179,12 +179,12 @@ class SlackApi
     {
         $wantedChannels = Arr::wrap($wantedChannels);
         $channels = $this->channels_list();
+
         return $channels
-            ->whereIn("name", $wantedChannels)
+            ->whereIn('name', $wantedChannels)
             ->map(function ($channel) {
-                return $channel["id"];
+                return $channel['id'];
             })
             ->all();
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace App\WooCommerce\Api\webhook;
 
-
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
@@ -23,7 +22,7 @@ class WebhookApi
      */
     public function list()
     {
-        return $this->getWithPaging("/wp-json/wc/v3/webhooks");
+        return $this->getWithPaging('/wp-json/wc/v3/webhooks');
     }
 
     /**
@@ -37,18 +36,18 @@ class WebhookApi
     public function create($topicKey, $topicName, $deliveryUrl, $secret = null)
     {
         $json = [
-            "topic" => $topicKey,
-            "name" => $topicName,
-            "delivery_url" => $deliveryUrl
+            'topic' => $topicKey,
+            'name' => $topicName,
+            'delivery_url' => $deliveryUrl,
         ];
 
-        if($secret != null) {
-            $json["secret"] = $secret;
+        if ($secret != null) {
+            $json['secret'] = $secret;
         }
 
         $response = $this->client
-            ->post("/wp-json/wc/v3/webhooks", [
-                RequestOptions::JSON => $json
+            ->post('/wp-json/wc/v3/webhooks', [
+                RequestOptions::JSON => $json,
             ]);
 
         return $this->jsonOrError($response);

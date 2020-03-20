@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
 
         $schedule
             ->command(BackupWinDSXCommand::class, [
-                storage_path("backups/on_time/".date("Y/m/d/h/i"))
+                storage_path('backups/on_time/'.date('Y/m/d/h/i')),
             ])
             ->hourly();
 
@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
             })
             ->weekly()
             ->saturdays()
-            ->at("13:00");
+            ->at('13:00');
     }
 
     /**

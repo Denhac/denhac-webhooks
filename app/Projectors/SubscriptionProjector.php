@@ -43,14 +43,14 @@ final class SubscriptionProjector implements Projector
      */
     private function addOrGetSubscription($subscription): void
     {
-        $wooId = $subscription["id"];
-        $customerId = $subscription["customer_id"];
-        $status = $subscription["status"];
+        $wooId = $subscription['id'];
+        $customerId = $subscription['customer_id'];
+        $status = $subscription['status'];
 
         Subscription::create([
-            "woo_id" => $wooId,
-            "customer_id" => $customerId,
-            "status" => $status,
+            'woo_id' => $wooId,
+            'customer_id' => $customerId,
+            'status' => $status,
         ]);
     }
 }

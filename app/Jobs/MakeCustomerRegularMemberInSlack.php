@@ -12,7 +12,6 @@ use Illuminate\Queue\SerializesModels;
 class MakeCustomerRegularMemberInSlack implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
     use MakeCustomerMemberInSlackMixin;
 
     /**
@@ -34,11 +33,11 @@ class MakeCustomerRegularMemberInSlack implements ShouldQueue
 
     protected function membershipType()
     {
-        return "regular";
+        return 'regular';
     }
 
     protected function channelIds(SlackApi $slackApi)
     {
-        return $slackApi->channelIdsByName(["general", "public", "random"]);
+        return $slackApi->channelIdsByName(['general', 'public', 'random']);
     }
 }

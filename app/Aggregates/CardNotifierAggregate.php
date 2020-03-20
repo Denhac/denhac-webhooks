@@ -11,7 +11,7 @@ use Spatie\EventSourcing\AggregateRoot;
 
 final class CardNotifierAggregate extends AggregateRoot
 {
-    private const GLOBAL_UUID = "81baf399-436e-405b-948c-a5a19b751bb3";
+    private const GLOBAL_UUID = '81baf399-436e-405b-948c-a5a19b751bb3';
     /**
      * @var Collection
      */
@@ -61,22 +61,22 @@ final class CardNotifierAggregate extends AggregateRoot
     {
         $existingNotifications = $this->cardNotifications
             ->filter(function ($notification) use ($event) {
-                /** @var CardNotificationNeeded $notification */
+                /* @var CardNotificationNeeded $notification */
                 return $notification->wooCustomerId == $event->wooCustomerId &&
                     $notification->cardNumber == $event->cardNumber;
             });
 
         if ($existingNotifications->count() == 0) {
             $this->cardNotifications->push($event);
-        } else if($existingNotifications->count() == 1) {
+        } elseif ($existingNotifications->count() == 1) {
             /** @var CardNotificationNeeded $notification */
             $notification = $existingNotifications->first;
 
             // If they're different, they cancel out.
             // If not, they're a duplicate and we can ignore the new one
-            if($notification->notificationType != $event->notificationType) {
-                $this->cardNotifications->reject(function($notification) use($event) {
-                    /** @var CardNotificationNeeded $notification */
+            if ($notification->notificationType != $event->notificationType) {
+                $this->cardNotifications->reject(function ($notification) use ($event) {
+                    /* @var CardNotificationNeeded $notification */
                     return $notification->wooCustomerId == $event->wooCustomerId &&
                         $notification->cardNumber == $event->cardNumber;
                 });
