@@ -2,7 +2,6 @@
 
 namespace App\WooCommerce\Api\subscriptions;
 
-
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
@@ -23,7 +22,6 @@ class SubscriptionsApi
      */
     public function list()
     {
-        return $this->getWithPaging("/wp-json/wc/v1/subscriptions");
+        return $this->getWithPaging('/wp-json/wc/v1/subscriptions');
     }
-
 }

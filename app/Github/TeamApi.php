@@ -2,7 +2,6 @@
 
 namespace App\Github;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
@@ -47,8 +46,8 @@ class TeamApi
         $json = json_decode($response->getBody(), true);
 
         return collect($json)
-            ->map(function($member) {
-                return $member["login"];
+            ->map(function ($member) {
+                return $member['login'];
             });
     }
 
@@ -62,8 +61,6 @@ class TeamApi
             ],
         ]);
     }
-
-
 
     public function remove($username)
     {

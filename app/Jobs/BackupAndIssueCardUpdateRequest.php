@@ -38,22 +38,22 @@ class BackupAndIssueCardUpdateRequest implements ShouldQueue
      */
     public function handle()
     {
-        $path = storage_path("backups/on_cards/" . date("Y/m/d/h/i"));
+        $path = storage_path('backups/on_cards/'.date('Y/m/d/h/i'));
         /** @var BackupWinDSXJob $backupWinDSX */
         $backupWinDSX = app(BackupWinDSX::class);
         $backupWinDSX->backup($path);
 
-        if($this->cardSentForRequest instanceof CardSentForActivation) {
+        if ($this->cardSentForRequest instanceof CardSentForActivation) {
             CardUpdateRequest::create([
-                "type" => CardUpdateRequest::ACTIVATION_TYPE,
-                "customer_id" => $this->cardSentForRequest->wooCustomerId,
-                "card" => $this->cardSentForRequest->cardNumber,
+                'type' => CardUpdateRequest::ACTIVATION_TYPE,
+                'customer_id' => $this->cardSentForRequest->wooCustomerId,
+                'card' => $this->cardSentForRequest->cardNumber,
             ]);
-        } else if($this->cardSentForRequest instanceof CardSentForDeactivation) {
+        } elseif ($this->cardSentForRequest instanceof CardSentForDeactivation) {
             CardUpdateRequest::create([
-                "type" => CardUpdateRequest::DEACTIVATION_TYPE,
-                "customer_id" => $this->cardSentForRequest->wooCustomerId,
-                "card" => $this->cardSentForRequest->cardNumber,
+                'type' => CardUpdateRequest::DEACTIVATION_TYPE,
+                'customer_id' => $this->cardSentForRequest->wooCustomerId,
+                'card' => $this->cardSentForRequest->cardNumber,
             ]);
         }
         // TODO Throw an error if it's not one of those

@@ -15,11 +15,11 @@ final class GithubMembershipReactor implements EventHandler
 {
     use HandlesEvents;
 
-    const MEMBERS_TEAM = "members";
+    const MEMBERS_TEAM = 'members';
 
     public function onGithubUsernameUpdated(GithubUsernameUpdated $event)
     {
-        if(!is_null($event->oldUsername)) {
+        if (! is_null($event->oldUsername)) {
             dispatch(new RemoveMemberFromGithub(
                 $event->oldUsername,
                 self::MEMBERS_TEAM
@@ -28,7 +28,7 @@ final class GithubMembershipReactor implements EventHandler
 
         // The customer can update their github without having an active subscription.
         // If they update the username, then become a member again, membership activated will take care of it
-        if($event->isMember) {
+        if ($event->isMember) {
             dispatch(new AddMemberToGithub($event->newUsername, self::MEMBERS_TEAM));
         }
     }
@@ -38,7 +38,7 @@ final class GithubMembershipReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if(!is_null($customer->github_username)) {
+        if (! is_null($customer->github_username)) {
             dispatch(new AddMemberToGithub(
                 $customer->github_username,
                 self::MEMBERS_TEAM
@@ -51,7 +51,7 @@ final class GithubMembershipReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if(!is_null($customer->github_username)) {
+        if (! is_null($customer->github_username)) {
             dispatch(new RemoveMemberFromGithub(
                 $customer->github_username,
                 self::MEMBERS_TEAM

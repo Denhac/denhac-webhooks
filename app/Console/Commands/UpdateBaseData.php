@@ -61,11 +61,11 @@ class UpdateBaseData extends Command
         $customersInDB = Customer::all();
         $customersInWooCommerce = $this->api->customers->list();
         $customersInWooCommerce->each(function ($customer) use ($customersInDB) {
-            $wooId = $customer["id"];
-            if(!$customersInDB->contains("woo_id", $wooId)) {
-                $username = $customer["username"];
+            $wooId = $customer['id'];
+            if (! $customersInDB->contains('woo_id', $wooId)) {
+                $username = $customer['username'];
                 $this->line("{$username} was not in our internal store, adding.");
-                MembershipAggregate::make($customer["id"])
+                MembershipAggregate::make($customer['id'])
                     ->importCustomer($customer)
                     ->persist();
             }
@@ -80,11 +80,11 @@ class UpdateBaseData extends Command
         $subscriptionsInDB = Subscription::all();
         $subscriptionsInWooCommerce = $this->api->subscriptions->list();
         $subscriptionsInWooCommerce->each(function ($subscription) use ($subscriptionsInDB) {
-            $wooId = $subscription["id"];
-            if(!$subscriptionsInDB->contains("woo_id", $wooId)) {
+            $wooId = $subscription['id'];
+            if (! $subscriptionsInDB->contains('woo_id', $wooId)) {
                 $this->line("Subscription {$wooId} was not in our internal store, adding.");
 
-                MembershipAggregate::make($subscription["customer_id"])
+                MembershipAggregate::make($subscription['customer_id'])
                     ->importSubscription($subscription)
                     ->persist();
             }

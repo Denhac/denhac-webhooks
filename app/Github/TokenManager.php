@@ -2,7 +2,6 @@
 
 namespace App\Github;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
@@ -39,7 +38,7 @@ class TokenManager
 
         $response = $this->client->post($installationUrl, [
             RequestOptions::HEADERS => [
-                'Accept' => "application/vnd.github.machine-man-preview+json",
+                'Accept' => 'application/vnd.github.machine-man-preview+json',
                 'Authorization' => "Bearer $appAccessToken",
             ],
         ]);
@@ -50,21 +49,21 @@ class TokenManager
     private function getAppAccessToken()
     {
         $jwtHeader = $this->base64url_encode(json_encode([
-            "alg" => "RS256",
+            'alg' => 'RS256',
         ]));
 
         $jwtClaims = $this->base64url_encode(json_encode([
-            "iat" => time(),
-            "exp" => time() + (10 * 60), // 10 minute max
-            "iss" => $this->appId,
+            'iat' => time(),
+            'exp' => time() + (10 * 60), // 10 minute max
+            'iss' => $this->appId,
         ]));
 
         $privateKeyId = openssl_pkey_get_private($this->signingKey);
-        $signature = "";
-        openssl_sign($jwtHeader . '.' . $jwtClaims, $signature, $privateKeyId, "sha256WithRSAEncryption");
+        $signature = '';
+        openssl_sign($jwtHeader.'.'.$jwtClaims, $signature, $privateKeyId, 'sha256WithRSAEncryption');
 
         $jwtSignature = $this->base64url_encode($signature);
 
-        return $jwtHeader . '.' . $jwtClaims . '.' . $jwtSignature;
+        return $jwtHeader.'.'.$jwtClaims.'.'.$jwtSignature;
     }
 }

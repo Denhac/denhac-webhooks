@@ -6,8 +6,8 @@ use Spatie\EventSourcing\ShouldBeStored;
 
 final class CardNotificationNeeded implements ShouldBeStored
 {
-    public const ACTIVATION_TYPE = "activation";
-    public const DEACTIVATION_TYPE = "deactivation";
+    public const ACTIVATION_TYPE = 'activation';
+    public const DEACTIVATION_TYPE = 'deactivation';
     public $notificationType;
     public $wooCustomerId;
     public $cardNumber;

@@ -2,7 +2,6 @@
 
 namespace App\Github;
 
-
 class GithubApi
 {
     /**

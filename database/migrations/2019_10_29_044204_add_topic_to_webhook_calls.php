@@ -14,7 +14,7 @@ class AddTopicToWebhookCalls extends Migration
     public function up()
     {
         Schema::table('webhook_calls', function (Blueprint $table) {
-            $table->string("topic")->nullable();
+            $table->string('topic')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddTopicToWebhookCalls extends Migration
     public function down()
     {
         Schema::table('webhook_calls', function (Blueprint $table) {
-            $table->dropColumn("topic");
+            $table->dropColumn('topic');
         });
     }
 }

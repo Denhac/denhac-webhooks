@@ -7,8 +7,7 @@ use Illuminate\Support\Str;
 use Spatie\WebhookClient\WebhookConfig;
 
 /**
- * Class WebhookCall
- * @package App\WooCommerce
+ * Class WebhookCall.
  * @property string name
  * @property array payload
  * @property array exception
@@ -22,7 +21,7 @@ class WebhookCall extends \Spatie\WebhookClient\Models\WebhookCall
         return self::create([
             'name' => $config->name,
             'payload' => $request->input(),
-            'topic' => $request->header("X-WC-Webhook-Topic")
+            'topic' => $request->header('X-WC-Webhook-Topic'),
         ]);
     }
 }

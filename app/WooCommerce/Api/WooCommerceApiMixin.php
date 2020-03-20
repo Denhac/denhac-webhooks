@@ -2,7 +2,6 @@
 
 namespace App\WooCommerce\Api;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
@@ -43,14 +42,14 @@ trait WooCommerceApiMixin
 
         $responseData = $this->jsonOrError($initialResponse);
 
-        $totalPages = (int) $initialResponse->getHeader("X-WP-TotalPages")[0];
+        $totalPages = (int) $initialResponse->getHeader('X-WP-TotalPages')[0];
 
-        if(!Arr::has($options, RequestOptions::QUERY)) {
+        if (! Arr::has($options, RequestOptions::QUERY)) {
             $options[RequestOptions::QUERY] = [];
         }
 
         for ($i = 2; $i <= $totalPages; $i++) {
-            $options[RequestOptions::QUERY]["page"] = $i;
+            $options[RequestOptions::QUERY]['page'] = $i;
             $response = $this->client->get($url, $options);
             $responseData = $responseData->merge($this->jsonOrError($response));
         }

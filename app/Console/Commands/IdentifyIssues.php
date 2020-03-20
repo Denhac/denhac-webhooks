@@ -17,9 +17,9 @@ use Illuminate\Support\Str;
 
 class IdentifyIssues extends Command
 {
-    const ISSUE_WITH_A_CARD = "Issue with a card";
-    const ISSUE_SLACK_ACCOUNT = "Issue with a Slack account";
-    const ISSUE_GOOGLE_GROUPS = "Issue with google groups";
+    const ISSUE_WITH_A_CARD = 'Issue with a card';
+    const ISSUE_SLACK_ACCOUNT = 'Issue with a Slack account';
+    const ISSUE_GOOGLE_GROUPS = 'Issue with google groups';
 
     /**
      * The name and signature of the console command.
@@ -78,7 +78,7 @@ class IdentifyIssues extends Command
      */
     public function handle()
     {
-        $this->info("Identifying issues");
+        $this->info('Identifying issues');
         $members = $this->getMembers();
         $this->unknownActiveCard($members);
         $this->extraSlackUsers($members);
@@ -88,11 +88,10 @@ class IdentifyIssues extends Command
         $this->printIssues();
     }
 
-
     private function printIssues()
     {
         $this->info("There are {$this->issues->count()} total issues.");
-        $this->info("");
+        $this->info('');
         collect($this->issues->keys())
             ->each(function ($key) {
                 $knownIssues = collect($this->issues->get($key));
@@ -102,7 +101,7 @@ class IdentifyIssues extends Command
                     ->map(function ($issue) {
                         $this->info(">>> $issue");
                     });
-                $this->info("");
+                $this->info('');
             });
     }
 
@@ -123,46 +122,46 @@ class IdentifyIssues extends Command
 
             $meta_data = collect($customer['meta_data']);
             $card_string = $meta_data->where('key', 'access_card_number')->first()['value'] ?? null;
-            $cards = is_null($card_string) ? collect() : collect(explode(",", $card_string))
+            $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
                 ->map(function ($card) {
-                    return ltrim($card, "0");
+                    return ltrim($card, '0');
                 });
 
             $emails = collect();
-            if(!is_null($customer["email"])) {
-                $emails->push(GmailEmailHelper::removePlusInGmail(Str::lower($customer["email"])));
+            if (! is_null($customer['email'])) {
+                $emails->push(GmailEmailHelper::removePlusInGmail(Str::lower($customer['email'])));
             }
 
             $email_aliases_string = $meta_data->where('key', 'email_aliases')->first()['value'] ?? null;
-            $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(",", $email_aliases_string));
+            $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(',', $email_aliases_string));
             $emails = $emails->merge($email_aliases);
 
             return [
-                "id" => $customer["id"],
-                "first_name" => $customer['first_name'],
-                "last_name" => $customer['last_name'],
-                "email" => $emails,
-                "is_member" => $isMember,
-                "cards" => $cards,
-                "slack_id" => $meta_data->where('key', 'access_slack_id')->first()['value'] ?? null,
+                'id' => $customer['id'],
+                'first_name' => $customer['first_name'],
+                'last_name' => $customer['last_name'],
+                'email' => $emails,
+                'is_member' => $isMember,
+                'cards' => $cards,
+                'slack_id' => $meta_data->where('key', 'access_slack_id')->first()['value'] ?? null,
             ];
         });
 
         $members = $members->concat(PaypalBasedMember::all()
             ->map(function ($member) {
                 $emails = collect();
-                if(!is_null($member->email)) {
+                if (! is_null($member->email)) {
                     $emails->push(GmailEmailHelper::removePlusInGmail(Str::lower($member->email)));
                 }
 
                 return [
-                    "id" => $member->paypal_id,
-                    "first_name" => $member->first_name,
-                    "last_name" => $member->last_name,
-                    "email" => $emails,
-                    "is_member" => $member->active,
-                    "cards" => is_null($member->card) ? collect() : collect([$member->card]),
-                    "slack_id" => $member->slack_id,
+                    'id' => $member->paypal_id,
+                    'first_name' => $member->first_name,
+                    'last_name' => $member->last_name,
+                    'email' => $emails,
+                    'is_member' => $member->active,
+                    'cards' => is_null($member->card) ? collect() : collect([$member->card]),
+                    'slack_id' => $member->slack_id,
                 ];
             }));
 
@@ -187,18 +186,18 @@ class IdentifyIssues extends Command
             ->each(function ($card_holder) use ($members) {
                 $membersWithCard = $members
                     ->filter(function ($member) use ($card_holder) {
-                        return $member['cards']->contains(ltrim($card_holder["card_num"], "0"));
+                        return $member['cards']->contains(ltrim($card_holder['card_num'], '0'));
                     });
 
                 if ($membersWithCard->count() == 0) {
-                    $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but I have no membership record of them with that card.";
+                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but I have no membership record of them with that card.";
                     $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
 
                     return;
                 }
 
                 if ($membersWithCard->count() > 1) {
-                    $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but is connected to multiple accounts.";
+                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is connected to multiple accounts.";
                     $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
 
                     return;
@@ -206,29 +205,29 @@ class IdentifyIssues extends Command
 
                 $member = $membersWithCard->first();
 
-                if ($card_holder["first_name"] != $member["first_name"] ||
-                    $card_holder["last_name"] != $member["last_name"]) {
-                    $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but is listed as {$member["first_name"]} {$member["last_name"]} in our records.";
+                if ($card_holder['first_name'] != $member['first_name'] ||
+                    $card_holder['last_name'] != $member['last_name']) {
+                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is listed as {$member['first_name']} {$member['last_name']} in our records.";
                     $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
                 }
 
-                if (!$member["is_member"]) {
-                    $message = "{$card_holder["first_name"]} {$card_holder["last_name"]} has the active card ({$card_holder["card_num"]}) but is not currently a member.";
+                if (! $member['is_member']) {
+                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is not currently a member.";
                     $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
                 }
             });
 
         $members
             ->filter(function ($member) {
-                return !is_null($member["first_name"]) &&
-                    !is_null($member["last_name"]) &&
-                    $member["is_member"];
+                return ! is_null($member['first_name']) &&
+                    ! is_null($member['last_name']) &&
+                    $member['is_member'];
             })
             ->each(function ($member) use ($card_holders) {
-                $member["cards"]->each(function ($card) use ($member, $card_holders) {
-                    $cardActive = $card_holders->contains("card_num", $card);
-                    if (!$cardActive) {
-                        $message = "{$member["first_name"]} {$member["last_name"]} has the card $card but it doesn't appear to be active";
+                $member['cards']->each(function ($card) use ($member, $card_holders) {
+                    $cardActive = $card_holders->contains('card_num', $card);
+                    if (! $cardActive) {
+                        $message = "{$member['first_name']} {$member['last_name']} has the card $card but it doesn't appear to be active";
                         $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
                     }
                 });
@@ -239,13 +238,13 @@ class IdentifyIssues extends Command
     {
         $slackUsers = $this->slackApi->users_list()
             ->filter(function ($user) {
-                if (array_key_exists("is_bot", $user) && $user["is_bot"]) {
+                if (array_key_exists('is_bot', $user) && $user['is_bot']) {
                     return false;
                 }
 
                 if (
-                    $user["id"] == "UNEA0SKK3" || // slack-api
-                    $user["id"] == "USLACKBOT" // slackbot
+                    $user['id'] == 'UNEA0SKK3' || // slack-api
+                    $user['id'] == 'USLACKBOT' // slackbot
                 ) {
                     return false;
                 }
@@ -257,42 +256,46 @@ class IdentifyIssues extends Command
             ->each(function ($user) use ($members) {
                 $membersForSlackId = $members
                     ->filter(function ($member) use ($user) {
-                        return $member["slack_id"] == $user["id"];
+                        return $member['slack_id'] == $user['id'];
                     });
 
                 if ($membersForSlackId->count() == 0) {
                     if ($this->isFullSlackUser($user)) {
-                        $message = "{$user["name"]} with slack id ({$user["id"]}) is a full user in slack but I have no membership record of them.";
+                        $message = "{$user['name']} with slack id ({$user['id']}) is a full user in slack but I have no membership record of them.";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                     }
+
                     return;
                 }
 
                 $member = $membersForSlackId->first();
 
-                if ($member["is_member"]) {
-                    if (array_key_exists("is_invited_user", $user) && $user["is_invited_user"]) {
+                if ($member['is_member']) {
+                    if (array_key_exists('is_invited_user', $user) && $user['is_invited_user']) {
                         return; // Do nothing, we've sent the invite and that's all we can do.
                     }
 
-                    if (array_key_exists("deleted", $user) && $user["deleted"]) {
-                        $message = "{$member["first_name"]} {$member["last_name"]} with slack id ({$user["id"]}) is deleted, but they are a member";
+                    if (array_key_exists('deleted', $user) && $user['deleted']) {
+                        $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is deleted, but they are a member";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
+
                         return;
                     }
 
-                    if (array_key_exists("is_restricted", $user) && $user["is_restricted"]) {
-                        $message = "{$member["first_name"]} {$member["last_name"]} with slack id ({$user["id"]}) is restricted, but they are a member";
+                    if (array_key_exists('is_restricted', $user) && $user['is_restricted']) {
+                        $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is restricted, but they are a member";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
+
                         return;
                     }
-                    if (array_key_exists("is_ultra_restricted", $user) && $user["is_ultra_restricted"]) {
-                        $message = "{$member["first_name"]} {$member["last_name"]} with slack id ({$user["id"]}) is ultra restricted, but they are a member";
+                    if (array_key_exists('is_ultra_restricted', $user) && $user['is_ultra_restricted']) {
+                        $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is ultra restricted, but they are a member";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
+
                         return;
                     }
-                } else if ($this->isFullSlackUser($user)) {
-                    $message = "{$member["first_name"]} {$member["last_name"]} with slack id ({$user["id"]}) is not an active member but they have a full slack account.";
+                } elseif ($this->isFullSlackUser($user)) {
+                    $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is not an active member but they have a full slack account.";
                     $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                 }
             });
@@ -300,14 +303,14 @@ class IdentifyIssues extends Command
 
     private function isFullSlackUser($slackUser)
     {
-
         if (
-            (array_key_exists("deleted", $slackUser) && $slackUser["deleted"]) ||
-            (array_key_exists("is_restricted", $slackUser) && $slackUser["is_restricted"]) ||
-            (array_key_exists("is_ultra_restricted", $slackUser) && $slackUser["is_ultra_restricted"])
+            (array_key_exists('deleted', $slackUser) && $slackUser['deleted']) ||
+            (array_key_exists('is_restricted', $slackUser) && $slackUser['is_restricted']) ||
+            (array_key_exists('is_ultra_restricted', $slackUser) && $slackUser['is_ultra_restricted'])
         ) {
             return false;
         }
+
         return true;
     }
 
@@ -317,17 +320,17 @@ class IdentifyIssues extends Command
 
         $members
             ->each(function ($member) use ($slackUsers) {
-                if (!$member["is_member"]) {
+                if (! $member['is_member']) {
                     return;
                 }
 
                 $slackForMember = $slackUsers
                     ->filter(function ($user) use ($member) {
-                        return $member["slack_id"] == $user["id"];
+                        return $member['slack_id'] == $user['id'];
                     });
 
                 if ($slackForMember->count() == 0) {
-                    $message = "{$member["first_name"]} {$member["last_name"]} ({$member["id"]}) doesn't appear to have a slack account";
+                    $message = "{$member['first_name']} {$member['last_name']} ({$member['id']}) doesn't appear to have a slack account";
                     $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                 }
             });
@@ -335,11 +338,11 @@ class IdentifyIssues extends Command
 
     private function googleGroupIssues(Collection $members)
     {
-        $groups = $this->googleApi->groupsForDomain("denhac.org")
+        $groups = $this->googleApi->groupsForDomain('denhac.org')
             ->filter(function ($group) {
                 // TODO handle excluded groups in a better way
-                return $group != "denhac@denhac.org" &&
-                    $group != "lpfmerrors@denhac.org";
+                return $group != 'denhac@denhac.org' &&
+                    $group != 'lpfmerrors@denhac.org';
             });
 
         $emailsToGroups = collect();
@@ -366,46 +369,49 @@ class IdentifyIssues extends Command
             $membersForEmail = $members
                 ->filter(function ($member) use ($email) {
                     /** @var Collection $memberEmails */
-                    $memberEmails = $member["email"];
+                    $memberEmails = $member['email'];
+
                     return $memberEmails->contains(Str::lower($email));
                 });
 
             if ($membersForEmail->count() > 1) {
                 $message = "More than 2 members exist for email address $email";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+
                 return;
             }
 
             if ($membersForEmail->count() == 0) {
-                $message = "No member found for email address $email in groups: {$groupsForEmail->implode(", ")}";
+                $message = "No member found for email address $email in groups: {$groupsForEmail->implode(', ')}";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+
                 return;
             }
 
             $member = $membersForEmail->first();
 
-            if (!$member["is_member"]) {
-                $message = "{$member["first_name"]} {$member["last_name"]} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(", ")}";
+            if (! $member['is_member']) {
+                $message = "{$member['first_name']} {$member['last_name']} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(', ')}";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
             }
         });
 
         $members->each(function ($member) use ($emailsToGroups) {
             /** @var Collection $memberEmails */
-            $memberEmails = $member["email"];
+            $memberEmails = $member['email'];
 
             if ($memberEmails->isEmpty()) {
                 return;
             }
 
-            if (!$member["is_member"]) {
+            if (! $member['is_member']) {
                 return;
             }
 
-            $membersGroupMailing = "members@denhac.org"; // TODO dedupe this
+            $membersGroupMailing = 'members@denhac.org'; // TODO dedupe this
 
             $memberHasEmailInMembersList = $memberEmails
-                ->filter(function($memberEmail) use($emailsToGroups, $membersGroupMailing) {
+                ->filter(function ($memberEmail) use ($emailsToGroups, $membersGroupMailing) {
                     return $emailsToGroups->has($memberEmail) &&
                         $emailsToGroups->get($memberEmail)->contains($membersGroupMailing);
                 })
@@ -414,7 +420,7 @@ class IdentifyIssues extends Command
                 return;
             }
 
-            $message = "{$member["first_name"]} {$member["last_name"]} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
+            $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
             $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
         });
     }

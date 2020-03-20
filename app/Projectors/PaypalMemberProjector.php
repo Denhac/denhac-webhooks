@@ -24,7 +24,7 @@ final class PaypalMemberProjector implements Projector
     public function onPaypalMemberImported(PaypalMemberImported $event)
     {
         PaypalBasedMember::create([
-            "paypal_id" => $event->paypal_id,
+            'paypal_id' => $event->paypal_id,
         ]);
     }
 
@@ -58,7 +58,7 @@ final class PaypalMemberProjector implements Projector
     }
 
     /**
-     * It's safe to do this because we won't let someone sign up via paypal again
+     * It's safe to do this because we won't let someone sign up via paypal again.
      *
      * @param PaypalMemberDeactivated $event
      */

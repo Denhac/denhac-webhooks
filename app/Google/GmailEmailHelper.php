@@ -2,12 +2,11 @@
 
 namespace App\Google;
 
-
 class GmailEmailHelper
 {
     /**
      * Modify emails in the form foo+bar@gmail.com to foo@gmail.com
-     * Do not modify emails in the form of foo+bar@test.com
+     * Do not modify emails in the form of foo+bar@test.com.
      *
      * Basically, for gmail based addresses, we can't add a plus based email to a group.
      *

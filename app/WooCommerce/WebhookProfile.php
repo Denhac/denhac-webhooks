@@ -10,7 +10,7 @@ class WebhookProfile implements BaseWebhookProfile
 {
     public function shouldProcess(Request $request): bool
     {
-        if(Str::startsWith($request->getContent(), "webhook_id=")) {
+        if (Str::startsWith($request->getContent(), 'webhook_id=')) {
             // This is a test ping, we don't care about it
             return false;
         }

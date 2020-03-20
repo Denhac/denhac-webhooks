@@ -37,10 +37,10 @@ final class CustomerProjector implements Projector
         /** @var Customer $customer */
         $customer = $this->addOrGetCustomer($event->customer);
 
-        $customer->email = $customer["email"];
-        $customer->username = $customer["username"];
-        $customer->first_name = $customer["first_name"];
-        $customer->last_name = $customer["last_name"];
+        $customer->email = $customer['email'];
+        $customer->username = $customer['username'];
+        $customer->first_name = $customer['first_name'];
+        $customer->last_name = $customer['last_name'];
         $customer->github_username = $this->getMetadataField($event->customer, 'github_username');
         $customer->slack_id = $this->getMetadataField($event->customer, 'access_slack_id');
         $customer->save();
@@ -49,9 +49,9 @@ final class CustomerProjector implements Projector
     public function onSubscriptionImported(SubscriptionImported $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->subscription["customer_id"])->first();
+        $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
 
-        if($event->subscription["status"] == "active") {
+        if ($event->subscription['status'] == 'active') {
             $customer->member = true;
             $customer->save();
         }
@@ -82,18 +82,18 @@ final class CustomerProjector implements Projector
     private function addOrGetCustomer($customer)
     {
         /** @var Customer $customer */
-        $customerModel = Customer::whereWooId($customer["id"])->first();
+        $customerModel = Customer::whereWooId($customer['id'])->first();
 
         if (is_null($customerModel)) {
             return Customer::create([
-                "woo_id" => $customer["id"],
-                "email" => $customer["email"],
-                "username" => $customer["username"],
-                "first_name" => $customer["first_name"],
-                "last_name" => $customer["last_name"],
-                "member" => false,
-                "github_username" => $this->getMetadataField($customer, 'github_username'),
-                "slack_id" => $this->getMetadataField($customer, 'access_slack_id'),
+                'woo_id' => $customer['id'],
+                'email' => $customer['email'],
+                'username' => $customer['username'],
+                'first_name' => $customer['first_name'],
+                'last_name' => $customer['last_name'],
+                'member' => false,
+                'github_username' => $this->getMetadataField($customer, 'github_username'),
+                'slack_id' => $this->getMetadataField($customer, 'access_slack_id'),
             ]);
         } else {
             return $customerModel;

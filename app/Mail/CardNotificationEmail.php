@@ -13,7 +13,7 @@ class CardNotificationEmail extends Mailable
 {
     use Queueable, SerializesModels;
     /**
-     * @var Collection $cardNotificationsNeeded
+     * @var Collection
      */
     private $cardNotificationsNeeded;
 
@@ -43,8 +43,7 @@ class CardNotificationEmail extends Mailable
         $activatedCards = collect();
         $deactivatedCards = collect();
 
-        $this->cardNotificationsNeeded->each(function ($cardNotification)
-        use ($customers, $activatedCards, $deactivatedCards) {
+        $this->cardNotificationsNeeded->each(function ($cardNotification) use ($customers, $activatedCards, $deactivatedCards) {
             $customer = $customers->where('woo_id', $cardNotification['wooCustomerId'])->first();
 
             if ($customer == null) {
@@ -52,19 +51,19 @@ class CardNotificationEmail extends Mailable
             }
 
             $notification = [
-                "first_name" => $customer->first_name,
-                "last_name" => $customer->last_name,
-                "card" => $cardNotification["cardNumber"],
+                'first_name' => $customer->first_name,
+                'last_name' => $customer->last_name,
+                'card' => $cardNotification['cardNumber'],
             ];
 
-            if ($cardNotification["notificationType"] == CardNotificationNeeded::ACTIVATION_TYPE) {
+            if ($cardNotification['notificationType'] == CardNotificationNeeded::ACTIVATION_TYPE) {
                 $activatedCards->push($notification);
-            } else if ($cardNotification["notificationType"] == CardNotificationNeeded::DEACTIVATION_TYPE) {
+            } elseif ($cardNotification['notificationType'] == CardNotificationNeeded::DEACTIVATION_TYPE) {
                 $deactivatedCards->push($notification);
             }
         });
 
-        $date = (new \DateTime())->format("m/d/Y");
+        $date = (new \DateTime())->format('m/d/Y');
 
         return $this
             ->subject("Access Card Update {$date}")
@@ -72,29 +71,29 @@ class CardNotificationEmail extends Mailable
             ->with([
                 'activatedCards' => $activatedCards,
                 'deactivatedCards' => $deactivatedCards,
-                'updateMessage' => $this->getUpdateMessage($activatedCards, $deactivatedCards)
+                'updateMessage' => $this->getUpdateMessage($activatedCards, $deactivatedCards),
             ]);
     }
 
     private function getUpdateMessage(Collection $activatedCards, Collection $deactivatedCards)
     {
-        $result = "";
+        $result = '';
         if ($activatedCards->count() == 0) {
-            $result .= "There were no cards activated";
-        } else if ($activatedCards->count() == 1) {
-            $result .= "There was 1 card activated";
+            $result .= 'There were no cards activated';
+        } elseif ($activatedCards->count() == 1) {
+            $result .= 'There was 1 card activated';
         } else {
             $result .= "There were {$activatedCards->count()} cards activated";
         }
 
         if ($deactivatedCards->count() == 0) {
-            $result .= " and no cards deactivated";
-        } else if ($deactivatedCards->count() == 1) {
-            $result .= " and 1 card deactivated";
+            $result .= ' and no cards deactivated';
+        } elseif ($deactivatedCards->count() == 1) {
+            $result .= ' and 1 card deactivated';
         } else {
             $result .= " and {$deactivatedCards->count()} cards deactivated";
         }
 
-        return $result . " since the last update.";
+        return $result.' since the last update.';
     }
 }

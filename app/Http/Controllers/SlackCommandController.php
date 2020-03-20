@@ -20,27 +20,27 @@ class SlackCommandController extends Controller
 
     public function doorCode(SlackSlashCommandRequest $request)
     {
-        $id = $request->get("user_id");
+        $id = $request->get('user_id');
         /** @var Customer $member */
         $member = Customer::whereSlackId($id)->first();
 
-        if($member === null) {
+        if ($member === null) {
             return response()->json([
-                "response_type" => "ephemeral",
-                "text" => "I don't recognize you. If you're a member in good standing and you're not using paypal for membership dues, please contact access@denhac.org.",
+                'response_type' => 'ephemeral',
+                'text' => "I don't recognize you. If you're a member in good standing and you're not using paypal for membership dues, please contact access@denhac.org.",
             ]);
         }
 
-        if(! $member->member) {
+        if (! $member->member) {
             return response()->json([
-                "response_type" => "ephemeral",
-                "text" => "I recognize you but you don't appear to be a member in good standing. If you think this is a mistake, please contact access@denhac.org.",
+                'response_type' => 'ephemeral',
+                'text' => "I recognize you but you don't appear to be a member in good standing. If you think this is a mistake, please contact access@denhac.org.",
             ]);
         }
 
         return response()->json([
-            "response_type" => "ephemeral",
-            "text" => "Hello! The door access code is ".config('denhac.door_code').".",
+            'response_type' => 'ephemeral',
+            'text' => 'Hello! The door access code is '.config('denhac.door_code').'.',
         ]);
     }
 }

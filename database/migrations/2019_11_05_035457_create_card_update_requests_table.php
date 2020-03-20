@@ -17,9 +17,9 @@ class CreateCardUpdateRequestsTable extends Migration
             $table->bigIncrements('id');
             $table->timestamps();
 
-            $table->string("type");
-            $table->string("customer_id");
-            $table->string("card");
+            $table->string('type');
+            $table->string('customer_id');
+            $table->string('card');
         });
     }
 

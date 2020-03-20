@@ -56,7 +56,7 @@ class MatchSlackUsers extends Command
         $this->wooCommerceApi->customers
             ->list()
             ->each(function ($customer) {
-                if ($customer["first_name"] == "" || $customer["last_name"] == "") {
+                if ($customer['first_name'] == '' || $customer['last_name'] == '') {
                     $this->line("Customer #{$customer['id']} has issues with their name");
                 }
             });
@@ -71,7 +71,7 @@ class MatchSlackUsers extends Command
 
         $members = $slackMembers
             ->filter(function ($member) {
-                return !is_null($member["profile"]["email"] ?? null) && !$member["deleted"] && !$member["is_bot"];
+                return ! is_null($member['profile']['email'] ?? null) && ! $member['deleted'] && ! $member['is_bot'];
             });
 
         $this->line("{$members->count()} of those have an email address and id.");
@@ -80,15 +80,15 @@ class MatchSlackUsers extends Command
 
         $wooCustomers->each(function ($customer) use ($members, &$matchingCustomers) {
             $member = $members->first(function ($member) use ($customer) {
-                return strtolower($member["profile"]["email"] ?? "") == strtolower($customer["email"]);
+                return strtolower($member['profile']['email'] ?? '') == strtolower($customer['email']);
             });
-            if (!is_null($member)) {
+            if (! is_null($member)) {
                 $matchingCustomers->push([
-                    "woo_id" => $customer["id"],
-                    "slack_id" => $member["id"],
-                    "email" => $customer["email"],
-                    "customer_name" => "{$customer['first_name']} {$customer['last_name']}",
-                    "slack_name" => $member["name"],
+                    'woo_id' => $customer['id'],
+                    'slack_id' => $member['id'],
+                    'email' => $customer['email'],
+                    'customer_name' => "{$customer['first_name']} {$customer['last_name']}",
+                    'slack_name' => $member['name'],
                 ]);
             }
         });
@@ -97,16 +97,16 @@ class MatchSlackUsers extends Command
 
         $matchingCustomers->each(function ($customer) {
             $slack_id = $customer['slack_id'];
-            $woo_id = $customer["woo_id"];
-            $this->line("Setting slack id {$slack_id} for customer {$customer["customer_name"]} with woo id {$woo_id}");
+            $woo_id = $customer['woo_id'];
+            $this->line("Setting slack id {$slack_id} for customer {$customer['customer_name']} with woo id {$woo_id}");
 
             $this->wooCommerceApi->customers->update($woo_id, [
-                "meta_data" => [
+                'meta_data' => [
                     [
-                        "key" => "access_slack_id",
-                        "value" => $slack_id,
-                    ]
-                ]
+                        'key' => 'access_slack_id',
+                        'value' => $slack_id,
+                    ],
+                ],
             ]);
         });
 
@@ -115,12 +115,12 @@ class MatchSlackUsers extends Command
         $this->line("There are {$wooCustomers->count()} remaining without a slack id.");
 
         $wooCustomers->each(function ($customer) {
-            $this->line("Customer:");
+            $this->line('Customer:');
             $this->line(" > Woo ID: {$customer['id']}");
             $this->line(" > URL: https://denhac.org/wp-admin/user-edit.php?user_id={$customer['id']}");
             $this->line(" > Name: {$customer['first_name']} {$customer['last_name']}");
             $this->line(" > Username: {$customer['username']}");
-            $this->line("");
+            $this->line('');
         });
     }
 
@@ -132,14 +132,14 @@ class MatchSlackUsers extends Command
     {
         return $this->wooCommerceApi->customers->list()
             ->filter(function ($customer) {
-                if ($customer["first_name"] == "" || $customer["last_name"] == "") {
+                if ($customer['first_name'] == '' || $customer['last_name'] == '') {
                     return false;
                 }
 
-                $access_slack_id = collect($customer["meta_data"])
-                        ->firstWhere("key", "access_slack_id") ?? null;
+                $access_slack_id = collect($customer['meta_data'])
+                        ->firstWhere('key', 'access_slack_id') ?? null;
 
-                if (!is_null($access_slack_id) && $access_slack_id != "") {
+                if (! is_null($access_slack_id) && $access_slack_id != '') {
                     return false;
                 }
 

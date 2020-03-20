@@ -16,21 +16,21 @@ class SlackSlashCommandRequest extends Request implements ValidatesWhenResolved
         $content = $this->content;
 
         $nowTimestamp = (new DateTime())->getTimestamp();
-        if(abs($nowTimestamp - $timestamp) > 60 * 5) {
+        if (abs($nowTimestamp - $timestamp) > 60 * 5) {
             throw new ValidationException(null, response()->json([
-                "response_type" => "ephemeral",
-                "text" => "Replay attacks are bad! Or we screwed up the time zone maybe?",
+                'response_type' => 'ephemeral',
+                'text' => 'Replay attacks are bad! Or we screwed up the time zone maybe?',
             ]));
         }
 
         $sig_base = "v0:$timestamp:$content";
         $secret = config('denhac.slack.api_signing_secret');
-        $computedSignature = "v0=" . hash_hmac('sha256', $sig_base, $secret);
+        $computedSignature = 'v0='.hash_hmac('sha256', $sig_base, $secret);
 
-        if($computedSignature != $sentSignature) {
+        if ($computedSignature != $sentSignature) {
             throw new ValidationException(null, response()->json([
-                "response_type" => "ephemeral",
-                "text" => "The signature from slack didn't match the computed value. Did our signing secret change?",
+                'response_type' => 'ephemeral',
+                'text' => "The signature from slack didn't match the computed value. Did our signing secret change?",
             ]));
         }
     }

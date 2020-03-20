@@ -17,12 +17,12 @@ class CreatePaypalBasedMembersTable extends Migration
             $table->bigIncrements('id');
             $table->timestamps();
 
-            $table->string("paypal_id");
-            $table->string("first_name")->nullable();
-            $table->string("last_name")->nullable();
-            $table->boolean("active")->default(true);
-            $table->string("card")->nullable();
-            $table->string("slack_id")->nullable();
+            $table->string('paypal_id');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->boolean('active')->default(true);
+            $table->string('card')->nullable();
+            $table->string('slack_id')->nullable();
         });
     }
 
