@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CardUpdateRequestsController;
+use App\Http\Controllers\ApiEventsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/card_updates', [CardUpdateRequestsController::class, 'index'])
-    ->middleware('auth:api');
-Route::post('/card_updates/{card_update_request}/status', [CardUpdateRequestsController::class, 'updateStatus'])
-    ->middleware('auth:api');
-Route::post('/active_card_holders', [CardUpdateRequestsController::class, 'updateActiveCardHolders'])
-    ->middleware('auth:api');
+Route::get("/card_updates", [CardUpdateRequestsController::class, "index"])
+    ->middleware("auth:api");
+Route::post("/card_updates/{card_update_request}/status", [CardUpdateRequestsController::class, "updateStatus"])
+    ->middleware("auth:api");
+Route::post("/active_card_holders", [CardUpdateRequestsController::class, "updateActiveCardHolders"])
+    ->middleware("auth:api");
+
+Route::post("/events/card_scanned", [ApiEventsController::class, "cardScanned"])
+    ->middleware("auth:api");

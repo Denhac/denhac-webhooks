@@ -33,8 +33,7 @@ class CardUpdateRequestsController extends Controller
             ]);
         }
 
-        $parameterBag = $request->json('card_holders');
-//        dd($parameterBag);
+        $parameterBag = $request->json("card_holders");
         ActiveCardHolderUpdate::create([
             'card_holders' => $parameterBag,
         ]);
