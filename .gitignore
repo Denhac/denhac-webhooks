@@ -124,3 +124,6 @@ modules.xml
 # End of https://www.gitignore.io/api/laravel,phpstorm+all
 
 storage/*.pem
+storage/backups
+
+cron-fail.log

@@ -4,6 +4,8 @@ namespace App\Projectors;
 
 use App\Customer;
 use App\PaypalBasedMember;
+use App\StorableEvents\CustomerCapabilitiesImported;
+use App\StorableEvents\CustomerCapabilitiesUpdated;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
@@ -72,6 +74,24 @@ final class CustomerProjector implements Projector
         $customer = Customer::whereWooId($event->customerId)->first();
 
         $customer->member = false;
+        $customer->save();
+    }
+
+    public function onCustomerCapabilitiesImported(CustomerCapabilitiesImported $event)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->customerId)->first();
+
+        $customer->capabilities = $event->capabilities;
+        $customer->save();
+    }
+
+    public function onCustomerCapabilitiesUpdated(CustomerCapabilitiesUpdated $event)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->customerId)->first();
+
+        $customer->capabilities = $event->capabilities;
         $customer->save();
     }
 

@@ -3,9 +3,14 @@
 namespace App\Reactors;
 
 use App\Customer;
+use App\Jobs\AddCustomerToSlackChannel;
+use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\MakeCustomerPublicOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
-use App\StorableEvents\CustomerCreated;
+use App\Jobs\RemoveCustomerFromSlackChannel;
+use App\Jobs\RemoveCustomerFromSlackUserGroup;
+use App\StorableEvents\CustomerBecameBoardMember;
+use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
@@ -29,5 +34,17 @@ final class SlackReactor implements EventHandler
         $customer = Customer::whereWooId($event->customerId)->first();
 
         dispatch(new MakeCustomerPublicOnlyMemberInSlack($customer->woo_id));
+    }
+
+    public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)
+    {
+        dispatch(new AddCustomerToSlackChannel($event->customerId, "board"));
+        dispatch(new AddCustomerToSlackUserGroup($event->customerId, "theboard"));
+    }
+
+    public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
+    {
+        dispatch(new RemoveCustomerFromSlackChannel($event->customerId, "board"));
+        dispatch(new RemoveCustomerFromSlackUserGroup($event->customerId, "theboard"));
     }
 }

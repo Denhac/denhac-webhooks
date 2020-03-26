@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Aggregates\CapabilityAggregate;
 use App\Aggregates\MembershipAggregate;
 use App\Customer;
 use App\Subscription;
@@ -48,6 +49,7 @@ class UpdateBaseData extends Command
     public function handle()
     {
         $this->createCustomersInDatabase();
+        $this->updateCustomerCapabilitiesInDatabase();
         // TODO: Handle updates for email changes
 
         $this->updateSubscriptionsInDatabase();
@@ -69,6 +71,22 @@ class UpdateBaseData extends Command
                     ->importCustomer($customer)
                     ->persist();
             }
+        });
+    }
+
+    private function updateCustomerCapabilitiesInDatabase()
+    {
+        $customersInDB = Customer::all()
+            ->whereNull('capabilities');
+
+        $customersInDB->each(function($customer) {
+            /** @var Customer $customer */
+            $username = $customer->username;
+            $this->line("${username} doesn't have their capabilities set, updating.");
+            $capabilities = $this->api->customers->capabilities($customer->woo_id);
+            CapabilityAggregate::make($customer->woo_id)
+                ->importCapabilities($capabilities)
+                ->persist();
         });
     }
 

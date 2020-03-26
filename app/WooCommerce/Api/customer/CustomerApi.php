@@ -56,4 +56,16 @@ class CustomerApi
 
         return $this->jsonOrError($response);
     }
+
+    /**
+     * @param int $woo_id
+     * @return Collection
+     * @throws ApiCallFailed
+     */
+    public function capabilities(int $woo_id)
+    {
+        $response = $this->client->get("/wp-json/wc-denhac/v1/capabilities/$woo_id");
+
+        return $this->jsonOrError($response);
+    }
 }

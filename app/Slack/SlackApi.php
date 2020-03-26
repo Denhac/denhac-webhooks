@@ -5,6 +5,7 @@ namespace App\Slack;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class SlackApi
@@ -138,8 +139,12 @@ class SlackApi
     {
         // TODO Make this handle errors/pagination
         return collect(json_decode($this->apiClient
-            ->get('https://denhac.slack.com/api/conversations.list')
-            ->getBody(), true)['channels']);
+            ->get('https://denhac.slack.com/api/conversations.list', [
+                RequestOptions::QUERY => [
+                    'types' => "public_channel,private_channel",
+                ],
+            ])
+            ->getBody(), true)["channels"]);
     }
 
     private function isValidToken($token)
@@ -175,6 +180,10 @@ class SlackApi
         return $matches[1];
     }
 
+    /**
+     * @param $wantedChannels
+     * @return array
+     */
     public function channelIdsByName($wantedChannels)
     {
         $wantedChannels = Arr::wrap($wantedChannels);
@@ -186,5 +195,62 @@ class SlackApi
                 return $channel['id'];
             })
             ->all();
+    }
+
+    public function conversations_invite(string $userId, $channelId)
+    {
+        $response = $this->apiClient
+            ->post('https://denhac.slack.com/api/conversations.invite', [
+                RequestOptions::FORM_PARAMS => [
+                    'channel' => $channelId,
+                    'users' => $userId,
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true)['ok'];
+    }
+
+    public function conversations_kick(string $userId, $channelId)
+    {
+        $response = $this->apiClient
+            ->post('https://denhac.slack.com/api/conversations.kick', [
+                RequestOptions::FORM_PARAMS => [
+                    'channel' => $channelId,
+                    'user' => $userId,
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true)['ok'];
+    }
+
+    public function usergroups_list()
+    {
+        // TODO Make this handle errors/pagination
+        return collect(json_decode($this->apiClient
+            ->get('https://denhac.slack.com/api/usergroups.list', [
+                RequestOptions::QUERY => [
+                    'include_users' => true,
+                ],
+            ])
+            ->getBody(), true)["usergroups"]);
+    }
+
+    public function usergroupForName($handle)
+    {
+        return $this->usergroups_list()
+            ->firstWhere('handle', $handle);
+    }
+
+    public function usergroups_users_update($usergroupId, Collection $users)
+    {
+        $response = $this->apiClient
+            ->post('https://denhac.slack.com/api/usergroups.users.update', [
+                RequestOptions::FORM_PARAMS => [
+                    'usergroup' => $usergroupId,
+                    'users' => $users->implode(","),
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true)['ok'];
     }
 }
