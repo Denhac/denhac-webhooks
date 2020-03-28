@@ -12,6 +12,7 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-openssl": "*",
+        "anlutro/l4-settings": "^0.11.0",
         "doctrine/dbal": "^2.10",
         "fabpot/goutte": "^3.2",
         "fideloper/proxy": "^4.2",

@@ -30,5 +30,13 @@ class Customer extends Model
 
     protected $casts = [
         'member' => 'boolean',
+        'capabilities' => 'json',
     ];
+
+    public function hasCapability($capability)
+    {
+        $capabilities = collect($this->capabilities) ?? collect();
+
+        return $capabilities->has($capability);
+    }
 }

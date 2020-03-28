@@ -32,5 +32,4 @@ return [
             'card_scan_channel_webhook' => env('NOTIFICATION_CARD_SCAN_SLACK_WEBHOOK'),
         ]
     ],
-    'door_code' => env('DOOR_CODE'),
 ];

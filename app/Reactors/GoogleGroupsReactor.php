@@ -51,6 +51,9 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
+        // Keep members on the mailing list for now
+        return;
+
         $this->googleApi->groupsForMember($customer->email)
             ->filter(function ($group) {
                 return $group != 'denhac@denhac.org';

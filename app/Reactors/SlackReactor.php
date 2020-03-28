@@ -33,6 +33,9 @@ final class SlackReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
+        // Keep members in slack for now
+        return;
+
         dispatch(new MakeCustomerPublicOnlyMemberInSlack($customer->woo_id));
     }
 
