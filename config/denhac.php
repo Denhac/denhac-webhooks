@@ -13,10 +13,11 @@ return [
         'auth_as' => env('GOOGLE_API_AUTH_AS_USER'),
     ],
     'slack' => [
-        'api_token' => env('SLACK_API_TOKEN'),
-        'api_signing_secret' => env('SLACK_API_SIGNING_SECRET'),
-        'email' => env('SLACK_API_EMAIL'),
-        'password' => env('SLACK_API_PASSWORD'),
+        'management_api_token' => env('SLACK_MANAGEMENT_API_TOKEN'),
+        'spacebot_api_signing_secret' => env('SLACK_SPACEBOT_API_SIGNING_SECRET'),
+        'management_api_signing_secret' => env('SLACK_MANAGEMENT_API_SIGNING_SECRET'),
+        'email' => env('SLACK_ADMIN_API_EMAIL'),
+        'password' => env('SLACK_ADMIN_API_PASSWORD'),
     ],
     'github' => [
         'key_path' => env('GITHUB_API_KEY_PATH', storage_path('github-api.pem')),

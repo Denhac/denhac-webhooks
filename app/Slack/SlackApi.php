@@ -13,18 +13,19 @@ class SlackApi
     private const ADMIN_TOKEN_CACHE_KEY = 'slack.admin.token';
     /**
      * @var Client
+     * This one is for the denhac management app.
      */
-    private $apiClient;
+    private $managementApiClient;
     /**
      * @var Client
      */
     private $adminClient;
 
-    public function __construct($apiToken, $email, $password)
+    public function __construct($managementApiToken, $email, $password)
     {
-        $this->apiClient = new Client([
+        $this->managementApiClient = new Client([
             RequestOptions::HEADERS => [
-                'Authorization' => "Bearer $apiToken",
+                'Authorization' => "Bearer $managementApiToken",
             ],
         ]);
 
@@ -118,7 +119,7 @@ class SlackApi
     public function users_list()
     {
         // TODO Make this handle errors/pagination
-        return collect(json_decode($this->apiClient
+        return collect(json_decode($this->managementApiClient
             ->get('https://denhac.slack.com/api/users.list')
             ->getBody(), true)['members']);
     }
@@ -126,7 +127,7 @@ class SlackApi
     public function users_lookupByEmail($email)
     {
         // TODO Handle user not found/ok is false
-        $response = $this->apiClient->get('https://denhac.slack.com/api/users.lookupByEmail', [
+        $response = $this->managementApiClient->get('https://denhac.slack.com/api/users.lookupByEmail', [
             RequestOptions::QUERY => [
                 'email' => $email,
             ],
@@ -138,7 +139,7 @@ class SlackApi
     public function channels_list()
     {
         // TODO Make this handle errors/pagination
-        return collect(json_decode($this->apiClient
+        return collect(json_decode($this->managementApiClient
             ->get('https://denhac.slack.com/api/conversations.list', [
                 RequestOptions::QUERY => [
                     'types' => "public_channel,private_channel",
@@ -197,9 +198,21 @@ class SlackApi
             ->all();
     }
 
+    public function conversations_join($channelId)
+    {
+        $response = $this->managementApiClient
+            ->post('https://denhac.slack.com/api/conversations.join', [
+                RequestOptions::FORM_PARAMS => [
+                    'channel' => $channelId,
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true)['ok'];
+    }
+
     public function conversations_invite(string $userId, $channelId)
     {
-        $response = $this->apiClient
+        $response = $this->managementApiClient
             ->post('https://denhac.slack.com/api/conversations.invite', [
                 RequestOptions::FORM_PARAMS => [
                     'channel' => $channelId,
@@ -212,7 +225,7 @@ class SlackApi
 
     public function conversations_kick(string $userId, $channelId)
     {
-        $response = $this->apiClient
+        $response = $this->managementApiClient
             ->post('https://denhac.slack.com/api/conversations.kick', [
                 RequestOptions::FORM_PARAMS => [
                     'channel' => $channelId,
@@ -226,7 +239,7 @@ class SlackApi
     public function usergroups_list()
     {
         // TODO Make this handle errors/pagination
-        return collect(json_decode($this->apiClient
+        return collect(json_decode($this->managementApiClient
             ->get('https://denhac.slack.com/api/usergroups.list', [
                 RequestOptions::QUERY => [
                     'include_users' => true,
