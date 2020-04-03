@@ -243,7 +243,7 @@ class SlackApi
 
     public function usergroups_users_update($usergroupId, Collection $users)
     {
-        $response = $this->apiClient
+        $response = $this->adminClient
             ->post('https://denhac.slack.com/api/usergroups.users.update', [
                 RequestOptions::FORM_PARAMS => [
                     'usergroup' => $usergroupId,

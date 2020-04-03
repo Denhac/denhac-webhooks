@@ -49,8 +49,10 @@ class RemoveCustomerFromSlackUserGroup implements ShouldQueue
         throw_if(is_null($usergroup), "Couldn't find usergroup for $this->usergroupHandle");
 
         $id = $usergroup["id"];
-        $users = collect($usergroup["users"]);
-        $users->forget($customer->slack_id);
+        $users = collect($usergroup["users"])
+            ->filter(function($user_id) use ($customer) {
+                return $user_id != $customer->slack_id;
+            });
 
         $slackApi->usergroups_users_update($id, $users);
     }
