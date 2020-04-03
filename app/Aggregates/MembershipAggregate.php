@@ -11,6 +11,7 @@ use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
 use App\StorableEvents\CardStatusUpdated;
 use App\StorableEvents\CustomerCreated;
+use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\GithubUsernameUpdated;
@@ -76,6 +77,16 @@ final class MembershipAggregate extends AggregateRoot
         $this->handleCards($customer);
 
         $this->handleGithub($customer);
+
+        return $this;
+    }
+
+    public function deleteCustomer($customer)
+    {
+        $this->recordThat(new CustomerDeleted($customer));
+
+        // TODO Handle deactivation of any active resources?
+        // An option is to just let the automated issue tracker catch it.
 
         return $this;
     }

@@ -7,6 +7,7 @@ use App\PaypalBasedMember;
 use App\StorableEvents\CustomerCapabilitiesImported;
 use App\StorableEvents\CustomerCapabilitiesUpdated;
 use App\StorableEvents\CustomerCreated;
+use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
@@ -46,6 +47,17 @@ final class CustomerProjector implements Projector
         $customer->github_username = $this->getMetadataField($event->customer, 'github_username');
         $customer->slack_id = $this->getMetadataField($event->customer, 'access_slack_id');
         $customer->save();
+    }
+
+    /**
+     * @param CustomerDeleted $event
+     * @throws \Exception
+     */
+    public function onCustomerDeleted(CustomerDeleted $event)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer->delete();
     }
 
     public function onSubscriptionImported(SubscriptionImported $event)
