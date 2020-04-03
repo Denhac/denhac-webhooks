@@ -163,19 +163,10 @@ return [
                 'queue' => ['backups'],
                 'balance' => 'simple',
                 'processes' => 1,
-                'memory' => 20,
+                'memory' => 50,
                 'tries' => 1,
                 'timeout' => 900,
             ],
-            'slack' => [
-                'connection' => 'redis',
-                'queue' => ['slack'],
-                'balance' => 'simple',
-                'processes' => 5,
-                'memory' => 20,
-                'tries' => 1,
-                'timeout' => 60,
-            ]
         ],
 
         'local' => [

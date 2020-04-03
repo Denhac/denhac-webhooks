@@ -4,12 +4,9 @@ namespace App\Providers;
 
 use App\Github\TokenManager as GithubTokenManager;
 use App\Google\TokenManager as GoogleTokenManager;
-use App\Http\Requests\SlackEventRequest;
 use App\Http\Requests\SlackSlashCommandRequest;
 use App\Slack\SlackApi;
 use App\WooCommerce\Api\WooCommerceApi;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -63,10 +60,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->resolving(SlackSlashCommandRequest::class, function ($request, $app) {
             return SlackSlashCommandRequest::createFrom($app['request'], $request);
-        });
-
-        $this->app->resolving(SlackEventRequest::class, function ($request, $app) {
-            return SlackEventRequest::createFrom($app['request'], $request);
         });
     }
 }
