@@ -29,6 +29,7 @@ class BackupAndIssueCardUpdateRequest implements ShouldQueue
     public function __construct($cardSentForRequest)
     {
         $this->cardSentForRequest = $cardSentForRequest;
+        $this->onQueue("backups");
     }
 
     /**

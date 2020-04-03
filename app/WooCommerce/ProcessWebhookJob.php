@@ -5,6 +5,7 @@ namespace App\WooCommerce;
 use App\Aggregates\CapabilityAggregate;
 use App\Aggregates\MembershipAggregate;
 use Illuminate\Support\Facades\Log;
+use Spatie\WebhookClient\Models\WebhookCall;
 
 /**
  * Class ProcessWebhookJob.
@@ -12,6 +13,12 @@ use Illuminate\Support\Facades\Log;
  */
 class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
 {
+    public function __construct(WebhookCall $webhookCall)
+    {
+        parent::__construct($webhookCall);
+        $this->onQueue("webhooks");
+    }
+
     public function handle()
     {
         if (is_null($this->webhookCall->topic)) {

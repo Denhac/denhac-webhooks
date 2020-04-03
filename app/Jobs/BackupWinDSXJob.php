@@ -22,6 +22,7 @@ class BackupWinDSXJob implements ShouldQueue
     public function __construct($path)
     {
         $this->path = $path;
+        $this->onQueue("backups");
     }
 
     /**

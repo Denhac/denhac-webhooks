@@ -33,6 +33,7 @@ return [
         \App\Reactors\GoogleGroupsReactor::class,
         \App\Reactors\SlackReactor::class,
         \App\Reactors\CardUpdateRequestReactor::class,
+        \App\Reactors\GithubMembershipReactor::class,
     ],
 
     /*

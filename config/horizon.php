@@ -141,9 +141,25 @@ return [
 
     'environments' => [
         'production' => [
-            'supervisor-1' => [
+            'default' => [
                 'connection' => 'redis',
                 'queue' => ['default'],
+                'balance' => 'simple',
+                'processes' => 3,
+                'tries' => 1,
+                'timeout' => 60,
+            ],
+            'simple-single-process' => [
+                'connection' => 'redis',
+                'queue' => ['webhooks', 'event-sourcing'],
+                'balance' => 'simple',
+                'processes' => 1,
+                'tries' => 1,
+                'timeout' => 60,
+            ],
+            'long-running-single-process' => [
+                'connection' => 'redis',
+                'queue' => ['backups'],
                 'balance' => 'simple',
                 'processes' => 1,
                 'tries' => 1,
@@ -152,7 +168,7 @@ return [
         ],
 
         'local' => [
-            'supervisor-1' => [
+            'default' => [
                 'connection' => 'redis',
                 'queue' => ['default'],
                 'balance' => 'simple',
