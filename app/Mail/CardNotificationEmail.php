@@ -68,6 +68,8 @@ class CardNotificationEmail extends Mailable
         return $this
             ->subject("Access Card Update {$date}")
             ->view('emails.card_notification')
+            ->to(config('denhac.notifications.card_notification.to'))
+            ->cc(config('denhac.notifications.card_notification.cc'))
             ->with([
                 'activatedCards' => $activatedCards,
                 'deactivatedCards' => $deactivatedCards,
