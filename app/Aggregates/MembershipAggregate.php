@@ -34,7 +34,7 @@ final class MembershipAggregate extends AggregateRoot
     private $cardsSentForDeactivation;
 
     private $subscriptions;
-    private $currentlyAMember = null;
+    private $currentlyAMember = false;
     private $githubUsername = null;
 
     public function __construct()
@@ -285,6 +285,10 @@ final class MembershipAggregate extends AggregateRoot
 
     protected function applySubscriptionStatusChanged(SubscriptionStatusChanged $event)
     {
+        if($event->newStatus == "active") {
+            $this->currentlyAMember = true;
+        }
+
         $this->subscriptions->put($event->subscriptionId, $event->newStatus);
     }
 
