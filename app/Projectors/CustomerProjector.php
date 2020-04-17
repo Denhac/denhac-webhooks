@@ -37,13 +37,12 @@ final class CustomerProjector implements Projector
 
     public function onCustomerUpdated(CustomerUpdated $event)
     {
-        /** @var Customer $customer */
         $customer = $this->addOrGetCustomer($event->customer);
 
-        $customer->email = $customer['email'];
-        $customer->username = $customer['username'];
-        $customer->first_name = $customer['first_name'];
-        $customer->last_name = $customer['last_name'];
+        $customer->email = $event->customer['email'];
+        $customer->username = $event->customer['username'];
+        $customer->first_name = $event->customer['first_name'];
+        $customer->last_name = $event->customer['last_name'];
         $customer->github_username = $this->getMetadataField($event->customer, 'github_username');
         $customer->slack_id = $this->getMetadataField($event->customer, 'access_slack_id');
         $customer->save();
