@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Projectors;
-
 use App\StorableEvents\UserCreated;
 use App\User;
 use Illuminate\Support\Str;
@@ -12,11 +11,16 @@ final class UserProjector implements Projector
 {
     use ProjectsEvents;
 
+    public function onStartingEventReplay()
+    {
+        User::truncate();
+    }
+
     public function onUserCreated(UserCreated $event)
     {
         User::create([
             'name' => $event->name,
-            'api_token' => Str::random(80),
+            'api_token' => $event->api_token,
         ]);
     }
 }
