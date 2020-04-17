@@ -258,7 +258,7 @@ final class MembershipAggregate extends AggregateRoot
             ->first()['value'] ?? null;
 
         if ($this->githubUsername != $githubUsername) {
-            event(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));
+            $this->recordThat(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));
         }
     }
 
