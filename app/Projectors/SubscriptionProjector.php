@@ -4,7 +4,7 @@ namespace App\Projectors;
 
 use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
-use App\StorableEvents\SubscriptionStatusChanged;
+use App\StorableEvents\SubscriptionUpdated;
 use App\Subscription;
 use Spatie\EventSourcing\Projectors\Projector;
 use Spatie\EventSourcing\Projectors\ProjectsEvents;
@@ -28,33 +28,35 @@ final class SubscriptionProjector implements Projector
         $this->addOrGetSubscription($event->subscription);
     }
 
-    public function onSubscriptionStatusChanged(SubscriptionStatusChanged $event)
+    public function onSubscriptionUpdated(SubscriptionUpdated $event)
     {
-        /** @var Subscription $subscription */
-        $subscription = Subscription::whereWooId($event->subscriptionId)->first();
+        $subscription = $this->addOrGetSubscription($event->subscription);
 
-        if($subscription == null) {
-            return;
-        }
-
-        $subscription->status = $event->newStatus;
+        $subscription->status = $event->subscription['status'];
 
         $subscription->save();
     }
 
     /**
      * @param $subscription
+     * @return Subscription
      */
-    private function addOrGetSubscription($subscription): void
+    private function addOrGetSubscription($subscription)
     {
-        $wooId = $subscription['id'];
-        $customerId = $subscription['customer_id'];
-        $status = $subscription['status'];
+        $subscriptionModel = Subscription::whereWooId($subscription['id'])->first();
 
-        Subscription::create([
-            'woo_id' => $wooId,
-            'customer_id' => $customerId,
-            'status' => $status,
-        ]);
+        if(is_null($subscriptionModel)) {
+            $wooId = $subscription['id'];
+            $customerId = $subscription['customer_id'];
+            $status = $subscription['status'];
+
+            return Subscription::create([
+                'woo_id' => $wooId,
+                'customer_id' => $customerId,
+                'status' => $status,
+            ]);
+        } else {
+            return $subscriptionModel;
+        }
     }
 }

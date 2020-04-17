@@ -109,7 +109,7 @@ final class CustomerProjector implements Projector
 
     /**
      * @param array $customer
-     * @return mixed
+     * @return Customer
      */
     private function addOrGetCustomer($customer)
     {
