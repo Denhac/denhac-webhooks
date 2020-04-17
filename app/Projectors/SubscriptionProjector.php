@@ -33,6 +33,10 @@ final class SubscriptionProjector implements Projector
         /** @var Subscription $subscription */
         $subscription = Subscription::whereWooId($event->subscriptionId)->first();
 
+        if($subscription == null) {
+            return;
+        }
+
         $subscription->status = $event->newStatus;
 
         $subscription->save();
