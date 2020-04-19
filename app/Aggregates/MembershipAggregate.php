@@ -26,16 +26,16 @@ use Spatie\EventSourcing\AggregateRoot;
 
 final class MembershipAggregate extends AggregateRoot
 {
-    private $customerId;
+    public $customerId;
 
-    private $cardsOnAccount;
-    private $cardsNeedingActivation; // They need activation only if this person is a confirmed member
-    private $cardsSentForActivation;
-    private $cardsSentForDeactivation;
+    public $cardsOnAccount;
+    public $cardsNeedingActivation; // They need activation only if this person is a confirmed member
+    public $cardsSentForActivation;
+    public $cardsSentForDeactivation;
 
-    private $subscriptions;
-    private $currentlyAMember = false;
-    private $githubUsername = null;
+    public $subscriptions;
+    public $currentlyAMember = false;
+    public $githubUsername = null;
 
     public function __construct()
     {
@@ -146,8 +146,8 @@ final class MembershipAggregate extends AggregateRoot
             }
         } else {
             $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
-                ."Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
-                .'not successful';
+                . "Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
+                . 'not successful';
             report(new \Exception($message));
         }
 
@@ -167,7 +167,7 @@ final class MembershipAggregate extends AggregateRoot
 
         $cardList = collect(explode(',', $cardField));
         foreach ($cardList as $card) {
-            if (! $this->cardsOnAccount->contains($card)) {
+            if (!$this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
                 if ($this->isActiveMember()) {
@@ -177,7 +177,7 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         foreach ($this->cardsOnAccount as $card) {
-            if (! $cardList->contains($card)) {
+            if (!$cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
@@ -192,18 +192,27 @@ final class MembershipAggregate extends AggregateRoot
 
     protected function applyCardSentForActivation(CardSentForActivation $event)
     {
-        $this->cardsNeedingActivation->pull($event->cardNumber);
+        $this->cardsNeedingActivation = $this->cardsNeedingActivation
+            ->reject(function ($value) use ($event) {
+                return $value == $event->cardNumber;
+            });
         $this->cardsSentForActivation->push($event->cardNumber);
     }
 
     protected function applyCardActivated(CardActivated $event)
     {
-        $this->cardsSentForActivation->pull($event->cardNumber);
+        $this->cardsSentForActivation = $this->cardsSentForActivation
+            ->reject(function ($value) use ($event) {
+                return $value == $event->cardNumber;
+            });
     }
 
     protected function applyCardRemoved(CardRemoved $event)
     {
-        $this->cardsOnAccount->push($event->cardNumber);
+        $this->cardsOnAccount = $this->cardsOnAccount
+            ->reject(function ($value) use ($event) {
+                return $value == $event->cardNumber;
+            });
     }
 
     protected function applyCardSentForDeactivation(CardSentForDeactivation $event)
@@ -213,7 +222,11 @@ final class MembershipAggregate extends AggregateRoot
 
     protected function applyCardDeactivated(CardDeactivated $event)
     {
-        $this->cardsSentForDeactivation->pull($event->cardNumber);
+        $this->cardsSentForDeactivation = $this->cardsSentForDeactivation
+            ->reject(function ($value) use ($event) {
+                return $value == $event->cardNumber;
+            });
+
     }
 
     public function handleSubscriptionStatus($subscriptionId, $newStatus)
@@ -254,8 +267,8 @@ final class MembershipAggregate extends AggregateRoot
     {
         $metadata = collect($customer['meta_data']);
         $githubUsername = $metadata
-            ->where('key', 'github_username')
-            ->first()['value'] ?? null;
+                ->where('key', 'github_username')
+                ->first()['value'] ?? null;
 
         if ($this->githubUsername != $githubUsername) {
             $this->recordThat(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));
@@ -285,7 +298,7 @@ final class MembershipAggregate extends AggregateRoot
 
     protected function applySubscriptionStatusChanged(SubscriptionStatusChanged $event)
     {
-        if($event->newStatus == "active") {
+        if ($event->newStatus == "active") {
             $this->currentlyAMember = true;
         }
 

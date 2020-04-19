@@ -24,7 +24,7 @@ class CardProjector implements Projector
     public function onCardAdded(CardAdded $event)
     {
         Card::create([
-            'number' => $event->cardNumber,
+            'number' => ltrim($event->cardNumber, "0"),
             'woo_customer_id' => $event->wooCustomerId,
             'active' => false,
             'member_has_card' => true,
@@ -34,9 +34,13 @@ class CardProjector implements Projector
     public function onCardActivated(CardActivated $event)
     {
         /** @var Card $card */
-        $card = Card::where('number', $event->cardNumber)
+        $card = Card::where('number', ltrim($event->cardNumber, "0"))
             ->where('woo_customer_id', $event->wooCustomerId)
             ->first();
+
+        if(is_null($card)) {
+            return;
+        }
 
         $card->active = true;
 
@@ -46,9 +50,13 @@ class CardProjector implements Projector
     public function onCardRemoved(CardRemoved $event)
     {
         /** @var Card $card */
-        $card = Card::where('number', $event->cardNumber)
+        $card = Card::where('number', ltrim($event->cardNumber, "0"))
             ->where('woo_customer_id', $event->wooCustomerId)
             ->first();
+
+        if(is_null($card)) {
+            return;
+        }
 
         $card->member_has_card = false;
 
@@ -58,9 +66,13 @@ class CardProjector implements Projector
     public function onCardDeactivated(CardDeactivated $event)
     {
         /** @var Card $card */
-        $card = Card::where('number', $event->cardNumber)
+        $card = Card::where('number', ltrim($event->cardNumber, "0"))
             ->where('woo_customer_id', $event->wooCustomerId)
             ->first();
+
+        if(is_null($card)) {
+            return;
+        }
 
         $card->active = false;
 
