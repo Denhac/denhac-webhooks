@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use DateTime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -48,13 +49,21 @@ class MemberBadgedIn extends Notification implements ShouldQueue
     /**
      * Get the Slack representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return SlackMessage
+     * @throws \Exception
      */
     public function toSlack($notifiable)
     {
+        $dateTime = new DateTime($this->scanTime);
+
         return (new SlackMessage)
-            ->content("$this->firstName $this->lastName badged in.");
+            ->content(
+                "$this->firstName $this->lastName badged in at " .
+                $dateTime->format('g:i A') .
+                " on " .
+                $dateTime->format('M d, Y.')
+            );
     }
 
     /**
