@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 
 /**
  * Class Customer.
@@ -18,6 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Customer extends Model
 {
+    use Notifiable;
+
     protected $fillable = [
         'username',
         'email',
@@ -38,5 +42,14 @@ class Customer extends Model
         $capabilities = collect($this->capabilities) ?? collect();
 
         return $capabilities->has($capability);
+    }
+
+    /**
+     * @param Notification $notification
+     * @return string
+     */
+    public function routeNotificationForMail($notification)
+    {
+        return $this->email;
     }
 }

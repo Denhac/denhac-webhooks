@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property boolean active
  * @property boolean member_has_card
  * @property integer woo_customer_id
+ * @property Customer customer
  */
 class Card extends Model
 {
@@ -20,4 +21,9 @@ class Card extends Model
         "member_has_card",
         "woo_customer_id",
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'woo_customer_id', 'woo_id');
+    }
 }

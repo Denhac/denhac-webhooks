@@ -4,33 +4,32 @@ namespace App\Notifications;
 
 use DateTime;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
-/**
- * Class MemberBadgedIn
- * @package App\Notifications
- */
-class MemberBadgedIn extends Notification implements ShouldQueue
+class CardAccessAllowedButNotAMemberRedAlert extends Notification
 {
     use Queueable;
 
     private $firstName;
     private $lastName;
     private $scanTime;
+    private $cardNum;
 
     /**
      * Create a new notification instance.
      *
      * @param $firstName
      * @param $lastName
+     * @param $cardNum
      * @param $scanTime
      */
-    public function __construct($firstName, $lastName, $scanTime)
+    public function __construct($firstName, $lastName, $cardNum, $scanTime)
     {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
+        $this->cardNum = $cardNum;
         $this->scanTime = $scanTime;
     }
 
@@ -42,7 +41,27 @@ class MemberBadgedIn extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['slack'];
+        return ['mail', 'slack'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param mixed $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @throws \Exception
+     */
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->subject('[important] !ALERT! Non-member badged into the space')
+            ->replyTo(config('denhac.access_email'))
+            ->view('emails.card_scan_fail_not_a_member', [
+                'firstName' => $this->firstName,
+                'lastName' => $this->lastName,
+                'cardNum' => $this->cardNum,
+                'dateTime' => new DateTime($this->scanTime),
+            ]);
     }
 
     /**
@@ -58,10 +77,9 @@ class MemberBadgedIn extends Notification implements ShouldQueue
 
         return (new SlackMessage)
             ->content(
-                "$this->firstName $this->lastName badged in at " .
-                $dateTime->format('g:i A') .
-                " on " .
-                $dateTime->format('M d, Y.')
+                "<!channel|channel> $this->firstName $this->lastName is NOT an active member but was able to " .
+                "scan in using card $this->cardNum at {$dateTime->format('g:i A')} on " .
+                "{$dateTime->format('M d, Y')}. Someone should check on that ASAP!"
             );
     }
 
