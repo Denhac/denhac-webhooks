@@ -17,23 +17,12 @@ class ApiEventsController extends Controller
 {
     public function cardScanned(Request $request)
     {
-        if(!$request->hasHeader("test")) {
-            $slackRoute = config('denhac.notifications.slack.card_scan_channel_webhook');
-            Notification::route('slack', $slackRoute)
-                ->notify(new MemberBadgedIn(
-                    $request->json("first_name"),
-                    $request->json("last_name"),
-                    $request->json("scan_time")
-                ));
-            return;
-        }
-
         $cardNumber = $request->get('card_num');
         /** @var Collection $cards */
         $cards = Card::where('number', $cardNumber)->get();
 
         if($cards->count() > 1) {
-            // TODO What do we even do here?
+            // TODO What do we even do here? Should we still notify of scan in?
             report(new \Exception("More than one card listed with card {$cardNumber} on card scan"));
             return;
         }
