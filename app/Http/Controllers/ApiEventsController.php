@@ -15,6 +15,16 @@ use Illuminate\Support\Facades\Notification;
 
 class ApiEventsController extends Controller
 {
+    /**
+     * @var string
+     */
+    private $slackCardScanRoute;
+
+    public function __construct()
+    {
+        $this->slackCardScanRoute = config('denhac.notifications.slack.card_scan_channel_webhook');
+    }
+
     public function cardScanned(Request $request)
     {
         $cardNumber = $request->get('card_num');
@@ -32,22 +42,25 @@ class ApiEventsController extends Controller
 
         /** @var Card $card */
         $card = $cards->first();
-        $customer = $card->customer;
-
-        if( is_null($customer) ) {
-            // We don't know who they are, so whether they have access or not is irrelevant.
+        if( is_null($card)) {
+            if($accessAllowed) {
+                $this->notifyBadgeInToSlack($request);
+            }
             return;
         }
 
-        $slackRoute = config('denhac.notifications.slack.card_scan_channel_webhook');
+        $customer = $card->customer;
+
+        if( is_null($customer) ) {
+            if($accessAllowed) {
+                $this->notifyBadgeInToSlack($request);
+            }
+            return;
+        }
+
         if($customer->member) {
             if($accessAllowed) {
-                Notification::route('slack', $slackRoute)
-                    ->notify(new MemberBadgedIn(
-                        $request->json("first_name"),
-                        $request->json("last_name"),
-                        $request->json("scan_time")
-                    ));
+                $this->notifyBadgeInToSlack($request);
             } else {
                 // They weren't given access
                 if($device == 0 || $device == 1) { // Front and Side door
@@ -58,7 +71,7 @@ class ApiEventsController extends Controller
                         $request->json("scan_time")
                     );
 
-                    Notification::route('slack', $slackRoute)
+                    Notification::route('slack', $this->slackCardScanRoute)
                         ->route('mail', $customer->email)
                         ->notify($notification);
                 } else if($device == 2) { // Back door
@@ -82,7 +95,7 @@ class ApiEventsController extends Controller
                     $request->json("scan_time")
                 );
 
-                Notification::route('slack', $slackRoute)
+                Notification::route('slack', $this->slackCardScanRoute)
                     ->route('mail', config('denhac.access_email'))
                     ->notify($notification);
             } else {
@@ -92,5 +105,18 @@ class ApiEventsController extends Controller
                     ->notify($notification);
             }
         }
+    }
+
+    /**
+     * @param Request $request
+     */
+    private function notifyBadgeInToSlack(Request $request): void
+    {
+        Notification::route('slack', $this->slackCardScanRoute)
+            ->notify(new MemberBadgedIn(
+                $request->json("first_name"),
+                $request->json("last_name"),
+                $request->json("scan_time")
+            ));
     }
 }
