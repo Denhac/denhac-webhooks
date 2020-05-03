@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68ab38c05e70ff6153680253d7233a23",
+    "content-hash": "c90cd1b19a69f4b5ec4ccee9cb736cf8",
     "packages": [
         {
             "name": "anlutro/l4-settings",
@@ -5747,6 +5747,65 @@
                 "php"
             ],
             "time": "2020-03-13T01:23:26+00:00"
+        },
+        {
+            "name": "ylsideas/feature-flags",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ylsideas/feature-flags.git",
+                "reference": "574a571578bf60df834270d99c14ad53ccb44670"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ylsideas/feature-flags/zipball/574a571578bf60df834270d99c14ad53ccb44670",
+                "reference": "574a571578bf60df834270d99c14ad53ccb44670",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "7.*|6.*|5.8.*",
+                "php": "^7.2.5"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.2.3",
+                "orchestra/testbench": "5.*|4.*|3.9.*|3.8.*",
+                "phpunit/phpunit": "^8.3.4",
+                "scrutinizer/ocular": "master-dev"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "YlsIdeas\\FeatureFlags\\FeatureFlagsServiceProvider"
+                    ],
+                    "aliases": {
+                        "FeatureFlags": "YlsIdeas\\FeatureFlags\\Facades\\Features"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "YlsIdeas\\FeatureFlags\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Peter Fox",
+                    "email": "peter.fox@ylsideas.co",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Laravel package for handling feature flags",
+            "homepage": "https://github.com/ylsideas/feature-flags",
+            "keywords": [
+                "feature-flags",
+                "ylsideas"
+            ],
+            "time": "2020-03-04T09:02:34+00:00"
         }
     ],
     "packages-dev": [

@@ -75,7 +75,7 @@ class CapabilityAggregate extends AggregateRoot
     protected function whenRemoved($capability, ShouldBeStored $event)
     {
         if ($this->previousCapabilities->has($capability) &&
-            ! $this->currentCapabilities->has($capability)) {
+            !$this->currentCapabilities->has($capability)) {
             $this->recordThat($event);
         }
     }

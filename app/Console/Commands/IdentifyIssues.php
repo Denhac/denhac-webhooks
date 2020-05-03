@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\ActiveCardHolderUpdate;
 use App\Card;
+use App\FeatureFlags;
 use App\Google\GmailEmailHelper;
 use App\Google\GoogleApi;
 use App\PaypalBasedMember;
@@ -15,6 +16,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 class IdentifyIssues extends Command
 {
@@ -123,7 +125,7 @@ class IdentifyIssues extends Command
         $members = $customers->map(function ($customer) use ($subscriptions) {
             $isMember = $subscriptions
                 ->where('customer_id', $customer['id'])
-                ->whereIn('status', ['active', 'pending-cancel'])
+                ->whereIn('status', ['active', 'pending-cancel', 'on-hold'])
                 ->isNotEmpty();
 
             $meta_data = collect($customer['meta_data']);
@@ -302,7 +304,8 @@ class IdentifyIssues extends Command
 
                         return;
                     }
-                } elseif ($this->isFullSlackUser($user)) {
+                } elseif ($this->isFullSlackUser($user) &&
+                    !Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
                     $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is not an active member but they have a full slack account.";
                     $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                 }
@@ -398,7 +401,8 @@ class IdentifyIssues extends Command
 
             $member = $membersForEmail->first();
 
-            if (!$member['is_member']) {
+            if (!$member['is_member'] &&
+                !Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
                 $message = "{$member['first_name']} {$member['last_name']} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(', ')}";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
             }
@@ -485,5 +489,25 @@ class IdentifyIssues extends Command
                 }
             });
         });
+
+        $cards
+            ->groupBy(function ($card) {
+                return $card->number;
+            })
+            ->filter(function ($value) {
+                return $value->count() > 1;
+            })
+            ->each(function ($cards, $cardNum) {
+                $uniqueCustomers = $cards
+                    ->map(function ($card) {
+                        return $card->woo_customer_id;
+                    })
+                    ->unique()
+                    ->implode(', ');
+                $numEntries = $cards->count();
+
+                $message = "$cardNum has $numEntries entries in the database for customer(s): $uniqueCustomers";
+                $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
+            });
     }
 }

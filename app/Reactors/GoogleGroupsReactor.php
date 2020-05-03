@@ -3,16 +3,21 @@
 namespace App\Reactors;
 
 use App\Customer;
+use App\FeatureFlags;
 use App\Google\GoogleApi;
 use App\Jobs\AddCustomerToGoogleGroup;
+use App\Jobs\InviteCustomerPublicOnlyMemberInSlack;
+use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\SubscriptionUpdated;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class GoogleGroupsReactor implements EventHandler
 {
@@ -38,6 +43,18 @@ final class GoogleGroupsReactor implements EventHandler
         dispatch(new AddCustomerToGoogleGroup($email, self::GROUP_DENHAC));
     }
 
+    public function onSubscriptionUpdated(SubscriptionUpdated $event)
+    {
+        if($event->subscription['status'] != 'need-id-check') {
+            return;
+        }
+
+        if(Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
+            $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
+            dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_MEMBERS));
+        }
+    }
+
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */
@@ -51,8 +68,9 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        // Keep members on the mailing list for now
-        return;
+        if(Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
+            return;
+        }
 
         $this->googleApi->groupsForMember($customer->email)
             ->filter(function ($group) {
