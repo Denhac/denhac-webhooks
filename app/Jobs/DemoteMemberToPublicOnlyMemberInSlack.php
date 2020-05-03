@@ -8,7 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MakeCustomerRegularMemberInSlack implements ShouldQueue
+class DemoteMemberToPublicOnlyMemberInSlack implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use MakeCustomerMemberInSlackMixin;
@@ -26,9 +26,9 @@ class MakeCustomerRegularMemberInSlack implements ShouldQueue
     public function handle()
     {
         if($this->isExistingSlackUser()) {
-            $this->setRegularMember();
+            $this->setSingleChannelGuest('public');
         } else {
-            $this->inviteRegularMember(['general', 'public', 'random']);
+            report(new \Exception("Demote was called on a new member: {$this->wooCustomerId}"));
         }
     }
 }

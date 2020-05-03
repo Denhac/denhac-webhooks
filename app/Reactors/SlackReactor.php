@@ -5,7 +5,8 @@ namespace App\Reactors;
 use App\Customer;
 use App\Jobs\AddCustomerToSlackChannel;
 use App\Jobs\AddCustomerToSlackUserGroup;
-use App\Jobs\MakeCustomerPublicOnlyMemberInSlack;
+use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
+use App\Jobs\InviteCustomerPublicOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Jobs\RemoveCustomerFromSlackChannel;
 use App\Jobs\RemoveCustomerFromSlackUserGroup;
@@ -36,7 +37,7 @@ final class SlackReactor implements EventHandler
         // Keep members in slack for now
         return;
 
-        dispatch(new MakeCustomerPublicOnlyMemberInSlack($customer->woo_id));
+        dispatch(new DemoteMemberToPublicOnlyMemberInSlack($customer->woo_id));
     }
 
     public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)

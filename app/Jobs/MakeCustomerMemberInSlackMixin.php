@@ -8,54 +8,85 @@ use App\WooCommerce\Api\WooCommerceApi;
 
 trait MakeCustomerMemberInSlackMixin
 {
-    protected $wooCustomerId;
+    /**
+     * @var WooCommerceApi
+     */
+    protected $wooCommerceApi;
 
     /**
-     * @param WooCommerceApi $wooCommerceApi
-     * @param SlackApi $slackApi
-     * @throws ApiCallFailed
+     * @var SlackApi
      */
-    public function handle(WooCommerceApi $wooCommerceApi, SlackApi $slackApi)
-    {
-        $customer = $wooCommerceApi->customers->get($this->wooCustomerId);
-        $customer_email = $customer['email'];
+    protected $slackApi;
+    protected $wooCustomerId;
 
-        $slack_id = collect($customer['meta_data'])
-                ->firstWhere('key', 'access_slack_id')['value'] ?? null;
+    private $customerInfoFetched = false;
+    private $customerEmail = null;
+    private $customerSlackId = null;
 
-        if (! is_null($slack_id)) {
-            $this->handleExistingMember($slackApi, $slack_id);
-        } else {
-            $emails = [
-                $customer_email => $this->membershipType(),
-            ];
-            $channels = $slackApi->channelIdsByName(['general', 'public', 'random']);
-            $slackApi->users_admin_inviteBulk($emails, $channels);
-            // TODO Report exception if the overall request isn't okay or per user isn't okay
-
-            $slackObject = $slackApi->users_lookupByEmail($customer_email);
-            if (is_null($slackObject)) {
-                throw new \Exception('Slack user was null, unsure if invite worked');
-            }
-            $slack_id = $slackObject['id'];
-
-            $wooCommerceApi->customers->update($this->wooCustomerId, [
-                'meta_data' => [
-                    [
-                        'key' => 'access_slack_id',
-                        'value' => $slack_id,
-                    ],
-                ],
-            ]);
+    private function fetchCustomerInfo() {
+        if (is_null($this->wooCommerceApi)) {
+            $this->wooCommerceApi = app(WooCommerceApi::class);
         }
+
+        if (is_null($this->slackApi)) {
+            $this->slackApi = app(SlackApi::class);
+        }
+
+        if($this->customerInfoFetched) {
+            return;
+        }
+
+        $customer = $this->wooCommerceApi->customers->get($this->wooCustomerId);
+        $this->customerEmail = $customer['email'];
+        $this->customerSlackId = collect($customer['meta_data'])
+                ->firstWhere('key', 'access_slack_id')['value'] ?? null;
+        $this->customerInfoFetched = true;
     }
 
-    // Handle an existing member
-    abstract protected function handleExistingMember(SlackApi $slackApi, $slack_id);
+    protected function isExistingSlackUser() {
+        $this->fetchCustomerInfo();
 
-    // What membership type should we use for the invite?
-    abstract protected function membershipType();
+        return ! is_null($this->customerSlackId);
+    }
 
-    // What channels should they be part of
-    abstract protected function channelIds(SlackApi $slackApi);
+    protected function inviteSingleChannelGuest($channel) {
+        $this->inviteCustomer('ultra_restricted', $channel);
+    }
+
+    protected function inviteRegularMember($channels) {
+        $this->inviteCustomer('regular', $channels);
+    }
+
+    protected function setSingleChannelGuest($channel) {
+        $channel = $this->slackApi->channelIdsByName($channel)[0];
+        $this->slackApi->users_admin_setUltraRestricted($this->customerSlackId, $channel);
+    }
+
+    protected function setRegularMember() {
+        $this->slackApi->users_admin_setRegular($this->customerSlackId);
+    }
+
+    private function inviteCustomer($membershipType, $channels) {
+        $emails = [
+            $this->customerEmail => $membershipType,
+        ];
+        $channels = $this->slackApi->channelIdsByName($channels);
+        $this->slackApi->users_admin_inviteBulk($emails, $channels);
+        // TODO Report exception if the overall request isn't okay or per user isn't okay
+
+        $slackObject = $this->slackApi->users_lookupByEmail($this->customerEmail);
+        if (is_null($slackObject)) {
+            throw new \Exception('Slack user was null, unsure if invite worked');
+        }
+        $this->customerSlackId = $slackObject['id'];
+
+        $this->wooCommerceApi->customers->update($this->wooCustomerId, [
+            'meta_data' => [
+                [
+                    'key' => 'access_slack_id',
+                    'value' => $this->customerSlackId,
+                ],
+            ],
+        ]);
+    }
 }
