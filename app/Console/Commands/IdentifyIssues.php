@@ -125,7 +125,7 @@ class IdentifyIssues extends Command
         $members = $customers->map(function ($customer) use ($subscriptions) {
             $isMember = $subscriptions
                 ->where('customer_id', $customer['id'])
-                ->whereIn('status', ['active', 'pending-cancel', 'on-hold'])
+                ->whereIn('status', ['active', 'pending-cancel'])
                 ->isNotEmpty();
 
             $meta_data = collect($customer['meta_data']);
@@ -144,12 +144,19 @@ class IdentifyIssues extends Command
             $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(',', $email_aliases_string));
             $emails = $emails->merge($email_aliases);
 
+            $subscriptionMap = $subscriptions
+                ->where('customer_id', $customer['id'])
+                ->map(function($subscription) {
+                    return $subscription['status'];
+                });
+
             return [
                 'id' => $customer['id'],
                 'first_name' => $customer['first_name'],
                 'last_name' => $customer['last_name'],
                 'email' => $emails,
                 'is_member' => $isMember,
+                'subscriptions' => $subscriptionMap,
                 'cards' => $cards,
                 'slack_id' => $meta_data->where('key', 'access_slack_id')->first()['value'] ?? null,
                 'system' => self::SYSTEM_WOOCOMMERCE,
@@ -169,6 +176,7 @@ class IdentifyIssues extends Command
                     'last_name' => $member->last_name,
                     'email' => $emails,
                     'is_member' => $member->active,
+                    'subscriptions' => collect(),
                     'cards' => is_null($member->card) ? collect() : collect([$member->card]),
                     'slack_id' => $member->slack_id,
                     'system' => self::SYSTEM_PAYPAL,
@@ -270,7 +278,8 @@ class IdentifyIssues extends Command
                     });
 
                 if ($membersForSlackId->count() == 0) {
-                    if ($this->isFullSlackUser($user)) {
+                    if ($this->isFullSlackUser($user) &&
+                        !Features::accessible(FeatureFlags::IGNORE_UNIDENTIFIABLE_MEMBERSHIP)) {
                         $message = "{$user['name']} with slack id ({$user['id']}) is a full user in slack but I have no membership record of them.";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                     }
@@ -331,8 +340,14 @@ class IdentifyIssues extends Command
 
         $members
             ->each(function ($member) use ($slackUsers) {
-                if (!$member['is_member']) {
-                    return;
+                if(! Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
+                    if (! $member['is_member']) {
+                        return;
+                    }
+                } else {
+                    if(! $member['subscriptions']->contains("need-id-check")) {
+                        return;
+                    }
                 }
 
                 $slackForMember = $slackUsers
@@ -393,6 +408,10 @@ class IdentifyIssues extends Command
             }
 
             if ($membersForEmail->count() == 0) {
+                if(Features::accessible(FeatureFlags::IGNORE_UNIDENTIFIABLE_MEMBERSHIP)) {
+                    return;
+                }
+
                 $message = "No member found for email address $email in groups: {$groupsForEmail->implode(', ')}";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
 
@@ -412,6 +431,8 @@ class IdentifyIssues extends Command
             /** @var Collection $memberEmails */
             $memberEmails = $member['email'];
 
+            $membersGroupMailing = 'members@denhac.org'; // TODO dedupe this
+
             if ($memberEmails->isEmpty()) {
                 return;
             }
@@ -428,12 +449,20 @@ class IdentifyIssues extends Command
                         $emailsToGroups->get($memberEmail)->contains($membersGroupMailing);
                 })
                 ->isNotEmpty();
-            if ($memberHasEmailInMembersList) {
+
+            if($memberHasEmailInMembersList) {
                 return;
             }
 
-            $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
-            $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+            if($member['is_member']) {
+                $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
+                $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+            } else if(Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
+                if($member['subscriptions']->contains("need-id-check")) {
+                    $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) needs an id check but is not part of $membersGroupMailing";
+                    $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
+                }
+            }
         });
     }
 
