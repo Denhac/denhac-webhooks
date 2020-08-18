@@ -133,7 +133,21 @@ class SlackApi
             ],
         ]);
 
-        return json_decode($response->getBody(), true)['user'];
+        $data = json_decode($response->getBody(), true);
+
+        if($data["ok"]) {
+            return $data['user'];
+        }
+
+        if($data["error"] == "users_not_found") {
+            return null;
+        }
+
+        if(!array_key_exists('user', $data)) {
+            throw new UnexpectedResponseException("No User key exists: {$response->getBody()}");
+        }
+
+        return null;
     }
 
     public function channels_list()
