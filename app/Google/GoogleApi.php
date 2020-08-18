@@ -47,6 +47,8 @@ class GoogleApi
                 ->map(function ($group) {
                     return $group['email'];
                 });
+        } else {
+            return collect();
         }
     }
 
@@ -74,6 +76,8 @@ class GoogleApi
                 ->map(function ($group) {
                     return $group['email'];
                 });
+        } else {
+            return collect();
         }
     }
 }
