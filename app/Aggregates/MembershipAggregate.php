@@ -214,12 +214,7 @@ final class MembershipAggregate extends AggregateRoot
             }
         }
 
-        $allCards = collect()
-            ->merge($this->cardsNeedingActivation)
-            ->merge($this->cardsSentForActivation)
-            ->merge($this->cardsOnAccount);
-
-        foreach ($allCards as $card) {
+        foreach ($this->allCards() as $card) {
             if (!$cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
@@ -283,7 +278,7 @@ final class MembershipAggregate extends AggregateRoot
         if ($oldStatus == 'need-id-check' && $newStatus == 'active') {
             $this->recordThat(new MembershipActivated($this->customerId));
 
-            foreach ($this->cardsNeedingActivation as $card) {
+            foreach ($this->allCards() as $card) {
                 $this->recordThat(new CardSentForActivation($this->customerId, $card));
             }
         }
@@ -293,11 +288,7 @@ final class MembershipAggregate extends AggregateRoot
             // TODO Make sure there's NO currently active subscriptions
             $this->recordThat(new MembershipDeactivated($this->customerId));
 
-            $allCards = collect()
-                ->merge($this->cardsNeedingActivation)
-                ->merge($this->cardsSentForActivation)
-                ->merge($this->cardsOnAccount);
-            foreach ($allCards as $card) {
+            foreach ($this->allCards() as $card) {
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
         }
@@ -365,5 +356,12 @@ final class MembershipAggregate extends AggregateRoot
     private function isActiveMember()
     {
         return $this->currentlyAMember;
+    }
+
+    private function allCards() {
+        return collect()
+            ->merge($this->cardsNeedingActivation)
+            ->merge($this->cardsSentForActivation)
+            ->merge($this->cardsOnAccount);
     }
 }
