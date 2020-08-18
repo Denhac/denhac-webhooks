@@ -176,7 +176,12 @@ final class MembershipAggregate extends AggregateRoot
             }
         }
 
-        foreach ($this->cardsOnAccount as $card) {
+        $allCards = collect()
+            ->merge($this->cardsNeedingActivation)
+            ->merge($this->cardsSentForActivation)
+            ->merge($this->cardsOnAccount);
+
+        foreach ($allCards as $card) {
             if (!$cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
@@ -226,7 +231,6 @@ final class MembershipAggregate extends AggregateRoot
             ->reject(function ($value) use ($event) {
                 return $value == $event->cardNumber;
             });
-
     }
 
     public function handleSubscriptionStatus($subscriptionId, $newStatus)
