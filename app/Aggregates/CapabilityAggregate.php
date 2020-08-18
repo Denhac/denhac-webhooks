@@ -5,6 +5,7 @@ namespace App\Aggregates;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerCapabilitiesImported;
 use App\StorableEvents\CustomerCapabilitiesUpdated;
+use App\StorableEvents\CustomerIsNoEventTestUser;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
@@ -22,6 +23,8 @@ class CapabilityAggregate extends AggregateRoot
      * @var Collection
      */
     private $currentCapabilities;
+
+    public $respondToEvents = true;
 
     public function __construct()
     {
@@ -44,6 +47,10 @@ class CapabilityAggregate extends AggregateRoot
 
     public function importCapabilities($capabilities)
     {
+        if(! $this->respondToEvents) {
+            return $this;
+        }
+
         $this->recordThat(new CustomerCapabilitiesImported($this->customerId, $capabilities));
 
         return $this;
@@ -51,6 +58,10 @@ class CapabilityAggregate extends AggregateRoot
 
     public function updateCapabilities($capabilities)
     {
+        if(! $this->respondToEvents) {
+            return $this;
+        }
+
         $this->recordThat(new CustomerCapabilitiesUpdated($this->customerId, $capabilities));
 
         $this->handleCapabilityUpdates();
@@ -78,6 +89,11 @@ class CapabilityAggregate extends AggregateRoot
             !$this->currentCapabilities->has($capability)) {
             $this->recordThat($event);
         }
+    }
+
+    protected function applyCustomerIsNoEventTestUser(CustomerIsNoEventTestUser $event)
+    {
+        $this->respondToEvents = false;
     }
 
     protected function applyCustomerCapabilitiesImported(CustomerCapabilitiesImported $event)
