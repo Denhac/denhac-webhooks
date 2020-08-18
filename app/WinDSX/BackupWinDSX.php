@@ -9,7 +9,7 @@ class BackupWinDSX
         try {
             mkdir($path, 0777, true);
         } catch (\ErrorException $errorException) {
-            report($errorException);
+            //report($errorException);
         }
 
         $command = "scp -r denhac-access:/C:/WinDSX {$path} 2>&1";

@@ -39,11 +39,6 @@ class BackupAndIssueCardUpdateRequest implements ShouldQueue
      */
     public function handle()
     {
-        $path = storage_path('backups/on_cards/'.date('Y/m/d/h/i'));
-        /** @var BackupWinDSXJob $backupWinDSX */
-        $backupWinDSX = app(BackupWinDSX::class);
-        $backupWinDSX->backup($path);
-
         if ($this->cardSentForRequest instanceof CardSentForActivation) {
             CardUpdateRequest::create([
                 'type' => CardUpdateRequest::ACTIVATION_TYPE,
