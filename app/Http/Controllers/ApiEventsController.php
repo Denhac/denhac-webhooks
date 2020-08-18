@@ -7,10 +7,10 @@ use App\Notifications\CardAccessAllowedButNotAMemberRedAlert;
 use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
-use App\Notifications\CardAccessDeniedUnderConstruction;
 use App\Notifications\MemberBadgedIn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class ApiEventsController extends Controller
@@ -27,6 +27,7 @@ class ApiEventsController extends Controller
 
     public function cardScanned(Request $request)
     {
+        Log::info($request->getContent());
         $cardNumber = $request->get('card_num');
         /** @var Collection $cards */
         $cards = Card::where('number', $cardNumber)->get();
@@ -43,6 +44,7 @@ class ApiEventsController extends Controller
         /** @var Card $card */
         $card = $cards->first();
         if( is_null($card)) {
+            Log::info("Couldn't find that card in our database");
             if($accessAllowed) {
                 $this->notifyBadgeInToSlack($request);
             }
@@ -52,6 +54,7 @@ class ApiEventsController extends Controller
         $customer = $card->customer;
 
         if( is_null($customer) ) {
+            Log::info("Couldn't find that customer for that card");
             if($accessAllowed) {
                 $this->notifyBadgeInToSlack($request);
             }
@@ -59,11 +62,13 @@ class ApiEventsController extends Controller
         }
 
         if($customer->member) {
+            Log::info("They're a member!");
             if($accessAllowed) {
                 $this->notifyBadgeInToSlack($request);
             } else {
+                Log::info("No access though.");
                 // They weren't given access
-                if($device == 0 || $device == 1) { // Front and Side door
+                if($device == 0 || $device == 1 || $device == 3) { // Front and Side door
                     $notification = new CardAccessDeniedButWereWorkingOnIt(
                         $request->json("first_name"),
                         $request->json("last_name"),
@@ -76,11 +81,6 @@ class ApiEventsController extends Controller
                         ->notify($notification);
                 } else if($device == 2) { // Back door
                     $notification = new CardAccessDeniedBadDoor();
-
-                    Notification::route('mail', $customer->email)
-                        ->notify($notification);
-                } else if($device == 3) { // denhac door
-                    $notification = new CardAccessDeniedUnderConstruction();
 
                     Notification::route('mail', $customer->email)
                         ->notify($notification);
