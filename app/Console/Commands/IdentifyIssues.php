@@ -9,6 +9,7 @@ use App\Google\GmailEmailHelper;
 use App\Google\GoogleApi;
 use App\PaypalBasedMember;
 use App\Slack\SlackApi;
+use App\Subscription;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
@@ -92,6 +93,7 @@ class IdentifyIssues extends Command
         $this->missingSlackUsers($members);
         $this->googleGroupIssues($members);
         $this->internalConsistencyCardIssues($members);
+        $this->internalConsistencySubscriptionIssues();
 
         $this->printIssues();
     }
@@ -538,5 +540,28 @@ class IdentifyIssues extends Command
                 $message = "$cardNum has $numEntries entries in the database for customer(s): $uniqueCustomers";
                 $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
             });
+    }
+
+    private function internalConsistencySubscriptionIssues()
+    {
+        $subscriptions_api = $this->wooCommerceApi->subscriptions->list();
+
+        $subscriptions_api->each(function($subscription_api) {
+            $sub_id = $subscription_api["id"];
+            $sub_status = $subscription_api['status'];
+
+            $model = Subscription::whereWooId($sub_id)->first();
+
+            if(is_null($model)) {
+                $message = "Subscription $sub_id doesn't exist in our local database";
+                $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
+                return;
+            }
+
+            if($model->status != $sub_status) {
+                $message = "Subscription $sub_id has api status $sub_status but local status {$model->status}";
+                $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
+            }
+        });
     }
 }
