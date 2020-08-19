@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Http\Requests\SlackSlashCommandRequest;
 use App\Slack\SlackResponse;
+use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -117,30 +118,33 @@ class SlackCommandController extends Controller
         Log::info("Options request!");
         Log::info($request->get("payload"));
 
+        $options = [];
+
+        $needIdCheckSubscriptions = Subscription::whereStatus('need-id-check')->with('customer')->get();
+
+        foreach($needIdCheckSubscriptions as $subscription) {
+            /** @var Subscription $subscription */
+            /** @var Customer $customer */
+            $customer = $subscription->customer;
+            $subscription_id = $subscription->getKey();
+
+            if(is_null($customer)) {
+                $name = "Unknown Customer";
+            } else {
+                $name = "{$customer->first_name} {$customer->last_name}";
+            }
+
+            $options[] = [
+                "text" => [
+                    "type" => "plain_text",
+                    "text" => "$name (Subscription #$subscription_id)"
+                ],
+                "value" => "subscription-$subscription_id",
+            ];
+        }
+
         return response()->json([
-            "options" => [
-                [
-                    "text" => [
-                        "type" => "plain_text",
-                        "text" => "apple"
-                    ],
-                    "value" => "value-0"
-                ],
-                [
-                    "text" => [
-                        "type" => "plain_text",
-                        "text" => "banana"
-                    ],
-                    "value" => "value-1"
-                ],
-                [
-                    "text" => [
-                        "type" => "plain_text",
-                        "text" => "cow"
-                    ],
-                    "value" => "value-2"
-                ]
-            ]
+            "options" => $options,
         ]);
     }
 }

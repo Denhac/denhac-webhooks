@@ -13,6 +13,7 @@ return [
         'auth_as' => env('GOOGLE_API_AUTH_AS_USER'),
     ],
     'slack' => [
+        'spacebot_api_token' => env('SLACK_SPACEBOT_API_TOKEN'),
         'management_api_token' => env('SLACK_MANAGEMENT_API_TOKEN'),
         'spacebot_api_signing_secret' => env('SLACK_SPACEBOT_API_SIGNING_SECRET'),
         'management_api_signing_secret' => env('SLACK_MANAGEMENT_API_SIGNING_SECRET'),
