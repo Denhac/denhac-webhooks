@@ -22,5 +22,5 @@ Route::post("/card_updates/{card_update_request}/status", [CardUpdateRequestsCon
 Route::post("/active_card_holders", [CardUpdateRequestsController::class, "updateActiveCardHolders"])
     ->middleware("auth:api");
 
-Route::post("/events/card_scanned", CardScannedController::class)
+Route::post("/events/card_scanned", 'CardScannedController')
     ->middleware("auth:api");
