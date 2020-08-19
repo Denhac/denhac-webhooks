@@ -101,6 +101,10 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteCustomer($customer)
     {
+        if(! $this->respondToEvents) {
+            return $this;
+        }
+
         $this->recordThat(new CustomerDeleted($customer));
 
         // TODO Handle deactivation of any active resources?
