@@ -4,27 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\Http\Requests\SlackSlashCommandRequest;
-use App\Slack\SlackResponse;
-use App\Subscription;
-use App\WooCommerce\Api\WooCommerceApi;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Slack;
 
-class SlackCommandController extends Controller
+class SlackDoorCodeCommandController extends Controller
 {
     const ACCESS_DOOR_CODE_KEY = 'access.door_code';
-    /**
-     * @var WooCommerceApi
-     */
-    private $wooCommerceApi;
 
-    public function __construct(WooCommerceApi $wooCommerceApi)
-    {
-        $this->wooCommerceApi = $wooCommerceApi;
-    }
-
-    public function doorCode(SlackSlashCommandRequest $request)
+    public function __invoke(SlackSlashCommandRequest $request)
     {
         $member = $request->customer();
 
@@ -100,51 +86,5 @@ class SlackCommandController extends Controller
             return Slack::newMessage()
                 ->text("I'm sorry, that code didn't look to be in the right format. It needs to be all numbers.");
         }
-    }
-
-    public function interactive(Request $request)
-    {
-        Log::info("Interactive request!");
-        Log::info($request->get("payload"));
-
-        return response()->json([
-            "replace_original" => "true",
-            "text" => "Thanks for your request",
-        ]);
-    }
-
-    public function options(Request $request)
-    {
-        Log::info("Options request!");
-        Log::info($request->get("payload"));
-
-        $options = [];
-
-        $needIdCheckSubscriptions = Subscription::whereStatus('need-id-check')->with('customer')->get();
-
-        foreach($needIdCheckSubscriptions as $subscription) {
-            /** @var Subscription $subscription */
-            /** @var Customer $customer */
-            $customer = $subscription->customer;
-            $subscription_id = $subscription->getKey();
-
-            if(is_null($customer)) {
-                $name = "Unknown Customer";
-            } else {
-                $name = "{$customer->first_name} {$customer->last_name}";
-            }
-
-            $options[] = [
-                "text" => [
-                    "type" => "plain_text",
-                    "text" => "$name (Subscription #$subscription_id)"
-                ],
-                "value" => "subscription-$subscription_id",
-            ];
-        }
-
-        return response()->json([
-            "options" => $options,
-        ]);
     }
 }

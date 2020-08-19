@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::webhooks('webhooks/denhac-org', 'denhac.org');
 
-Route::post('slack/door_code', 'SlackCommandController@doorCode');
-Route::post('slack/interactive', 'SlackCommandController@interactive');
-Route::post('slack/options', 'SlackCommandController@options');
+Route::post('slack/door_code', 'SlackDoorCodeCommandController');
 Route::post('slack/membership', 'SlackMembershipCommandController');
+
+Route::post('slack/interactive', 'SlackInteractiveController');
+Route::post('slack/options', 'SlackOptionsController');
