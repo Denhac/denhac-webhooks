@@ -84,7 +84,7 @@ class SlackMembershipCommandController extends Controller
         $matches = [];
         $result = preg_match('/subscription\-(\d+)/', $selectedOption, $matches);
 
-        if(! $result) {
+        if (!$result) {
             throw new \Exception("Option wasn't valid for subscription: $selectedOption");
         }
 
@@ -108,6 +108,15 @@ class SlackMembershipCommandController extends Controller
             ->label("Last Name")
             ->newTextInput(SlackID::NEW_MEMBER_DETAIL_LAST_NAME_ACTION_ID)
             ->initialValue($customer->last_name);
+
+        $birthdayInput = $modalView->newInput()
+            ->blockId(SlackID::NEW_MEMBER_DETAIL_BIRTHDAY_BLOCK_ID)
+            ->label("Birthday")
+            ->newDatePicker(SlackID::NEW_MEMBER_DETAIL_BIRTHDAY_ACTION_ID);
+
+        if (!is_null($customer->birthday)) {
+            $birthdayInput->initialDate($customer->birthday->format('Y-m-d'));
+        }
 
         $modalView->newInput()
             ->blockId(SlackID::NEW_MEMBER_DETAIL_CARD_NUM_BLOCK_ID)

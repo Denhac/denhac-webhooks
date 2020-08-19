@@ -20,6 +20,8 @@ class SlackID
     public const NEW_MEMBER_DETAIL_FIRST_NAME_ACTION_ID = 'new-member-detail-first-name-action';
     public const NEW_MEMBER_DETAIL_LAST_NAME_BLOCK_ID = 'new-member-detail-last-name-block';
     public const NEW_MEMBER_DETAIL_LAST_NAME_ACTION_ID = 'new-member-detail-last-name-action';
+    public const NEW_MEMBER_DETAIL_BIRTHDAY_BLOCK_ID = 'new-member-detail-birthday-block';
+    public const NEW_MEMBER_DETAIL_BIRTHDAY_ACTION_ID = 'new-member-detail-birthday-action';
     public const NEW_MEMBER_DETAIL_CARD_NUM_BLOCK_ID = 'new-member-detail-card-num-block';
     public const NEW_MEMBER_DETAIL_CARD_NUM_ACTION_ID = 'new-member-detail-card-num-action';
 }

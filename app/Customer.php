@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
@@ -17,6 +18,7 @@ use Illuminate\Notifications\Notification;
  * @property string github_username
  * @property string slack_id
  * @property array capabilities
+ * @property Carbon birthday
  */
 class Customer extends Model
 {
@@ -30,11 +32,16 @@ class Customer extends Model
         'first_name',
         'last_name',
         'github_username',
+        'birthday',
     ];
 
     protected $casts = [
         'member' => 'boolean',
         'capabilities' => 'json',
+    ];
+
+    protected $dates = [
+        'birthday',
     ];
 
     public function hasCapability($capability)
