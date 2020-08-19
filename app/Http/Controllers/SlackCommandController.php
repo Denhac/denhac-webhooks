@@ -25,9 +25,7 @@ class SlackCommandController extends Controller
 
     public function doorCode(SlackSlashCommandRequest $request)
     {
-        $id = $request->get('user_id');
-        /** @var Customer $member */
-        $member = Customer::whereSlackId($id)->first();
+        $member = $request->customer();
 
         if ($member === null) {
             return Slack::newMessage()
@@ -57,7 +55,7 @@ class SlackCommandController extends Controller
 
     private function handleDoorCodeUpdate(SlackSlashCommandRequest $request, Customer $member, string $text)
     {
-        if (!$member->hasCapability("denhac_board_member")) {
+        if (!$member->isBoardMember()) {
             return Slack::newMessage()
                 ->text("This functionality is for updating the door code, and only denhac board members can do that.");
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Customer;
 use App\Slack\ValidatesSlackSignature;
 use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use Illuminate\Http\Request;
@@ -23,5 +24,14 @@ class SlackSlashCommandRequest extends Request implements ValidatesWhenResolved
                 'text' => "The signature from slack didn't match the computed value. Did our signing secret change?",
             ]));
         }
+    }
+
+    public function customer()
+    {
+        $userId = $this->get('user_id');
+        /** @var Customer $customer */
+        $customer = Customer::whereSlackId($userId)->first();
+
+        return $customer;
     }
 }

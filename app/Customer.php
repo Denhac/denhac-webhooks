@@ -44,6 +44,11 @@ class Customer extends Model
         return $capabilities->has($capability);
     }
 
+    public function isBoardMember()
+    {
+        return $this->hasCapability("denhac_board_member");
+    }
+
     /**
      * @param Notification $notification
      * @return string

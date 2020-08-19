@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string status
  * @property string wooId
  * @property string customer_id
+ * @property Customer customer
  */
 class Subscription extends Model
 {
@@ -16,4 +17,9 @@ class Subscription extends Model
         'status',
         'woo_id',
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', 'woo_id');
+    }
 }
