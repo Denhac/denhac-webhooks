@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
             ])
             ->hourly();
 
-        // TODO Clean up backups that are too old
+        $schedule->command('denhac:backup-cleanup')->daily();
 
         $schedule
             ->call(function () {
