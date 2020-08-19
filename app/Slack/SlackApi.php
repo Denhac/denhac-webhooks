@@ -21,15 +21,19 @@ class SlackApi
      */
     private $adminClient;
 
-    public function __construct($managementApiToken, $email, $password)
+    public function __construct()
     {
+        $managementApiToken = config('denhac.slack.management_api_token');
         $this->managementApiClient = new Client([
             RequestOptions::HEADERS => [
                 'Authorization' => "Bearer $managementApiToken",
             ],
         ]);
 
-        $this->adminClient = $this->getAdminClient($email, $password);
+        $this->adminClient = $this->getAdminClient(
+            config('denhac.slack.email'),
+            config('denhac.slack.password')
+        );
     }
 
     private function getAdminClient($email, $password)

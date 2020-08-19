@@ -20,13 +20,13 @@ class WooCommerceApi
      */
     private $guzzleClient;
 
-    public function __construct($baseUrl, $consumerKey, $consumerSecret)
+    public function __construct()
     {
         $this->guzzleClient = new Client([
-            'base_uri' => $baseUrl,
+            'base_uri' => config('denhac.url'),
             'auth' => [
-                $consumerKey,
-                $consumerSecret,
+                config('denhac.rest.key'),
+                config('denhac.rest.secret'),
             ],
         ]);
     }

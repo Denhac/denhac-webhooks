@@ -18,11 +18,11 @@ class TokenManager
      */
     private $client;
 
-    public function __construct($apiKey, $serviceAccount, $authAs)
+    public function __construct()
     {
-        $this->apiKey = $apiKey;
-        $this->serviceAccount = $serviceAccount;
-        $this->authAs = $authAs;
+        $this->apiKey = file_get_contents(config('denhac.google.key_path'));
+        $this->serviceAccount = config('denhac.google.service_account');
+        $this->authAs = config('denhac.google.auth_as');
 
         $this->client = new Client();
     }

@@ -15,11 +15,11 @@ class TokenManager
      */
     private $client;
 
-    public function __construct($signingKey, $appId, $installationId)
+    public function __construct()
     {
-        $this->signingKey = $signingKey;
-        $this->appId = $appId;
-        $this->installationId = $installationId;
+        $this->signingKey = file_get_contents(config('denhac.github.key_path'));
+        $this->appId = config('denhac.github.app_id');
+        $this->installationId = config('denhac.github.installation_id');
 
         $this->client = new Client();
     }
