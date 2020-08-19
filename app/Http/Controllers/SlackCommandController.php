@@ -8,6 +8,7 @@ use App\Slack\SlackResponse;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Jeremeamia\Slack\BlockKit\Slack;
 
 class SlackCommandController extends Controller
 {
@@ -29,12 +30,12 @@ class SlackCommandController extends Controller
         $member = Customer::whereSlackId($id)->first();
 
         if ($member === null) {
-            return (new SlackResponse())
+            return Slack::newMessage()
                 ->text("I don't recognize you. If you're a member in good standing and you're not using paypal for membership dues, please contact access@denhac.org.");
         }
 
         if (!$member->member) {
-            return (new SlackResponse())
+            return Slack::newMessage()
                 ->text("I recognize you but you don't appear to be a member in good standing. If you think this is a mistake, please contact access@denhac.org.");
         }
 
@@ -46,10 +47,10 @@ class SlackCommandController extends Controller
         $doorCodeSetting = setting(self::ACCESS_DOOR_CODE_KEY);
 
         if ($doorCodeSetting != "") {
-            return (new SlackResponse())
+            return Slack::newMessage()
                 ->text("Hello! The door access code is $doorCodeSetting.");
         } else {
-            return (new SlackResponse())
+            return Slack::newMessage()
                 ->text("So here's the thing... I'd tell you the door code, but I seem to have misplaced it. Maybe ask an admin?");
         }
     }
@@ -57,19 +58,19 @@ class SlackCommandController extends Controller
     private function handleDoorCodeUpdate(SlackSlashCommandRequest $request, Customer $member, string $text)
     {
         if (!$member->hasCapability("denhac_board_member")) {
-            return (new SlackResponse())
+            return Slack::newMessage()
                 ->text("This functionality is for updating the door code, and only denhac board members can do that.");
         }
 
         if (preg_match("/^\d+$/", $text) == 1) {
             if(setting(self::ACCESS_DOOR_CODE_KEY) == $text) {
-                return (new SlackResponse())
+                return Slack::newMessage()
                     ->text("That's the same code we already have!");
             }
 
             setting([self::ACCESS_DOOR_CODE_KEY => $text])->save();
 
-            return (new SlackResponse())
+            return Slack::newMessage()
                 ->text("Access code updated to $text!");
 
                     /*
@@ -97,19 +98,51 @@ class SlackCommandController extends Controller
                     ]
                     */
         } else {
-            return (new SlackResponse())
+            return Slack::newMessage()
                 ->text("I'm sorry, that code didn't look to be in the right format. It needs to be all numbers.");
         }
     }
 
     public function interactive(Request $request)
     {
-        Log::info("Request!");
+        Log::info("Interactive request!");
         Log::info($request->get("payload"));
 
         return response()->json([
             "replace_original" => "true",
             "text" => "Thanks for your request",
+        ]);
+    }
+
+    public function options(Request $request)
+    {
+        Log::info("Options request!");
+        Log::info($request->get("payload"));
+
+        return response()->json([
+            "options" => [
+                [
+                    "text" => [
+                        "type" => "plain_text",
+                        "text" => "apple"
+                    ],
+                    "value" => "value-0"
+                ],
+                [
+                    "text" => [
+                        "type" => "plain_text",
+                        "text" => "banana"
+                    ],
+                    "value" => "value-1"
+                ],
+                [
+                    "text" => [
+                        "type" => "plain_text",
+                        "text" => "cow"
+                    ],
+                    "value" => "value-2"
+                ]
+            ]
         ]);
     }
 }
