@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
-use App\Http\Requests\SlackSlashCommandRequest;
+use App\Http\Requests\SlackRequest;
 use Jeremeamia\Slack\BlockKit\Slack;
 
 class SlackDoorCodeCommandController extends Controller
 {
     const ACCESS_DOOR_CODE_KEY = 'access.door_code';
 
-    public function __invoke(SlackSlashCommandRequest $request)
+    public function __invoke(SlackRequest $request)
     {
         $member = $request->customer();
 
@@ -40,7 +40,7 @@ class SlackDoorCodeCommandController extends Controller
         }
     }
 
-    private function handleDoorCodeUpdate(SlackSlashCommandRequest $request, Customer $member, string $text)
+    private function handleDoorCodeUpdate(SlackRequest $request, Customer $member, string $text)
     {
         if (!$member->isBoardMember()) {
             return Slack::newMessage()
