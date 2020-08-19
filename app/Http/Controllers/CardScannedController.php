@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
-class ApiEventsController extends Controller
+class CardScannedController extends Controller
 {
     /**
      * @var string
@@ -25,7 +25,7 @@ class ApiEventsController extends Controller
         $this->slackCardScanRoute = config('denhac.notifications.slack.card_scan_channel_webhook');
     }
 
-    public function cardScanned(Request $request)
+    public function __invoke(Request $request)
     {
         Log::info($request->getContent());
         $cardNumber = $request->get('card_num');
