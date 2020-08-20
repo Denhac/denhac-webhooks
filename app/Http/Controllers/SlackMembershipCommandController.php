@@ -95,7 +95,8 @@ class SlackMembershipCommandController extends Controller
         $modalView = Slack::newModal()
             ->callbackId(SlackID::NEW_MEMBER_DETAIL_CALLBACK_ID)
             ->title("New Member Signup")
-            ->submit("Submit");
+            ->submit("Submit")
+            ->privateMetadata($customer->woo_id);
 
         $modalView->newInput()
             ->blockId(SlackID::NEW_MEMBER_DETAIL_FIRST_NAME_BLOCK_ID)
@@ -118,11 +119,16 @@ class SlackMembershipCommandController extends Controller
             $birthdayInput->initialDate($customer->birthday->format('Y-m-d'));
         }
 
-        $modalView->newInput()
+        $cardsInput = $modalView->newInput()
             ->blockId(SlackID::NEW_MEMBER_DETAIL_CARD_NUM_BLOCK_ID)
             ->label("Card Number")
             ->newTextInput(SlackID::NEW_MEMBER_DETAIL_CARD_NUM_ACTION_ID)
             ->placeholder("Enter Card Number");
+
+        $cardString = $customer->cards->implode('number', ',');
+        if (! empty($cardString)) {
+            $cardsInput->initialValue($cardString);
+        }
 
         return response()->json([
             "response_action" => "push",

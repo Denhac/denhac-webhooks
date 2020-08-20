@@ -150,10 +150,6 @@ final class CustomerProjector implements Projector
     private function getMetadataFieldDate(array $customer, string $key) {
         $string = $this->getMetadataField($customer, $key);
 
-        // TODO Handle other date formats
-        if($customer["id"] == 115) {
-            Log::info($customer["id"] . " -> " . print_r($customer, true) . " " . $string);
-        }
         return is_null($string) ? null : Carbon::parse($string);
     }
 }
