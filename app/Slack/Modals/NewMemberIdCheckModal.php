@@ -6,6 +6,7 @@ namespace App\Slack\Modals;
 use App\Http\Requests\SlackRequest;
 use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Slack;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
@@ -85,10 +86,29 @@ class NewMemberIdCheckModal implements ModalInterface
         [self::FIRST_NAME_BLOCK_ID][self::FIRST_NAME_ACTION_ID]['value'];
         $lastName = $request->payload()['view']['state']['values']
         [self::LAST_NAME_BLOCK_ID][self::LAST_NAME_ACTION_ID]['value'];
-        $birthday = $request->payload()['view']['state']['values']
-        [self::BIRTHDAY_BLOCK_ID][self::BIRTHDAY_ACTION_ID]['selected_date'];
+        $birthday = Carbon::parse($request->payload()['view']['state']['values']
+        [self::BIRTHDAY_BLOCK_ID][self::BIRTHDAY_ACTION_ID]['selected_date']);
         $cards = $request->payload()['view']['state']['values']
         [self::CARD_NUM_BLOCK_ID][self::CARD_NUM_ACTION_ID]['value'];
+
+        $errors = [];
+
+        if($birthday > Carbon::today()->subYears(18)) {
+            $errors[self::BIRTHDAY_BLOCK_ID] = "New member is not at least 18";
+        }
+
+        foreach(explode(",", $cards) as $card) {
+            if (preg_match("/^\d+$/", $card) == 0) {
+                $errors[self::CARD_NUM_BLOCK_ID] = "This is a comma separated list of cards (no spaces!)";
+            }
+        }
+
+        if(!empty($errors)) {
+            return response()->json([
+                "response_action" => "errors",
+                "errors" => $errors,
+            ]);
+        }
 
         $customerId = $request->payload()['view']['private_metadata'];
         Log::info($customerId);
