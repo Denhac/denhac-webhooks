@@ -18,5 +18,5 @@ Route::webhooks('webhooks/denhac-org', 'denhac.org');
 Route::post('slack/door_code', 'SlackDoorCodeCommandController');
 Route::post('slack/membership', 'SlackMembershipCommandController');
 
-Route::post('slack/interactive', 'SlackInteractiveController');
-Route::post('slack/options', 'SlackOptionsController');
+Route::post('slack/interactive', 'SlackInteractivityController@interactive');
+Route::post('slack/options', 'SlackInteractivityController@options');

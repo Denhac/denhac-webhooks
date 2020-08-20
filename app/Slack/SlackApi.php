@@ -305,9 +305,7 @@ class SlackApi
             ->post('https://denhac.slack.com/api/views.open', [
                 RequestOptions::JSON => [
                     "trigger_id" => $trigger_id,
-                    "view" => Slack::newRenderer()
-                        ->forJson()
-                        ->render($view)
+                    "view" => json_encode($view),
                 ]
             ]);
 
