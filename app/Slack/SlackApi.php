@@ -268,6 +268,14 @@ class SlackApi
         return json_decode($response->getBody(), true)['ok'];
     }
 
+    public function team_accessLogs()
+    {
+        $response = $this->adminClient
+            ->get('https://denhac.slack.com/api/team.accessLogs');
+
+        return json_decode($response->getBody(), true)['logins'];
+    }
+
     public function usergroups_list()
     {
         // TODO Make this handle errors/pagination
