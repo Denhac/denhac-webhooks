@@ -3,7 +3,6 @@
 namespace App\Slack\Modals;
 
 
-use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
 use Jeremeamia\Slack\BlockKit\Slack;
@@ -23,11 +22,13 @@ class MembershipOptionsModal implements ModalInterface
      */
     private $modalView;
 
-    public function __construct(Customer $customer)
+    public function __construct()
     {
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
             ->title("What do you want to do?")
+            ->clearOnClose(true)
+            ->close("Cancel")
             ->submit("Submit");
 
         $this->modalView->newInput()
@@ -55,6 +56,9 @@ class MembershipOptionsModal implements ModalInterface
             case self::SIGN_UP_NEW_MEMBER_VALUE:
                 $modal = new NeedIdCheckModal();
                 return $modal->push();
+            case self::CANCEL_MEMBERSHIP_VALUE:
+                $modal = new CancelMembershipConfirmationModal($request->customer());
+                return $modal->push();
         }
 
         throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
@@ -76,8 +80,14 @@ class MembershipOptionsModal implements ModalInterface
         }
 
         if($customer->isBoardMember()) {
-            $options
-                ->option("Sign up new member", self::SIGN_UP_NEW_MEMBER_VALUE);
+            $options->option("Sign up new member", self::SIGN_UP_NEW_MEMBER_VALUE);
+        }
+
+        $subscriptions = $customer->subscriptions;
+        $hasActiveMembership = $subscriptions->where('status', 'active')->count() > 0;
+
+        if($hasActiveMembership) {
+            $options->option("Cancel My Membership", self::CANCEL_MEMBERSHIP_VALUE);
         }
 
         return $options;

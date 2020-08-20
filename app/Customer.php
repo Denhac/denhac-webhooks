@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
@@ -22,6 +23,7 @@ use Illuminate\Support\Collection;
  * @property Carbon birthday
  * @property Collection subscriptions
  * @property Collection cards
+ * @method static Builder whereWooId($customerId)
  */
 class Customer extends Model
 {

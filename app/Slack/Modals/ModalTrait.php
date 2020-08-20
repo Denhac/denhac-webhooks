@@ -21,4 +21,11 @@ trait ModalTrait
 
         $slackApi->views_open($trigger_id, $this);
     }
+
+    protected static function clearViewStack()
+    {
+        return response()->json([
+            "response_action" => "clear",
+        ]);
+    }
 }

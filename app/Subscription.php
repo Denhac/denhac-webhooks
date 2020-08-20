@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string status
- * @property string wooId
+ * @property string woo_id
  * @property string customer_id
  * @property Customer customer
  */

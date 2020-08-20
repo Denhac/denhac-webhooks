@@ -37,6 +37,8 @@ class NewMemberIdCheckModal implements ModalInterface
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
             ->title("New Member Signup")
+            ->clearOnClose(true)
+            ->close("Cancel")
             ->submit("Submit")
             ->privateMetadata($customer->woo_id);
 
@@ -111,11 +113,6 @@ class NewMemberIdCheckModal implements ModalInterface
         }
 
         $customerId = $request->payload()['view']['private_metadata'];
-        Log::info($customerId);
-        Log::info($firstName);
-        Log::info($lastName);
-        Log::info($birthday);
-        Log::info($cards);
 
         $wooCommerceApi = app(WooCommerceApi::class);
 
@@ -135,9 +132,7 @@ class NewMemberIdCheckModal implements ModalInterface
                 ],
             ]);
 
-        return response()->json([
-            "response_action" => "clear",
-        ]);
+        return self::clearViewStack();
     }
 
     public static function getOptions(SlackRequest $request)

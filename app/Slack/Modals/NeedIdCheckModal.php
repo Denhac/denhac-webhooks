@@ -28,6 +28,8 @@ class NeedIdCheckModal implements ModalInterface
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
             ->title("New Member Signup")
+            ->clearOnClose(true)
+            ->close("Cancel")
             ->submit("Submit");
 
         $this->modalView->newInput()

@@ -31,7 +31,7 @@ class SlackMembershipCommandController extends Controller
                 ->text("I don't recognize you. If you're a member in good standing and you're not using paypal for membership dues, please contact access@denhac.org.");
         }
 
-        $modal = new MembershipOptionsModal($customer);
+        $modal = new MembershipOptionsModal();
         $modal->open($request->get('trigger_id'));
 
         return response("");

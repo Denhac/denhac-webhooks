@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SlackRequest;
+use App\Slack\Modals\CancelMembershipConfirmationModal;
 use App\Slack\Modals\MembershipOptionsModal;
 use App\Slack\Modals\ModalInterface;
 use App\Slack\Modals\NeedIdCheckModal;
 use App\Slack\Modals\NewMemberIdCheckModal;
-use App\Slack\SlackID;
 use Illuminate\Support\Facades\Log;
 
 class SlackInteractivityController extends Controller
@@ -16,6 +16,7 @@ class SlackInteractivityController extends Controller
         MembershipOptionsModal::class,
         NeedIdCheckModal::class,
         NewMemberIdCheckModal::class,
+        CancelMembershipConfirmationModal::class,
     ];
 
     public function interactive(SlackRequest $request)
