@@ -119,21 +119,21 @@ class NewMemberIdCheckModal implements ModalInterface
 
         $wooCommerceApi = app(WooCommerceApi::class);
 
-//        $wooCommerceApi->customers
-//            ->update($customerId, [
-//                "first_name" => $firstName,
-//                "last_name" => $lastName,
-//                "meta_data" => [
-//                    [
-//                        "key" => "access_card_number",
-//                        "value" => $cards,
-//                    ],
-//                    [
-//                        "key" => "account_birthday",
-//                        "value" => $birthday,
-//                    ]
-//                ],
-//            ]);
+        $wooCommerceApi->customers
+            ->update($customerId, [
+                "first_name" => $firstName,
+                "last_name" => $lastName,
+                "meta_data" => [
+                    [
+                        "key" => "access_card_number",
+                        "value" => $cards,
+                    ],
+                    [
+                        "key" => "account_birthday",
+                        "value" => $birthday,
+                    ]
+                ],
+            ]);
 
         return response()->json([
             "response_action" => "clear",
