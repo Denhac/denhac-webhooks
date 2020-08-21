@@ -316,7 +316,5 @@ class SlackApi
                     "view" => json_encode($view),
                 ]
             ]);
-
-        Log::info($response->getBody());
     }
 }

@@ -8,7 +8,7 @@ use App\Slack\Modals\MembershipOptionsModal;
 use App\Slack\Modals\ModalInterface;
 use App\Slack\Modals\NeedIdCheckModal;
 use App\Slack\Modals\NewMemberIdCheckModal;
-use Illuminate\Support\Facades\Log;
+use App\Slack\SlackOptions;
 
 class SlackInteractivityController extends Controller
 {
@@ -21,8 +21,8 @@ class SlackInteractivityController extends Controller
 
     public function interactive(SlackRequest $request)
     {
-        Log::info("Interactive request!");
-        Log::info(print_r($request->payload(), true));
+//        Log::info("Interactive request!");
+//        Log::info(print_r($request->payload(), true));
 
         $payload = $request->payload();
 
@@ -35,8 +35,8 @@ class SlackInteractivityController extends Controller
 
     public function options(SlackRequest $request)
     {
-        Log::info("Options request!");
-        Log::info(print_r($request->payload(), true));
+//        Log::info("Options request!");
+//        Log::info(print_r($request->payload(), true));
 
         $payload = $request->payload();
 
@@ -56,7 +56,14 @@ class SlackInteractivityController extends Controller
         foreach (self::MODALS as $modalClass) {
             /** @var ModalInterface $modalClass */
             if ($callback_id == $modalClass::callbackId()) {
-                return $modalClass::getOptions($request);
+                $options = $modalClass::getOptions($request);
+
+                if(is_a($options, SlackOptions::class)) {
+                    $value = $request->payload()["value"] ?? null;
+                    $options->filterByValue($value);
+                }
+
+                return $options;
             }
         }
 

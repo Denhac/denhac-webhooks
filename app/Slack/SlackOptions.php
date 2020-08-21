@@ -3,7 +3,6 @@
 namespace App\Slack;
 
 
-use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Element;
 use Jeremeamia\Slack\BlockKit\Partials\HasOptions;
 use Jeremeamia\Slack\BlockKit\Partials\Option;

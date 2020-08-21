@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SlackRequest;
 use App\Slack\Modals\MembershipOptionsModal;
 use App\Slack\SlackApi;
-use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Slack;
 
 class SlackMembershipCommandController extends Controller
@@ -22,8 +21,6 @@ class SlackMembershipCommandController extends Controller
 
     public function __invoke(SlackRequest $request)
     {
-        Log::info($request->getContent());
-
         $customer = $request->customer();
 
         if ($customer === null) {

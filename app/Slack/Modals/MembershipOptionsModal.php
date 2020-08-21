@@ -90,9 +90,6 @@ class MembershipOptionsModal implements ModalInterface
             $options->option("Cancel My Membership", self::CANCEL_MEMBERSHIP_VALUE);
         }
 
-        $value = $request->payload()["value"] ?? null;
-        $options->filterByValue($value);
-
         return $options;
     }
 }

@@ -7,7 +7,6 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
 use App\Subscription;
-use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Slack;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
@@ -53,8 +52,6 @@ class NeedIdCheckModal implements ModalInterface
         [self::NEW_MEMBER_BLOCK_ID][self::NEW_MEMBER_ACTION_ID]
         ['selected_option']['value'];
 
-        Log::info("Selected Options is: {$selectedOption}");
-
         $matches = [];
         $result = preg_match('/subscription\-(\d+)/', $selectedOption, $matches);
 
@@ -90,9 +87,6 @@ class NeedIdCheckModal implements ModalInterface
 
             $options->option($text, $value);
         }
-
-        $value = $request->payload()["value"] ?? null;
-        $options->filterByValue($value);
 
         return $options;
     }
