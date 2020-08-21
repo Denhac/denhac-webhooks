@@ -79,7 +79,7 @@ class MembershipOptionsModal implements ModalInterface
             return $options;
         }
 
-        if($customer->isBoardMember()) {
+        if($customer->hasCapability('denhac_can_verify_member_id')) {
             $options->option("Sign up new member", self::SIGN_UP_NEW_MEMBER_VALUE);
         }
 

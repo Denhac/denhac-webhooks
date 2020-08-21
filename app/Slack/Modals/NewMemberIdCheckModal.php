@@ -127,7 +127,7 @@ class NewMemberIdCheckModal implements ModalInterface
                     ],
                     [
                         "key" => "account_birthday",
-                        "value" => $birthday,
+                        "value" => $birthday->format("Y-m-d"),
                     ]
                 ],
             ]);
