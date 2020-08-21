@@ -8,6 +8,7 @@ use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
 use App\Notifications\MemberBadgedIn;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -51,6 +52,9 @@ class CardScannedController extends Controller
             return;
         }
 
+        $createdAt = $card->created_at;
+        $createdAt->tz("America/Denver");
+        $scanTime = Carbon::parse($request->json("scan_time"), "America/Denver");
         $customer = $card->customer;
 
         if( is_null($customer) ) {
@@ -68,6 +72,12 @@ class CardScannedController extends Controller
             } else {
                 Log::info("No access though.");
                 // They weren't given access
+
+                if($scanTime->subMinutes(10) < $createdAt) {
+                    // We created this card less than 10 minutes ago. It might even be active yet.
+                    return;
+                }
+
                 if($device == 0 || $device == 1 || $device == 3) { // Front and Side door
                     $notification = new CardAccessDeniedButWereWorkingOnIt(
                         $request->json("first_name"),

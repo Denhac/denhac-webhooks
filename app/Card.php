@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property boolean member_has_card
  * @property integer woo_customer_id
  * @property Customer customer
+ * @property Carbon created_at
  */
 class Card extends Model
 {
