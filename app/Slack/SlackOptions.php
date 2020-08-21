@@ -3,8 +3,10 @@
 namespace App\Slack;
 
 
+use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Element;
 use Jeremeamia\Slack\BlockKit\Partials\HasOptions;
+use Jeremeamia\Slack\BlockKit\Partials\Option;
 
 class SlackOptions extends Element
 {
@@ -25,5 +27,23 @@ class SlackOptions extends Element
     public function validate(): void
     {
         $this->validateOptions();
+    }
+
+    public function filterByValue($value)
+    {
+        if(empty($value)) {
+            return;
+        }
+
+        $value = strtolower($value);
+        $this->options = array_filter($this->options, function($option) use ($value) {
+            /** @var Option $option */
+
+            // This is the only way to get the text currently
+            $optionArray = $option->toArray();
+            $text = strtolower($optionArray['text']['text']);
+
+            return strpos($text, $value) === false ? false : true;
+        });
     }
 }

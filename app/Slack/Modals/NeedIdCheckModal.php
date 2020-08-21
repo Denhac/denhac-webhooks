@@ -69,7 +69,7 @@ class NeedIdCheckModal implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
-        $options = new SlackOptions;
+        $options = SlackOptions::new();
 
         $needIdCheckSubscriptions = Subscription::whereStatus('need-id-check')->with('customer')->get();
 
@@ -90,6 +90,9 @@ class NeedIdCheckModal implements ModalInterface
 
             $options->option($text, $value);
         }
+
+        $value = $request->payload()["value"] ?? null;
+        $options->filterByValue($value);
 
         return $options;
     }
