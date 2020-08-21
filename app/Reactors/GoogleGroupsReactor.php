@@ -6,11 +6,8 @@ use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
 use App\Jobs\AddCustomerToGoogleGroup;
-use App\Jobs\InviteCustomerPublicOnlyMemberInSlack;
-use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\StorableEvents\CustomerBecameBoardMember;
-use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -36,21 +33,19 @@ final class GoogleGroupsReactor implements EventHandler
         $this->googleApi = $googleApi;
     }
 
-    public function onCustomerCreated(CustomerCreated $event)
-    {
-        $email = $event->customer['email'];
-
-        dispatch(new AddCustomerToGoogleGroup($email, self::GROUP_DENHAC));
-    }
-
     public function onSubscriptionUpdated(SubscriptionUpdated $event)
     {
         if($event->subscription['status'] != 'need-id-check') {
             return;
         }
 
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
+
+        dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_DENHAC));
+
         if(Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-            $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
+
             dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_MEMBERS));
         }
     }
