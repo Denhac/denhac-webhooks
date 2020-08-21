@@ -7,6 +7,9 @@ use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class SlackApi
 {
@@ -16,6 +19,11 @@ class SlackApi
      * This one is for the denhac management app.
      */
     private $managementApiClient;
+    /**
+     * @var Client
+     * This one is for the spacebot bot client.
+     */
+    private $spaceBotApiClient;
     /**
      * @var Client
      */
@@ -29,6 +37,12 @@ class SlackApi
                 'Authorization' => "Bearer $managementApiToken",
             ],
         ]);
+        $spaceBotApiToken = config('denhac.slack.spacebot_api_token');
+        $this->spaceBotApiClient = new Client([
+            RequestOptions::HEADERS => [
+                'Authorization' => "Bearer $spaceBotApiToken",
+            ],
+        ]);
 
         $this->adminClient = $this->getAdminClient(
             config('denhac.slack.email'),
@@ -40,7 +54,7 @@ class SlackApi
     {
         $token = Cache::get(self::ADMIN_TOKEN_CACHE_KEY);
 
-        if (is_null($token) || ! $this->isValidToken($token)) {
+        if (is_null($token) || !$this->isValidToken($token)) {
             $token = $this->makeAdminToken($email, $password);
             Cache::forever(self::ADMIN_TOKEN_CACHE_KEY, $token);
         }
@@ -67,7 +81,7 @@ class SlackApi
     public function users_admin_inviteBulk($emails, $channels)
     {
         $emails = Arr::wrap($emails);
-        if (! Arr::isAssoc($emails)) {
+        if (!Arr::isAssoc($emails)) {
             $emails = array_fill_keys($emails, 'regular');
         }
 
@@ -139,15 +153,15 @@ class SlackApi
 
         $data = json_decode($response->getBody(), true);
 
-        if($data["ok"]) {
+        if ($data["ok"]) {
             return $data['user'];
         }
 
-        if($data["error"] == "users_not_found") {
+        if ($data["error"] == "users_not_found") {
             return null;
         }
 
-        if(!array_key_exists('user', $data)) {
+        if (!array_key_exists('user', $data)) {
             throw new UnexpectedResponseException("No User key exists: {$response->getBody()}");
         }
 
@@ -254,6 +268,14 @@ class SlackApi
         return json_decode($response->getBody(), true)['ok'];
     }
 
+    public function team_accessLogs()
+    {
+        $response = $this->adminClient
+            ->get('https://denhac.slack.com/api/team.accessLogs');
+
+        return json_decode($response->getBody(), true)['logins'];
+    }
+
     public function usergroups_list()
     {
         // TODO Make this handle errors/pagination
@@ -283,5 +305,18 @@ class SlackApi
             ]);
 
         return json_decode($response->getBody(), true)['ok'];
+    }
+
+    public function views_open($trigger_id, $view)
+    {
+        $response = $this->spaceBotApiClient
+            ->post('https://denhac.slack.com/api/views.open', [
+                RequestOptions::JSON => [
+                    "trigger_id" => $trigger_id,
+                    "view" => json_encode($view),
+                ]
+            ]);
+
+        Log::info($response->getBody());
     }
 }

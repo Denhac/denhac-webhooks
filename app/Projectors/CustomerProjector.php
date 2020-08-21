@@ -13,6 +13,8 @@ use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\Projectors\Projector;
 use Spatie\EventSourcing\Projectors\ProjectsEvents;
 
@@ -45,6 +47,7 @@ final class CustomerProjector implements Projector
         $customer->last_name = $event->customer['last_name'];
         $customer->github_username = $this->getMetadataField($event->customer, 'github_username');
         $customer->slack_id = $this->getMetadataField($event->customer, 'access_slack_id');
+        $customer->birthday = $this->getMetadataFieldDate($event->customer, 'account_birthday');
         $customer->save();
     }
 
@@ -107,24 +110,25 @@ final class CustomerProjector implements Projector
     }
 
     /**
-     * @param array $customer
+     * @param array $customer_json
      * @return Customer
      */
-    private function addOrGetCustomer($customer)
+    private function addOrGetCustomer(array $customer_json)
     {
         /** @var Customer $customer */
-        $customerModel = Customer::whereWooId($customer['id'])->first();
+        $customerModel = Customer::whereWooId($customer_json['id'])->first();
 
         if (is_null($customerModel)) {
             return Customer::create([
-                'woo_id' => $customer['id'],
-                'email' => $customer['email'],
-                'username' => $customer['username'],
-                'first_name' => $customer['first_name'],
-                'last_name' => $customer['last_name'],
+                'woo_id' => $customer_json['id'],
+                'email' => $customer_json['email'],
+                'username' => $customer_json['username'],
+                'first_name' => $customer_json['first_name'],
+                'last_name' => $customer_json['last_name'],
                 'member' => false,
-                'github_username' => $this->getMetadataField($customer, 'github_username'),
-                'slack_id' => $this->getMetadataField($customer, 'access_slack_id'),
+                'github_username' => $this->getMetadataField($customer_json, 'github_username'),
+                'slack_id' => $this->getMetadataField($customer_json, 'access_slack_id'),
+                'birthday' => $this->getMetadataFieldDate($customer_json, 'account_birthday'),
             ]);
         } else {
             return $customerModel;
@@ -136,10 +140,16 @@ final class CustomerProjector implements Projector
      * @param string $key The name of the metadata field to lookup
      * @return mixed|null
      */
-    private function getMetadataField($customer, $key)
+    private function getMetadataField(array $customer, string $key)
     {
         return collect($customer['meta_data'])
                 ->where('key', $key)
                 ->first()['value'] ?? null;
+    }
+
+    private function getMetadataFieldDate(array $customer, string $key) {
+        $string = $this->getMetadataField($customer, $key);
+
+        return is_null($string) ? null : Carbon::parse($string);
     }
 }

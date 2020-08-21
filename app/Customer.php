@@ -2,9 +2,12 @@
 
 namespace App;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Collection;
 
 /**
  * Class Customer.
@@ -17,6 +20,10 @@ use Illuminate\Notifications\Notification;
  * @property string github_username
  * @property string slack_id
  * @property array capabilities
+ * @property Carbon birthday
+ * @property Collection subscriptions
+ * @property Collection cards
+ * @method static Builder whereWooId($customerId)
  */
 class Customer extends Model
 {
@@ -30,6 +37,7 @@ class Customer extends Model
         'first_name',
         'last_name',
         'github_username',
+        'birthday',
     ];
 
     protected $casts = [
@@ -37,11 +45,30 @@ class Customer extends Model
         'capabilities' => 'json',
     ];
 
+    protected $dates = [
+        'birthday',
+    ];
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class, 'customer_id', 'woo_id');
+    }
+
+    public function cards()
+    {
+        return $this->hasMany(Card::class, 'woo_customer_id', 'woo_id');
+    }
+
     public function hasCapability($capability)
     {
         $capabilities = collect($this->capabilities) ?? collect();
 
         return $capabilities->has($capability);
+    }
+
+    public function isBoardMember()
+    {
+        return $this->hasCapability("denhac_board_member");
     }
 
     /**

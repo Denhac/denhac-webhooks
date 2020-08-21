@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "642cdff4a6607ca47ec2abc6ee3e65bd",
+    "content-hash": "0a19ed84958b4dee4e55c4a9cbd68ae4",
     "packages": [
         {
             "name": "anlutro/l4-settings",
@@ -1352,6 +1352,42 @@
                 "versions"
             ],
             "time": "2018-06-13T13:22:40+00:00"
+        },
+        {
+            "name": "jeremeamia/slack-block-kit",
+            "version": "0.8.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jeremeamia/slack-block-kit.git",
+                "reference": "da07375c8ab87f433d5b9da268cec02fcf3cd2fd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jeremeamia/slack-block-kit/zipball/da07375c8ab87f433d5b9da268cec02fcf3cd2fd",
+                "reference": "da07375c8ab87f433d5b9da268cec02fcf3cd2fd",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.11.0",
+                "phpunit/phpunit": "^8.0",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jeremeamia\\Slack\\BlockKit\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "OOP interface for writing Slack Block Kit messages",
+            "time": "2020-06-09T23:14:01+00:00"
         },
         {
             "name": "laravel/framework",
@@ -2800,12 +2836,12 @@
             "version": "v1.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nrk/predis.git",
+                "url": "https://github.com/predis/predis.git",
                 "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nrk/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
+                "url": "https://api.github.com/repos/predis/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
                 "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1",
                 "shasum": ""
             },

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Http\Requests\SlackSlashCommandRequest;
+use App\Http\Requests\SlackRequest;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->resolving(SlackSlashCommandRequest::class, function ($request, $app) {
-            return SlackSlashCommandRequest::createFrom($app['request'], $request);
+        $this->app->resolving(SlackRequest::class, function ($request, $app) {
+            return SlackRequest::createFrom($app['request'], $request);
         });
     }
 }
