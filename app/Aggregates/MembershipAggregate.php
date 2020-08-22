@@ -59,6 +59,11 @@ final class MembershipAggregate extends AggregateRoot
         $aggregateRoot = self::retrieve($uuid);
         $aggregateRoot->customerId = $customerId;
 
+        // Some events end up not having a customer id. We don't want those assigned to customer 0.
+        if($customerId == 0) {
+            $aggregateRoot->respondToEvents = false;
+        }
+
         return $aggregateRoot;
     }
 

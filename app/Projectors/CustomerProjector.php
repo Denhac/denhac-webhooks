@@ -14,6 +14,7 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\Projectors\Projector;
 use Spatie\EventSourcing\Projectors\ProjectsEvents;
@@ -59,6 +60,10 @@ final class CustomerProjector implements Projector
     {
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
+
+        if(is_null($customer)) {
+            throw new Exception("Failed to find customer {$event->customerId}");
+        }
         $customer->delete();
     }
 
@@ -66,6 +71,10 @@ final class CustomerProjector implements Projector
     {
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
+
+        if(is_null($customer)) {
+            throw new Exception("Failed to find customer {$event->subscription['customer_id']}");
+        }
 
         if ($event->subscription['status'] == 'active') {
             $customer->member = true;
@@ -78,6 +87,10 @@ final class CustomerProjector implements Projector
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
+        if(is_null($customer)) {
+            throw new Exception("Failed to find customer {$event->customerId}");
+        }
+
         $customer->member = true;
         $customer->save();
     }
@@ -86,6 +99,10 @@ final class CustomerProjector implements Projector
     {
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
+
+        if(is_null($customer)) {
+            throw new Exception("Failed to find customer {$event->customerId}");
+        }
 
         $customer->member = false;
         $customer->save();
@@ -96,6 +113,10 @@ final class CustomerProjector implements Projector
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
+        if(is_null($customer)) {
+            throw new Exception("Failed to find customer {$event->customerId}");
+        }
+
         $customer->capabilities = $event->capabilities;
         $customer->save();
     }
@@ -104,6 +125,10 @@ final class CustomerProjector implements Projector
     {
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
+
+        if(is_null($customer)) {
+            throw new Exception("Failed to find customer {$event->customerId}");
+        }
 
         $customer->capabilities = $event->capabilities;
         $customer->save();
