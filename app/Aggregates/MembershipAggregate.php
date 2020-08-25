@@ -20,7 +20,6 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
-use App\StorableEvents\SubscriptionStatusChanged;
 use App\StorableEvents\SubscriptionUpdated;
 use Spatie\EventSourcing\AggregateRoot;
 
@@ -280,7 +279,11 @@ final class MembershipAggregate extends AggregateRoot
             }
         }
 
-        $this->recordThat(new SubscriptionStatusChanged($subscriptionId, $oldStatus, $newStatus));
+        if ($newStatus == "active") {
+            $this->currentlyAMember = true;
+        }
+
+        $this->subscriptions->put($subscriptionId, $newStatus);
     }
 
     private function handleGithub($customer)
@@ -314,15 +317,6 @@ final class MembershipAggregate extends AggregateRoot
         if ($status == 'active') {
             $this->currentlyAMember = true;
         }
-    }
-
-    protected function applySubscriptionStatusChanged(SubscriptionStatusChanged $event)
-    {
-        if ($event->newStatus == "active") {
-            $this->currentlyAMember = true;
-        }
-
-        $this->subscriptions->put($event->subscriptionId, $event->newStatus);
     }
 
     protected function applyMembershipActivated(MembershipActivated $event)

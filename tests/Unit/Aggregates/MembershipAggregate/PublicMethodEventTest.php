@@ -10,7 +10,6 @@ use App\StorableEvents\CustomerIsNoEventTestUser;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
-use App\StorableEvents\SubscriptionStatusChanged;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
@@ -85,11 +84,6 @@ class PublicMethodEventTest extends TestCase
             ->createSubscription($subscription)
             ->assertRecorded([
                 new SubscriptionCreated($subscription),
-                new SubscriptionStatusChanged(
-                    $subscription->id,
-                    null,
-                    $subscription->status
-                )
             ]);
     }
 
@@ -102,11 +96,6 @@ class PublicMethodEventTest extends TestCase
             ->updateSubscription($subscription)
             ->assertRecorded([
                 new SubscriptionUpdated($subscription),
-                new SubscriptionStatusChanged(
-                    $subscription->id,
-                    null,
-                    $subscription->status
-                )
             ]);
     }
 
@@ -119,11 +108,6 @@ class PublicMethodEventTest extends TestCase
             ->importSubscription($subscription)
             ->assertRecorded([
                 new SubscriptionImported($subscription),
-                new SubscriptionStatusChanged(
-                    $subscription->id,
-                    null,
-                    $subscription->status
-                )
             ]);
     }
 }

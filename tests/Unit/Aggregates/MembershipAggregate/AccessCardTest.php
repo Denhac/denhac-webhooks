@@ -8,12 +8,10 @@ use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardRemoved;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
-use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
-use App\StorableEvents\SubscriptionStatusChanged;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
@@ -47,11 +45,6 @@ class AccessCardTest extends TestCase
                 new SubscriptionUpdated($subscription),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
-                new SubscriptionStatusChanged(
-                    $subscription->id,
-                    'need-id-check',
-                    $subscription->status
-                ),
             ]);
     }
 
@@ -126,11 +119,6 @@ class AccessCardTest extends TestCase
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, '42424'),
                 new CardSentForActivation($customer->id, '53535'),
-                new SubscriptionStatusChanged(
-                    $subscription->id,
-                    'need-id-check',
-                    'active'
-                ),
             ]);
     }
 
@@ -155,11 +143,6 @@ class AccessCardTest extends TestCase
                 new MembershipDeactivated($customer->id),
                 new CardSentForDeactivation($customer->id, '42424'),
                 new CardSentForDeactivation($customer->id, '53535'),
-                new SubscriptionStatusChanged(
-                    $activeSubscription->id,
-                    $activeSubscription->status,
-                    $cancelledSubscription->status,
-                ),
             ]);
     }
 
@@ -177,11 +160,6 @@ class AccessCardTest extends TestCase
             ->importSubscription($subscription)
             ->assertRecorded([
                 new SubscriptionImported($subscription),
-                new SubscriptionStatusChanged(
-                    $subscription->id,
-                    null,
-                    $subscription->status
-                )
             ]);
     }
 }
