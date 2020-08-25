@@ -88,4 +88,11 @@ class SubscriptionBuilder extends BaseBuilder
             "removed_line_items" => [],
         ];
     }
+
+    public function status($status)
+    {
+        $this->data["status"] = $status;
+
+        return $this;
+    }
 }

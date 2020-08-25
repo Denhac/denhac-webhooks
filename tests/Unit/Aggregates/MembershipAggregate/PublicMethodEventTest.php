@@ -13,6 +13,7 @@ use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionStatusChanged;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
+use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;
 
 class PublicMethodEventTest extends TestCase
@@ -22,10 +23,11 @@ class PublicMethodEventTest extends TestCase
         parent::setUp();
 
         Event::fake();
+        Projectionist::withoutEventHandlers();
     }
 
     /** @test */
-    public function customerIsNoEventTestUser()
+    public function customer_is_no_event_test_user()
     {
         $customer = $this->customer();
 
@@ -35,7 +37,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function createCustomerCallMakesEvent()
+    public function create_customer_call_makes_event()
     {
         $customer = $this->customer();
 
@@ -45,7 +47,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function updateCustomerCallMakesEvent()
+    public function update_customer_call_makes_event()
     {
         $customer = $this->customer();
 
@@ -55,7 +57,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function deleteCustomerCallMakesEvent()
+    public function delete_customer_call_makes_event()
     {
         $customer = $this->customer();
 
@@ -65,7 +67,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function importCustomerCallMakesEvent()
+    public function import_customer_call_makes_event()
     {
         $customer = $this->customer();
 
@@ -75,7 +77,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function createSubscriptionCallMakesEvent()
+    public function create_subscription_call_makes_event()
     {
         $subscription = $this->subscription();
 
@@ -92,7 +94,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function updateSubscriptionCallMakesEvent()
+    public function update_subscription_call_makes_event()
     {
         $subscription = $this->subscription();
 
@@ -109,7 +111,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function importSubscriptionCallMakesEvent()
+    public function import_subscription_call_makes_event()
     {
         $subscription = $this->subscription();
 

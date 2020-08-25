@@ -263,7 +263,7 @@ final class MembershipAggregate extends AggregateRoot
             return;
         }
 
-        if ($oldStatus == 'need-id-check' && $newStatus == 'active') {
+        if (($oldStatus == 'need-id-check' || $oldStatus == 'id-was-checked') && $newStatus == 'active') {
             $this->recordThat(new MembershipActivated($this->customerId));
 
             foreach ($this->allCards() as $card) {
