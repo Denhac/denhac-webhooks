@@ -8,6 +8,7 @@ use App\Google\GoogleApi;
 use App\Jobs\AddCustomerToGoogleGroup;
 use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\StorableEvents\CustomerBecameBoardMember;
+use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -71,6 +72,18 @@ final class GoogleGroupsReactor implements EventHandler
             ->filter(function ($group) {
                 return $group != 'denhac@denhac.org';
             })
+            ->each(function ($group) use ($customer) {
+                dispatch(new RemoveCustomerFromGoogleGroup($customer->email, $group));
+            });
+    }
+
+    // Deleted customers get removed from everything
+    public function onCustomerDeleted(CustomerDeleted $event)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->customerId)->first();
+
+        $this->googleApi->groupsForMember($customer->email)
             ->each(function ($group) use ($customer) {
                 dispatch(new RemoveCustomerFromGoogleGroup($customer->email, $group));
             });
