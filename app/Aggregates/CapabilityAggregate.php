@@ -14,7 +14,7 @@ use Spatie\EventSourcing\ShouldBeStored;
 
 class CapabilityAggregate extends AggregateRoot
 {
-    private $customerId;
+    use CustomerBasedAggregate;
     /**
      * @var Collection
      */
@@ -24,25 +24,10 @@ class CapabilityAggregate extends AggregateRoot
      */
     private $currentCapabilities;
 
-    public $respondToEvents = true;
-
     public function __construct()
     {
         $this->previousCapabilities = collect();
         $this->currentCapabilities = collect();
-    }
-
-    /**
-     * @param string $customerId
-     * @return CapabilityAggregate
-     */
-    public static function make(string $customerId): AggregateRoot
-    {
-        $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customerId);
-        $aggregateRoot = self::retrieve($uuid);
-        $aggregateRoot->customerId = $customerId;
-
-        return $aggregateRoot;
     }
 
     public function importCapabilities($capabilities)

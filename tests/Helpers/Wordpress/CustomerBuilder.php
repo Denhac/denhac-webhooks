@@ -3,6 +3,11 @@
 namespace Tests\Helpers\Wordpress;
 
 
+/**
+ * Class CustomerBuilder
+ * @package Tests\Helpers\Wordpress
+ * @property int id
+ */
 class CustomerBuilder extends BaseBuilder
 {
     public function __construct()
@@ -26,7 +31,7 @@ class CustomerBuilder extends BaseBuilder
                 "address_2" => "",
                 "city" => "Denver",
                 "postcode" => "80204",
-                "country" => "",
+                "country" => "US",
                 "state" => "CO",
                 "email" => "email@example.com",
                 "phone" => "5550001234"

@@ -22,12 +22,11 @@ use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionStatusChanged;
 use App\StorableEvents\SubscriptionUpdated;
-use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoot;
 
 final class MembershipAggregate extends AggregateRoot
 {
-    public $customerId;
+    use CustomerBasedAggregate;
 
     public $cardsOnAccount;
     public $cardsNeedingActivation; // They need activation only if this person is a confirmed member
@@ -38,8 +37,6 @@ final class MembershipAggregate extends AggregateRoot
     public $currentlyAMember = false;
     public $githubUsername = null;
 
-    public $respondToEvents = true;
-
     public function __construct()
     {
         $this->cardsOnAccount = collect();
@@ -47,24 +44,6 @@ final class MembershipAggregate extends AggregateRoot
         $this->cardsSentForActivation = collect();
         $this->cardsSentForDeactivation = collect();
         $this->subscriptions = collect();
-    }
-
-    /**
-     * @param string $customerId
-     * @return MembershipAggregate
-     */
-    public static function make(string $customerId): AggregateRoot
-    {
-        $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customerId);
-        $aggregateRoot = self::retrieve($uuid);
-        $aggregateRoot->customerId = $customerId;
-
-        // Some events end up not having a customer id. We don't want those assigned to customer 0.
-        if($customerId == 0) {
-            $aggregateRoot->respondToEvents = false;
-        }
-
-        return $aggregateRoot;
     }
 
     public function customerIsNoEventTestUser()
