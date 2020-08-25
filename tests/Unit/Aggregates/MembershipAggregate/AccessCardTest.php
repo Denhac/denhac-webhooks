@@ -41,7 +41,6 @@ class AccessCardTest extends TestCase
                 new CustomerCreated($customer),
                 new SubscriptionUpdated($this->subscription()->status('need-id-check')),
                 new CardAdded($customer->id, $card),
-
             ])
             ->updateSubscription($subscription)
             ->assertRecorded([

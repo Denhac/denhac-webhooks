@@ -7,6 +7,7 @@ use App\Aggregates\MembershipAggregate;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
@@ -32,7 +33,7 @@ class ActiveMembershipTest extends TestCase
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
-                new SubscriptionUpdated($this->subscription()->status('need-id-check')),
+                new SubscriptionCreated($this->subscription()->status('need-id-check')),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
@@ -51,7 +52,7 @@ class ActiveMembershipTest extends TestCase
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
-                new SubscriptionUpdated($this->subscription()->status('id-was-checked')),
+                new SubscriptionCreated($this->subscription()->status('id-was-checked')),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([

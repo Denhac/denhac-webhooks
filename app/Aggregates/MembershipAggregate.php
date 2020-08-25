@@ -314,25 +314,28 @@ final class MembershipAggregate extends AggregateRoot
      */
     protected function applySubscriptionImported(SubscriptionImported $event)
     {
-        $status = $event->subscription['status'];
+        $this->updateStatus($event->subscription['id'], $event->subscription['status']);
+    }
 
-        if ($status == 'active') {
-            $this->currentlyAMember = true;
-        }
+    protected function applySubscriptionCreated(SubscriptionCreated $event)
+    {
+        $this->updateStatus($event->subscription['id'], $event->subscription['status']);
     }
 
     protected function applySubscriptionUpdated(SubscriptionUpdated $event)
     {
-        $id = $event->subscription['id'];
-        $newStatus = $event->subscription['status'];
+        $this->updateStatus($event->subscription['id'], $event->subscription['status']);
+    }
 
+    protected function updateStatus($subscriptionId, $newStatus)
+    {
         if ($newStatus == 'active') {
             $this->currentlyAMember = true;
         }
 
-        $oldStatus = $this->subscriptionsNewStatus->get($id);
-        $this->subscriptionsOldStatus->put($id, $oldStatus);
-        $this->subscriptionsNewStatus->put($id, $newStatus);
+        $oldStatus = $this->subscriptionsNewStatus->get($subscriptionId);
+        $this->subscriptionsOldStatus->put($subscriptionId, $oldStatus);
+        $this->subscriptionsNewStatus->put($subscriptionId, $newStatus);
     }
 
     protected function applyMembershipActivated(MembershipActivated $event)
