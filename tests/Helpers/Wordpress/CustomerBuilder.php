@@ -67,4 +67,9 @@ class CustomerBuilder extends BaseBuilder
     {
         return $this->meta_data('access_card_number', $card);
     }
+
+    public function github_username($username)
+    {
+        return $this->meta_data('github_username', $username);
+    }
 }
