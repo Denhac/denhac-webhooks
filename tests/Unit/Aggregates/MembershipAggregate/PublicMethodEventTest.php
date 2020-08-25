@@ -100,6 +100,34 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
+    public function create_then_update_subscription_call_makes_events()
+    {
+        $subscription = $this->subscription();
+
+        MembershipAggregate::fake()
+            ->createSubscription($subscription)
+            ->updateSubscription($subscription)
+            ->assertRecorded([
+                new SubscriptionCreated($subscription),
+                new SubscriptionUpdated($subscription),
+            ]);
+    }
+
+    /** @test */
+    public function update_then_create_subscription_call_makes_events()
+    {
+        $subscription = $this->subscription();
+
+        MembershipAggregate::fake()
+            ->updateSubscription($subscription)
+            ->createSubscription($subscription)
+            ->assertRecorded([
+                new SubscriptionUpdated($subscription),
+                new SubscriptionCreated($subscription),
+            ]);
+    }
+
+    /** @test */
     public function import_subscription_call_makes_event()
     {
         $subscription = $this->subscription();
