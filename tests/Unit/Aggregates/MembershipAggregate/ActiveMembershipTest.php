@@ -117,4 +117,26 @@ class ActiveMembershipTest extends TestCase
                 new MembershipDeactivated($customer->id),
             ]);
     }
+
+    /** @test */
+    public function canceling_one_subscription_with_another_still_active_does_not_deactivate_membership()
+    {
+        $subscriptionA = $this->subscription()->id(1)->status('active');
+        $subscriptionB = $this->subscription()->id(2)->status('active');
+        $customer = $this->customer();
+
+        $aggregate = MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new SubscriptionCreated($subscriptionA),
+                new SubscriptionCreated($subscriptionB),
+            ]);
+
+        $subscriptionB->status('cancelled');
+
+        $aggregate
+            ->updateSubscription($subscriptionB)
+            ->assertRecorded([
+                new SubscriptionUpdated($subscriptionB)
+            ]);
+    }
 }

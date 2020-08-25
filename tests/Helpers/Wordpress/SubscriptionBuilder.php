@@ -89,6 +89,13 @@ class SubscriptionBuilder extends BaseBuilder
         ];
     }
 
+    public function id($id)
+    {
+        $this->data["id"] = $id;
+
+        return $this;
+    }
+
     public function status($status)
     {
         $this->data["status"] = $status;

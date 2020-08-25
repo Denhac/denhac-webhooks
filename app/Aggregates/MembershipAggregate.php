@@ -92,9 +92,6 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new CustomerDeleted($customer));
 
-        // TODO Handle deactivation of any active resources?
-        // An option is to just let the automated issue tracker catch it.
-
         return $this;
     }
 
@@ -273,11 +270,16 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         if (in_array($newStatus, ['cancelled', 'suspended-payment', 'suspended-manual'])) {
-            // TODO Make sure there's NO currently active subscriptions
-            $this->recordThat(new MembershipDeactivated($this->customerId));
+            $anyActive = $this->subscriptionsNewStatus->filter(function($status) {
+                return $status == 'active';
+            })->isNotEmpty();
 
-            foreach ($this->allCards() as $card) {
-                $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
+            if(! $anyActive) {
+                $this->recordThat(new MembershipDeactivated($this->customerId));
+
+                foreach ($this->allCards() as $card) {
+                    $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
+                }
             }
         }
 
