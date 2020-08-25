@@ -43,11 +43,15 @@ class SlackApi
                 'Authorization' => "Bearer $spaceBotApiToken",
             ],
         ]);
+    }
 
-        $this->adminClient = $this->getAdminClient(
-            config('denhac.slack.email'),
-            config('denhac.slack.password')
-        );
+    private function ensureAdminClient() {
+        if(is_null($this->adminClient)) {
+            $this->adminClient = $this->getAdminClient(
+                config('denhac.slack.email'),
+                config('denhac.slack.password')
+            );
+        }
     }
 
     private function getAdminClient($email, $password)
@@ -80,6 +84,8 @@ class SlackApi
      */
     public function users_admin_inviteBulk($emails, $channels)
     {
+        $this->ensureAdminClient();
+
         $emails = Arr::wrap($emails);
         if (!Arr::isAssoc($emails)) {
             $emails = array_fill_keys($emails, 'regular');
@@ -111,6 +117,8 @@ class SlackApi
 
     public function users_admin_setRegular($slack_id)
     {
+        $this->ensureAdminClient();
+
         $response = $this->adminClient
             ->post('https://denhac.slack.com/api/users.admin.setRegular', [
                 RequestOptions::FORM_PARAMS => [
@@ -123,6 +131,8 @@ class SlackApi
 
     public function users_admin_setUltraRestricted($slack_id, $channel_id)
     {
+        $this->ensureAdminClient();
+
         $response = $this->adminClient
             ->post('https://denhac.slack.com/api/users.admin.setUltraRestricted', [
                 RequestOptions::FORM_PARAMS => [
@@ -270,6 +280,8 @@ class SlackApi
 
     public function team_accessLogs()
     {
+        $this->ensureAdminClient();
+
         $response = $this->adminClient
             ->get('https://denhac.slack.com/api/team.accessLogs');
 
@@ -296,6 +308,8 @@ class SlackApi
 
     public function usergroups_users_update($usergroupId, Collection $users)
     {
+        $this->ensureAdminClient();
+
         $response = $this->adminClient
             ->post('https://denhac.slack.com/api/usergroups.users.update', [
                 RequestOptions::FORM_PARAMS => [
