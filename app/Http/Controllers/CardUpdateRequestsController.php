@@ -19,9 +19,14 @@ class CardUpdateRequestsController extends Controller
     {
         $status = $request->json('status');
 
-        MembershipAggregate::make($cardUpdateRequest->customer_id)
-            ->updateCardStatus($cardUpdateRequest, $status)
-            ->persist();
+        try {
+            MembershipAggregate::make($cardUpdateRequest->customer_id)
+                ->updateCardStatus($cardUpdateRequest, $status)
+                ->persist();
+        } catch (\Throwable $t) {
+            // Swallow the error, the client can't handle it
+            report($t);
+        }
     }
 
     public function updateActiveCardHolders(Request $request)

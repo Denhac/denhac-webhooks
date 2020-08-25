@@ -16,6 +16,7 @@ use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
@@ -235,6 +236,83 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    // TODO Test case for unknown update request type
-    // TODO Test case for status != STATUS_SUCCESS
+    /** @test */
+    public function former_member_becoming_a_member_again_activates_their_cards()
+    {
+        $card = '42424';
+        $customer = $this->customer();
+        $subscription = $this->subscription()->status('need-id-check');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $card),
+                new CardSentForActivation($customer->id, $card),
+                new CardActivated($customer->id, $card),
+                new MembershipDeactivated($customer->id),
+                new CardSentForDeactivation($customer->id, $card),
+                new CardDeactivated($customer->id, $card),
+                new SubscriptionCreated($subscription)
+            ])
+            ->updateSubscription($subscription->status('active'))
+            ->assertRecorded([
+                new SubscriptionUpdated($subscription),
+                new MembershipActivated($customer->id),
+                new CardSentForActivation($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function unknown_update_request_type_throws_exception()
+    {
+        $fakeType = 'lol_what_is_a_type_anyway';
+        $card = '42424';
+        $customer = $this->customer();
+
+        $cardUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => $fakeType,
+            'card' => $card,
+        ]);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Card update request type wasn't one of the expected values: $fakeType");
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardRemoved($customer->id, $card),
+                new CardSentForDeactivation($customer->id, $card),
+            ])
+            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS);
+    }
+
+    /** @test */
+    public function non_successful_card_update_request_status_throws_exception()
+    {
+        $fakeStatus = 'fake_status_goes_here';
+        $card = '42424';
+        $customer = $this->customer();
+
+        $cardUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        $this->expectException(\Exception::class);
+        $message = "Card update (Customer: {$customer->id}, Card: $card, Type: enable) not successful";
+        $this->expectExceptionMessage($message);
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardRemoved($customer->id, $card),
+                new CardSentForDeactivation($customer->id, $card),
+            ])
+            ->updateCardStatus($cardUpdateRequest, $fakeStatus);
+    }
 }

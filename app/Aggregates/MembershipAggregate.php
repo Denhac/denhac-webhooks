@@ -166,13 +166,13 @@ final class MembershipAggregate extends AggregateRoot
                 $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
             } else {
                 $message = "Card update request type wasn't one of the expected values: {$cardUpdateRequest->type}";
-                report(new \Exception($message));
+                throw new \Exception($message);
             }
         } else {
             $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
                 . "Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
                 . 'not successful';
-            report(new \Exception($message));
+            throw new \Exception($message);
         }
 
         return $this;
