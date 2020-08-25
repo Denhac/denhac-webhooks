@@ -4,10 +4,14 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 
 use App\Aggregates\MembershipAggregate;
+use App\CardUpdateRequest;
+use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
+use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardRemoved;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\CardStatusUpdated;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
@@ -33,8 +37,7 @@ class AccessCardTest extends TestCase
     {
         $card = '42424';
         $customer = $this->customer();
-        $subscription = $this->subscription()
-            ->status('active');
+        $subscription = $this->subscription()->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
@@ -74,8 +77,7 @@ class AccessCardTest extends TestCase
     {
         $oldCard = '42424';
         $newCard = '53535';
-        $customer = $this->customer()
-            ->access_card($oldCard);
+        $customer = $this->customer()->access_card($oldCard);
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
@@ -98,8 +100,7 @@ class AccessCardTest extends TestCase
     public function multiple_cards_can_be_used_in_comma_separated_fashion()
     {
         $cards = '42424,53535';
-        $customer = $this->customer()
-            ->access_card($cards);
+        $customer = $this->customer()->access_card($cards);
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
@@ -116,11 +117,10 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function all_cards_are_deactivated_on_subscription_deactivated()
+    public function all_cards_are_sent_for_deactivation_on_subscription_deactivated()
     {
         $customer = $this->customer();
-        $cancelledSubscription = $this->subscription()
-            ->status('cancelled');
+        $cancelledSubscription = $this->subscription()->status('cancelled');
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
@@ -139,21 +139,102 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_does_not_activate_on_active_subscription_import()
+    public function card_is_not_sent_for_activation_on_active_subscription_import()
     {
-        $customer = $this->customer()
-            ->access_card('42424');
-        $subscription = $this->subscription()
-            ->status('active');
+        $customer = $this->customer();
+        $subscription = $this->subscription()->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
+                new CardAdded($customer->id, '42424'),
             ])
-            ->persist()
             ->importSubscription($subscription)
             ->assertRecorded([
                 new SubscriptionImported($subscription),
             ]);
     }
+
+    /** @test */
+    public function card_is_not_sent_for_activation_if_it_has_already_been_sent()
+    {
+        $card = '42424';
+        $customer = $this->customer()
+            ->access_card($card);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $card),
+                new CardSentForActivation($customer->id, $card),
+            ])
+            ->updateCustomer($customer)
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+            ]);
+    }
+
+    /** @test */
+    public function update_card_status_records_activated_card_on_success()
+    {
+        $card = '42424';
+        $customer = $this->customer();
+
+        $cardUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $card),
+                new CardSentForActivation($customer->id, $card),
+            ])
+            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new CardStatusUpdated(
+                    CardUpdateRequest::ACTIVATION_TYPE,
+                    $customer->id,
+                    $card
+                ),
+                new CardActivated($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function update_card_status_records_deactivated_card_on_success()
+    {
+        $card = '42424';
+        $customer = $this->customer();
+
+        $cardUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardRemoved($customer->id, $card),
+                new CardSentForDeactivation($customer->id, $card),
+            ])
+            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new CardStatusUpdated(
+                    CardUpdateRequest::DEACTIVATION_TYPE,
+                    $customer->id,
+                    $card
+                ),
+                new CardDeactivated($customer->id, $card),
+            ]);
+    }
+
+    // TODO Test case for unknown update request type
+    // TODO Test case for status != STATUS_SUCCESS
 }

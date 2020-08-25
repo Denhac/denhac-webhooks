@@ -4,7 +4,14 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 
 use App\Aggregates\MembershipAggregate;
+use App\CardUpdateRequest;
+use App\StorableEvents\CardDeactivated;
+use App\StorableEvents\CardRemoved;
+use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\CardStatusUpdated;
+use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerIsNoEventTestUser;
+use App\StorableEvents\MembershipActivated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;
@@ -93,6 +100,23 @@ class NoEventUserTest extends TestCase
         MembershipAggregate::fakeCustomer($customer)
             ->given(new CustomerIsNoEventTestUser($customer->id))
             ->importSubscription($this->subscription())
+            ->assertNothingRecorded();
+    }
+
+    /** @test */
+    public function card_update_request_does_not_make_event()
+    {
+        $customer = $this->customer();
+
+        $cardUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
+            'card' => '42424',
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given(new CustomerIsNoEventTestUser($customer->id))
+            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
             ->assertNothingRecorded();
     }
 }
