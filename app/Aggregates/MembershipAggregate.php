@@ -32,7 +32,8 @@ final class MembershipAggregate extends AggregateRoot
     public $cardsSentForActivation;
     public $cardsSentForDeactivation;
 
-    public $subscriptions;
+    public $subscriptionsOldStatus;
+    public $subscriptionsNewStatus;
     public $currentlyAMember = false;
     public $githubUsername = null;
 
@@ -42,7 +43,8 @@ final class MembershipAggregate extends AggregateRoot
         $this->cardsNeedingActivation = collect();
         $this->cardsSentForActivation = collect();
         $this->cardsSentForDeactivation = collect();
-        $this->subscriptions = collect();
+        $this->subscriptionsOldStatus = collect();
+        $this->subscriptionsNewStatus = collect();
     }
 
     public function customerIsNoEventTestUser()
@@ -255,7 +257,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function handleSubscriptionStatus($subscriptionId, $newStatus)
     {
-        $oldStatus = $this->subscriptions->get($subscriptionId);
+        $oldStatus = $this->subscriptionsOldStatus->get($subscriptionId);
 
         if ($newStatus == $oldStatus) {
             // Probably just a renewal, but there's nothing for us to do
@@ -283,7 +285,7 @@ final class MembershipAggregate extends AggregateRoot
             $this->currentlyAMember = true;
         }
 
-        $this->subscriptions->put($subscriptionId, $newStatus);
+        $this->subscriptionsOldStatus->put($subscriptionId, $newStatus);
     }
 
     private function handleGithub($customer)
@@ -317,6 +319,20 @@ final class MembershipAggregate extends AggregateRoot
         if ($status == 'active') {
             $this->currentlyAMember = true;
         }
+    }
+
+    protected function applySubscriptionUpdated(SubscriptionUpdated $event)
+    {
+        $id = $event->subscription['id'];
+        $newStatus = $event->subscription['status'];
+
+        if ($newStatus == 'active') {
+            $this->currentlyAMember = true;
+        }
+
+        $oldStatus = $this->subscriptionsNewStatus->get($id);
+        $this->subscriptionsOldStatus->put($id, $oldStatus);
+        $this->subscriptionsNewStatus->put($id, $newStatus);
     }
 
     protected function applyMembershipActivated(MembershipActivated $event)

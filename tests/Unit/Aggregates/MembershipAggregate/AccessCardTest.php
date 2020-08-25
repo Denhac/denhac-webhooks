@@ -8,6 +8,7 @@ use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardRemoved;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -31,15 +32,17 @@ class AccessCardTest extends TestCase
     public function access_card_is_sent_for_activation_when_membership_is_activated()
     {
         $card = '42424';
-        $customer = $this->customer()
-            ->access_card($card);
+        $customer = $this->customer();
         $subscription = $this->subscription()
             ->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->createSubscription($this->subscription()->status('need-id-check'))
-            ->persist()
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($this->subscription()->status('need-id-check')),
+                new CardAdded($customer->id, $card),
+
+            ])
             ->updateSubscription($subscription)
             ->assertRecorded([
                 new SubscriptionUpdated($subscription),
@@ -53,18 +56,13 @@ class AccessCardTest extends TestCase
     {
         $card = '42424';
         $customer = $this->customer();
-        $subscription = $this->subscription()
-            ->status('active');
 
-        $aggregate = MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($subscription)
-            ->persist();
-
-        $customer->access_card($card);
-
-        $aggregate
-            ->updateCustomer($customer)
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+            ])
+            ->updateCustomer($customer->access_card($card))
             ->assertRecorded([
                 new CustomerUpdated($customer),
                 new CardAdded($customer->id, $card),
@@ -76,21 +74,18 @@ class AccessCardTest extends TestCase
     public function updating_access_card_removes_old_cards_and_actives_new_ones()
     {
         $oldCard = '42424';
+        $newCard = '53535';
         $customer = $this->customer()
             ->access_card($oldCard);
-        $subscription = $this->subscription()
-            ->status('active');
 
-        $aggregate = MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($subscription)
-            ->persist();
-
-        $newCard = '53535';
-        $customer->access_card($newCard);
-
-        $aggregate
-            ->updateCustomer($customer)
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $oldCard),
+                new CardSentForActivation($customer->id, $oldCard),
+            ])
+            ->updateCustomer($customer->access_card($newCard))
             ->assertRecorded([
                 new CustomerUpdated($customer),
                 new CardAdded($customer->id, $newCard),
@@ -106,18 +101,17 @@ class AccessCardTest extends TestCase
         $cards = '42424,53535';
         $customer = $this->customer()
             ->access_card($cards);
-        $subscription = $this->subscription()
-            ->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->createSubscription($this->subscription()->status('need-id-check'))
-            ->persist()
-            ->updateSubscription($subscription)
-            ->assertRecorded([
-                new SubscriptionUpdated($subscription),
+            ->given([
                 new MembershipActivated($customer->id),
+            ])
+            ->updateCustomer($customer)
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+                new CardAdded($customer->id, '42424'),
                 new CardSentForActivation($customer->id, '42424'),
+                new CardAdded($customer->id, '53535'),
                 new CardSentForActivation($customer->id, '53535'),
             ]);
     }
@@ -125,18 +119,17 @@ class AccessCardTest extends TestCase
     /** @test */
     public function all_cards_are_deactivated_on_subscription_deactivated()
     {
-        $cards = '42424,53535';
-        $customer = $this->customer()
-            ->access_card($cards);
-        $activeSubscription = $this->subscription()
-            ->status('active');
+        $customer = $this->customer();
         $cancelledSubscription = $this->subscription()
             ->status('cancelled');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($activeSubscription)
-            ->persist()
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, '42424'),
+                new CardAdded($customer->id, '53535'),
+                new SubscriptionUpdated($this->subscription()->status('active')),
+            ])
             ->updateSubscription($cancelledSubscription)
             ->assertRecorded([
                 new SubscriptionUpdated($cancelledSubscription),
@@ -155,7 +148,9 @@ class AccessCardTest extends TestCase
             ->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+            ])
             ->persist()
             ->importSubscription($subscription)
             ->assertRecorded([

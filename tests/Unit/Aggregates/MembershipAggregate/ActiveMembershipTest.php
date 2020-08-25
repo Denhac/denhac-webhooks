@@ -4,6 +4,7 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 
 use App\Aggregates\MembershipAggregate;
+use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
@@ -29,9 +30,10 @@ class ActiveMembershipTest extends TestCase
         $newSubscription = $this->subscription()->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($this->subscription()->status('need-id-check'))
-            ->persist()
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($this->subscription()->status('need-id-check')),
+            ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
@@ -47,9 +49,10 @@ class ActiveMembershipTest extends TestCase
         $newSubscription = $this->subscription()->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($this->subscription()->status('id-was-checked'))
-            ->persist()
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($this->subscription()->status('id-was-checked')),
+            ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
@@ -65,9 +68,10 @@ class ActiveMembershipTest extends TestCase
         $newSubscription = $this->subscription()->status('cancelled');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($this->subscription()->status('active'))
-            ->persist()
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($this->subscription()->status('active')),
+            ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
@@ -83,9 +87,10 @@ class ActiveMembershipTest extends TestCase
         $newSubscription = $this->subscription()->status('suspended-payment');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($this->subscription()->status('active'))
-            ->persist()
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($this->subscription()->status('active')),
+            ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
@@ -101,9 +106,10 @@ class ActiveMembershipTest extends TestCase
         $newSubscription = $this->subscription()->status('suspended-manual');
 
         MembershipAggregate::fakeCustomer($customer)
-            ->createCustomer($customer)
-            ->updateSubscription($this->subscription()->status('active'))
-            ->persist()
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($this->subscription()->status('active')),
+            ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
