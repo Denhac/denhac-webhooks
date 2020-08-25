@@ -10,6 +10,8 @@ namespace Tests\Helpers\Wordpress;
  */
 class CustomerBuilder extends BaseBuilder
 {
+    private $metaKeyId = 1;
+
     public function __construct()
     {
         $this->data = [
@@ -39,5 +41,30 @@ class CustomerBuilder extends BaseBuilder
             "is_paying_customer" => false,
             "meta_data" => [],
         ];
+    }
+
+    public function meta_data($key, $value)
+    {
+        foreach($this->data["meta_data"] as $key => $item) {
+            if($item["key"] == $key) {
+                $this->data["meta_data"][$key]["value"] = $value;
+                return $this;
+            }
+        }
+
+        $this->data["meta_data"][] = [
+            "id" => $this->metaKeyId,
+            "key" => $key,
+            "value" => $value,
+        ];
+
+        $this->metaKeyId++;
+
+        return $this;
+    }
+
+    public function access_card($card)
+    {
+        return $this->meta_data('access_card_number', $card);
     }
 }

@@ -263,7 +263,7 @@ final class MembershipAggregate extends AggregateRoot
             return;
         }
 
-        if (($oldStatus == 'need-id-check' || $oldStatus == 'id-was-checked') && $newStatus == 'active') {
+        if (in_array($oldStatus, ['need-id-check',  'id-was-checked']) && $newStatus == 'active') {
             $this->recordThat(new MembershipActivated($this->customerId));
 
             foreach ($this->allCards() as $card) {
@@ -271,8 +271,7 @@ final class MembershipAggregate extends AggregateRoot
             }
         }
 
-        // TODO figure out how to actually handle all of these individually and if they really are the same.
-        if ($newStatus == 'cancelled' || $newStatus == 'suspended-payment' || $newStatus == 'suspended-manual') {
+        if (in_array($newStatus, ['cancelled', 'suspended-payment', 'suspended-manual'])) {
             // TODO Make sure there's NO currently active subscriptions
             $this->recordThat(new MembershipDeactivated($this->customerId));
 
@@ -350,6 +349,7 @@ final class MembershipAggregate extends AggregateRoot
         return collect()
             ->merge($this->cardsNeedingActivation)
             ->merge($this->cardsSentForActivation)
-            ->merge($this->cardsOnAccount);
+            ->merge($this->cardsOnAccount)
+            ->unique();
     }
 }
