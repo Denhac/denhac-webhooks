@@ -74,6 +74,9 @@ trait MakeCustomerMemberInSlackMixin
         $this->slackApi->users_admin_inviteBulk($emails, $channels);
         // TODO Report exception if the overall request isn't okay or per user isn't okay
 
+        // The slack API doesn't update fast enough
+        sleep(60);
+
         $slackObject = $this->slackApi->users_lookupByEmail($this->customerEmail);
         if (is_null($slackObject)) {
             throw new \Exception('Slack user was null, unsure if invite worked');

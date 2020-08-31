@@ -7,9 +7,6 @@ use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Jeremeamia\Slack\BlockKit\Slack;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class SlackApi
 {
@@ -168,11 +165,13 @@ class SlackApi
         }
 
         if ($data["error"] == "users_not_found") {
+            report(new UnexpectedResponseException("Some error: {$response->getBody()}"));
             return null;
         }
 
         if (!array_key_exists('user', $data)) {
-            throw new UnexpectedResponseException("No User key exists: {$response->getBody()}");
+            report(new UnexpectedResponseException("No User key exists: {$response->getBody()}"));
+            return null;
         }
 
         return null;
@@ -323,7 +322,7 @@ class SlackApi
 
     public function views_open($trigger_id, $view)
     {
-        $response = $this->spaceBotApiClient
+        $this->spaceBotApiClient
             ->post('https://denhac.slack.com/api/views.open', [
                 RequestOptions::JSON => [
                     "trigger_id" => $trigger_id,
