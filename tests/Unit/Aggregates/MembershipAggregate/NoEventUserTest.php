@@ -5,13 +5,7 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
-use App\StorableEvents\CardDeactivated;
-use App\StorableEvents\CardRemoved;
-use App\StorableEvents\CardSentForDeactivation;
-use App\StorableEvents\CardStatusUpdated;
-use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerIsNoEventTestUser;
-use App\StorableEvents\MembershipActivated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;

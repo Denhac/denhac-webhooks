@@ -43,6 +43,12 @@ class CustomerBuilder extends BaseBuilder
         ];
     }
 
+    public function id($id)
+    {
+        $this->data["id"] = $id;
+        return $this;
+    }
+
     public function meta_data($key, $value)
     {
         foreach($this->data["meta_data"] as $key => $item) {
