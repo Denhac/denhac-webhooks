@@ -13,8 +13,8 @@ class RemoveMemberFromGithub implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $username;
-    private $team;
+    public $username;
+    public $team;
 
     /**
      * Create a new job instance.

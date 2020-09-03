@@ -13,8 +13,8 @@ class AddMemberToGithub implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $username;
-    protected $team;
+    public $username;
+    public $team;
 
     /**
      * Create a new job instance.

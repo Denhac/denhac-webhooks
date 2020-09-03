@@ -28,7 +28,7 @@ final class GithubMembershipReactor implements EventHandler
 
         // The customer can update their github without having an active subscription.
         // If they update the username, then become a member again, membership activated will take care of it
-        if ($event->isMember) {
+        if (! is_null($event->newUsername) && $event->isMember) {
             dispatch(new AddMemberToGithub($event->newUsername, self::MEMBERS_TEAM));
         }
     }
