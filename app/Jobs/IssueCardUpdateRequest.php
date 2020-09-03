@@ -5,21 +5,21 @@ namespace App\Jobs;
 use App\CardUpdateRequest;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
-use App\WinDSX\BackupWinDSX;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class BackupAndIssueCardUpdateRequest implements ShouldQueue
+class IssueCardUpdateRequest implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var CardSentForActivation|CardSentForDeactivation
      */
-    private $cardSentForRequest;
+    public $cardSentForRequest;
 
     /**
      * Create a new job instance.
@@ -36,6 +36,7 @@ class BackupAndIssueCardUpdateRequest implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws Exception
      */
     public function handle()
     {
@@ -51,7 +52,9 @@ class BackupAndIssueCardUpdateRequest implements ShouldQueue
                 'customer_id' => $this->cardSentForRequest->wooCustomerId,
                 'card' => $this->cardSentForRequest->cardNumber,
             ]);
+        } else {
+            $cls = get_class($this->cardSentForRequest);
+            throw new Exception("Unknown issuing request type: $cls");
         }
-        // TODO Throw an error if it's not one of those
     }
 }

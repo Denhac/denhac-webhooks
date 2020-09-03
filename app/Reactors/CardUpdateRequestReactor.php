@@ -2,7 +2,7 @@
 
 namespace App\Reactors;
 
-use App\Jobs\BackupAndIssueCardUpdateRequest;
+use App\Jobs\IssueCardUpdateRequest;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
@@ -14,11 +14,11 @@ final class CardUpdateRequestReactor implements EventHandler
 
     public function onCardSentForActivation(CardSentForActivation $event)
     {
-        BackupAndIssueCardUpdateRequest::dispatch($event);
+        dispatch(new IssueCardUpdateRequest($event));
     }
 
     public function onCardSentForDeactivation(CardSentForDeactivation $event)
     {
-        BackupAndIssueCardUpdateRequest::dispatch($event);
+        dispatch(new IssueCardUpdateRequest($event));
     }
 }
