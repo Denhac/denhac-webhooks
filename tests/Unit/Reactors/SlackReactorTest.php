@@ -135,4 +135,15 @@ class SlackReactorTest extends TestCase
                 return $job->wooCustomerId == $subscription->customer_id;
             });
     }
+
+    /** @test */
+    public function active_subscription_update_does_nothing()
+    {
+        $subscription = $this->subscription()->status('active');
+
+        event(new SubscriptionUpdated($subscription->toArray()));
+
+        Bus::assertNotDispatched(InviteCustomerPublicOnlyMemberInSlack::class);
+        Bus::assertNotDispatched(MakeCustomerRegularMemberInSlack::class);
+    }
 }
