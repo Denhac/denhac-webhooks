@@ -16,6 +16,7 @@ use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
+use Illuminate\Support\Facades\Bus;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 use YlsIdeas\FeatureFlags\Facades\Features;
@@ -39,22 +40,17 @@ final class SlackReactor implements EventHandler
 
     public function onMembershipActivated(MembershipActivated $event)
     {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
-
-        dispatch(new MakeCustomerRegularMemberInSlack($customer->woo_id));
+        dispatch(new MakeCustomerRegularMemberInSlack($event->customerId));
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
 
         if(Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
             return;
         }
 
-        dispatch(new DemoteMemberToPublicOnlyMemberInSlack($customer->woo_id));
+        dispatch(new DemoteMemberToPublicOnlyMemberInSlack($event->customerId));
     }
 
     public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)

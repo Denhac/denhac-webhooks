@@ -17,7 +17,7 @@ trait MakeCustomerMemberInSlackMixin
      * @var SlackApi
      */
     protected $slackApi;
-    protected $wooCustomerId;
+    public $wooCustomerId;
 
     private $customerInfoFetched = false;
     private $customerEmail = null;

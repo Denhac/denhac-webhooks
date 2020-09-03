@@ -14,8 +14,8 @@ class RemoveCustomerFromSlackChannel implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $customerId;
-    private $channel;
+    public $customerId;
+    public $channel;
 
     /**
      * Create a new job instance.

@@ -8,6 +8,7 @@ namespace Tests\Helpers\Wordpress;
  * @package Tests\Helpers\Wordpress
  * @property int id
  * @property string status
+ * @property string customer_id
  */
 class SubscriptionBuilder extends BaseBuilder
 {

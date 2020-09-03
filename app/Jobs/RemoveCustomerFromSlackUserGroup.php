@@ -14,8 +14,8 @@ class RemoveCustomerFromSlackUserGroup implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $customerId;
-    private $usergroupHandle;
+    public $customerId;
+    public $usergroupHandle;
 
     /**
      * Create a new job instance.

@@ -33,5 +33,6 @@
         <server name="SESSION_DRIVER" value="array"/>
         <server name="DB_CONNECTION" value="sqlite"/>
         <server name="DB_DATABASE" value=":memory:"/>
+        <server name="JOB_FAIL_NOTIFICATION_CHANNELS" value=""/>
     </php>
 </phpunit>

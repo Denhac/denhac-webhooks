@@ -24,7 +24,7 @@ return [
     /*
      * The channels to which the notification will be sent.
      */
-    'channels' => ['slack'],
+    'channels' => array_filter(explode(',', env('JOB_FAIL_NOTIFICATION_CHANNELS', 'slack'))),
 
     'mail' => [
         'to' => env('ACCESS_EMAIL'),
