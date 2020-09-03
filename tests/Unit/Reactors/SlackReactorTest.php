@@ -26,14 +26,23 @@ class SlackReactorTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
         $this->withOnlyEventHandler(SlackReactor::class);
+
+        Bus::fake([
+            AddCustomerToSlackChannel::class,
+            AddCustomerToSlackUserGroup::class,
+            RemoveCustomerFromSlackChannel::class,
+            RemoveCustomerFromSlackUserGroup::class,
+            DemoteMemberToPublicOnlyMemberInSlack::class,
+            MakeCustomerRegularMemberInSlack::class,
+            InviteCustomerPublicOnlyMemberInSlack::class,
+        ]);
     }
 
     /** @test */
     public function on_becoming_board_member_customer_is_added_to_board_slack_channel_and_group()
     {
-        Bus::fake([AddCustomerToSlackChannel::class, AddCustomerToSlackUserGroup::class]);
-
         $customerId = 1;
         event(new CustomerBecameBoardMember($customerId));
 
@@ -51,8 +60,6 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function on_removal_from_board_customer_is_removed_from_board_slack_channel_and_group()
     {
-        Bus::fake([RemoveCustomerFromSlackChannel::class, RemoveCustomerFromSlackUserGroup::class]);
-
         $customerId = 1;
         event(new CustomerRemovedFromBoard($customerId));
 
@@ -70,8 +77,6 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function on_membership_deactivation_they_are_demoted_in_slack()
     {
-        Bus::fake(DemoteMemberToPublicOnlyMemberInSlack::class);
-
         $customerId = 1;
         event(new MembershipDeactivated($customerId));
 
@@ -84,8 +89,6 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function on_membership_deactivation_with_keep_members_flag_on_they_are_not_demoted()
     {
-        Bus::fake(DemoteMemberToPublicOnlyMemberInSlack::class);
-
         Features::turnOn(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL);
 
         event(new MembershipDeactivated(1));
@@ -96,8 +99,6 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function on_membership_activation_they_are_made_a_regular_member_in_slack()
     {
-        Bus::fake(MakeCustomerRegularMemberInSlack::class);
-
         $customerId = 1;
         event(new MembershipActivated($customerId));
 
@@ -110,8 +111,6 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function need_id_check_subscription_invites_as_public_only_member()
     {
-        Bus::fake(InviteCustomerPublicOnlyMemberInSlack::class);
-
         $subscription = $this->subscription()->status('need-id-check');
 
         event(new SubscriptionUpdated($subscription->toArray()));
@@ -125,8 +124,6 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function need_id_check_subscription_invites_regular_member_if_flag_is_set()
     {
-        Bus::fake(MakeCustomerRegularMemberInSlack::class);
-
         Features::turnOn(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL);
 
         $subscription = $this->subscription()->status('need-id-check');
