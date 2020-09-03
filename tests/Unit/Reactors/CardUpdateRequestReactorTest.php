@@ -17,13 +17,13 @@ class CardUpdateRequestReactorTest extends TestCase
         parent::setUp();
 
         $this->withOnlyEventHandler(CardUpdateRequestReactor::class);
+
+        Bus::fake(IssueCardUpdateRequest::class);
     }
 
     /** @test */
     public function card_sent_for_activation_dispatches_update_request()
     {
-        Bus::fake(IssueCardUpdateRequest::class);
-
         $event = new CardSentForActivation(1, 1234);
 
         event($event);
@@ -39,8 +39,6 @@ class CardUpdateRequestReactorTest extends TestCase
     /** @test */
     public function card_sent_for_deactivation_dispatches_update_request()
     {
-        Bus::fake(IssueCardUpdateRequest::class);
-
         $event = new CardSentForDeactivation(1, 1234);
 
         event($event);
