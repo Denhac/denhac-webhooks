@@ -191,6 +191,10 @@ final class MembershipAggregate extends AggregateRoot
 
         $cardList = collect(explode(',', $cardField));
         foreach ($cardList as $card) {
+            if(is_null($card) || $card === "") {
+                continue;
+            }
+
             if (!$this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 

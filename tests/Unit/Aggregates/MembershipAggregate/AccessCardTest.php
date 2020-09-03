@@ -177,6 +177,20 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
+    public function card_is_not_added_if_card_number_is_null()
+    {
+        $card = '42424';
+        $customer = $this->customer()
+            ->access_card(null);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->createCustomer($customer)
+            ->assertRecorded([
+                new CustomerCreated($customer),
+            ]);
+    }
+
+    /** @test */
     public function update_card_status_records_activated_card_on_success()
     {
         $card = '42424';
