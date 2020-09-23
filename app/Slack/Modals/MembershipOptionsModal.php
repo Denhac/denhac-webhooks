@@ -16,6 +16,7 @@ class MembershipOptionsModal implements ModalInterface
     private const MEMBERSHIP_OPTION_ACTION_ID = 'membership-option-action';
     private const CANCEL_MEMBERSHIP_VALUE = 'value-cancel-membership';
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
+    private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
 
     /**
      * @var Modal
@@ -56,6 +57,9 @@ class MembershipOptionsModal implements ModalInterface
             case self::SIGN_UP_NEW_MEMBER_VALUE:
                 $modal = new NeedIdCheckModal();
                 return $modal->push();
+            case self::MANAGE_MEMBERS_CARDS_VALUE:
+                $modal = new SelectAMemberModal(ManageMembersCardsModal::class);
+                return $modal->push();
             case self::CANCEL_MEMBERSHIP_VALUE:
                 $modal = new CancelMembershipConfirmationModal($request->customer());
                 return $modal->push();
@@ -81,6 +85,7 @@ class MembershipOptionsModal implements ModalInterface
 
         if($customer->hasCapability('denhac_can_verify_member_id')) {
             $options->option("Sign up new member", self::SIGN_UP_NEW_MEMBER_VALUE);
+            $options->option("Manage a member's access cards", self::MANAGE_MEMBERS_CARDS_VALUE);
         }
 
         $subscriptions = $customer->subscriptions;

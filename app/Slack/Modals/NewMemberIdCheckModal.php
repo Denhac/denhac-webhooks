@@ -7,7 +7,6 @@ use App\Http\Requests\SlackRequest;
 use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Slack;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
@@ -82,8 +81,6 @@ class NewMemberIdCheckModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info("Payload:");
-        Log::info($request->get('payload'));
         $firstName = $request->payload()['view']['state']['values']
         [self::FIRST_NAME_BLOCK_ID][self::FIRST_NAME_ACTION_ID]['value'];
         $lastName = $request->payload()['view']['state']['values']

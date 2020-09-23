@@ -4,9 +4,37 @@ namespace App\Slack\Modals;
 
 
 use App\Slack\SlackApi;
+use ReflectionClass;
 
 trait ModalTrait
 {
+    public static function getModal($callbackId)
+    {
+        return collect(get_declared_classes())
+            ->filter(function($name) use($callbackId) {
+                if(strpos($name, "App\\Slack\\Modals") !== 0) {
+                    return false;
+                }
+
+                $reflect = new ReflectionClass($name);
+                if(! $reflect->implementsInterface('\App\Slack\Modals\ModalInterface')) {
+                    return false;
+                }
+
+                $classTraits = collect(array_keys($reflect->getTraits()));
+                if(! $classTraits->contains("App\\Slack\\Modals\\ModalTrait")) {
+                    return false;
+                }
+
+                if($name::callbackId() !== $callbackId) {
+                    return false;
+                }
+
+                return true;
+            })
+            ->first();
+    }
+
     public function push() {
         return response()->json([
             "response_action" => "push",
