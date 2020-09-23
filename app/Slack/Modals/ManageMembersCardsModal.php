@@ -42,7 +42,7 @@ class ManageMembersCardsModal implements ModalInterface
 
         $cardsInput = $this->modalView->newInput()
             ->blockId(self::CARD_NUM_BLOCK_ID)
-            ->label("Card Number")
+            ->label("Card Number (comma separated)")
             ->newTextInput(self::CARD_NUM_ACTION_ID)
             ->placeholder("Enter Card Number");
 
