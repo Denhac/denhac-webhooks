@@ -39,6 +39,10 @@ class SetUpDenhacWebhooks extends Command
         'subscription.deleted' => 'Subscription Deleted',
         'subscription.switched' => 'Subscription Switched',
         'action.wc_denhac_capabilities_updated' => 'Customer Capabilities Updated',
+        'user_membership.created' => 'User Membership Created',
+        'user_membership.updated' => 'User Membership Updated',
+        'user_membership.transferred' => 'User Membership Transferred',
+        'user_membership.deleted' => 'User Membership Deleted',
     ];
 
     /**
