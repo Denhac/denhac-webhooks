@@ -6,6 +6,7 @@ use App\Aggregates\CapabilityAggregate;
 use App\Aggregates\MembershipAggregate;
 use App\Customer;
 use App\Subscription;
+use App\UserMembership;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
@@ -53,6 +54,7 @@ class UpdateBaseData extends Command
         // TODO: Handle updates for email changes
 
         $this->updateSubscriptionsInDatabase();
+        $this->updateUserMembershipsInDatabase();
     }
 
     /**
@@ -60,6 +62,8 @@ class UpdateBaseData extends Command
      */
     private function createCustomersInDatabase()
     {
+        $this->line("Updating customers");
+
         $customersInDB = Customer::all();
         $customersInWooCommerce = $this->api->customers->list();
         $customersInWooCommerce->each(function ($customer) use ($customersInDB) {
@@ -76,6 +80,8 @@ class UpdateBaseData extends Command
 
     private function updateCustomerCapabilitiesInDatabase()
     {
+        $this->line("Updating user capabilities");
+
         $customersInDB = Customer::all()
             ->whereNull('capabilities');
 
@@ -95,6 +101,8 @@ class UpdateBaseData extends Command
      */
     private function updateSubscriptionsInDatabase()
     {
+        $this->line("Updating subscriptions");
+
         $subscriptionsInDB = Subscription::all();
         $subscriptionsInWooCommerce = $this->api->subscriptions->list();
         $subscriptionsInWooCommerce->each(function ($subscription) use ($subscriptionsInDB) {
@@ -104,6 +112,24 @@ class UpdateBaseData extends Command
 
                 MembershipAggregate::make($subscription['customer_id'])
                     ->importSubscription($subscription)
+                    ->persist();
+            }
+        });
+    }
+
+    public function updateUserMembershipsInDatabase()
+    {
+        $this->line("Updating user memberships");
+
+        $userMembershipsInDB = UserMembership::all();
+        $userMembershipsInWooCommerce = $this->api->members->list();
+        $userMembershipsInWooCommerce->each(function ($membership) use ($userMembershipsInDB) {
+            $wooId = $membership['id'];
+            if(! $userMembershipsInDB->contains('id', $wooId)) {
+                $this->line("User Membership {$wooId} was not in our internal store, adding.");
+
+                MembershipAggregate::make($membership['customer_id'])
+                    ->importUserMembership($membership)
                     ->persist();
             }
         });
