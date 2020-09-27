@@ -142,6 +142,17 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
+    public function createUserMembership($membership)
+    {
+        if(! $this->respondToEvents) {
+            return $this;
+        }
+
+        $this->recordThat(new UserMembershipCreated($membership));
+
+        return $this;
+    }
+
     public function handleMembershipActivated()
     {
         $this->activateCardsNeedingActivation();

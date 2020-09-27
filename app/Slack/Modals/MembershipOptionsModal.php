@@ -5,6 +5,7 @@ namespace App\Slack\Modals;
 
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
+use App\UserMembership;
 use Jeremeamia\Slack\BlockKit\Slack;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
@@ -77,7 +78,8 @@ class MembershipOptionsModal implements ModalInterface
     {
         $options = SlackOptions::new();
 
-        $customer = $request->customer();
+        $customer = $request->customer()
+            ->load(['subscriptions', 'memberships']);
 
         if(is_null($customer)) {
             return $options;
@@ -86,6 +88,10 @@ class MembershipOptionsModal implements ModalInterface
         if($customer->hasCapability('denhac_can_verify_member_id')) {
             $options->option("Sign up new member", self::SIGN_UP_NEW_MEMBER_VALUE);
             $options->option("Manage a member's access cards", self::MANAGE_MEMBERS_CARDS_VALUE);
+        }
+
+        if($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_TRAINER)) {
+            $options->option("Authorize a member to use the 3d printer", 'lolz');
         }
 
         $subscriptions = $customer->subscriptions;

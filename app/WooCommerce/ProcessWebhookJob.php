@@ -46,6 +46,11 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->deleteCustomer($payload)
                     ->persist();
                 break;
+            case 'user_membership.created':
+                MembershipAggregate::make($payload['customer_id'])
+                    ->createUserMembership($payload)
+                    ->persist();
+                break;
             case 'subscription.created':
                 MembershipAggregate::make($payload['customer_id'])
                     ->createSubscription($payload)

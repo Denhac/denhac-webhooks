@@ -24,6 +24,7 @@ use Illuminate\Support\Collection;
  * @property Carbon birthday
  * @property Collection subscriptions
  * @property Collection cards
+ * @property Collection memberships
  * @method static Builder whereWooId($customerId)
  */
 class Customer extends Model
@@ -49,6 +50,16 @@ class Customer extends Model
     protected $dates = [
         'birthday',
     ];
+
+    public function memberships()
+    {
+        return $this->hasMany(UserMembership::class, 'customer_id', 'woo_id');
+    }
+
+    public function hasMembership($planId)
+    {
+        return $this->memberships->where('plan_id', $planId)->count() > 0;
+    }
 
     public function subscriptions()
     {
