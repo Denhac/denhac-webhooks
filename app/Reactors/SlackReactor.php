@@ -2,9 +2,8 @@
 
 namespace App\Reactors;
 
-use App\Customer;
+use App\Actions\AddCustomerToSlackChannel;
 use App\FeatureFlags;
-use App\Jobs\AddCustomerToSlackChannel;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerPublicOnlyMemberInSlack;
@@ -16,7 +15,8 @@ use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
-use Illuminate\Support\Facades\Bus;
+use App\StorableEvents\UserMembershipCreated;
+use App\UserMembership;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 use YlsIdeas\FeatureFlags\Facades\Features;
@@ -55,7 +55,9 @@ final class SlackReactor implements EventHandler
 
     public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)
     {
-        dispatch(new AddCustomerToSlackChannel($event->customerId, "board"));
+        app(AddCustomerToSlackChannel::class)
+            ->onQueue()
+            ->execute($event->customerId, 'board');
         dispatch(new AddCustomerToSlackUserGroup($event->customerId, "theboard"));
     }
 
@@ -63,5 +65,21 @@ final class SlackReactor implements EventHandler
     {
         dispatch(new RemoveCustomerFromSlackChannel($event->customerId, "board"));
         dispatch(new RemoveCustomerFromSlackUserGroup($event->customerId, "theboard"));
+    }
+
+    public function onUserMembershipCreated(UserMembershipCreated $event)
+    {
+        if($event->membership['status'] != 'active') {
+            return;
+        }
+
+        $customerId = $event->membership['customer_id'];
+        $plan_id = $event->membership['plan_id'];
+
+        if($plan_id == UserMembership::MEMBERSHIP_3DP_USER) {
+            app(AddCustomerToSlackChannel::class)
+                ->onQueue()
+                ->execute($customerId, '3d-printing');
+        }
     }
 }

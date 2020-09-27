@@ -52,5 +52,4 @@ class OctoPrintReactor implements EventHandler
     // TODO Membership deactivated deactivates octoprint
     // TODO Trainer is added to 3dp@denhac.org
     // TODO Trainer is added to 3dp_team slack group
-    // TODO Member is added to #3d-printing slack
 }
