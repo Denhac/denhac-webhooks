@@ -248,7 +248,7 @@ class SlackApi
                 ],
             ]);
 
-        return json_decode($response->getBody(), true)['ok'];
+        return json_decode($response->getBody(), true);
     }
 
     public function conversations_invite(string $userId, $channelId)
@@ -261,7 +261,7 @@ class SlackApi
                 ],
             ]);
 
-        return json_decode($response->getBody(), true)['ok'];
+        return json_decode($response->getBody(), true);
     }
 
     public function conversations_kick(string $userId, $channelId)
@@ -274,7 +274,7 @@ class SlackApi
                 ],
             ]);
 
-        return json_decode($response->getBody(), true)['ok'];
+        return json_decode($response->getBody(), true);
     }
 
     public function team_accessLogs()

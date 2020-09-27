@@ -16,6 +16,8 @@ class UserMembership extends Model
 {
     public const MEMBERSHIP_3DP_USER = 8749;
     public const MEMBERSHIP_3DP_TRAINER = 8750;
+    public const MEMBERSHIP_LASER_CUTTER_TRAINER = 8761;
+    public const MEMBERSHIP_LASER_CUTTER_USER = 8762;
 
     protected $fillable = [
         'id',

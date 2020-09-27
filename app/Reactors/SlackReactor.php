@@ -81,5 +81,11 @@ final class SlackReactor implements EventHandler
                 ->onQueue()
                 ->execute($customerId, '3d-printing');
         }
+
+        if($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_USER) {
+            app(AddCustomerToSlackChannel::class)
+                ->onQueue()
+                ->execute($customerId, 'laser');
+        }
     }
 }

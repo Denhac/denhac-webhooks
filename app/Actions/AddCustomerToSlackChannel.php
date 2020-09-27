@@ -44,6 +44,18 @@ class AddCustomerToSlackChannel
 
         $channelId = collect($channels)->first();
 
-        $this->slackApi->conversations_invite($customer->slack_id, $channelId);
+        $response = $this->slackApi->conversations_invite($customer->slack_id, $channelId);
+
+        if($response['ok']) {
+            return;
+        }
+
+        if($response['error'] == 'not_in_channel') {
+            $this->slackApi->conversations_join($channelId);
+            $response = $this->slackApi->conversations_invite($customer->slack_id, $channelId);
+        }
+
+        $response_s = json_encode($response);
+        throw_unless($response['ok'], "Could not join channel $channel: $response_s");
     }
 }

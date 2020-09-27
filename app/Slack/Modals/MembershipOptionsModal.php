@@ -19,6 +19,7 @@ class MembershipOptionsModal implements ModalInterface
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
     private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
     private const AUTHORIZE_3D_PRINTER_VALUE = 'value-authorize-3d-printer';
+    private const AUTHORIZE_LASER_CUTTER_VALUE = 'value-authorize-laser-cutter';
 
     /**
      * @var Modal
@@ -68,6 +69,9 @@ class MembershipOptionsModal implements ModalInterface
             case self::AUTHORIZE_3D_PRINTER_VALUE:
                 $modal = new SelectAMemberModal(Authorize3DPrinterUse::class);
                 return $modal->push();
+            case self::AUTHORIZE_LASER_CUTTER_VALUE:
+                $modal = new SelectAMemberModal(AuthorizeLaserCutterUse::class);
+                return $modal->push();
         }
 
         throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
@@ -96,6 +100,10 @@ class MembershipOptionsModal implements ModalInterface
 
         if($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_TRAINER)) {
             $options->option("Authorize a member to use the 3d printer", self::AUTHORIZE_3D_PRINTER_VALUE);
+        }
+
+        if($customer->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER)) {
+            $options->option("Authorize a member to use the laser cutter", self::AUTHORIZE_LASER_CUTTER_VALUE);
         }
 
         $subscriptions = $customer->subscriptions;

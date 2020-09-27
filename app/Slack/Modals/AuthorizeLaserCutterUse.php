@@ -10,7 +10,7 @@ use App\WooCommerce\Api\WooCommerceApi;
 use Jeremeamia\Slack\BlockKit\Slack;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
-class Authorize3DPrinterUse implements ModalInterface
+class AuthorizeLaserCutterUse implements ModalInterface
 {
     use ModalTrait;
 
@@ -27,7 +27,7 @@ class Authorize3DPrinterUse implements ModalInterface
     {
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
-            ->title("3D Printer")
+            ->title("Laser Cutter")
             ->clearOnClose(true)
             ->close("Cancel")
             ->privateMetadata($customerId);
@@ -35,11 +35,11 @@ class Authorize3DPrinterUse implements ModalInterface
         /** @var Customer $customer */
         $customer = Customer::whereWooId($customerId)->with('memberships')->first();
 
-        if($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
-            $this->modalView->text("They already have access to the 3d printers");
+        if($customer->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_USER)) {
+            $this->modalView->text("They already have access to the laser cutter");
         } else {
-            $introText = "This will let {$customer->first_name} {$customer->last_name} use the 3d printers. " .
-                "They will be sent an email with generated OctoPrint credentials.";
+            $introText = "This will let {$customer->first_name} {$customer->last_name} use the laser cutter. " .
+                "They will be sent an email letting them know.";
 
             $this->modalView
                 ->submit("Confirm")
@@ -49,7 +49,7 @@ class Authorize3DPrinterUse implements ModalInterface
 
     public static function callbackId()
     {
-        return 'authorize-3dp-use-modal';
+        return 'authorize-laser-cutter-use-modal';
     }
 
     public static function handle(SlackRequest $request)
@@ -58,7 +58,7 @@ class Authorize3DPrinterUse implements ModalInterface
 
         $wooCommerceApi = app(WooCommerceApi::class);
 
-        $wooCommerceApi->members->addMembership($customerId, UserMembership::MEMBERSHIP_3DP_USER);
+        $wooCommerceApi->members->addMembership($customerId, UserMembership::MEMBERSHIP_LASER_CUTTER_USER);
 
         return self::clearViewStack();
     }
