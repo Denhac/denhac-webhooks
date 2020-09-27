@@ -3,8 +3,10 @@
 namespace App\Reactors;
 
 use App\Actions\AddUserToOctoPrintHosts;
+use App\Actions\DeactivateOctoPrintUser;
 use App\Customer;
 use App\StorableEvents\MembershipActivated;
+use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\UserMembershipCreated;
 use App\UserMembership;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
@@ -49,7 +51,17 @@ class OctoPrintReactor implements EventHandler
             ->execute($customer);
     }
 
-    // TODO Membership deactivated deactivates octoprint
-    // TODO Trainer is added to 3dp@denhac.org
-    // TODO Trainer is added to 3dp_team slack group
+    public function onMembershipDeactivated(MembershipDeactivated $event)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->customerId)->first();
+
+        if(! $customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
+            return;
+        }
+
+        app(DeactivateOctoPrintUser::class)
+            ->onQueue('event-sourcing')
+            ->execute($customer);
+    }
 }

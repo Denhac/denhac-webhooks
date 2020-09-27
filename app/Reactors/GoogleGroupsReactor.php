@@ -13,6 +13,8 @@ use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
+use App\StorableEvents\UserMembershipCreated;
+use App\UserMembership;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 use YlsIdeas\FeatureFlags\Facades\Features;
@@ -22,6 +24,9 @@ final class GoogleGroupsReactor implements EventHandler
     private const GROUP_MEMBERS = 'members@denhac.org';
     private const GROUP_DENHAC = 'denhac@denhac.org';
     private const GROUP_BOARD = 'board@denhac.org';
+    private const GROUP_3DP = '3dp@denhac.org';
+    private const GROUP_LASER = 'laser@denhac.org';
+
     use HandlesEvents;
 
     /**
@@ -103,5 +108,26 @@ final class GoogleGroupsReactor implements EventHandler
         $customer = Customer::whereWooId($event->customerId)->first();
 
         dispatch(new RemoveCustomerFromGoogleGroup($customer->email, self::GROUP_BOARD));
+    }
+
+    public function onUserMembershipCreated(UserMembershipCreated $event)
+    {
+        if($event->membership['status'] != 'active') {
+            return;
+        }
+
+        $customerId = $event->membership['customer_id'];
+        $plan_id = $event->membership['plan_id'];
+
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($customerId)->first();
+
+        if($plan_id == UserMembership::MEMBERSHIP_3DP_TRAINER) {
+            dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_3DP));
+        }
+
+        if($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER) {
+            dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_LASER));
+        }
     }
 }
