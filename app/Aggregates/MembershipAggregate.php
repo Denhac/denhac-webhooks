@@ -14,6 +14,9 @@ use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
+use App\StorableEvents\UserMembershipDeleted;
+use App\StorableEvents\UserMembershipImported;
+use App\StorableEvents\UserMembershipUpdated;
 use Spatie\EventSourcing\AggregateRoot;
 
 final class MembershipAggregate extends AggregateRoot
@@ -149,6 +152,39 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         $this->recordThat(new UserMembershipCreated($membership));
+
+        return $this;
+    }
+
+    public function updateUserMembership($membership)
+    {
+        if(! $this->respondToEvents) {
+            return $this;
+        }
+
+        $this->recordThat(new UserMembershipUpdated($membership));
+
+        return $this;
+    }
+
+    public function deleteUserMembership($membership)
+    {
+        if(! $this->respondToEvents) {
+            return $this;
+        }
+
+        $this->recordThat(new UserMembershipDeleted($membership));
+
+        return $this;
+    }
+
+    public function importUserMembership($membership)
+    {
+        if(! $this->respondToEvents) {
+            return $this;
+        }
+
+        $this->recordThat(new UserMembershipImported($membership));
 
         return $this;
     }

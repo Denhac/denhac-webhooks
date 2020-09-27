@@ -4,6 +4,14 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class UserMembership
+ * @package App
+ * @property int id
+ * @property int customer_id
+ * @property int plan_id
+ * @property string status
+ */
 class UserMembership extends Model
 {
     public const MEMBERSHIP_3DP_USER = 8749;

@@ -140,7 +140,7 @@ final class CustomerProjector implements Projector
      */
     private function addOrGetCustomer(array $customer_json)
     {
-        /** @var Customer $customer */
+        /** @var Customer $customerModel */
         $customerModel = Customer::whereWooId($customer_json['id'])->first();
 
         if (is_null($customerModel)) {
