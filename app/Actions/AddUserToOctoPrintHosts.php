@@ -33,6 +33,9 @@ class AddUserToOctoPrintHosts
             $api->add_user($username, $password);
 
             $customer->notify(new OctoPrintNewUser($host, $username, $password));
+        } else {
+            // Make sure they're an active user
+            $api->update_user($username, $active = true);
         }
     }
 }
