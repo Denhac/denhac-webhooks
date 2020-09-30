@@ -23,7 +23,7 @@ use YlsIdeas\FeatureFlags\Facades\Features;
 
 class SlackReactorTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
