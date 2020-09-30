@@ -16,12 +16,12 @@ trait ModalTrait
                 }
 
                 $reflect = new ReflectionClass($name);
-                if (! $reflect->implementsInterface('\App\Slack\Modals\ModalInterface')) {
+                if (! $reflect->implementsInterface(\App\Slack\Modals\ModalInterface::class)) {
                     return false;
                 }
 
                 $classTraits = collect(array_keys($reflect->getTraits()));
-                if (! $classTraits->contains('App\\Slack\\Modals\\ModalTrait')) {
+                if (! $classTraits->contains(\App\Slack\Modals\ModalTrait::class)) {
                     return false;
                 }
 
