@@ -2,7 +2,6 @@
 
 namespace App\Slack\Modals;
 
-
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
@@ -33,8 +32,8 @@ class ManageMembersCardsModal implements ModalInterface
             ->callbackId(self::callbackId())
             ->title("Manage a member's cards")
             ->clearOnClose(true)
-            ->close("Cancel")
-            ->submit("Submit")
+            ->close('Cancel')
+            ->submit('Submit')
             ->privateMetadata($customerId);
 
         /** @var Customer $customer */
@@ -42,9 +41,9 @@ class ManageMembersCardsModal implements ModalInterface
 
         $cardsInput = $this->modalView->newInput()
             ->blockId(self::CARD_NUM_BLOCK_ID)
-            ->label("Card Number (comma separated)")
+            ->label('Card Number (comma separated)')
             ->newTextInput(self::CARD_NUM_ACTION_ID)
-            ->placeholder("Enter Card Number");
+            ->placeholder('Enter Card Number');
 
         $cardString = $customer->cards
             ->where('member_has_card', true)
@@ -61,21 +60,20 @@ class ManageMembersCardsModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        $cards = $request->payload()['view']['state']['values']
-        [self::CARD_NUM_BLOCK_ID][self::CARD_NUM_ACTION_ID]['value'];
+        $cards = $request->payload()['view']['state']['values'][self::CARD_NUM_BLOCK_ID][self::CARD_NUM_ACTION_ID]['value'];
 
         $errors = [];
 
-        foreach(explode(",", $cards) as $card) {
+        foreach (explode(',', $cards) as $card) {
             if (preg_match("/^\d+$/", $card) == 0) {
-                $errors[self::CARD_NUM_BLOCK_ID] = "This is a comma separated list of cards (no spaces!)";
+                $errors[self::CARD_NUM_BLOCK_ID] = 'This is a comma separated list of cards (no spaces!)';
             }
         }
 
-        if(!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json([
-                "response_action" => "errors",
-                "errors" => $errors,
+                'response_action' => 'errors',
+                'errors' => $errors,
             ]);
         }
 
@@ -85,10 +83,10 @@ class ManageMembersCardsModal implements ModalInterface
 
         $wooCommerceApi->customers
             ->update($customerId, [
-                "meta_data" => [
+                'meta_data' => [
                     [
-                        "key" => "access_card_number",
-                        "value" => $cards,
+                        'key' => 'access_card_number',
+                        'value' => $cards,
                     ],
                 ],
             ]);
@@ -102,7 +100,7 @@ class ManageMembersCardsModal implements ModalInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {

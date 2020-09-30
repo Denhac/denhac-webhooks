@@ -25,7 +25,7 @@ class BackupWinDSXJob implements ShouldQueue
     public function __construct($path)
     {
         $this->path = $path;
-        $this->onQueue("backups");
+        $this->onQueue('backups');
     }
 
     /**
@@ -55,7 +55,7 @@ class BackupWinDSXJob implements ShouldQueue
 
         setting([self::JOB_FAILURE_KEY => $value]);
 
-        if($value >= 10) {
+        if ($value >= 10) {
             throw $throwable;
         }
     }

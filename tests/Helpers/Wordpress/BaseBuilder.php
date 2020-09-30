@@ -2,7 +2,6 @@
 
 namespace Tests\Helpers\Wordpress;
 
-
 use Illuminate\Contracts\Support\Arrayable;
 
 abstract class BaseBuilder implements \JsonSerializable, Arrayable, \ArrayAccess

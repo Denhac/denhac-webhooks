@@ -6,22 +6,21 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Card
- * @package App
+ * Class Card.
  * @property string number
- * @property boolean active
- * @property boolean member_has_card
- * @property integer woo_customer_id
+ * @property bool active
+ * @property bool member_has_card
+ * @property int woo_customer_id
  * @property Customer customer
  * @property Carbon created_at
  */
 class Card extends Model
 {
     protected $fillable = [
-        "number",
-        "active",
-        "member_has_card",
-        "woo_customer_id",
+        'number',
+        'active',
+        'member_has_card',
+        'woo_customer_id',
     ];
 
     public function customer()

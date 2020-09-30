@@ -77,8 +77,8 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
 
         return (new SlackMessage)
             ->content(
-                "<!channel|channel> $this->firstName $this->lastName is NOT an active member but was able to " .
-                "scan in using card $this->cardNum at {$dateTime->format('g:i A')} on " .
+                "<!channel|channel> $this->firstName $this->lastName is NOT an active member but was able to ".
+                "scan in using card $this->cardNum at {$dateTime->format('g:i A')} on ".
                 "{$dateTime->format('M d, Y')}. Someone should check on that ASAP!"
             );
     }

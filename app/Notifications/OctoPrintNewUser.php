@@ -52,9 +52,9 @@ class OctoPrintNewUser extends Notification
             ->subject("Access to {$this->host} OctoPrint")
             ->line('You have been granted access to an OctoPrint instance!')
             ->line(
-                "Your username is \"{$this->username}\" and your password is \"{$this->password}\". " .
-                "We recommend logging in and changing your password under your user settings.")
-            ->line("Please note that you must be at the space to access this url.")
+                "Your username is \"{$this->username}\" and your password is \"{$this->password}\". ".
+                'We recommend logging in and changing your password under your user settings.')
+            ->line('Please note that you must be at the space to access this url.')
             ->action('Log in here', $url)
             ->line('Thank you for being a member of denhac!');
     }

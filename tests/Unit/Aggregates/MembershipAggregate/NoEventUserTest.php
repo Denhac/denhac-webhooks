@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
-
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
 use App\StorableEvents\CustomerIsNoEventTestUser;

@@ -25,7 +25,7 @@ class MakeCustomerRegularMemberInSlack implements ShouldQueue
 
     public function handle()
     {
-        if($this->isExistingSlackUser()) {
+        if ($this->isExistingSlackUser()) {
             $this->setRegularMember();
         } else {
             $this->inviteRegularMember(['general', 'public', 'random']);

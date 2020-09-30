@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
-
 use App\Aggregates\MembershipAggregate;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\MembershipActivated;
@@ -136,7 +135,7 @@ class ActiveMembershipTest extends TestCase
         $aggregate
             ->updateSubscription($subscriptionB)
             ->assertRecorded([
-                new SubscriptionUpdated($subscriptionB)
+                new SubscriptionUpdated($subscriptionB),
             ]);
     }
 }

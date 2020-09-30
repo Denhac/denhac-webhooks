@@ -2,7 +2,6 @@
 
 namespace App\Slack;
 
-
 use DateTime;
 use Illuminate\Http\Request;
 

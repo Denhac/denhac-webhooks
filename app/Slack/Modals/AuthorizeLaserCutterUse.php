@@ -2,7 +2,6 @@
 
 namespace App\Slack\Modals;
 
-
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\UserMembership;
@@ -27,22 +26,22 @@ class AuthorizeLaserCutterUse implements ModalInterface
     {
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
-            ->title("Laser Cutter")
+            ->title('Laser Cutter')
             ->clearOnClose(true)
-            ->close("Cancel")
+            ->close('Cancel')
             ->privateMetadata($customerId);
 
         /** @var Customer $customer */
         $customer = Customer::whereWooId($customerId)->with('memberships')->first();
 
-        if($customer->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_USER)) {
-            $this->modalView->text("They already have access to the laser cutter");
+        if ($customer->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_USER)) {
+            $this->modalView->text('They already have access to the laser cutter');
         } else {
-            $introText = "This will let {$customer->first_name} {$customer->last_name} use the laser cutter. " .
-                "They will be sent an email letting them know.";
+            $introText = "This will let {$customer->first_name} {$customer->last_name} use the laser cutter. ".
+                'They will be sent an email letting them know.';
 
             $this->modalView
-                ->submit("Confirm")
+                ->submit('Confirm')
                 ->text($introText);
         }
     }
@@ -69,7 +68,7 @@ class AuthorizeLaserCutterUse implements ModalInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {

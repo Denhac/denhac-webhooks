@@ -23,7 +23,8 @@ trait MakeCustomerMemberInSlackMixin
     private $customerEmail = null;
     private $customerSlackId = null;
 
-    private function fetchCustomerInfo() {
+    private function fetchCustomerInfo()
+    {
         if (is_null($this->wooCommerceApi)) {
             $this->wooCommerceApi = app(WooCommerceApi::class);
         }
@@ -32,7 +33,7 @@ trait MakeCustomerMemberInSlackMixin
             $this->slackApi = app(SlackApi::class);
         }
 
-        if($this->customerInfoFetched) {
+        if ($this->customerInfoFetched) {
             return;
         }
 
@@ -43,30 +44,36 @@ trait MakeCustomerMemberInSlackMixin
         $this->customerInfoFetched = true;
     }
 
-    protected function isExistingSlackUser() {
+    protected function isExistingSlackUser()
+    {
         $this->fetchCustomerInfo();
 
         return ! is_null($this->customerSlackId);
     }
 
-    protected function inviteSingleChannelGuest($channel) {
+    protected function inviteSingleChannelGuest($channel)
+    {
         $this->inviteCustomer('ultra_restricted', $channel);
     }
 
-    protected function inviteRegularMember($channels) {
+    protected function inviteRegularMember($channels)
+    {
         $this->inviteCustomer('regular', $channels);
     }
 
-    protected function setSingleChannelGuest($channel) {
+    protected function setSingleChannelGuest($channel)
+    {
         $channel = $this->slackApi->channelIdsByName($channel)[0];
         $this->slackApi->users_admin_setUltraRestricted($this->customerSlackId, $channel);
     }
 
-    protected function setRegularMember() {
+    protected function setRegularMember()
+    {
         $this->slackApi->users_admin_setRegular($this->customerSlackId);
     }
 
-    private function inviteCustomer($membershipType, $channels) {
+    private function inviteCustomer($membershipType, $channels)
+    {
         $emails = [
             $this->customerEmail => $membershipType,
         ];

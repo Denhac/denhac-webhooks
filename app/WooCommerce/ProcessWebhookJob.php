@@ -16,7 +16,7 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
     public function __construct(WebhookCall $webhookCall)
     {
         parent::__construct($webhookCall);
-        $this->onQueue("webhooks");
+        $this->onQueue('webhooks');
     }
 
     public function handle()
@@ -72,8 +72,8 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->persist();
                 break;
             case 'action.wc_denhac_capabilities_updated':
-                CapabilityAggregate::make($payload["arg"]['customer_id'])
-                    ->updateCapabilities($payload["arg"]['capabilities'])
+                CapabilityAggregate::make($payload['arg']['customer_id'])
+                    ->updateCapabilities($payload['arg']['capabilities'])
                     ->persist();
         }
     }

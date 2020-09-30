@@ -14,7 +14,7 @@ class AddCapabilitiesToCustomersTable extends Migration
     public function up()
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->json("capabilities")->nullable();
+            $table->json('capabilities')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddCapabilitiesToCustomersTable extends Migration
     public function down()
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->dropColumn("capabilities");
+            $table->dropColumn('capabilities');
         });
     }
 }

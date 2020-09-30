@@ -2,7 +2,6 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
@@ -36,18 +35,18 @@ trait Subscription
         }
 
         if (in_array($newStatus, ['cancelled', 'suspended-payment', 'suspended-manual'])) {
-            $anyActive = $this->subscriptionsNewStatus->filter(function($status) {
+            $anyActive = $this->subscriptionsNewStatus->filter(function ($status) {
                 return $status == 'active';
             })->isNotEmpty();
 
-            if(! $anyActive) {
+            if (! $anyActive) {
                 $this->recordThat(new MembershipDeactivated($this->customerId));
 
                 $this->handleMembershipDeactivated();
             }
         }
 
-        if ($newStatus == "active") {
+        if ($newStatus == 'active') {
             $this->currentlyAMember = true;
         }
 

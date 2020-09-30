@@ -16,17 +16,17 @@ class LaserCutterReactor implements EventHandler
 
     public function onUserMembershipCreated(UserMembershipCreated $event)
     {
-        if($event->membership['plan_id'] != UserMembership::MEMBERSHIP_LASER_CUTTER_USER) {
+        if ($event->membership['plan_id'] != UserMembership::MEMBERSHIP_LASER_CUTTER_USER) {
             return;
         }
-        if($event->membership['status'] != 'active') {
+        if ($event->membership['status'] != 'active') {
             return;
         }
 
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->membership['customer_id'])->first();
 
-        if(!$customer->member) {
+        if (! $customer->member) {
             return;
         }
 

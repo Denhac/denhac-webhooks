@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
             ->call(function () {
                 CardNotifierAggregate::make()->sendNotificationEmail()->persist();
             })
-            ->weeklyOn(6, "13:00");
+            ->weeklyOn(6, '13:00');
     }
 
     /**

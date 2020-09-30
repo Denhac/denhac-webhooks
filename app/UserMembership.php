@@ -5,8 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class UserMembership
- * @package App
+ * Class UserMembership.
  * @property int id
  * @property int customer_id
  * @property int plan_id
@@ -23,7 +22,7 @@ class UserMembership extends Model
         'id',
         'plan_id',
         'status',
-        'customer_id'
+        'customer_id',
     ];
 
     public function customer()

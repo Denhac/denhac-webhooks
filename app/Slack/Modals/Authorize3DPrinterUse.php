@@ -2,7 +2,6 @@
 
 namespace App\Slack\Modals;
 
-
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\UserMembership;
@@ -27,22 +26,22 @@ class Authorize3DPrinterUse implements ModalInterface
     {
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
-            ->title("3D Printer")
+            ->title('3D Printer')
             ->clearOnClose(true)
-            ->close("Cancel")
+            ->close('Cancel')
             ->privateMetadata($customerId);
 
         /** @var Customer $customer */
         $customer = Customer::whereWooId($customerId)->with('memberships')->first();
 
-        if($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
-            $this->modalView->text("They already have access to the 3d printers");
+        if ($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
+            $this->modalView->text('They already have access to the 3d printers');
         } else {
-            $introText = "This will let {$customer->first_name} {$customer->last_name} use the 3d printers. " .
-                "They will be sent an email with generated OctoPrint credentials.";
+            $introText = "This will let {$customer->first_name} {$customer->last_name} use the 3d printers. ".
+                'They will be sent an email with generated OctoPrint credentials.';
 
             $this->modalView
-                ->submit("Confirm")
+                ->submit('Confirm')
                 ->text($introText);
         }
     }
@@ -69,7 +68,7 @@ class Authorize3DPrinterUse implements ModalInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {

@@ -9,8 +9,7 @@ use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Class MemberBadgedIn
- * @package App\Notifications
+ * Class MemberBadgedIn.
  */
 class MemberBadgedIn extends Notification implements ShouldQueue
 {
@@ -58,9 +57,9 @@ class MemberBadgedIn extends Notification implements ShouldQueue
 
         return (new SlackMessage)
             ->content(
-                "$this->firstName $this->lastName badged in at " .
-                $dateTime->format('g:i A') .
-                " on " .
+                "$this->firstName $this->lastName badged in at ".
+                $dateTime->format('g:i A').
+                ' on '.
                 $dateTime->format('M d, Y.')
             );
     }

@@ -15,7 +15,7 @@ class WebhookProfile implements BaseWebhookProfile
             return false;
         }
 
-        if($request->getContent() == "[]") {
+        if ($request->getContent() == '[]') {
             return false;
         }
 

@@ -29,7 +29,7 @@ class IssueCardUpdateRequest implements ShouldQueue
     public function __construct($cardSentForRequest)
     {
         $this->cardSentForRequest = $cardSentForRequest;
-        $this->onQueue("backups");
+        $this->onQueue('backups');
     }
 
     /**

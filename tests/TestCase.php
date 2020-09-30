@@ -29,7 +29,7 @@ abstract class TestCase extends BaseTestCase
 
         $handlersToRemove = $projectionist->getReactors()
             ->merge($projectionist->getProjectors())
-            ->reject(function($value) use ($cls) {
+            ->reject(function ($value) use ($cls) {
                 return get_class($value) == $cls;
             });
 

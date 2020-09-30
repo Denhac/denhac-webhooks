@@ -79,9 +79,9 @@ class CardAccessDeniedButWereWorkingOnIt extends Notification
 
         return (new SlackMessage)
             ->content(
-                "<!channel|channel> $this->firstName $this->lastName is an active member who tried to scan in using card " .
-                "$this->cardNum at {$dateTime->format('g:i A')} on {$dateTime->format('M d, Y')} but " .
-                "was unable to."
+                "<!channel|channel> $this->firstName $this->lastName is an active member who tried to scan in using card ".
+                "$this->cardNum at {$dateTime->format('g:i A')} on {$dateTime->format('M d, Y')} but ".
+                'was unable to.'
             );
     }
 

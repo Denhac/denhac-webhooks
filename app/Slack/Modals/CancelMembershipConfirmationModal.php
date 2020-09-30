@@ -2,7 +2,6 @@
 
 namespace App\Slack\Modals;
 
-
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Subscription;
@@ -23,14 +22,14 @@ class CancelMembershipConfirmationModal implements ModalInterface
     {
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
-            ->title("Confirm Cancellation")
+            ->title('Confirm Cancellation')
             ->clearOnClose(true)
-            ->close("No")
-            ->submit("Yes")
+            ->close('No')
+            ->submit('Yes')
             ->privateMetadata($customer->woo_id);
 
         $this->modalView->newSection()
-            ->plainText("Are you sure you want to cancel?");
+            ->plainText('Are you sure you want to cancel?');
     }
 
     public static function callbackId()
@@ -49,11 +48,11 @@ class CancelMembershipConfirmationModal implements ModalInterface
         $wooCommerceApi = app(WooCommerceApi::class);
 
         foreach ($activeSubscriptions as $subscription) {
-            /** @var Subscription $subscription */
+            /* @var Subscription $subscription */
 
             $wooCommerceApi->subscriptions
                 ->update($subscription->woo_id, [
-                    'status', 'pending-cancel'
+                    'status', 'pending-cancel',
                 ]);
         }
 
@@ -66,7 +65,7 @@ class CancelMembershipConfirmationModal implements ModalInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {

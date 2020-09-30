@@ -2,7 +2,6 @@
 
 namespace App\Slack\Modals;
 
-
 use App\Http\Requests\SlackRequest;
 
 interface ModalInterface extends \JsonSerializable

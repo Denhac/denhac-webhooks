@@ -55,7 +55,7 @@ class CleanupOldWinDSXBackups extends Command
      */
     public function handle()
     {
-        /**
+        /*
          * 1) The last 30 days of backups are full backups
          * 2) From 30 days until 3 months, we keep one backup per day
          * 3) From 3 months until 1 year, we keep mdb files for backups per day
@@ -64,7 +64,7 @@ class CleanupOldWinDSXBackups extends Command
 
         $this->isDryRun = $this->option('dry-run');
         if ($this->isDryRun) {
-            $this->info("This is a dry run, no changes will be made.");
+            $this->info('This is a dry run, no changes will be made.');
         }
 
         $interval = new DateInterval('P1D');
@@ -107,6 +107,7 @@ class CleanupOldWinDSXBackups extends Command
                 if ($file_name[0] === '.') {
                     return false; // Skip hidden files and directories above WinDSX
                 }
+
                 return true; // Keep going
             }
 
@@ -126,10 +127,10 @@ class CleanupOldWinDSXBackups extends Command
         });
 
         $iterator = new \RecursiveIteratorIterator($filter);
-        $paths = array();
+        $paths = [];
         foreach ($iterator as $info) {
             $pathname = $info->getPathname();
-            if(ends_with($pathname, '.')) {
+            if (ends_with($pathname, '.')) {
                 $pathname = substr($pathname, 0, strlen($pathname) - strlen('.'));
             }
             $paths[] = $pathname;
@@ -147,13 +148,13 @@ class CleanupOldWinDSXBackups extends Command
     {
         $file = substr($file, strlen($this->backup_path));
 
-        if (starts_with($file, "/on_time/")) {
+        if (starts_with($file, '/on_time/')) {
             $file = substr($file, 9);
         } else {
             throw new \Exception("Unknown starting point for {$file}");
         }
 
-        $file = substr($file, 0, strlen($file) - strlen("/WinDSX/"));
+        $file = substr($file, 0, strlen($file) - strlen('/WinDSX/'));
 
         return DateTime::createFromFormat('Y/m/d/h/i', $file);
     }
@@ -162,6 +163,7 @@ class CleanupOldWinDSXBackups extends Command
     {
         if ($this->isDryRun) {
             $this->info("Would delete $path.");
+
             return;
         }
 
@@ -184,19 +186,19 @@ class CleanupOldWinDSXBackups extends Command
         $filter = new \RecursiveCallbackFilterIterator($it, function ($current, $key, $iterator) {
             $file_name = $current->getFilename();
 
-            if(ends_with($file_name, '.mdb')) {
+            if (ends_with($file_name, '.mdb')) {
                 return false;
             }
 
-            if(ends_with($file_name, '.ldb')) {
+            if (ends_with($file_name, '.ldb')) {
                 return false;
             }
 
-            if(strpos($current->getPathname(), 'MdbStruc')) {
+            if (strpos($current->getPathname(), 'MdbStruc')) {
                 return false;
             }
 
-            if($file_name[0] == '.') {
+            if ($file_name[0] == '.') {
                 return false;
             }
 
@@ -206,12 +208,13 @@ class CleanupOldWinDSXBackups extends Command
             new RecursiveIteratorIterator($filter, RecursiveIteratorIterator::CHILD_FIRST)
         );
 
-        if(count($files) == 0) {
+        if (count($files) == 0) {
             return;
         }
 
         if ($this->isDryRun) {
             $this->info("Would delete all but database in $path.");
+
             return;
         }
 
@@ -282,20 +285,19 @@ class CleanupOldWinDSXBackups extends Command
     private function remove_empty_sub_folders($path)
     {
         $empty = true;
-        foreach (glob($path.DIRECTORY_SEPARATOR."*") as $file)
-        {
-            if(strpos($path, "WinDSX") === false) {
+        foreach (glob($path.DIRECTORY_SEPARATOR.'*') as $file) {
+            if (strpos($path, 'WinDSX') === false) {
                 $empty &= is_dir($file) && $this->remove_empty_sub_folders($file);
             } else {
                 $empty = false;
             }
         }
 
-        if(! $empty) {
+        if (! $empty) {
             return;
         }
 
-        if($this->isDryRun) {
+        if ($this->isDryRun) {
             $this->info("Directory {$path} is empty, would delete.");
         } else {
             $this->info("Deleting {$path} because it is empty.");

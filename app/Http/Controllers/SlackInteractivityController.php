@@ -18,7 +18,7 @@ class SlackInteractivityController extends Controller
         if ($payload['type'] == 'view_submission') {
             return $this->viewSubmission($request);
         } else {
-            throw new \Exception("Slack interactive payload has unknown type");
+            throw new \Exception('Slack interactive payload has unknown type');
         }
     }
 
@@ -33,7 +33,7 @@ class SlackInteractivityController extends Controller
             return $this->blockSuggestion($request);
         }
 
-        throw new \Exception("Slack options payload has unknown type");
+        throw new \Exception('Slack options payload has unknown type');
     }
 
     private function blockSuggestion(SlackRequest $request)
@@ -43,14 +43,14 @@ class SlackInteractivityController extends Controller
         $callback_id = $payload['view']['callback_id'];
 
         $modalClass = ModalTrait::getModal($callback_id);
-        if(is_null($modalClass)) {
+        if (is_null($modalClass)) {
             throw new \Exception("Slack options payload has unknown callback id: $callback_id");
         }
 
         $options = $modalClass::getOptions($request);
 
-        if(is_a($options, SlackOptions::class)) {
-            $value = $request->payload()["value"] ?? null;
+        if (is_a($options, SlackOptions::class)) {
+            $value = $request->payload()['value'] ?? null;
             $options->filterByValue($value);
         }
 
@@ -60,11 +60,11 @@ class SlackInteractivityController extends Controller
     private function viewSubmission(SlackRequest $request)
     {
         $view = $request->payload()['view'];
-        $callback_id = $view["callback_id"];
+        $callback_id = $view['callback_id'];
 
         $modalClass = ModalTrait::getModal($callback_id);
 
-        if(is_null($modalClass)) {
+        if (is_null($modalClass)) {
             throw new \Exception("Slack interactive view submission had unknown callback id: $callback_id");
         }
 

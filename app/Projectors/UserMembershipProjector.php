@@ -39,7 +39,7 @@ class UserMembershipProjector implements Projector
     {
         $membership = UserMembership::find($event->membership['id']);
 
-        if(! is_null($membership)) {
+        if (! is_null($membership)) {
             $membership->delete();
         }
     }

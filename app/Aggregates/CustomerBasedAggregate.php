@@ -2,7 +2,6 @@
 
 namespace App\Aggregates;
 
-
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoot;
 use Spatie\EventSourcing\FakeAggregateRoot;
@@ -25,7 +24,7 @@ trait CustomerBasedAggregate
         $aggregateRoot->customerId = $customerId;
 
         // Some events end up not having a customer id. We don't want those assigned to customer 0.
-        if($customerId == 0) {
+        if ($customerId == 0) {
             $aggregateRoot->respondToEvents = false;
         }
 
@@ -40,11 +39,11 @@ trait CustomerBasedAggregate
      */
     public static function fakeCustomer($customer): FakeAggregateRoot
     {
-        if(is_a($customer, CustomerBuilder::class)) {
+        if (is_a($customer, CustomerBuilder::class)) {
             $customer = $customer->id;
         }
 
-        $aggregateRoot = self::retrieve("");
+        $aggregateRoot = self::retrieve('');
         $aggregateRoot->customerId = $customer;
 
         return new FakeAggregateRoot($aggregateRoot);

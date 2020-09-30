@@ -2,9 +2,8 @@
 
 namespace Tests\Unit\Reactors;
 
-
 use App\Actions\AddCustomerToSlackChannel;
-use App\FeatureFlags;;
+use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerPublicOnlyMemberInSlack;
@@ -54,7 +53,7 @@ class SlackReactorTest extends TestCase
 
         Bus::assertDispatched(AddCustomerToSlackUserGroup::class,
             function (AddCustomerToSlackUserGroup $job) use ($customerId) {
-                return $job->customerId == $customerId && $job->usergroupHandle == "theboard";
+                return $job->customerId == $customerId && $job->usergroupHandle == 'theboard';
             });
     }
 
@@ -66,12 +65,12 @@ class SlackReactorTest extends TestCase
 
         Bus::assertDispatched(RemoveCustomerFromSlackChannel::class,
             function (RemoveCustomerFromSlackChannel $job) use ($customerId) {
-                return $job->customerId == $customerId && $job->channel == "board";
+                return $job->customerId == $customerId && $job->channel == 'board';
             });
 
         Bus::assertDispatched(RemoveCustomerFromSlackUserGroup::class,
             function (RemoveCustomerFromSlackUserGroup $job) use ($customerId) {
-                return $job->customerId == $customerId && $job->usergroupHandle == "theboard";
+                return $job->customerId == $customerId && $job->usergroupHandle == 'theboard';
             });
     }
 

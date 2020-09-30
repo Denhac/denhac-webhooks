@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Projectors;
+
 use App\StorableEvents\UserCreated;
 use App\User;
 use Illuminate\Support\Str;

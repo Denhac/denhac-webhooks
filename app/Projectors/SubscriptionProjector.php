@@ -52,7 +52,7 @@ final class SubscriptionProjector implements Projector
     {
         $subscriptionModel = Subscription::whereWooId($subscription['id'])->first();
 
-        if(is_null($subscriptionModel)) {
+        if (is_null($subscriptionModel)) {
             $wooId = $subscription['id'];
             $customerId = $subscription['customer_id'];
             $status = $subscription['status'];

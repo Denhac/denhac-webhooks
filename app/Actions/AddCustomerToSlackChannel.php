@@ -46,14 +46,14 @@ class AddCustomerToSlackChannel
 
         $response = $this->slackApi->conversations_invite($customer->slack_id, $channelId);
 
-        if($response['ok']) {
+        if ($response['ok']) {
             return;
         }
 
-        if($response['error'] == 'not_in_channel') {
+        if ($response['error'] == 'not_in_channel') {
             $this->slackApi->conversations_join($channelId);
             $response = $this->slackApi->conversations_invite($customer->slack_id, $channelId);
-        } else if ($response['error'] == 'already_in_channel') {
+        } elseif ($response['error'] == 'already_in_channel') {
             return; // Everything's fine
         }
 
