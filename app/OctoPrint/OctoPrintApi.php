@@ -76,7 +76,7 @@ class OctoPrintApi
 
     public function update_user($username, $active = true, $admin = false)
     {
-        $response = $this->client->post("/api/access/users/$username", [
+        $response = $this->client->put("/api/access/users/$username", [
             RequestOptions::JSON => [
                 "active" => $active,
                 "admin" => $admin
@@ -88,7 +88,7 @@ class OctoPrintApi
 
     public function change_password($username, $password)
     {
-        $response = $this->client->post("/api/access/users/$username", [
+        $response = $this->client->put("/api/access/users/$username", [
             RequestOptions::JSON => [
                 "password" => $password,
             ],
