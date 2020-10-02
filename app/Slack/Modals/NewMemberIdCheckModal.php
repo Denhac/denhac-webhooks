@@ -129,7 +129,7 @@ class NewMemberIdCheckModal implements ModalInterface
                 ],
             ]);
 
-        return self::clearViewStack();
+        return (new SuccessModal())->push();
     }
 
     public static function getOptions(SlackRequest $request)

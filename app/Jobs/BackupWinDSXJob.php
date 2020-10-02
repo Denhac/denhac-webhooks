@@ -40,7 +40,7 @@ class BackupWinDSXJob implements ShouldQueue
         $backupWinDSX = app(BackupWinDSX::class);
         $backupWinDSX->backup($this->path);
 
-        setting([self::JOB_FAILURE_KEY => 0]);
+        setting([self::JOB_FAILURE_KEY => 0])->save();
     }
 
     /**
@@ -53,7 +53,7 @@ class BackupWinDSXJob implements ShouldQueue
 
         $value++;
 
-        setting([self::JOB_FAILURE_KEY => $value]);
+        setting([self::JOB_FAILURE_KEY => $value])->save();
 
         if($value >= 10) {
             throw $throwable;

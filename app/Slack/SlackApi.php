@@ -53,11 +53,11 @@ class SlackApi
 
     private function getAdminClient($email, $password)
     {
-        $token = Cache::get(self::ADMIN_TOKEN_CACHE_KEY);
+        $token = setting(self::ADMIN_TOKEN_CACHE_KEY);
 
         if (is_null($token) || !$this->isValidToken($token)) {
             $token = $this->makeAdminToken($email, $password);
-            Cache::forever(self::ADMIN_TOKEN_CACHE_KEY, $token);
+            setting([self::ADMIN_TOKEN_CACHE_KEY => $token])->save();
         }
 
         return new Client([

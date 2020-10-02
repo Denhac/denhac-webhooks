@@ -53,11 +53,11 @@ class CancelMembershipConfirmationModal implements ModalInterface
 
             $wooCommerceApi->subscriptions
                 ->update($subscription->woo_id, [
-                    'status', 'pending-cancel'
+                    'status' => 'pending-cancel'
                 ]);
         }
 
-        return self::clearViewStack();
+        return (new SuccessModal())->push();
     }
 
     public static function getOptions(SlackRequest $request)
