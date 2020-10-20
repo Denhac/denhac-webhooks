@@ -32,31 +32,26 @@ class BackupWinDSXJob implements ShouldQueue
      * Execute the job.
      *
      * @return void
-     * @throws \Exception
+     * @throws Throwable
      */
     public function handle()
     {
-        /** @var \App\WinDSX\BackupWinDSX $backupWinDSX */
-        $backupWinDSX = app(BackupWinDSX::class);
-        $backupWinDSX->backup($this->path);
+        try {
+            /** @var BackupWinDSX $backupWinDSX */
+            $backupWinDSX = app(BackupWinDSX::class);
+            $backupWinDSX->backup($this->path);
 
-        setting([self::JOB_FAILURE_KEY => 0])->save();
-    }
+            setting([self::JOB_FAILURE_KEY => 0])->save();
+        } catch (Throwable $throwable) {
+            $value = setting(self::JOB_FAILURE_KEY, 0);
 
-    /**
-     * @param Throwable $throwable
-     * @throws Throwable
-     */
-    public function failed(Throwable $throwable)
-    {
-        $value = setting(self::JOB_FAILURE_KEY, 0);
+            $value++;
 
-        $value++;
+            setting([self::JOB_FAILURE_KEY => $value])->save();
 
-        setting([self::JOB_FAILURE_KEY => $value])->save();
-
-        if($value >= 10) {
-            throw $throwable;
+            if($value >= 10) {
+                throw $throwable;
+            }
         }
     }
 }
