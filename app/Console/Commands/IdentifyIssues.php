@@ -139,7 +139,7 @@ class IdentifyIssues extends Command
 
             $emails = collect();
             if (!is_null($customer['email'])) {
-                $emails->push(GmailEmailHelper::removePlusInGmail(Str::lower($customer['email'])));
+                $emails->push(GmailEmailHelper::handleGmail(Str::lower($customer['email'])));
             }
 
             $email_aliases_string = $meta_data->where('key', 'email_aliases')->first()['value'] ?? null;
@@ -169,7 +169,7 @@ class IdentifyIssues extends Command
             ->map(function ($member) {
                 $emails = collect();
                 if (!is_null($member->email)) {
-                    $emails->push(GmailEmailHelper::removePlusInGmail(Str::lower($member->email)));
+                    $emails->push(GmailEmailHelper::handleGmail(Str::lower($member->email)));
                 }
 
                 return [
@@ -379,7 +379,7 @@ class IdentifyIssues extends Command
             $membersInGroup = $this->googleApi->group($group)->list();
 
             $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
-                $groupMember = Str::lower($groupMember);
+                $groupMember = GmailEmailHelper::handleGmail(Str::lower($groupMember));
                 $groupsForEmail = $emailsToGroups->get($groupMember, collect());
                 $groupsForEmail->add($group);
                 $emailsToGroups->put($groupMember, $groupsForEmail);

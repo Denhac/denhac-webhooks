@@ -14,6 +14,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::webhooks('webhooks/denhac-org', 'denhac.org');
+Route::webhooks('webhooks/octoprint', 'OctoPrint');
 
 Route::post('slack/door_code', 'SlackDoorCodeCommandController');
 Route::post('slack/membership', 'SlackMembershipCommandController');

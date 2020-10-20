@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class AddCustomerToGoogleGroup implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, Queueable, SerializesModels;
     protected $email;
     protected $group;
 

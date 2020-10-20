@@ -60,7 +60,7 @@ class Authorize3DPrinterUse implements ModalInterface
 
         $wooCommerceApi->members->addMembership($customerId, UserMembership::MEMBERSHIP_3DP_USER);
 
-        return (new SuccessModal())->push();
+        return self::clearViewStack();
     }
 
     public static function getOptions(SlackRequest $request)

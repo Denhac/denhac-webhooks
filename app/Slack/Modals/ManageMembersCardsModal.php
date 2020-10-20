@@ -93,7 +93,7 @@ class ManageMembersCardsModal implements ModalInterface
                 ],
             ]);
 
-        return (new SuccessModal())->push();
+        return self::clearViewStack();
     }
 
     public static function getOptions(SlackRequest $request)
