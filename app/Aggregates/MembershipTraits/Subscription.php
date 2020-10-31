@@ -29,18 +29,21 @@ trait Subscription
             return;
         }
 
-        if (in_array($oldStatus, ['need-id-check',  'id-was-checked']) && $newStatus == 'active') {
+        if (
+            (in_array($oldStatus, ['need-id-check', 'id-was-checked']) || $oldStatus == null)
+            && $newStatus == 'active'
+        ) {
             $this->recordThat(new MembershipActivated($this->customerId));
 
             $this->handleMembershipActivated();
         }
 
         if (in_array($newStatus, ['cancelled', 'suspended-payment', 'suspended-manual'])) {
-            $anyActive = $this->subscriptionsNewStatus->filter(function($status) {
+            $anyActive = $this->subscriptionsNewStatus->filter(function ($status) {
                 return $status == 'active';
             })->isNotEmpty();
 
-            if(! $anyActive) {
+            if (!$anyActive) {
                 $this->recordThat(new MembershipDeactivated($this->customerId));
 
                 $this->handleMembershipDeactivated();

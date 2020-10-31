@@ -62,6 +62,24 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
+    public function going_from_null_to_active_subscription_activates_membership()
+    {
+        $customer = $this->customer();
+
+        $newSubscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+            ])
+            ->updateSubscription($newSubscription)
+            ->assertRecorded([
+                new SubscriptionUpdated($newSubscription),
+                new MembershipActivated($customer->id),
+            ]);
+    }
+
+    /** @test */
     public function going_from_active_to_cancelled_subscription_deactivates_membership()
     {
         $customer = $this->customer();

@@ -140,23 +140,6 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_is_not_sent_for_activation_on_active_subscription_import()
-    {
-        $customer = $this->customer();
-        $subscription = $this->subscription()->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new CardAdded($customer->id, '42424'),
-            ])
-            ->importSubscription($subscription)
-            ->assertRecorded([
-                new SubscriptionImported($subscription),
-            ]);
-    }
-
-    /** @test */
     public function card_is_not_sent_for_activation_if_it_has_already_been_sent()
     {
         $card = '42424';
