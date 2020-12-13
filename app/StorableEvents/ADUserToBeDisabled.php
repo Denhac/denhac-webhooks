@@ -6,7 +6,7 @@ use Spatie\EventSourcing\ShouldBeStored;
 
 class ADUserToBeDisabled implements ShouldBeStored
 {
-    private $customerId;
+    public $customerId;
 
     public function __construct($customerId)
     {
