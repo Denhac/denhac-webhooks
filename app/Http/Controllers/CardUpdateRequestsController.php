@@ -7,10 +7,11 @@ use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
 use App\Http\Resources\CardUpdateRequestResource;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CardUpdateRequestsController extends Controller
 {
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
         return CardUpdateRequestResource::collection(CardUpdateRequest::with('customer')->get());
     }

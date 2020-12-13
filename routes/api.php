@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ADUpdateRequestsController;
 use App\Http\Controllers\CardUpdateRequestsController;
 use App\Http\Controllers\CardScannedController;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,5 @@ Route::post("/active_card_holders", [CardUpdateRequestsController::class, "updat
 
 Route::post("/events/card_scanned", 'CardScannedController')
     ->middleware("auth:api");
+
+Route::get("/ad_updates", [ADUpdateRequestsController::class, "index"]);

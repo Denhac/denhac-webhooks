@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class ADUpdateRequest
  * @package App
+ * @property int id
  * @property string type
  * @property int customer_id
  * @property Customer customer
