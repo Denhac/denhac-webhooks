@@ -36,7 +36,9 @@ class ADUpdateRequestsControllerTest extends TestCase
             'customer_id' => $customer->id,
         ]);
 
-        $response = $this->get('/api/ad_updates');
+        $response = $this
+            ->be($this->apiUser, 'api')
+            ->get('/api/ad_updates');
         $response->assertJson([
             'data' => [
                 [
