@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\ADUpdateRequest;
 use App\CardUpdateRequest;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,7 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot();
 
         Route::model('card_update_request', CardUpdateRequest::class);
+        Route::model('ad_update_request', ADUpdateRequest::class);
     }
 
     /**

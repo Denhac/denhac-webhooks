@@ -42,7 +42,7 @@ trait Cards
         if ($status == CardUpdateRequest::STATUS_SUCCESS) {
             if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
-            } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
+            } else if ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
                 $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
             } else {
                 $message = "Card update request type wasn't one of the expected values: {$cardUpdateRequest->type}";
