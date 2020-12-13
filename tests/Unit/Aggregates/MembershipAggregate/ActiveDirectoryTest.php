@@ -3,7 +3,10 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 
+use App\ADUpdateRequest;
 use App\Aggregates\MembershipAggregate;
+use App\StorableEvents\ADUserDisabled;
+use App\StorableEvents\ADUserEnabled;
 use App\StorableEvents\ADUserToBeDisabled;
 use App\StorableEvents\ADUserToBeEnabled;
 use App\StorableEvents\CustomerCreated;
@@ -59,6 +62,50 @@ class ActiveDirectoryTest extends TestCase
                 new SubscriptionUpdated($cancelledSubscription),
                 new MembershipDeactivated($customer->id),
                 new ADUserToBeDisabled($customer->id),
+            ]);
+    }
+
+    /** @test */
+    public function update_ad_status_records_enabled_user_on_success()
+    {
+        $customer = $this->customer();
+
+        $adUpdateRequest = ADUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => ADUpdateRequest::ACTIVATION_TYPE,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new ADUserToBeEnabled($customer->id),
+            ])
+            ->updateADStatus($adUpdateRequest, ADUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new ADUserEnabled($customer->id),
+            ]);
+    }
+
+    /** @test */
+    public function update_ad_status_records_disabled_user_on_success()
+    {
+        $customer = $this->customer();
+
+        $adUpdateRequest = ADUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => ADUpdateRequest::DEACTIVATION_TYPE,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new ADUserToBeDisabled($customer->id),
+            ])
+            ->updateADStatus($adUpdateRequest, ADUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new ADUserDisabled($customer->id),
             ]);
     }
 }

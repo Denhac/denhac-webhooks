@@ -19,7 +19,6 @@ class ADUpdateRequest extends Model
     public const ACTIVATION_TYPE = 'enable';
     public const DEACTIVATION_TYPE = 'disable';
 
-    public const STATUS_NOT_DONE = 'not_done';
     public const STATUS_SUCCESS = 'success';
 
     protected $fillable = [
