@@ -10,21 +10,24 @@ class TokenManager
 {
     private const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
-    private $apiKey;
-    private $authAs;
-    private $serviceAccount;
-    /**
-     * @var Client
-     */
-    private $client;
+    private bool $propertiesBound = false;
+    private string $apiKey;
+    private string $authAs;
+    private string $serviceAccount;
+    private Client $client;
 
-    public function __construct()
+    private function lateBindProperties()
     {
+        if($this->propertiesBound) {
+            return;
+        }
+
         $this->apiKey = file_get_contents(config('denhac.google.key_path'));
         $this->serviceAccount = config('denhac.google.service_account');
         $this->authAs = config('denhac.google.auth_as');
 
         $this->client = new Client();
+        $this->propertiesBound = true;
     }
 
     public function getAccessToken($scopes)
@@ -45,6 +48,8 @@ class TokenManager
 
     private function getJwtToken(string $scopes)
     {
+        $this->lateBindProperties();
+
         $jwtHeader = $this->base64url_encode(json_encode([
             'alg' => 'RS256',
             'typ' => 'JWT',
@@ -70,6 +75,8 @@ class TokenManager
 
     private function refreshToken($jwtToken)
     {
+        $this->lateBindProperties();
+
         $response = $this->client->post(self::TOKEN_URL, [
             RequestOptions::HEADERS => [
                 'Content-Type' => 'application/x-www-form-urlencoded;charset=UTF-8',
