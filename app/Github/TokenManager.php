@@ -7,21 +7,24 @@ use GuzzleHttp\RequestOptions;
 
 class TokenManager
 {
-    private $signingKey;
-    private $appId;
-    private $installationId;
-    /**
-     * @var Client
-     */
-    private $client;
+    private bool $propertiesBound = false;
+    private string $signingKey;
+    private string $appId;
+    private string $installationId;
+    private Client $client;
 
-    public function __construct()
+    private function lateBindProperties()
     {
+        if($this->propertiesBound) {
+            return;
+        }
+
         $this->signingKey = file_get_contents(config('denhac.github.key_path'));
         $this->appId = config('denhac.github.app_id');
         $this->installationId = config('denhac.github.installation_id');
 
         $this->client = new Client();
+        $this->propertiesBound = true;
     }
 
     private function base64url_encode($data)
@@ -32,6 +35,8 @@ class TokenManager
     // TODO Refactor this to work for specific logins / organizations to get installation id automatically
     public function getInstallationAccessToken()
     {
+        $this->lateBindProperties();
+
         $appAccessToken = $this->getAppAccessToken();
 
         $installationUrl = "https://api.github.com/app/installations/{$this->installationId}/access_tokens";
@@ -48,6 +53,8 @@ class TokenManager
 
     private function getAppAccessToken()
     {
+        $this->lateBindProperties();
+
         $jwtHeader = $this->base64url_encode(json_encode([
             'alg' => 'RS256',
         ]));

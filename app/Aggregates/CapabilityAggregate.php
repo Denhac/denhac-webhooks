@@ -9,8 +9,8 @@ use App\StorableEvents\CustomerIsNoEventTestUser;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
-use Spatie\EventSourcing\AggregateRoot;
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class CapabilityAggregate extends AggregateRoot
 {
@@ -32,7 +32,7 @@ class CapabilityAggregate extends AggregateRoot
 
     public function importCapabilities($capabilities)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -43,7 +43,7 @@ class CapabilityAggregate extends AggregateRoot
 
     public function updateCapabilities($capabilities)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -56,13 +56,13 @@ class CapabilityAggregate extends AggregateRoot
 
     private function handleCapabilityUpdates()
     {
-        $this->whenAdded("denhac_board_member", new CustomerBecameBoardMember($this->customerId));
-        $this->whenRemoved("denhac_board_member", new CustomerRemovedFromBoard($this->customerId));
+        $this->whenAdded('denhac_board_member', new CustomerBecameBoardMember($this->customerId));
+        $this->whenRemoved('denhac_board_member', new CustomerRemovedFromBoard($this->customerId));
     }
 
     protected function whenAdded($capability, ShouldBeStored $event)
     {
-        if (!$this->previousCapabilities->has($capability) &&
+        if (! $this->previousCapabilities->has($capability) &&
             $this->currentCapabilities->has($capability)) {
             $this->recordThat($event);
         }
@@ -71,7 +71,7 @@ class CapabilityAggregate extends AggregateRoot
     protected function whenRemoved($capability, ShouldBeStored $event)
     {
         if ($this->previousCapabilities->has($capability) &&
-            !$this->currentCapabilities->has($capability)) {
+            ! $this->currentCapabilities->has($capability)) {
             $this->recordThat($event);
         }
     }
@@ -91,5 +91,4 @@ class CapabilityAggregate extends AggregateRoot
         $this->previousCapabilities = $this->currentCapabilities;
         $this->currentCapabilities = collect($event->capabilities);
     }
-
 }

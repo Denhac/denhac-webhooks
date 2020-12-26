@@ -36,6 +36,7 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     {
         Gate::define('viewHorizon', function ($user = null) {
             $request = app(Request::class);
+
             return $request->hasCookie('horizon') &&
                 setting('horizon.password') == $request->cookie('horizon');
         });

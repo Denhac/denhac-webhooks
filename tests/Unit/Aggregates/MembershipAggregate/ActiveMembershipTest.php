@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
-
 use App\Aggregates\MembershipAggregate;
 use App\StorableEvents\ADUserToBeDisabled;
 use App\StorableEvents\ADUserToBeEnabled;
@@ -17,7 +16,7 @@ use Tests\TestCase;
 
 class ActiveMembershipTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -162,7 +161,7 @@ class ActiveMembershipTest extends TestCase
         $aggregate
             ->updateSubscription($subscriptionB)
             ->assertRecorded([
-                new SubscriptionUpdated($subscriptionB)
+                new SubscriptionUpdated($subscriptionB),
             ]);
     }
 }

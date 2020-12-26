@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
-
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
 use App\StorableEvents\ADUserToBeDisabled;
@@ -26,7 +25,7 @@ use Tests\TestCase;
 
 class AccessCardTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -253,7 +252,7 @@ class AccessCardTest extends TestCase
                 new MembershipDeactivated($customer->id),
                 new CardSentForDeactivation($customer->id, $card),
                 new CardDeactivated($customer->id, $card),
-                new SubscriptionCreated($subscription)
+                new SubscriptionCreated($subscription),
             ])
             ->updateSubscription($subscription->status('active'))
             ->assertRecorded([

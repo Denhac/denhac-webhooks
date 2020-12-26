@@ -50,10 +50,10 @@ abstract class TestCase extends BaseTestCase
 
         $handlersToRemove = $projectionist->getReactors()
             ->merge($projectionist->getProjectors())
-            ->reject(function($value) use ($cls) {
+            ->reject(function ($value) use ($cls) {
                 return get_class($value) == $cls;
             });
 
-        $projectionist->withoutEventHandlers($handlersToRemove->keys()->all());
+        $projectionist->withoutEventHandlers(collect($handlersToRemove)->keys()->all());
     }
 }

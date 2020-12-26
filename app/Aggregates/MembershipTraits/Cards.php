@@ -2,7 +2,6 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-
 use App\CardUpdateRequest;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
@@ -20,7 +19,8 @@ trait Cards
     public $cardsSentForActivation;
     public $cardsSentForDeactivation;
 
-    public function bootCards() {
+    public function bootCards()
+    {
         $this->cardsOnAccount = collect();
         $this->cardsNeedingActivation = collect();
         $this->cardsSentForActivation = collect();
@@ -29,7 +29,7 @@ trait Cards
 
     public function updateCardStatus(CardUpdateRequest $cardUpdateRequest, $status)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -50,8 +50,8 @@ trait Cards
             }
         } else {
             $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
-                . "Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
-                . 'not successful';
+                ."Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
+                .'not successful';
             throw new Exception($message);
         }
 
@@ -71,11 +71,11 @@ trait Cards
 
         $cardList = collect(explode(',', $cardField));
         foreach ($cardList as $card) {
-            if(is_null($card) || $card === "") {
+            if (is_null($card) || $card === '') {
                 continue;
             }
 
-            if (!$this->cardsOnAccount->contains($card)) {
+            if (! $this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
                 if ($this->isActiveMember()) {
@@ -85,7 +85,7 @@ trait Cards
         }
 
         foreach ($this->allCards() as $card) {
-            if (!$cardList->contains($card)) {
+            if (! $cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
@@ -150,7 +150,8 @@ trait Cards
             });
     }
 
-    private function allCards() {
+    private function allCards()
+    {
         return collect()
             ->merge($this->cardsNeedingActivation)
             ->merge($this->cardsSentForActivation)

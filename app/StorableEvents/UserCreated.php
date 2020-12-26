@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class UserCreated implements ShouldBeStored
+final class UserCreated extends ShouldBeStored
 {
     public $name;
     public $api_token;

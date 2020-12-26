@@ -18,7 +18,7 @@ use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipDeleted;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
-use Spatie\EventSourcing\AggregateRoot;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 final class MembershipAggregate extends AggregateRoot
 {
@@ -56,7 +56,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function createCustomer($customer)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -71,7 +71,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateCustomer($customer)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -86,7 +86,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteCustomer($customer)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -97,7 +97,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importCustomer($customer)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -110,7 +110,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function createSubscription($subscription)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -123,7 +123,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateSubscription($subscription)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -136,7 +136,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importSubscription($subscription)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -149,7 +149,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function createUserMembership($membership)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -160,7 +160,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateUserMembership($membership)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -171,7 +171,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteUserMembership($membership)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -182,7 +182,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importUserMembership($membership)
     {
-        if(! $this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 

@@ -54,21 +54,21 @@ return [
      * To add extra behaviour you can change this to a class of your own. It should
      * extend the \Spatie\EventSourcing\Models\EloquentStoredEvent model.
      */
-    'stored_event_model' => \Spatie\EventSourcing\Models\EloquentStoredEvent::class,
+    'stored_event_model' => \Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent::class,
 
     /*
      * This class is responsible for storing events. To add extra behaviour you
      * can change this to a class of your own. The only restriction is that
      * it should implement \Spatie\EventSourcing\StoredEventRepository.
      */
-    'stored_event_repository' => \Spatie\EventSourcing\EloquentStoredEventRepository::class,
+    'stored_event_repository' => \Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository::class,
 
     /*
      * This class is responsible for handling stored events. To add extra behaviour you
      * can change this to a class of your own. The only restriction is that
      * it should implement \Spatie\EventSourcing\HandleDomainEventJob.
      */
-    'stored_event_job' => \Spatie\EventSourcing\HandleStoredEventJob::class,
+    'stored_event_job' => \Spatie\EventSourcing\StoredEvents\HandleStoredEventJob::class,
 
     /*
      * Similar to Relation::morphMap() you can define which alias responds to which

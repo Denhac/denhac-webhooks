@@ -30,7 +30,7 @@ class SlackRequest extends Request implements ValidatesWhenResolved
     public function validateResolved()
     {
         $secret = config('denhac.slack.spacebot_api_signing_secret');
-        if (!$this->isSlackSignatureValid($this, $secret)) {
+        if (! $this->isSlackSignatureValid($this, $secret)) {
             throw new ValidationException(null, response()->json([
                 'response_type' => 'ephemeral',
                 'text' => "The signature from slack didn't match the computed value. Did our signing secret change?",
@@ -41,10 +41,10 @@ class SlackRequest extends Request implements ValidatesWhenResolved
     public function payload()
     {
         if (is_null($this->payload_json)) {
-            $this->payload_json = json_decode($this->get("payload"), true);
+            $this->payload_json = json_decode($this->get('payload'), true);
 
             if (is_null($this->payload_json)) {
-                throw new \Exception("Slack request has no payload");
+                throw new \Exception('Slack request has no payload');
             }
         }
 
@@ -69,7 +69,7 @@ class SlackRequest extends Request implements ValidatesWhenResolved
     {
         $userID = $this->get('user_id');
 
-        if (!is_null($userID)) {
+        if (! is_null($userID)) {
             return $userID;
         }
 
@@ -79,15 +79,15 @@ class SlackRequest extends Request implements ValidatesWhenResolved
             return null;
         }
 
-        if (!array_key_exists("user", $payload)) {
+        if (! array_key_exists('user', $payload)) {
             return null;
         }
 
-        if (!array_key_exists("id", $payload["user"])) {
+        if (! array_key_exists('id', $payload['user'])) {
             return null;
         }
 
-        $userID = $payload["user"]["id"];
+        $userID = $payload['user']['id'];
 
         return $userID;
     }

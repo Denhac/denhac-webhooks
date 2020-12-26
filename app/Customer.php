@@ -80,7 +80,7 @@ class Customer extends Model
 
     public function isBoardMember()
     {
-        return $this->hasCapability("denhac_board_member");
+        return $this->hasCapability('denhac_board_member');
     }
 
     /**

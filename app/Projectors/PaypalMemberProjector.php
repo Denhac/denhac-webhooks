@@ -9,10 +9,10 @@ use App\StorableEvents\PaypalMemberEmailUpdated;
 use App\StorableEvents\PaypalMemberImported;
 use App\StorableEvents\PaypalMemberNameUpdated;
 use App\StorableEvents\PaypalMemberSlackIdUpdated;
-use Spatie\EventSourcing\Projectors\Projector;
-use Spatie\EventSourcing\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
-final class PaypalMemberProjector implements Projector
+final class PaypalMemberProjector extends Projector
 {
     use ProjectsEvents;
 

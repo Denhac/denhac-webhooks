@@ -43,7 +43,7 @@ class LaserCutterAccessAllowed extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject("Laser Cutter Training Complete")
+            ->subject('Laser Cutter Training Complete')
             ->line('You are now allowed to use our "ultra secret" laser cutter!')
             ->line('If you have any questions, you can ask in the #laser channel in slack or email laser@denhac.org.')
             ->line('Thank you for being a member of denhac!');

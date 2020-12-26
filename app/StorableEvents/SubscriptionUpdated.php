@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class SubscriptionUpdated implements ShouldBeStored
+final class SubscriptionUpdated extends ShouldBeStored
 {
     public $subscription;
 

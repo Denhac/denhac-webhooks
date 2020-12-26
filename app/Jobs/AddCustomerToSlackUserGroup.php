@@ -47,8 +47,8 @@ class AddCustomerToSlackUserGroup implements ShouldQueue
 
         throw_if(is_null($usergroup), "Couldn't find usergroup for $this->usergroupHandle");
 
-        $id = $usergroup["id"];
-        $users = collect($usergroup["users"]);
+        $id = $usergroup['id'];
+        $users = collect($usergroup['users']);
         $users->add($customer->slack_id);
 
         $slackApi->usergroups_users_update($id, $users);

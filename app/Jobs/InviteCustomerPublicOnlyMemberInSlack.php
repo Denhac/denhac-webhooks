@@ -28,7 +28,7 @@ class InviteCustomerPublicOnlyMemberInSlack implements ShouldQueue
      */
     public function handle()
     {
-        if($this->isExistingSlackUser()) {
+        if ($this->isExistingSlackUser()) {
             /*
              * This can technically happen if someone signs up on the new system using slack,
              * but honestly I'd rather check all of those manually.

@@ -2,7 +2,6 @@
 
 namespace App\Slack\Modals;
 
-
 use App\Slack\SlackApi;
 use ReflectionClass;
 
@@ -11,22 +10,22 @@ trait ModalTrait
     public static function getModal($callbackId)
     {
         return collect(get_declared_classes())
-            ->filter(function($name) use($callbackId) {
-                if(strpos($name, "App\\Slack\\Modals") !== 0) {
+            ->filter(function ($name) use ($callbackId) {
+                if (strpos($name, 'App\\Slack\\Modals') !== 0) {
                     return false;
                 }
 
                 $reflect = new ReflectionClass($name);
-                if(! $reflect->implementsInterface('\App\Slack\Modals\ModalInterface')) {
+                if (! $reflect->implementsInterface(\App\Slack\Modals\ModalInterface::class)) {
                     return false;
                 }
 
                 $classTraits = collect(array_keys($reflect->getTraits()));
-                if(! $classTraits->contains("App\\Slack\\Modals\\ModalTrait")) {
+                if (! $classTraits->contains(\App\Slack\Modals\ModalTrait::class)) {
                     return false;
                 }
 
-                if($name::callbackId() !== $callbackId) {
+                if ($name::callbackId() !== $callbackId) {
                     return false;
                 }
 
@@ -35,10 +34,11 @@ trait ModalTrait
             ->first();
     }
 
-    public function push() {
+    public function push()
+    {
         return response()->json([
-            "response_action" => "push",
-            "view" => $this
+            'response_action' => 'push',
+            'view' => $this,
         ]);
     }
 
@@ -53,7 +53,7 @@ trait ModalTrait
     protected static function clearViewStack()
     {
         return response()->json([
-            "response_action" => "clear",
+            'response_action' => 'clear',
         ]);
     }
 }

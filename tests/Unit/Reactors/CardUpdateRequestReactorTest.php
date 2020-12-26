@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Reactors;
 
-
 use App\Jobs\IssueCardUpdateRequest;
 use App\Reactors\CardUpdateRequestReactor;
 use App\StorableEvents\CardSentForActivation;
@@ -12,7 +11,7 @@ use Tests\TestCase;
 
 class CardUpdateRequestReactorTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -30,7 +29,7 @@ class CardUpdateRequestReactorTest extends TestCase
 
         Bus::assertDispatched(IssueCardUpdateRequest::class,
             function (IssueCardUpdateRequest $job) use ($event) {
-            return $job->cardSentForRequest->wooCustomerId == $event->wooCustomerId &&
+                return $job->cardSentForRequest->wooCustomerId == $event->wooCustomerId &&
                 $job->cardSentForRequest->cardNumber == $event->cardNumber &&
                 get_class($job->cardSentForRequest) == CardSentForActivation::class;
             });

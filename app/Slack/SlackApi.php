@@ -42,8 +42,9 @@ class SlackApi
         ]);
     }
 
-    private function ensureAdminClient() {
-        if(is_null($this->adminClient)) {
+    private function ensureAdminClient()
+    {
+        if (is_null($this->adminClient)) {
             $this->adminClient = $this->getAdminClient(
                 config('denhac.slack.email'),
                 config('denhac.slack.password')
@@ -55,7 +56,7 @@ class SlackApi
     {
         $token = setting(self::ADMIN_TOKEN_CACHE_KEY);
 
-        if (is_null($token) || !$this->isValidToken($token)) {
+        if (is_null($token) || ! $this->isValidToken($token)) {
             $token = $this->makeAdminToken($email, $password);
             setting([self::ADMIN_TOKEN_CACHE_KEY => $token])->save();
         }
@@ -84,7 +85,7 @@ class SlackApi
         $this->ensureAdminClient();
 
         $emails = Arr::wrap($emails);
-        if (!Arr::isAssoc($emails)) {
+        if (! Arr::isAssoc($emails)) {
             $emails = array_fill_keys($emails, 'regular');
         }
 
@@ -160,17 +161,19 @@ class SlackApi
 
         $data = json_decode($response->getBody(), true);
 
-        if ($data["ok"]) {
+        if ($data['ok']) {
             return $data['user'];
         }
 
-        if ($data["error"] == "users_not_found") {
+        if ($data['error'] == 'users_not_found') {
             report(new UnexpectedResponseException("Some error: {$response->getBody()}"));
+
             return null;
         }
 
-        if (!array_key_exists('user', $data)) {
+        if (! array_key_exists('user', $data)) {
             report(new UnexpectedResponseException("No User key exists: {$response->getBody()}"));
+
             return null;
         }
 
@@ -183,10 +186,10 @@ class SlackApi
         return collect(json_decode($this->managementApiClient
             ->get('https://denhac.slack.com/api/conversations.list', [
                 RequestOptions::QUERY => [
-                    'types' => "public_channel,private_channel",
+                    'types' => 'public_channel,private_channel',
                 ],
             ])
-            ->getBody(), true)["channels"]);
+            ->getBody(), true)['channels']);
     }
 
     private function isValidToken($token)
@@ -296,7 +299,7 @@ class SlackApi
                     'include_users' => true,
                 ],
             ])
-            ->getBody(), true)["usergroups"]);
+            ->getBody(), true)['usergroups']);
     }
 
     public function usergroupForName($handle)
@@ -313,7 +316,7 @@ class SlackApi
             ->post('https://denhac.slack.com/api/usergroups.users.update', [
                 RequestOptions::FORM_PARAMS => [
                     'usergroup' => $usergroupId,
-                    'users' => $users->implode(","),
+                    'users' => $users->implode(','),
                 ],
             ]);
 
@@ -325,9 +328,9 @@ class SlackApi
         $this->spaceBotApiClient
             ->post('https://denhac.slack.com/api/views.open', [
                 RequestOptions::JSON => [
-                    "trigger_id" => $trigger_id,
-                    "view" => json_encode($view),
-                ]
+                    'trigger_id' => $trigger_id,
+                    'view' => json_encode($view),
+                ],
             ]);
     }
 }

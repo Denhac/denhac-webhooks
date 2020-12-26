@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class CardStatusUpdated implements ShouldBeStored
+final class CardStatusUpdated extends ShouldBeStored
 {
     /**
      * @var string

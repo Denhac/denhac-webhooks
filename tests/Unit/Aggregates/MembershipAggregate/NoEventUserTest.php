@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
-
 use App\ADUpdateRequest;
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
@@ -13,7 +12,7 @@ use Tests\TestCase;
 
 class NoEventUserTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

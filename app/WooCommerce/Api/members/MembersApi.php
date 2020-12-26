@@ -38,10 +38,10 @@ class MembersApi
      */
     public function addMembership($woo_id, $plan_id)
     {
-        $response = $this->client->post("/wp-json/wc/v3/memberships/members", [
+        $response = $this->client->post('/wp-json/wc/v3/memberships/members', [
             RequestOptions::JSON => [
-                "customer_id" => $woo_id,
-                "plan_id" => $plan_id,
+                'customer_id' => $woo_id,
+                'plan_id' => $plan_id,
             ],
         ]);
 
@@ -55,9 +55,9 @@ class MembersApi
      */
     public function get($woo_id)
     {
-        $response = $this->client->get("/wp-json/wc/v3/memberships/members", [
+        $response = $this->client->get('/wp-json/wc/v3/memberships/members', [
             RequestOptions::QUERY => [
-                "customer" => $woo_id,
+                'customer' => $woo_id,
             ],
         ]);
 

@@ -2,7 +2,6 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
@@ -43,14 +42,14 @@ trait Subscription
                 return $status == 'active';
             })->isNotEmpty();
 
-            if (!$anyActive) {
+            if (! $anyActive) {
                 $this->recordThat(new MembershipDeactivated($this->customerId));
 
                 $this->handleMembershipDeactivated();
             }
         }
 
-        if ($newStatus == "active") {
+        if ($newStatus == 'active') {
             $this->currentlyAMember = true;
         }
 

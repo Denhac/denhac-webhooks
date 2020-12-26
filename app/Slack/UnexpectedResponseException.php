@@ -2,7 +2,6 @@
 
 namespace App\Slack;
 
-
 use Throwable;
 
 class UnexpectedResponseException extends \Exception

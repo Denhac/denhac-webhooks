@@ -2,7 +2,6 @@
 
 namespace App;
 
-
 class FeatureFlags
 {
     public const KEEP_MEMBERS_IN_SLACK_AND_EMAIL = 'keep-members-in-slack-and-email';

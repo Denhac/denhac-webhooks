@@ -29,7 +29,7 @@ class DeactivateOctoPrintUser
         $username = $customer->username;
         $api = app()->make(OctoPrintApi::class, ['host' => $host]);
 
-        if(! is_null($api->get_user($username))) {
+        if (! is_null($api->get_user($username))) {
             $api->update_user($username, $active = false);
         }
     }

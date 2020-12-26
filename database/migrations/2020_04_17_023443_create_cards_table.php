@@ -17,9 +17,9 @@ class CreateCardsTable extends Migration
             $table->id();
             $table->timestamps();
 
-            $table->string("number");
-            $table->boolean("active");
-            $table->boolean("member_has_card");
+            $table->string('number');
+            $table->boolean('active');
+            $table->boolean('member_has_card');
             $table->integer('woo_customer_id');
         });
     }

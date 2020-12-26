@@ -2,7 +2,6 @@
 
 namespace App\OctoPrint;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\RequestOptions;
@@ -21,10 +20,10 @@ class OctoPrintApi
 
     public function __construct($host, $ip = null, $api_key = null)
     {
-        if(is_null($api_key)) {
+        if (is_null($api_key)) {
             $api_key = setting("hosts.$host.api_key");
         }
-        if(is_null($ip)) {
+        if (is_null($ip)) {
             $ip = setting("hosts.$host.ip");
         }
 
@@ -41,7 +40,7 @@ class OctoPrintApi
 
     public function get_users()
     {
-        $response = $this->client->get("/api/access/users");
+        $response = $this->client->get('/api/access/users');
 
         return collect(json_decode($response->getBody(), true));
     }
@@ -53,7 +52,7 @@ class OctoPrintApi
 
             return json_decode($response->getBody(), true);
         } catch (ClientException $ex) {
-            if($ex->getCode() == 404) {
+            if ($ex->getCode() == 404) {
                 return null;
             }
             throw $ex;
@@ -62,12 +61,12 @@ class OctoPrintApi
 
     public function add_user($username, $password, $active = true, $admin = false)
     {
-        $response = $this->client->post("/api/access/users", [
+        $response = $this->client->post('/api/access/users', [
                 RequestOptions::JSON => [
-                    "name" => $username,
-                    "password" => $password,
-                    "active" => $active,
-                    "admin" => $admin
+                    'name' => $username,
+                    'password' => $password,
+                    'active' => $active,
+                    'admin' => $admin,
                 ],
             ]);
 
@@ -78,8 +77,8 @@ class OctoPrintApi
     {
         $response = $this->client->put("/api/access/users/$username", [
             RequestOptions::JSON => [
-                "active" => $active,
-                "admin" => $admin
+                'active' => $active,
+                'admin' => $admin,
             ],
         ]);
 
@@ -90,7 +89,7 @@ class OctoPrintApi
     {
         $response = $this->client->put("/api/access/users/$username", [
             RequestOptions::JSON => [
-                "password" => $password,
+                'password' => $password,
             ],
         ]);
 

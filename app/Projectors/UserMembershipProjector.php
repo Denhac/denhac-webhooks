@@ -7,10 +7,10 @@ use App\StorableEvents\UserMembershipDeleted;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
 use App\UserMembership;
-use Spatie\EventSourcing\Projectors\Projector;
-use Spatie\EventSourcing\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
-class UserMembershipProjector implements Projector
+class UserMembershipProjector extends Projector
 {
     use ProjectsEvents;
 
@@ -39,7 +39,7 @@ class UserMembershipProjector implements Projector
     {
         $membership = UserMembership::find($event->membership['id']);
 
-        if(! is_null($membership)) {
+        if (! is_null($membership)) {
             $membership->delete();
         }
     }

@@ -2,7 +2,6 @@
 
 namespace App\Slack\Modals;
 
-
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
@@ -24,25 +23,25 @@ class SelectAMemberModal implements ModalInterface
     public function __construct($callbackOrModalClass)
     {
         $callbackId = $callbackOrModalClass;
-        if(strpos($callbackId, "App\\Slack\\Modals") === 0) {
+        if (strpos($callbackId, 'App\\Slack\\Modals') === 0) {
             $callbackId = $callbackOrModalClass::callbackId();
         }
 
         $this->modalView = Slack::newModal()
             ->callbackId(self::callbackId())
-            ->title("Select A Member")
+            ->title('Select A Member')
             ->clearOnClose(true)
-            ->close("Cancel")
-            ->submit("Submit")
+            ->close('Cancel')
+            ->submit('Submit')
             ->privateMetadata($callbackId);
 
         $this->modalView->newInput()
-            ->label("Member")
+            ->label('Member')
             ->blockId(self::SELECT_A_MEMBER_BLOCK_ID)
             ->newSelectMenu()
             ->forExternalOptions()
             ->actionId(self::SELECT_A_MEMBER_ACTION_ID)
-            ->placeholder("Select a Member")
+            ->placeholder('Select a Member')
             ->minQueryLength(2);
     }
 
@@ -53,14 +52,12 @@ class SelectAMemberModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        $selectedOption = $request->payload()['view']['state']['values']
-        [self::SELECT_A_MEMBER_BLOCK_ID][self::SELECT_A_MEMBER_ACTION_ID]
-        ['selected_option']['value'];
+        $selectedOption = $request->payload()['view']['state']['values'][self::SELECT_A_MEMBER_BLOCK_ID][self::SELECT_A_MEMBER_ACTION_ID]['selected_option']['value'];
 
         $matches = [];
         $result = preg_match('/customer\-(\d+)/', $selectedOption, $matches);
 
-        if (!$result) {
+        if (! $result) {
             throw new \Exception("Option wasn't valid for customer: $selectedOption");
         }
 
@@ -70,6 +67,7 @@ class SelectAMemberModal implements ModalInterface
         $modalClass = ModalTrait::getModal($nextCallbackId);
         /** @var ModalTrait $modal */
         $modal = new $modalClass($customer_id);
+
         return $modal->push();
     }
 
@@ -79,18 +77,18 @@ class SelectAMemberModal implements ModalInterface
 
         $customers = Customer::with('subscriptions')->get();
 
-        foreach($customers as $customer) {
+        foreach ($customers as $customer) {
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
 
             $hasAnySubscriptions = $customer->subscriptions->count() > 0;
             $hasNeedIdCheck = $customer->subscriptions->where('status', 'need-id-check')->count() > 0;
 
-            if(! $hasAnySubscriptions) {
+            if (! $hasAnySubscriptions) {
                 continue;
-            } else if($hasNeedIdCheck) {
+            } elseif ($hasNeedIdCheck) {
                 $text = "$name (Need ID Check)";
-            } else if($customer->member) {
+            } elseif ($customer->member) {
                 $text = "$name (Member)";
             } else {
                 $text = "$name (Not a Member)";
@@ -105,7 +103,7 @@ class SelectAMemberModal implements ModalInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {

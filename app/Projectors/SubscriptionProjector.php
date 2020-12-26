@@ -7,10 +7,10 @@ use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
 use App\Subscription;
-use Spatie\EventSourcing\Projectors\Projector;
-use Spatie\EventSourcing\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
-final class SubscriptionProjector implements Projector
+final class SubscriptionProjector extends Projector
 {
     use ProjectsEvents;
 
@@ -52,7 +52,7 @@ final class SubscriptionProjector implements Projector
     {
         $subscriptionModel = Subscription::whereWooId($subscription['id'])->first();
 
-        if(is_null($subscriptionModel)) {
+        if (is_null($subscriptionModel)) {
             $wooId = $subscription['id'];
             $customerId = $subscription['customer_id'];
             $status = $subscription['status'];

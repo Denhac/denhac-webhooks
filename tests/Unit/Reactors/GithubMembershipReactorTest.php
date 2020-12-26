@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Reactors;
 
-
 use App\Customer;
 use App\Jobs\AddMemberToGithub;
 use App\Jobs\RemoveMemberFromGithub;
@@ -15,7 +14,7 @@ use Tests\TestCase;
 
 class GithubMembershipReactorTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -23,7 +22,7 @@ class GithubMembershipReactorTest extends TestCase
 
         Bus::fake([
             AddMemberToGithub::class,
-            RemoveMemberFromGithub::class
+            RemoveMemberFromGithub::class,
         ]);
     }
 
@@ -87,7 +86,7 @@ class GithubMembershipReactorTest extends TestCase
             'username' => 'something',
             'email' => 'test@email.com',
             'woo_id' => 1,
-            # Their membership is being activated, this field is probably false in db
+            // Their membership is being activated, this field is probably false in db
             'member' => false,
             'github_username' => 'test',
         ]);
@@ -110,7 +109,7 @@ class GithubMembershipReactorTest extends TestCase
             'username' => 'something',
             'email' => 'test@email.com',
             'woo_id' => 1,
-            # Their membership is being deactivated, this field is probably true in db
+            // Their membership is being deactivated, this field is probably true in db
             'member' => true,
             'github_username' => 'test',
         ]);
@@ -133,7 +132,7 @@ class GithubMembershipReactorTest extends TestCase
             'username' => 'something',
             'email' => 'test@email.com',
             'woo_id' => 1,
-            # Their membership is being activated, this field is probably false in db
+            // Their membership is being activated, this field is probably false in db
             'member' => false,
             'github_username' => null,
         ]);
@@ -152,7 +151,7 @@ class GithubMembershipReactorTest extends TestCase
             'username' => 'something',
             'email' => 'test@email.com',
             'woo_id' => 1,
-            # Their membership is being deactivated, this field is probably true in db
+            // Their membership is being deactivated, this field is probably true in db
             'member' => true,
             'github_username' => null,
         ]);

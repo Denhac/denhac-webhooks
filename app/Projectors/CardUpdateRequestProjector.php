@@ -5,10 +5,10 @@ namespace App\Projectors;
 use App\CardUpdateRequest;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardDeactivated;
-use Spatie\EventSourcing\Projectors\Projector;
-use Spatie\EventSourcing\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
-final class CardUpdateRequestProjector implements Projector
+final class CardUpdateRequestProjector extends Projector
 {
     use ProjectsEvents;
 

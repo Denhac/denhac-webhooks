@@ -41,7 +41,7 @@ final class GoogleGroupsReactor implements EventHandler
 
     public function onSubscriptionUpdated(SubscriptionUpdated $event)
     {
-        if($event->subscription['status'] != 'need-id-check') {
+        if ($event->subscription['status'] != 'need-id-check') {
             return;
         }
 
@@ -50,8 +50,7 @@ final class GoogleGroupsReactor implements EventHandler
 
         dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_DENHAC));
 
-        if(Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-
+        if (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
             dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_MEMBERS));
         }
     }
@@ -69,7 +68,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if(Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
+        if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
             return;
         }
 
@@ -112,7 +111,7 @@ final class GoogleGroupsReactor implements EventHandler
 
     public function onUserMembershipCreated(UserMembershipCreated $event)
     {
-        if($event->membership['status'] != 'active') {
+        if ($event->membership['status'] != 'active') {
             return;
         }
 
@@ -122,11 +121,11 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($customerId)->first();
 
-        if($plan_id == UserMembership::MEMBERSHIP_3DP_TRAINER) {
+        if ($plan_id == UserMembership::MEMBERSHIP_3DP_TRAINER) {
             dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_3DP));
         }
 
-        if($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER) {
+        if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER) {
             dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_LASER));
         }
     }

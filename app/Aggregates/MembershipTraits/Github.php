@@ -2,7 +2,6 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-
 use App\StorableEvents\GithubUsernameUpdated;
 
 trait Github

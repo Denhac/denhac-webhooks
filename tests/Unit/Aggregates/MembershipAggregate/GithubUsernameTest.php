@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
-
 use App\Aggregates\MembershipAggregate;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerUpdated;
@@ -14,7 +13,7 @@ use Tests\TestCase;
 
 class GithubUsernameTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

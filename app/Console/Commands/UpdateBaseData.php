@@ -62,7 +62,7 @@ class UpdateBaseData extends Command
      */
     private function createCustomersInDatabase()
     {
-        $this->line("Updating customers");
+        $this->line('Updating customers');
 
         $customersInDB = Customer::all();
         $customersInWooCommerce = $this->api->customers->list();
@@ -80,12 +80,12 @@ class UpdateBaseData extends Command
 
     private function updateCustomerCapabilitiesInDatabase()
     {
-        $this->line("Updating user capabilities");
+        $this->line('Updating user capabilities');
 
         $customersInDB = Customer::all()
             ->whereNull('capabilities');
 
-        $customersInDB->each(function($customer) {
+        $customersInDB->each(function ($customer) {
             /** @var Customer $customer */
             $username = $customer->username;
             $this->line("${username} doesn't have their capabilities set, updating.");
@@ -101,7 +101,7 @@ class UpdateBaseData extends Command
      */
     private function updateSubscriptionsInDatabase()
     {
-        $this->line("Updating subscriptions");
+        $this->line('Updating subscriptions');
 
         $subscriptionsInDB = Subscription::all();
         $subscriptionsInWooCommerce = $this->api->subscriptions->list();
@@ -119,13 +119,13 @@ class UpdateBaseData extends Command
 
     public function updateUserMembershipsInDatabase()
     {
-        $this->line("Updating user memberships");
+        $this->line('Updating user memberships');
 
         $userMembershipsInDB = UserMembership::all();
         $userMembershipsInWooCommerce = $this->api->members->list();
         $userMembershipsInWooCommerce->each(function ($membership) use ($userMembershipsInDB) {
             $wooId = $membership['id'];
-            if(! $userMembershipsInDB->contains('id', $wooId)) {
+            if (! $userMembershipsInDB->contains('id', $wooId)) {
                 $this->line("User Membership {$wooId} was not in our internal store, adding.");
 
                 MembershipAggregate::make($membership['customer_id'])
