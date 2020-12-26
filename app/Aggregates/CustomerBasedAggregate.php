@@ -4,7 +4,7 @@ namespace App\Aggregates;
 
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use Spatie\EventSourcing\FakeAggregateRoot;
+use Spatie\EventSourcing\AggregateRoots\FakeAggregateRoot;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 
 trait CustomerBasedAggregate

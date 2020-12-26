@@ -54,6 +54,6 @@ abstract class TestCase extends BaseTestCase
                 return get_class($value) == $cls;
             });
 
-        $projectionist->withoutEventHandlers($handlersToRemove->keys()->all());
+        $projectionist->withoutEventHandlers(collect($handlersToRemove)->keys()->all());
     }
 }

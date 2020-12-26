@@ -50,9 +50,9 @@ class CustomerBuilder extends BaseBuilder
 
     public function meta_data($key, $value)
     {
-        foreach ($this->data['meta_data'] as $key => $item) {
+        foreach ($this->data['meta_data'] as $index => $item) {
             if ($item['key'] == $key) {
-                $this->data['meta_data'][$key]['value'] = $value;
+                $this->data['meta_data'][$index]['value'] = $value;
 
                 return $this;
             }
