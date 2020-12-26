@@ -28,7 +28,10 @@ trait Subscription
             return;
         }
 
-        if (in_array($oldStatus, ['need-id-check',  'id-was-checked']) && $newStatus == 'active') {
+        if (
+            (in_array($oldStatus, ['need-id-check', 'id-was-checked']) || $oldStatus == null)
+            && $newStatus == 'active'
+        ) {
             $this->recordThat(new MembershipActivated($this->customerId));
 
             $this->handleMembershipActivated();

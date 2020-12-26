@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SlackRequest;
 use App\Slack\Modals\ModalTrait;
 use App\Slack\SlackOptions;
+use Illuminate\Support\Facades\Log;
 
 class SlackInteractivityController extends Controller
 {
@@ -59,6 +60,9 @@ class SlackInteractivityController extends Controller
 
     private function viewSubmission(SlackRequest $request)
     {
+        Log::info("View submitted!");
+        Log::info(print_r($request->payload(), true));
+
         $view = $request->payload()['view'];
         $callback_id = $view['callback_id'];
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
+use App\ADUpdateRequest;
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
 use App\StorableEvents\CustomerIsNoEventTestUser;
@@ -110,6 +111,22 @@ class NoEventUserTest extends TestCase
         MembershipAggregate::fakeCustomer($customer->id)
             ->given(new CustomerIsNoEventTestUser($customer->id))
             ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->assertNothingRecorded();
+    }
+
+    /** @test */
+    public function ad_update_request_does_not_make_event()
+    {
+        $customer = $this->customer();
+
+        $adUpdateRequest = ADUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer->id)
+            ->given(new CustomerIsNoEventTestUser($customer->id))
+            ->updateADStatus($adUpdateRequest, ADUpdateRequest::STATUS_SUCCESS)
             ->assertNothingRecorded();
     }
 }

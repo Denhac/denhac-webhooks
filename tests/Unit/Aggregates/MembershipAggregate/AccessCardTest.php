@@ -4,6 +4,8 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
+use App\StorableEvents\ADUserToBeDisabled;
+use App\StorableEvents\ADUserToBeEnabled;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;
@@ -16,7 +18,6 @@ use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
-use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
@@ -50,6 +51,7 @@ class AccessCardTest extends TestCase
                 new SubscriptionUpdated($subscription),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
+                new ADUserToBeEnabled($customer->id),
             ]);
     }
 
@@ -135,23 +137,7 @@ class AccessCardTest extends TestCase
                 new MembershipDeactivated($customer->id),
                 new CardSentForDeactivation($customer->id, '42424'),
                 new CardSentForDeactivation($customer->id, '53535'),
-            ]);
-    }
-
-    /** @test */
-    public function card_is_not_sent_for_activation_on_active_subscription_import()
-    {
-        $customer = $this->customer();
-        $subscription = $this->subscription()->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new CardAdded($customer->id, '42424'),
-            ])
-            ->importSubscription($subscription)
-            ->assertRecorded([
-                new SubscriptionImported($subscription),
+                new ADUserToBeDisabled($customer->id),
             ]);
     }
 
@@ -273,6 +259,7 @@ class AccessCardTest extends TestCase
                 new SubscriptionUpdated($subscription),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
+                new ADUserToBeEnabled($customer->id),
             ]);
     }
 

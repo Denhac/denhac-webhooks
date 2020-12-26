@@ -33,7 +33,7 @@ class OctoPrintReactor implements EventHandler
         }
 
         app(AddUserToOctoPrintHosts::class)
-            ->onQueue('event-sourcing')
+            ->onQueue()
             ->execute($customer);
     }
 
@@ -47,7 +47,7 @@ class OctoPrintReactor implements EventHandler
         }
 
         app(AddUserToOctoPrintHosts::class)
-            ->onQueue('event-sourcing')
+            ->onQueue()
             ->execute($customer);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Aggregates;
 
+use App\Aggregates\MembershipTraits\ActiveDirectory;
 use App\Aggregates\MembershipTraits\Cards;
 use App\Aggregates\MembershipTraits\Github;
 use App\Aggregates\MembershipTraits\Subscription;
@@ -22,8 +23,9 @@ use Spatie\EventSourcing\AggregateRoot;
 final class MembershipAggregate extends AggregateRoot
 {
     use CustomerBasedAggregate;
-    use Github;
+    use ActiveDirectory;
     use Cards;
+    use Github;
     use Subscription;
 
     public $currentlyAMember = false;
@@ -192,11 +194,13 @@ final class MembershipAggregate extends AggregateRoot
     public function handleMembershipActivated()
     {
         $this->activateCardsNeedingActivation();
+        $this->enableActiveDirectoryAccount();
     }
 
     public function handleMembershipDeactivated()
     {
         $this->deactivateAllCards();
+        $this->disableActiveDirectoryAccount();
     }
 
     protected function applyMembershipActivated()

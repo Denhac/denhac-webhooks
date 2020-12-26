@@ -3,13 +3,23 @@
 namespace App\Actions;
 
 use App\Customer;
-use App\Notifications\OctoPrintNewUser;
-use App\OctoPrint\OctoPrintApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddUserToOctoPrintHosts
 {
     use QueueableAction;
+
+    public $queue = 'event-sourcing';
+
+    /**
+     * @var AddOrActivateUserToOctoPrintHost
+     */
+    private $activateUserToOctoPrintHost;
+
+    public function __construct(AddOrActivateUserToOctoPrintHost $activateUserToOctoPrintHost)
+    {
+        $this->activateUserToOctoPrintHost = $activateUserToOctoPrintHost;
+    }
 
     public function execute(Customer $customer)
     {
@@ -20,22 +30,9 @@ class AddUserToOctoPrintHosts
         $fake_password = str_random(8);
 
         foreach ($octoprint_hosts as $host) {
-            $this->invite($host, $customer, $fake_password);
-        }
-    }
-
-    private function invite($host, Customer $customer, $password)
-    {
-        $username = $customer->username;
-        $api = app()->make(OctoPrintApi::class, ['host' => $host]);
-
-        if (is_null($api->get_user($username))) {
-            $api->add_user($username, $password);
-
-            $customer->notify(new OctoPrintNewUser($host, $username, $password));
-        } else {
-            // Make sure they're an active user
-            $api->update_user($username, $active = true);
+            $this->activateUserToOctoPrintHost
+                ->onQueue()
+                ->execute($customer, $host, $fake_password);
         }
     }
 }

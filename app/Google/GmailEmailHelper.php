@@ -13,8 +13,16 @@ class GmailEmailHelper
      * @param $email
      * @return string
      */
-    public static function removePlusInGmail($email)
+    public static function handleGmail($email)
     {
-        return preg_replace("#(.+)\+.*@(gmail.com)#", '$1@$2', $email);
+        $email = preg_replace("#(.+)\+.*@(gmail.com)#", '$1@$2', $email);
+
+        preg_match("#(.+)@gmail.com#", $email, $matches);
+
+        if(! empty($matches)) {
+            $email = str_replace('.', '', $matches[1]) . "@gmail.com";
+        }
+
+        return $email;
     }
 }
