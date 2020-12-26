@@ -18,7 +18,7 @@ use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipDeleted;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
-use Spatie\EventSourcing\AggregateRoot;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 final class MembershipAggregate extends AggregateRoot
 {

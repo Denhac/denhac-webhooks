@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class CardNotificationEmailNeeded implements ShouldBeStored
+final class CardNotificationEmailNeeded extends ShouldBeStored
 {
     public $cardNotifications;
 

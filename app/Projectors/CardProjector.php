@@ -9,10 +9,10 @@ use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardRemoved;
 use App\StorableEvents\SubscriptionImported;
 use Illuminate\Database\Eloquent\Collection;
-use Spatie\EventSourcing\Projectors\Projector;
-use Spatie\EventSourcing\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
-class CardProjector implements Projector
+class CardProjector extends Projector
 {
     use ProjectsEvents;
 

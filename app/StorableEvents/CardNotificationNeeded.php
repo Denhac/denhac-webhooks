@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class CardNotificationNeeded implements ShouldBeStored
+final class CardNotificationNeeded extends ShouldBeStored
 {
     public const ACTIVATION_TYPE = 'activation';
     public const DEACTIVATION_TYPE = 'deactivation';

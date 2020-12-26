@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class MembershipActivated implements ShouldBeStored
+final class MembershipActivated extends ShouldBeStored
 {
     public $customerId;
 

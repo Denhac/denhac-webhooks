@@ -3,7 +3,7 @@
 namespace App\Aggregates;
 
 use Ramsey\Uuid\Uuid;
-use Spatie\EventSourcing\AggregateRoot;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Spatie\EventSourcing\FakeAggregateRoot;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 

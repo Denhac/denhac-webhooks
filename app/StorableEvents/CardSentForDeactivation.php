@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class CardSentForDeactivation implements ShouldBeStored
+final class CardSentForDeactivation extends ShouldBeStored
 {
     public $wooCustomerId;
     public $cardNumber;

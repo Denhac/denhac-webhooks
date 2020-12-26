@@ -11,13 +11,16 @@
 |
 */
 
+use App\Http\Controllers\SlackDoorCodeCommandController;
+use App\Http\Controllers\SlackInteractivityController;
+use App\Http\Controllers\SlackMembershipCommandController;
 use Illuminate\Support\Facades\Route;
 
 Route::webhooks('webhooks/denhac-org', 'denhac.org');
 Route::webhooks('webhooks/octoprint', 'OctoPrint');
 
-Route::post('slack/door_code', 'SlackDoorCodeCommandController');
-Route::post('slack/membership', 'SlackMembershipCommandController');
+Route::post('slack/door_code', SlackDoorCodeCommandController::class);
+Route::post('slack/membership', SlackMembershipCommandController::class);
 
-Route::post('slack/interactive', 'SlackInteractivityController@interactive');
-Route::post('slack/options', 'SlackInteractivityController@options');
+Route::post('slack/interactive', [SlackInteractivityController:: class, 'interactive']);
+Route::post('slack/options', [SlackInteractivityController:: class, 'options']);

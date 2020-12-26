@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class GithubUsernameUpdated implements ShouldBeStored
+final class GithubUsernameUpdated extends ShouldBeStored
 {
     public $oldUsername;
     public $newUsername;

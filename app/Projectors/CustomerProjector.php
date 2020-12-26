@@ -3,7 +3,6 @@
 namespace App\Projectors;
 
 use App\Customer;
-use App\PaypalBasedMember;
 use App\StorableEvents\CustomerCapabilitiesImported;
 use App\StorableEvents\CustomerCapabilitiesUpdated;
 use App\StorableEvents\CustomerCreated;
@@ -15,11 +14,10 @@ use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Log;
-use Spatie\EventSourcing\Projectors\Projector;
-use Spatie\EventSourcing\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
-final class CustomerProjector implements Projector
+final class CustomerProjector extends Projector
 {
     use ProjectsEvents;
 

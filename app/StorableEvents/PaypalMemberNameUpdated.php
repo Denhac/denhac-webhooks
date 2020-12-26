@@ -2,9 +2,9 @@
 
 namespace App\StorableEvents;
 
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class PaypalMemberNameUpdated implements ShouldBeStored
+final class PaypalMemberNameUpdated extends ShouldBeStored
 {
     public $paypal_id;
     public $first_name;

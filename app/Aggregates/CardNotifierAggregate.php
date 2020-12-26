@@ -7,7 +7,7 @@ use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardNotificationEmailNeeded;
 use App\StorableEvents\CardNotificationNeeded;
 use Illuminate\Support\Collection;
-use Spatie\EventSourcing\AggregateRoot;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 final class CardNotifierAggregate extends AggregateRoot
 {

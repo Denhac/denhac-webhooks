@@ -9,8 +9,8 @@ use App\StorableEvents\CustomerIsNoEventTestUser;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
-use Spatie\EventSourcing\AggregateRoot;
-use Spatie\EventSourcing\ShouldBeStored;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class CapabilityAggregate extends AggregateRoot
 {

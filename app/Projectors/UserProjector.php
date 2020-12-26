@@ -4,11 +4,10 @@ namespace App\Projectors;
 
 use App\StorableEvents\UserCreated;
 use App\User;
-use Illuminate\Support\Str;
-use Spatie\EventSourcing\Projectors\Projector;
-use Spatie\EventSourcing\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
-final class UserProjector implements Projector
+final class UserProjector extends Projector
 {
     use ProjectsEvents;
 
