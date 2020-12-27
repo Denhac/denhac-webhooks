@@ -7,7 +7,7 @@ use DateInterval;
 use DatePeriod;
 use DateTime;
 use Illuminate\Console\Command;
-use ParentIterator;
+use Illuminate\Support\Str;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -96,14 +96,14 @@ class CleanupOldWinDSXBackups extends Command
         return 0;
     }
 
-    private function get_windsx_paths()
+    private function get_windsx_paths(): array
     {
         $directory = new \RecursiveDirectoryIterator($this->backup_path, RecursiveIteratorIterator::SELF_FIRST);
         $filter = new \RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) {
             $path_name = $current->getPathname();
             $file_name = $current->getFilename();
 
-            if (strpos($path_name, 'WinDSX') === false) {
+            if (! str_contains($path_name, 'WinDSX')) {
                 if ($file_name[0] === '.') {
                     return false; // Skip hidden files and directories above WinDSX
                 }
@@ -130,7 +130,7 @@ class CleanupOldWinDSXBackups extends Command
         $paths = [];
         foreach ($iterator as $info) {
             $pathname = $info->getPathname();
-            if (ends_with($pathname, '.')) {
+            if (Str::endsWith($pathname, '.')) {
                 $pathname = substr($pathname, 0, strlen($pathname) - strlen('.'));
             }
             $paths[] = $pathname;
@@ -148,7 +148,7 @@ class CleanupOldWinDSXBackups extends Command
     {
         $file = substr($file, strlen($this->backup_path));
 
-        if (starts_with($file, '/on_time/')) {
+        if (Str::startsWith($file, '/on_time/')) {
             $file = substr($file, 9);
         } else {
             throw new \Exception("Unknown starting point for {$file}");
@@ -186,11 +186,11 @@ class CleanupOldWinDSXBackups extends Command
         $filter = new \RecursiveCallbackFilterIterator($it, function ($current, $key, $iterator) {
             $file_name = $current->getFilename();
 
-            if (ends_with($file_name, '.mdb')) {
+            if (Str::endsWith($file_name, '.mdb')) {
                 return false;
             }
 
-            if (ends_with($file_name, '.ldb')) {
+            if (Str::endsWith($file_name, '.ldb')) {
                 return false;
             }
 
@@ -282,11 +282,11 @@ class CleanupOldWinDSXBackups extends Command
         $this->remove_empty_sub_folders($this->backup_path);
     }
 
-    private function remove_empty_sub_folders($path)
+    private function remove_empty_sub_folders($path): bool
     {
         $empty = true;
         foreach (glob($path.DIRECTORY_SEPARATOR.'*') as $file) {
-            if (strpos($path, 'WinDSX') === false) {
+            if (!str_contains($path, 'WinDSX')) {
                 $empty &= is_dir($file) && $this->remove_empty_sub_folders($file);
             } else {
                 $empty = false;
@@ -294,7 +294,7 @@ class CleanupOldWinDSXBackups extends Command
         }
 
         if (! $empty) {
-            return;
+            return false;
         }
 
         if ($this->isDryRun) {
@@ -303,5 +303,6 @@ class CleanupOldWinDSXBackups extends Command
             $this->info("Deleting {$path} because it is empty.");
             rmdir($path);
         }
+        return true;
     }
 }
