@@ -62,7 +62,7 @@ class PublicMethodEventTest extends TestCase
 
         MembershipAggregate::fake()
             ->deleteCustomer($customer)
-            ->assertRecorded(new CustomerDeleted($customer));
+            ->assertRecorded(new CustomerDeleted($customer->id));
     }
 
     /** @test */

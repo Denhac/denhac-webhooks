@@ -90,7 +90,7 @@ final class MembershipAggregate extends AggregateRoot
             return $this;
         }
 
-        $this->recordThat(new CustomerDeleted($customer));
+        $this->recordThat(new CustomerDeleted($customer['id']));
 
         return $this;
     }
