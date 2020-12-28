@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
@@ -29,6 +30,7 @@ use Illuminate\Support\Collection;
  */
 class Customer extends Model
 {
+    use SoftDeletes;
     use Notifiable;
 
     protected $fillable = [

@@ -27,7 +27,7 @@ class SlackReactorTest extends TestCase
     {
         parent::setUp();
 
-        $this->withOnlyEventHandler(SlackReactor::class);
+        $this->withOnlyEventHandlerType(SlackReactor::class);
 
         Bus::fake([
             ActionJob::class,

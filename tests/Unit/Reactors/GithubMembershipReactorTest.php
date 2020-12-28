@@ -18,7 +18,7 @@ class GithubMembershipReactorTest extends TestCase
     {
         parent::setUp();
 
-        $this->withOnlyEventHandler(GithubMembershipReactor::class);
+        $this->withOnlyEventHandlerType(GithubMembershipReactor::class);
 
         Bus::fake([
             AddMemberToGithub::class,

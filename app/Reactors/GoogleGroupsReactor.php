@@ -21,11 +21,11 @@ use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class GoogleGroupsReactor implements EventHandler
 {
-    private const GROUP_MEMBERS = 'members@denhac.org';
-    private const GROUP_DENHAC = 'denhac@denhac.org';
-    private const GROUP_BOARD = 'board@denhac.org';
-    private const GROUP_3DP = '3dp@denhac.org';
-    private const GROUP_LASER = 'laser@denhac.org';
+    public const GROUP_MEMBERS = 'members@denhac.org';
+    public const GROUP_DENHAC = 'denhac@denhac.org';
+    public const GROUP_BOARD = 'board@denhac.org';
+    public const GROUP_3DP = '3dp@denhac.org';
+    public const GROUP_LASER = 'laser@denhac.org';
 
     use HandlesEvents;
 
@@ -85,7 +85,9 @@ final class GoogleGroupsReactor implements EventHandler
     public function onCustomerDeleted(CustomerDeleted $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::withTrashed()
+            ->where('woo_id', $event->customerId)
+            ->first();
 
         $this->googleApi->groupsForMember($customer->email)
             ->each(function ($group) use ($customer) {

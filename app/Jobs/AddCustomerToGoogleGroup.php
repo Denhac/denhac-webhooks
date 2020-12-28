@@ -13,8 +13,8 @@ use Illuminate\Queue\SerializesModels;
 class AddCustomerToGoogleGroup implements ShouldQueue
 {
     use Dispatchable, Queueable, SerializesModels;
-    protected $email;
-    protected $group;
+    public string $email;
+    public string $group;
 
     /**
      * Create a new job instance.

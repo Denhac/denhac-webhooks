@@ -56,4 +56,39 @@ class ADUpdateRequestsControllerTest extends TestCase
             ]
         ]);
     }
+
+    /** @test */
+    public function deleted_customer_still_shows_up()
+    {
+        /** @var Customer $customer */
+        $customer = Customer::create([
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'username' => $this->faker->userName,
+            'email' => $this->faker->email,
+            'woo_id' => 1,
+            'member' => true,
+        ]);
+
+        $customer->delete();
+
+        /** @var ADUpdateRequest $disableRequest */
+        $disableRequest = ADUpdateRequest::create([
+            'type' => ADUpdateRequest::DEACTIVATION_TYPE,
+            'customer_id' => $customer->id,
+        ]);
+
+        $response = $this
+            ->be($this->apiUser, 'api')
+            ->get('/api/ad_updates');
+        $response->assertJson([
+            'data' => [
+                [
+                    'id' => $disableRequest->id,
+                    'method' => ADUpdateRequest::DEACTIVATION_TYPE,
+                    'username' => $customer->username,
+                ],
+            ]
+        ]);
+    }
 }

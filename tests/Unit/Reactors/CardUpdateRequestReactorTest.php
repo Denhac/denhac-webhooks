@@ -15,7 +15,7 @@ class CardUpdateRequestReactorTest extends TestCase
     {
         parent::setUp();
 
-        $this->withOnlyEventHandler(CardUpdateRequestReactor::class);
+        $this->withOnlyEventHandlerType(CardUpdateRequestReactor::class);
 
         Bus::fake(IssueCardUpdateRequest::class);
     }

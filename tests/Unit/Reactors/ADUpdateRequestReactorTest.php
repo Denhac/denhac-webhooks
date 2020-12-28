@@ -17,7 +17,7 @@ class ADUpdateRequestReactorTest extends TestCase
     {
         parent::setUp();
 
-        $this->withOnlyEventHandler(ADUpdateRequestReactor::class);
+        $this->withOnlyEventHandlerType(ADUpdateRequestReactor::class);
     }
 
     /** @test */

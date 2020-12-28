@@ -101,4 +101,15 @@ class SubscriptionBuilder extends BaseBuilder
 
         return $this;
     }
+
+    public function customer($customer)
+    {
+        if (is_int($customer)) {
+            $this->data['customer_id'] = $customer;
+        } else {
+            $this->data['customer_id'] = $customer->id;
+        }
+
+        return $this;
+    }
 }
