@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Customer;
+use Illuminate\Support\Str;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddUserToOctoPrintHosts
@@ -27,7 +28,7 @@ class AddUserToOctoPrintHosts
             ->where('type', 'octoprint')
             ->keys();
 
-        $fake_password = str_random(8);
+        $fake_password = Str::random(8);
 
         foreach ($octoprint_hosts as $host) {
             $this->activateUserToOctoPrintHost
