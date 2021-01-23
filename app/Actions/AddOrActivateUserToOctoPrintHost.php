@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Customer;
 use App\Notifications\OctoPrintNewUser;
 use App\OctoPrint\OctoPrintApi;
+use Illuminate\Support\Str;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddOrActivateUserToOctoPrintHost
@@ -16,7 +17,7 @@ class AddOrActivateUserToOctoPrintHost
     public function execute(Customer $customer, $host, $password = null)
     {
         if(is_null($password)) {
-            $password = str_random(8);
+            $password = Str::random(8);
         }
 
         $username = $customer->username;
