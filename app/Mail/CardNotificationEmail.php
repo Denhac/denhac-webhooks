@@ -53,15 +53,19 @@ class CardNotificationEmail extends Mailable
                 return; // TODO Is this an okay solution?
             }
 
+            /** @var CardNotificationNeeded|array $cardNotification */
+            $cardNumber = is_array($cardNotification) ? $cardNotification['cardNumber'] : $cardNotification->cardNumber;
+            $notificationType = is_array($cardNotification) ? $cardNotification['notificationType'] : $cardNotification->notificationType;
+
             $notification = [
                 'first_name' => $customer->first_name,
                 'last_name' => $customer->last_name,
-                'card' => $cardNotification['cardNumber'],
+                'card' => $cardNumber,
             ];
 
-            if ($cardNotification['notificationType'] == CardNotificationNeeded::ACTIVATION_TYPE) {
+            if ($notificationType == CardNotificationNeeded::ACTIVATION_TYPE) {
                 $activatedCards->push($notification);
-            } elseif ($cardNotification['notificationType'] == CardNotificationNeeded::DEACTIVATION_TYPE) {
+            } elseif ($notificationType == CardNotificationNeeded::DEACTIVATION_TYPE) {
                 $deactivatedCards->push($notification);
             }
         });
