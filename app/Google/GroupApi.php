@@ -35,6 +35,7 @@ class GroupApi
 
     public function add(string $email)
     {
+        $email = GmailEmailHelper::handleGmail($email);
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
 
         /** @var ResponseInterface $response */
@@ -60,6 +61,7 @@ class GroupApi
 
     public function remove(string $email)
     {
+        $email = GmailEmailHelper::handleGmail($email);
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
 
         /** @var ResponseInterface $response */
@@ -87,7 +89,7 @@ class GroupApi
         if (Arr::has($json, 'members')) {
             return collect($json['members'])
                 ->map(function ($group) {
-                    return $group['email'];
+                    return GmailEmailHelper::handleGmail($group['email']);
                 });
         }
 
