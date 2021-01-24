@@ -4,6 +4,7 @@ namespace App\WooCommerce;
 
 use App\Aggregates\CapabilityAggregate;
 use App\Aggregates\MembershipAggregate;
+use App\UserMembership;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Models\WebhookCall;
 
@@ -57,9 +58,13 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->persist();
                 break;
             case 'user_membership.deleted':
-                MembershipAggregate::make($payload['customer_id'])
-                    ->deleteUserMembership($payload)
-                    ->persist();
+                $user_membership = UserMembership::find($payload['id']);
+
+                if (! is_null($user_membership)) {
+                    MembershipAggregate::make($user_membership->customer_id)
+                        ->deleteUserMembership($payload)
+                        ->persist();
+                }
                 break;
             case 'subscription.created':
                 MembershipAggregate::make($payload['customer_id'])
