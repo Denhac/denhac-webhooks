@@ -29,7 +29,6 @@ return [
     'notifications' => [
         'card_notification' => [
             'to' => env('NOTIFICATION_CARD_TO'),
-            'cc' => env('NOTIFICATION_CARD_CC'),
         ],
         'slack' => [
             'card_scan_channel_webhook' => env('NOTIFICATION_CARD_SCAN_SLACK_WEBHOOK'),
