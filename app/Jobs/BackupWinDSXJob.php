@@ -49,7 +49,7 @@ class BackupWinDSXJob implements ShouldQueue
 
             setting([self::JOB_FAILURE_KEY => $value])->save();
 
-            if($value >= 10) {
+            if($value >= 100) {
                 throw $throwable;
             }
         }
