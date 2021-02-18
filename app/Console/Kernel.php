@@ -36,13 +36,13 @@ class Kernel extends ConsoleKernel
 //            ->command(SetUpDenhacWebhooks::class)
 //            ->hourly();
 
-        $schedule
-            ->command(BackupWinDSXCommand::class, [
-                storage_path('backups/on_time/'.date('Y/m/d/h/i')),
-            ])
-            ->hourly();
+//        $schedule
+//            ->command(BackupWinDSXCommand::class, [
+//                storage_path('backups/on_time/'.date('Y/m/d/h/i')),
+//            ])
+//            ->hourly();
 
-        $schedule->command('denhac:backup-cleanup')->daily();
+//        $schedule->command('denhac:backup-cleanup')->daily();
 
         $schedule
             ->call(function () {
