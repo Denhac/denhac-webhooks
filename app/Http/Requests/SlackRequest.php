@@ -3,13 +3,10 @@
 namespace App\Http\Requests;
 
 use App\Customer;
-use App\Slack\ValidatesSlack;
 use Illuminate\Http\Request;
 
 class SlackRequest extends Request
 {
-    use ValidatesSlack;
-
     private ?array $payload_json = null;
 
     public function payload()

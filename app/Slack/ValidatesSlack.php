@@ -12,7 +12,7 @@ trait ValidatesSlack
     {
         $timestamp = $request->header('x-slack-request-timestamp');
         $sentSignature = $request->header('x-slack-signature');
-        $content = $request->content;
+        $content = $request->getContent();
 
         $nowTimestamp = (new DateTime())->getTimestamp();
         if (abs($nowTimestamp - $timestamp) > 60 * 5) {
