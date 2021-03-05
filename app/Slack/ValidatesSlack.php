@@ -4,7 +4,6 @@ namespace App\Slack;
 
 use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Spatie\SslCertificate\SslCertificate;
 
 trait ValidatesSlack
@@ -36,7 +35,6 @@ trait ValidatesSlack
         $clientCertificateDataEncoded = $request->server('X_CLIENT_CERTIFICATE');
 
         if($clientVerify != 'SUCCESS') {
-            Log::debug("client verify failed");
             return false;
         }
 
@@ -44,9 +42,6 @@ trait ValidatesSlack
         $clientCertificate = SslCertificate::createFromString($clientCertificateData);
 
         if(! $clientCertificate->isValid("platform-tls-client.slack.com")) {
-            Log::debug("Not valid for that domain");
-            Log::debug($clientCertificate->isValid());
-            Log::debug(print_r($clientCertificate->getAdditionalDomains(), true));
             return false;
         }
 
