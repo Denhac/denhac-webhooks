@@ -3,40 +3,14 @@
 namespace App\Http\Requests;
 
 use App\Customer;
-use App\Slack\ValidatesSlackSignature;
-use Illuminate\Contracts\Validation\ValidatesWhenResolved;
+use App\Slack\ValidatesSlack;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
-class SlackRequest extends Request implements ValidatesWhenResolved
+class SlackRequest extends Request
 {
-    use ValidatesSlackSignature;
+    use ValidatesSlack;
 
-    /**
-     * @var null
-     */
-    private $payload_json;
-
-    public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
-    {
-        parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
-
-        $this->payload_json = null;
-    }
-
-    /**
-     * @throws ValidationException
-     */
-    public function validateResolved()
-    {
-        $secret = config('denhac.slack.spacebot_api_signing_secret');
-        if (! $this->isSlackSignatureValid($this, $secret)) {
-            throw new ValidationException(null, response()->json([
-                'response_type' => 'ephemeral',
-                'text' => "The signature from slack didn't match the computed value. Did our signing secret change?",
-            ]));
-        }
-    }
+    private ?array $payload_json = null;
 
     public function payload()
     {
@@ -51,7 +25,7 @@ class SlackRequest extends Request implements ValidatesWhenResolved
         return $this->payload_json;
     }
 
-    public function customer()
+    public function customer(): ?Customer
     {
         $userId = $this->get_user_id();
 
@@ -60,9 +34,7 @@ class SlackRequest extends Request implements ValidatesWhenResolved
         }
 
         /** @var Customer $customer */
-        $customer = Customer::whereSlackId($userId)->first();
-
-        return $customer;
+        return Customer::whereSlackId($userId)->first();
     }
 
     private function get_user_id()
@@ -87,8 +59,6 @@ class SlackRequest extends Request implements ValidatesWhenResolved
             return null;
         }
 
-        $userID = $payload['user']['id'];
-
-        return $userID;
+        return $payload['user']['id'];
     }
 }
