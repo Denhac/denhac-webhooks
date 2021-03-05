@@ -60,8 +60,8 @@ class SlackInteractivityController extends Controller
 
     private function viewSubmission(SlackRequest $request)
     {
-        Log::info("View submitted!");
-        Log::info(print_r($request->payload(), true));
+//        Log::info("View submitted!");
+//        Log::info(print_r($request->payload(), true));
 
         $view = $request->payload()['view'];
         $callback_id = $view['callback_id'];
