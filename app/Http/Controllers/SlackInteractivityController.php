@@ -15,11 +15,14 @@ class SlackInteractivityController extends Controller
 //        Log::info(print_r($request->payload(), true));
 
         $payload = $request->payload();
+        $type = $payload['type'];
 
-        if ($payload['type'] == 'view_submission') {
+        if ($type == 'view_submission') {
             return $this->viewSubmission($request);
+        } else if ($type == 'shortcut') {
+            return $this->shortcut($request);
         } else {
-            throw new \Exception('Slack interactive payload has unknown type');
+            throw new \Exception('Slack interactive payload has unknown type: '. $type);
         }
     }
 
@@ -73,5 +76,16 @@ class SlackInteractivityController extends Controller
         }
 
         return $modalClass::handle($request);
+    }
+
+    private function shortcut(SlackRequest $request)
+    {
+        Log::info("Shortcut!");
+        Log::info(print_r($request->payload(), true));
+
+        return response()->json([
+            'response_type' => 'ephemeral',
+            'text' => "That's not implemented, just yet!",
+        ]);
     }
 }
