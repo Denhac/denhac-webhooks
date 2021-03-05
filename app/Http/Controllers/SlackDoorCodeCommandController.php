@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\Http\Requests\SlackRequest;
+use App\Slack\CommonResponses;
 use Jeremeamia\Slack\BlockKit\Slack;
 
 class SlackDoorCodeCommandController extends Controller
@@ -15,13 +16,11 @@ class SlackDoorCodeCommandController extends Controller
         $member = $request->customer();
 
         if ($member === null) {
-            return Slack::newMessage()
-                ->text("I don't recognize you. If you're a member in good standing and you're not using paypal for membership dues, please contact access@denhac.org.");
+            return CommonResponses::unrecognizedUser();
         }
 
-        if (! $member->member) {
-            return Slack::newMessage()
-                ->text("I recognize you but you don't appear to be a member in good standing. If you think this is a mistake, please contact access@denhac.org.");
+        if (!$member->member) {
+            return CommonResponses::memberInGoodStanding();
         }
 
         $text = $request->get('text', '');
@@ -42,7 +41,7 @@ class SlackDoorCodeCommandController extends Controller
 
     private function handleDoorCodeUpdate(SlackRequest $request, Customer $member, string $text)
     {
-        if (! $member->isBoardMember()) {
+        if (!$member->isBoardMember()) {
             return Slack::newMessage()
                 ->text('This functionality is for updating the door code, and only denhac board members can do that.');
         }
@@ -58,30 +57,6 @@ class SlackDoorCodeCommandController extends Controller
             return Slack::newMessage()
                 ->text("Access code updated to $text!");
 
-        /*
-        [
-            "type" => "actions",
-            "elements" => [
-                [
-                    "type" => "button",
-                    "text" => [
-                        "type" => "plain_text",
-                        "text" => "Email it out!",
-                    ],
-                    "action_id" => "1",
-                    "style" => "primary",
-                ],
-                [
-                    "type" => "button",
-                    "text" => [
-                        "type" => "plain_text",
-                        "text" => "No, I'll do it.",
-                    ],
-                    "action_id" => "2",
-                ]
-            ]
-        ]
-        */
         } else {
             return Slack::newMessage()
                 ->text("I'm sorry, that code didn't look to be in the right format. It needs to be all numbers.");
