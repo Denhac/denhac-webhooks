@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SlackRequest;
 use App\Slack\Modals\ModalTrait;
+use App\Slack\Modals\SuccessModal;
 use App\Slack\SlackOptions;
 use Illuminate\Support\Facades\Log;
 
@@ -83,9 +84,9 @@ class SlackInteractivityController extends Controller
         Log::info("Shortcut!");
         Log::info(print_r($request->payload(), true));
 
-        return response()->json([
-            'response_type' => 'ephemeral',
-            'text' => "That's not implemented, just yet!",
-        ]);
+        $modal = new SuccessModal();
+        $modal->open($request->payload()['trigger_id']);
+
+        return response('');
     }
 }

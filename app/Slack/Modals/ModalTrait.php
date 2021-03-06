@@ -42,6 +42,14 @@ trait ModalTrait
         ]);
     }
 
+    public function update()
+    {
+        return response()->json([
+            'response_action' => 'update',
+            'view' => $this,
+        ]);
+    }
+
     public function open($trigger_id)
     {
         /** @var SlackApi $slackApi */

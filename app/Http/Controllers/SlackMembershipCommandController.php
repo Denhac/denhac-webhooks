@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SlackRequest;
 use App\Slack\CommonResponses;
 use App\Slack\Modals\MembershipOptionsModal;
-use App\Slack\SlackApi;
-use Jeremeamia\Slack\BlockKit\Slack;
 
 class SlackMembershipCommandController extends Controller
 {
@@ -19,7 +17,7 @@ class SlackMembershipCommandController extends Controller
         }
 
         $modal = new MembershipOptionsModal();
-        $modal->open($request->get('trigger_id'));
+        $modal->open($request->payload()['trigger_id']);
 
         return response('');
     }

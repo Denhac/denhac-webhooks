@@ -56,27 +56,24 @@ class MembershipOptionsModal implements ModalInterface
         switch ($selectedOption) {
             case self::SIGN_UP_NEW_MEMBER_VALUE:
                 $modal = new NeedIdCheckModal();
-
-                return $modal->push();
+                break;
             case self::MANAGE_MEMBERS_CARDS_VALUE:
                 $modal = new SelectAMemberModal(ManageMembersCardsModal::class);
-
-                return $modal->push();
+                break;
             case self::CANCEL_MEMBERSHIP_VALUE:
                 $modal = new CancelMembershipConfirmationModal($request->customer());
-
-                return $modal->push();
+                break;
             case self::AUTHORIZE_3D_PRINTER_VALUE:
                 $modal = new SelectAMemberModal(Authorize3DPrinterUse::class);
-
-                return $modal->push();
+                break;
             case self::AUTHORIZE_LASER_CUTTER_VALUE:
                 $modal = new SelectAMemberModal(AuthorizeLaserCutterUse::class);
-
-                return $modal->push();
+                break;
+            default:
+                throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
         }
 
-        throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
+        return $modal->update();
     }
 
     public function jsonSerialize()

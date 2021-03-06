@@ -59,7 +59,7 @@ class AuthorizeLaserCutterUse implements ModalInterface
 
         $wooCommerceApi->members->addMembership($customerId, UserMembership::MEMBERSHIP_LASER_CUTTER_USER);
 
-        return self::clearViewStack();
+        return (new SuccessModal())->update();
     }
 
     public static function getOptions(SlackRequest $request)

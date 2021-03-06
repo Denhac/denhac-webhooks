@@ -59,7 +59,7 @@ class NeedIdCheckModal implements ModalInterface
         $subscription_id = $matches[1];
         $modal = new NewMemberIdCheckModal($subscription_id);
 
-        return $modal->push();
+        return $modal->update();
     }
 
     public static function getOptions(SlackRequest $request)

@@ -68,7 +68,7 @@ class SelectAMemberModal implements ModalInterface
         /** @var ModalTrait $modal */
         $modal = new $modalClass($customer_id);
 
-        return $modal->push();
+        return $modal->update();
     }
 
     public static function getOptions(SlackRequest $request)
