@@ -23,6 +23,7 @@ Route::middleware(['slack'])->group(function () {
     Route::post('slack/door_code', SlackDoorCodeCommandController::class);
     Route::post('slack/membership', SlackMembershipCommandController::class);
 
+    Route::post('slack/event', [SlackInteractivityController:: class, 'event']);
     Route::post('slack/interactive', [SlackInteractivityController:: class, 'interactive']);
     Route::post('slack/options', [SlackInteractivityController:: class, 'options']);
 });

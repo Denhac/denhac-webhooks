@@ -10,6 +10,21 @@ use Illuminate\Support\Facades\Log;
 
 class SlackInteractivityController extends Controller
 {
+    public function event(SlackRequest $request)
+    {
+        Log::info("Event!");
+        Log::info(print_r($request->payload(), true));
+
+        $type = $request->payload()['type'];
+        if ($type == 'url_verification') {
+            $challenge = $request->payload()['challenge'];
+
+            return response($challenge);
+        }
+
+        return response('');
+    }
+
     public function interactive(SlackRequest $request)
     {
 //        Log::info("Interactive request!");
@@ -23,7 +38,7 @@ class SlackInteractivityController extends Controller
         } else if ($type == 'shortcut') {
             return $this->shortcut($request);
         } else {
-            throw new \Exception('Slack interactive payload has unknown type: '. $type);
+            throw new \Exception('Slack interactive payload has unknown type: ' . $type);
         }
     }
 
