@@ -16,11 +16,11 @@ class SlackDoorCodeCommandController extends Controller
         $member = $request->customer();
 
         if ($member === null) {
-            return CommonResponses::unrecognizedUser();
+            return Slack::newMessage()->text(CommonResponses::unrecognizedUser());
         }
 
         if (!$member->member) {
-            return CommonResponses::memberInGoodStanding();
+            return Slack::newMessage()->text(CommonResponses::notAMemberInGoodStanding());
         }
 
         $text = $request->get('text', '');

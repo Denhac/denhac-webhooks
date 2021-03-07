@@ -3,8 +3,11 @@
 namespace App\Slack\Events;
 
 use App\Customer;
+use App\Slack\CommonResponses;
 use App\Slack\SlackApi;
+use App\UserMembership;
 use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Surfaces\AppHome;
 use Spatie\QueueableAction\QueueableAction;
 
 class AppHomeOpened implements EventInterface
@@ -27,21 +30,41 @@ class AppHomeOpened implements EventInterface
     public function execute($event)
     {
         $home = Slack::newAppHome();
-        $home->text("This is a test of SpaceBot app home");
 
         $user_id = $event['user'];
         /** @var Customer $member */
-        $member = Customer::whereSlackId($user_id);
+        $member = Customer::whereSlackId($user_id)->first();
 
         if(is_null($member)) {
-            $home->text("I don't recognize you, unfortunately");
+            $home->text(CommonResponses::unrecognizedUser());
         } else if(! $member->member) {
-            $home->text("I do recognize you, but I don't see you as an active member");
+            $home->text(CommonResponses::notAMemberInGoodStanding());
         } else {
-            $home->text("You're an active member! Thank you for being part of denhac!");
+            $this->activeMember($home, $member);
         }
 
         $this->slackApi->views_publish($user_id, $home);
+    }
+
+    private function activeMember(AppHome $home, Customer $member)
+    {
+        $home->text("You're an active member! Thank you for being part of denhac!");
+
+        if($member->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
+            $home->text("You are authorized to use the 3d printers");
+        }
+
+        if($member->hasMembership(UserMembership::MEMBERSHIP_3DP_TRAINER)) {
+            $home->text("You are authorized to train others to use the 3d printers");
+        }
+
+        if($member->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_USER)) {
+            $home->text("You are authorized to use the laser cutter");
+        }
+
+        if($member->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER)) {
+            $home->text("You are authorized to train others to use the laser cutter");
+        }
     }
 
     public static function eventType(): string

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SlackRequest;
 use App\Slack\CommonResponses;
 use App\Slack\Modals\MembershipOptionsModal;
+use Jeremeamia\Slack\BlockKit\Slack;
 
 class SlackMembershipCommandController extends Controller
 {
@@ -13,7 +14,7 @@ class SlackMembershipCommandController extends Controller
         $customer = $request->customer();
 
         if ($customer === null) {
-            return CommonResponses::unrecognizedUser();
+            return Slack::newMessage()->text(CommonResponses::unrecognizedUser());
         }
 
         $modal = new MembershipOptionsModal();
