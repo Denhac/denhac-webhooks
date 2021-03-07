@@ -18,7 +18,7 @@ class SlackMembershipCommandController extends Controller
         }
 
         $modal = new MembershipOptionsModal();
-        $modal->open($request->payload()['trigger_id']);
+        $modal->open($request->get('trigger_id'));
 
         return response('');
     }
