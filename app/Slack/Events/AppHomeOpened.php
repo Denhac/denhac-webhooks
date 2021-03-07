@@ -26,7 +26,7 @@ class AppHomeOpened implements EventInterface
     public function execute($event)
     {
         $home = Slack::newAppHome();
-        $home->text("This is a test");
+        $home->text("This is a test of SpaceBot app home");
 
         $this->slackApi->views_publish($event['user'], $home);
     }
