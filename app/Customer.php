@@ -27,6 +27,7 @@ use Illuminate\Support\Collection;
  * @property Collection cards
  * @property Collection memberships
  * @method static Builder whereWooId($customerId)
+ * @method static Builder whereSlackId($slackId)
  */
 class Customer extends Model
 {

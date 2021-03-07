@@ -17,7 +17,7 @@ class SlackEventController extends Controller
         $event = $this->getEvent($request->json('event.type'));
 
         if (!is_null($event)) {
-            app($event)->onQueue()->execute($request->json()['event']);
+            app($event)->onQueue()->execute($request->json('event'));
         }
 
         return response('');

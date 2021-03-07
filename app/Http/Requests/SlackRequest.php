@@ -30,7 +30,6 @@ class SlackRequest extends Request
             return null;
         }
 
-        /** @var Customer $customer */
         return Customer::whereSlackId($userId)->first();
     }
 
