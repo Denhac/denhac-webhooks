@@ -2,6 +2,8 @@
 
 namespace Tests\Helpers\Wordpress;
 
+use Tests\Helpers\BaseBuilder;
+
 /**
  * Class SubscriptionBuilder.
  * @property int id

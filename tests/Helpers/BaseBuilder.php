@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Helpers\Wordpress;
+namespace Tests\Helpers;
 
 use Illuminate\Contracts\Support\Arrayable;
 

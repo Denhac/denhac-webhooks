@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\NoReturn;
 use Spatie\EventSourcing\Projectionist;
+use Tests\Helpers\OctoPrintUpdateBuilder;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 use Tests\Helpers\Wordpress\SubscriptionBuilder;
 use Tests\Helpers\Wordpress\UserMembershipBuilder;
@@ -81,6 +82,11 @@ abstract class TestCase extends BaseTestCase
             "Expired" => ["expired"],
             "Cancelled" => ["cancelled"],
         ];
+    }
+
+    public function octoPrintUpdate()
+    {
+        return new OctoPrintUpdateBuilder();
     }
 
     public function withOnlyEventHandlerType($cls)

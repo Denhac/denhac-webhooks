@@ -2,6 +2,8 @@
 
 namespace Tests\Helpers\Wordpress;
 
+use Tests\Helpers\BaseBuilder;
+
 /**
  * Class CustomerBuilder.
  * @property int id
