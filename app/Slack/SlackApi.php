@@ -333,4 +333,15 @@ class SlackApi
                 ],
             ]);
     }
+
+    public function views_publish($user_id, $view)
+    {
+        $this->spaceBotApiClient
+            ->post('https://denhac.slack.com/api/views.publish', [
+                RequestOptions::JSON => [
+                    'user_id' => $user_id,
+                    'view' => json_encode($view),
+                ],
+            ]);
+    }
 }

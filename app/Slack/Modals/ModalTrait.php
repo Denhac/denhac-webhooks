@@ -11,7 +11,7 @@ trait ModalTrait
     {
         return collect(get_declared_classes())
             ->filter(function ($name) use ($callbackId) {
-                if (strpos($name, 'App\\Slack\\Modals') !== 0) {
+                if (!str_starts_with($name, 'App\\Slack\\Modals')) {
                     return false;
                 }
 
