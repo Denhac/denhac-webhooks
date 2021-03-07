@@ -15,13 +15,6 @@ class SlackInteractivityController extends Controller
         Log::info("Event!");
         Log::info(print_r($request->payload(), true));
 
-        $type = $request->payload()['type'];
-        if ($type == 'url_verification') {
-            $challenge = $request->payload()['challenge'];
-
-            return response($challenge);
-        }
-
         return response('');
     }
 

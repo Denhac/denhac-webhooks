@@ -38,6 +38,14 @@ class AuthorizeSlackRequest
             }
         }
 
+        $type = $request->get('type');
+
+        if(! is_null($type) && $type == 'url_verification') {
+            $challenge = $request->get('challenge');
+
+            return response($challenge);
+        }
+
         return $next($request);
     }
 }
