@@ -13,7 +13,7 @@ class SlackInteractivityController extends Controller
     public function event(SlackRequest $request)
     {
         Log::info("Event!");
-        Log::info(print_r($request->payload(), true));
+        Log::info(print_r($request->json(), true));
 
         return response('');
     }
