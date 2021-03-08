@@ -6,7 +6,7 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class CancelMembershipConfirmationModal implements ModalInterface
@@ -20,7 +20,7 @@ class CancelMembershipConfirmationModal implements ModalInterface
 
     public function __construct(Customer $customer)
     {
-        $this->modalView = Slack::newModal()
+        $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('Confirm Cancellation')
             ->clearOnClose(true)

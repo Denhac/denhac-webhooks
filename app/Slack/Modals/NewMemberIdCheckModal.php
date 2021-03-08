@@ -6,7 +6,7 @@ use App\Http\Requests\SlackRequest;
 use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
 use Carbon\Carbon;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class NewMemberIdCheckModal implements ModalInterface
@@ -32,7 +32,7 @@ class NewMemberIdCheckModal implements ModalInterface
         $subscription = Subscription::findOrFail($subscription_id);
         $customer = $subscription->customer;
 
-        $this->modalView = Slack::newModal()
+        $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('New Member Signup')
             ->clearOnClose(true)

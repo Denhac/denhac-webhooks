@@ -6,7 +6,7 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
 use App\Subscription;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class NeedIdCheckModal implements ModalInterface
@@ -23,7 +23,7 @@ class NeedIdCheckModal implements ModalInterface
 
     public function __construct()
     {
-        $this->modalView = Slack::newModal()
+        $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('New Member Signup')
             ->clearOnClose(true)

@@ -5,7 +5,7 @@ namespace App\Slack\Modals;
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class SelectAMemberModal implements ModalInterface
@@ -27,7 +27,7 @@ class SelectAMemberModal implements ModalInterface
             $callbackId = $callbackOrModalClass::callbackId();
         }
 
-        $this->modalView = Slack::newModal()
+        $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('Select A Member')
             ->clearOnClose(true)

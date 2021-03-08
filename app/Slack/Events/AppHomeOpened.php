@@ -7,7 +7,7 @@ use App\Printer3D;
 use App\Slack\CommonResponses;
 use App\Slack\SlackApi;
 use App\UserMembership;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\AppHome;
 use Spatie\QueueableAction\QueueableAction;
 
@@ -22,7 +22,7 @@ class AppHomeOpened implements EventInterface
     public function __construct(SlackApi $slackApi)
     {
         $this->slackApi = $slackApi;
-        $this->home = Slack::newAppHome();
+        $this->home = Kit::newAppHome();
     }
 
     public static function eventType(): string

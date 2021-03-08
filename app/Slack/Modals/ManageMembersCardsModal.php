@@ -4,10 +4,8 @@ namespace App\Slack\Modals;
 
 use App\Customer;
 use App\Http\Requests\SlackRequest;
-use App\Slack\SlackOptions;
-use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class ManageMembersCardsModal implements ModalInterface
@@ -28,7 +26,7 @@ class ManageMembersCardsModal implements ModalInterface
      */
     public function __construct(int $customerId)
     {
-        $this->modalView = Slack::newModal()
+        $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title("Manage a member's cards")
             ->clearOnClose(true)

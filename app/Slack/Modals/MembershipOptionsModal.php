@@ -5,7 +5,7 @@ namespace App\Slack\Modals;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
 use App\UserMembership;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class MembershipOptionsModal implements ModalInterface
@@ -27,7 +27,7 @@ class MembershipOptionsModal implements ModalInterface
 
     public function __construct()
     {
-        $this->modalView = Slack::newModal()
+        $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('What do you want to do?')
             ->clearOnClose(true)

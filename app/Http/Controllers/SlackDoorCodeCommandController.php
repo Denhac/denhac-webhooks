@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\CommonResponses;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 
 class SlackDoorCodeCommandController extends Controller
 {
@@ -16,11 +16,11 @@ class SlackDoorCodeCommandController extends Controller
         $member = $request->customer();
 
         if ($member === null) {
-            return Slack::newMessage()->text(CommonResponses::unrecognizedUser());
+            return Kit::newMessage()->text(CommonResponses::unrecognizedUser());
         }
 
         if (!$member->member) {
-            return Slack::newMessage()->text(CommonResponses::notAMemberInGoodStanding());
+            return Kit::newMessage()->text(CommonResponses::notAMemberInGoodStanding());
         }
 
         $text = $request->get('text', '');
@@ -31,10 +31,10 @@ class SlackDoorCodeCommandController extends Controller
         $doorCodeSetting = setting(self::ACCESS_DOOR_CODE_KEY);
 
         if ($doorCodeSetting != '') {
-            return Slack::newMessage()
+            return Kit::newMessage()
                 ->text("Hello! The door access code is $doorCodeSetting.");
         } else {
-            return Slack::newMessage()
+            return Kit::newMessage()
                 ->text("So here's the thing... I'd tell you the door code, but I seem to have misplaced it. Maybe ask an admin?");
         }
     }
@@ -42,23 +42,23 @@ class SlackDoorCodeCommandController extends Controller
     private function handleDoorCodeUpdate(SlackRequest $request, Customer $member, string $text)
     {
         if (!$member->isBoardMember()) {
-            return Slack::newMessage()
+            return Kit::newMessage()
                 ->text('This functionality is for updating the door code, and only denhac board members can do that.');
         }
 
         if (preg_match("/^\d+$/", $text) == 1) {
             if (setting(self::ACCESS_DOOR_CODE_KEY) == $text) {
-                return Slack::newMessage()
+                return Kit::newMessage()
                     ->text("That's the same code we already have!");
             }
 
             setting([self::ACCESS_DOOR_CODE_KEY => $text])->save();
 
-            return Slack::newMessage()
+            return Kit::newMessage()
                 ->text("Access code updated to $text!");
 
         } else {
-            return Slack::newMessage()
+            return Kit::newMessage()
                 ->text("I'm sorry, that code didn't look to be in the right format. It needs to be all numbers.");
         }
     }

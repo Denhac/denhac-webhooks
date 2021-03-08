@@ -4,7 +4,7 @@ namespace App\Slack\Modals;
 
 
 use App\Http\Requests\SlackRequest;
-use Jeremeamia\Slack\BlockKit\Slack;
+use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
 class SuccessModal implements ModalInterface
@@ -21,7 +21,7 @@ class SuccessModal implements ModalInterface
      */
     public function __construct()
     {
-        $this->modalView = Slack::newModal()
+        $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title("Success!")
             ->clearOnClose(true)
