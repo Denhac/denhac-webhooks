@@ -19,6 +19,7 @@ return [
         \App\Projectors\CardUpdateRequestProjector::class,
         \App\Projectors\CustomerProjector::class,
         \App\Projectors\PaypalMemberProjector::class,
+        \App\Projectors\PrinterProjector::class,
         \App\Projectors\SubscriptionProjector::class,
         \App\Projectors\UserProjector::class,
     ],
