@@ -2,6 +2,7 @@
 
 namespace App\Projectors;
 
+use App\Customer;
 use App\Printer3D;
 use App\StorableEvents\OctoPrintStatusUpdated;
 use Carbon\Carbon;
@@ -9,6 +10,11 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class PrinterProjector extends Projector
 {
+    public function onStartingEventReplay()
+    {
+        Customer::truncate();
+    }
+
     public function onOctoPrintStatusUpdated(OctoPrintStatusUpdated $event)
     {
         $deviceIdentifier = $event->payload["deviceIdentifier"];
@@ -16,7 +22,7 @@ class PrinterProjector extends Projector
         /** @var Printer3D $printer */
         $printer = Printer3D::whereName($deviceIdentifier)->first();
 
-        if(is_null($printer)) {
+        if (is_null($printer)) {
             Printer3D::create([
                 'name' => $deviceIdentifier,
                 'status' => Printer3D::getStatus($event->payload['topic']),
