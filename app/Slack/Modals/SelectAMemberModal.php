@@ -15,15 +15,12 @@ class SelectAMemberModal implements ModalInterface
     private const SELECT_A_MEMBER_BLOCK_ID = 'select-a-member-block';
     private const SELECT_A_MEMBER_ACTION_ID = 'select-a-member-action';
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     public function __construct($callbackOrModalClass)
     {
         $callbackId = $callbackOrModalClass;
-        if (strpos($callbackId, 'App\\Slack\\Modals') === 0) {
+        if (str_starts_with($callbackId, 'App\\Slack\\Modals')) {
             $callbackId = $callbackOrModalClass::callbackId();
         }
 
@@ -55,7 +52,7 @@ class SelectAMemberModal implements ModalInterface
         $selectedOption = $request->payload()['view']['state']['values'][self::SELECT_A_MEMBER_BLOCK_ID][self::SELECT_A_MEMBER_ACTION_ID]['selected_option']['value'];
 
         $matches = [];
-        $result = preg_match('/customer\-(\d+)/', $selectedOption, $matches);
+        $result = preg_match('/customer-(\d+)/', $selectedOption, $matches);
 
         if (! $result) {
             throw new \Exception("Option wasn't valid for customer: $selectedOption");
