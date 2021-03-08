@@ -6,7 +6,6 @@ use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Collection;
-use JetBrains\PhpStorm\NoReturn;
 use Spatie\EventSourcing\Projectionist;
 use Tests\Helpers\OctoPrintUpdateBuilder;
 use Tests\Helpers\Wordpress\CustomerBuilder;

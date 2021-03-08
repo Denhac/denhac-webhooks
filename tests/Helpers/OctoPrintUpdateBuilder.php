@@ -3,6 +3,13 @@
 namespace Tests\Helpers;
 
 
+/**
+ * Class OctoPrintUpdateBuilder
+ * @package Tests\Helpers
+ * @property string deviceIdentifier
+ * @property string topic
+ * @property int currentTime
+ */
 class OctoPrintUpdateBuilder extends BaseBuilder
 {
     public function __construct()
@@ -42,5 +49,19 @@ class OctoPrintUpdateBuilder extends BaseBuilder
             ],
             "message" => "Your print has started.",
         ];
+    }
+
+    public function topic(string $topic): static
+    {
+        $this->data['topic'] = $topic;
+
+        return $this;
+    }
+
+    public function currentTime(int $time): static
+    {
+        $this->data['currentTime'] = $time;
+
+        return $this;
     }
 }
