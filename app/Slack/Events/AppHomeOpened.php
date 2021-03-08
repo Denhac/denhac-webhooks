@@ -3,6 +3,7 @@
 namespace App\Slack\Events;
 
 use App\Customer;
+use App\Printer3D;
 use App\Slack\CommonResponses;
 use App\Slack\SlackApi;
 use App\UserMembership;
@@ -16,9 +17,17 @@ class AppHomeOpened implements EventInterface
 
     private SlackApi $slackApi;
 
+    private AppHome $home;
+
     public function __construct(SlackApi $slackApi)
     {
         $this->slackApi = $slackApi;
+        $this->home = Slack::newAppHome();
+    }
+
+    public static function eventType(): string
+    {
+        return 'app_home_opened';
     }
 
     /**
@@ -29,46 +38,67 @@ class AppHomeOpened implements EventInterface
      */
     public function execute($event)
     {
-        $home = Slack::newAppHome();
-
         $user_id = $event['user'];
         /** @var Customer $member */
         $member = Customer::whereSlackId($user_id)->first();
 
         if(is_null($member)) {
-            $home->text(CommonResponses::unrecognizedUser());
+            $this->home->text(CommonResponses::unrecognizedUser());
         } else if(! $member->member) {
-            $home->text(CommonResponses::notAMemberInGoodStanding());
+            $this->home->text(CommonResponses::notAMemberInGoodStanding());
         } else {
-            $this->activeMember($home, $member);
+            $this->activeMember($member);
         }
 
-        $this->slackApi->views_publish($user_id, $home);
+        $this->slackApi->views_publish($user_id, $this->home);
     }
 
-    private function activeMember(AppHome $home, Customer $member)
+    private function activeMember(Customer $member)
     {
-        $home->text("You're an active member! Thank you for being part of denhac!");
+        $this->home->text("You're an active member! Thank you for being part of denhac!");
 
         if($member->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
-            $home->text("You are authorized to use the 3d printers");
+            $this->equipment3DPrinterStatus();
         }
 
         if($member->hasMembership(UserMembership::MEMBERSHIP_3DP_TRAINER)) {
-            $home->text("You are authorized to train others to use the 3d printers");
+            $this->home->text("You are authorized to train others to use the 3d printers");
         }
 
         if($member->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_USER)) {
-            $home->text("You are authorized to use the laser cutter");
+            $this->home->text("You are authorized to use the laser cutter");
         }
 
         if($member->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER)) {
-            $home->text("You are authorized to train others to use the laser cutter");
+            $this->home->text("You are authorized to train others to use the laser cutter");
         }
     }
 
-    public static function eventType(): string
+    private function equipment3DPrinterStatus()
     {
-        return 'app_home_opened';
+        $this->home->divider();
+        $this->home->header("3D Printers");
+        $printers = Printer3D::all();
+
+        $printers->each(function($printer) {
+            /** @var Printer3D $printer */
+            if($printer->status == Printer3D::STATUS_PRINT_STARTED) {
+                $message = ":printer: Printer is in use.";
+            } else if($printer->status == Printer3D::STATUS_PRINT_DONE) {
+                $message = ":large_green_circle: Printer is ready to go.";
+            } else if($printer->status == Printer3D::STATUS_PRINT_FAILED) {
+                $message = ":bangbang: The last print has failed. The printer may be available.";
+            } else if($printer->status == Printer3D::STATUS_PRINT_PAUSED) {
+                $message = ":double_vertical_bar: Printer is paused.";
+            } else if($printer->status == Printer3D::STATUS_ERROR) {
+                $message = ":bangbang: Something went wrong (eg printer disconnect). The printer may be available.";
+            } else if($printer->status == Printer3D::STATUS_USER_ACTION_NEEDED) {
+                $message = ":warning: User action needed.";
+            } else {
+                $message = ":question: The printer is in an unknown state.";
+            }
+
+            $this->home->text("{$printer->name} $message");
+        });
     }
 }

@@ -58,13 +58,4 @@ class Printer3D extends Model
 
         return self::STATUS_UNKNOWN;
     }
-
-    /*
-    "“”Print Failed”“” :bangbang:The last print has failed. The printer may be available.
-“”"User Action Needed”“” :warning: User action needed
-“”"Print Started”“” :printer: Printer is in use
-“”"Error”“” :bangbang:Something went wrong (eg printer disconnect). The printer may be available.
-“”"Print Done”“” :large_green_circle: Printer is ready to go
-“”"Print Paused”“” :double_vertical_bar: Printer is paused (edited)
-    */
 }
