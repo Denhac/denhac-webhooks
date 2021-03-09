@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SlackRequest;
 use App\Slack\Events\EventInterface;
-use App\Slack\Events\EventTrait;
 use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 
@@ -20,7 +19,7 @@ class SlackEventController extends Controller
         if (!is_null($event_class)) {
             /** @var EventInterface $event */
             $event = app($event_class);
-            $event->handle($request->json('event'));
+            $event->handle($request);
         }
 
         return response('');

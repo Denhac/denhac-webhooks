@@ -3,9 +3,11 @@
 namespace App\Slack\Events;
 
 
+use App\Http\Requests\SlackRequest;
+
 interface EventInterface
 {
     public static function eventType(): string;
 
-    public static function handle($event);
+    public function handle(SlackRequest $request);
 }

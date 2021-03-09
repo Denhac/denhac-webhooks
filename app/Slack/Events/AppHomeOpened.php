@@ -3,6 +3,7 @@
 namespace App\Slack\Events;
 
 use App\Actions\UpdateSpaceBotAppHome;
+use App\Http\Requests\SlackRequest;
 
 class AppHomeOpened implements EventInterface
 {
@@ -11,12 +12,12 @@ class AppHomeOpened implements EventInterface
         return 'app_home_opened';
     }
 
-    public static function handle($event)
+    public function handle(SlackRequest $request)
     {
         /** @var UpdateSpaceBotAppHome $updateSpaceBotAppHome */
         $updateSpaceBotAppHome = app(UpdateSpaceBotAppHome::class);
         $updateSpaceBotAppHome
             ->onQueue()
-            ->execute($event['user']);
+            ->execute($request->getSlackId());
     }
 }

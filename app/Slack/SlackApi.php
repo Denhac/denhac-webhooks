@@ -344,4 +344,15 @@ class SlackApi
                 ],
             ]);
     }
+
+    public function user_profile_set($user_id, $profile)
+    {
+        $this->adminClient
+            ->post('https://denhac.slack.com/api/user.profile.set', [
+                RequestOptions::JSON => [
+                    'user' => $user_id,
+                    'profile' => $profile,
+                ],
+            ]);
+    }
 }

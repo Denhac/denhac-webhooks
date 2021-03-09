@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 class SlackRequest extends Request
 {
     private ?array $payload_json = null;
+    private ?array $event_json = null;
 
     public function payload()
     {
@@ -22,9 +23,22 @@ class SlackRequest extends Request
         return $this->payload_json;
     }
 
+    private function event()
+    {
+        if (is_null($this->event_json)) {
+            $this->event_json = json_decode($this->get('event'), true);
+
+            if (is_null($this->event_json)) {
+                throw new \Exception('Slack request has no event');
+            }
+        }
+
+        return $this->event_json;
+    }
+
     public function customer(): ?Customer
     {
-        $userId = $this->get_user_id();
+        $userId = $this->getSlackId();
 
         if (is_null($userId)) {
             return null;
@@ -33,7 +47,7 @@ class SlackRequest extends Request
         return Customer::whereSlackId($userId)->first();
     }
 
-    private function get_user_id()
+    public function getSlackId()
     {
         $userID = $this->get('user_id');
 
@@ -41,20 +55,28 @@ class SlackRequest extends Request
             return $userID;
         }
 
-        $payload = json_decode($this->get('payload'), true);
+        $data = json_decode($this->get('payload'), true);
 
-        if (is_null($payload)) {
+        if (is_null($data)) {
+            $data = json_decode($this->get('event'), true);
+
+            if (is_null($data)) {
+                return null;
+            }
+        }
+
+        if (! array_key_exists('user', $data)) {
             return null;
         }
 
-        if (! array_key_exists('user', $payload)) {
+        if(is_string($data['user'])) {
+            return $data['user'];
+        }
+
+        if (! array_key_exists('id', $data['user'])) {
             return null;
         }
 
-        if (! array_key_exists('id', $payload['user'])) {
-            return null;
-        }
-
-        return $payload['user']['id'];
+        return $data['user']['id'];
     }
 }
