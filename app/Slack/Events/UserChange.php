@@ -32,10 +32,7 @@ class UserChange implements EventInterface
             $membershipValue = $profileFields[$key]['value'];
             $customer = $request->customer();
 
-            if (is_null($customer)) {
-                Log::info("Couldn't find the customer!");
-                self::updateMembershipField($slack_id);
-            } else if ($customer->member && $membershipValue == 'No') {
+            if ($customer->member && $membershipValue == 'No') {
                 Log::info("{$customer->username} is a member, but membership value is No");
                 self::updateMembershipField($slack_id);
             } else if (! $customer->member && $membershipValue == 'Yes') {
