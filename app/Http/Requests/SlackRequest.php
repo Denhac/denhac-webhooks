@@ -58,7 +58,7 @@ class SlackRequest extends Request
         $data = json_decode($this->get('payload'), true);
 
         if (is_null($data)) {
-            $data = json_decode($this->get('event'), true);
+            $data = $this->json('event');
 
             if (is_null($data)) {
                 return null;
