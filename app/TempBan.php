@@ -2,9 +2,19 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class TempBan
+ * @package App
+ * @property string user_id
+ * @property string channel_id
+ * @property ?Carbon expires_at
+ * @property ?string reason
+ * @property ?string banned_by_id
+ */
 class TempBan extends Model
 {
     protected $fillable = [
@@ -21,8 +31,16 @@ class TempBan extends Model
 
     public static function isBanned($userId, $channelId): bool
     {
-        return TempBan::where('user_id', $userId)
+        /** @var Collection $tempBans */
+        $tempBans = TempBan::where('user_id', $userId)
             ->where('channel_id', $channelId)
+            ->get();
+
+        return $tempBans
+            ->filter(function($tempBan) {
+                /** @var TempBan $tempBan */
+                return is_null($tempBan->expires_at) || $tempBan->expires_at >= Carbon::now();
+            })
             ->count() > 0;
     }
 }
