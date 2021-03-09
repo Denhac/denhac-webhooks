@@ -23,7 +23,7 @@ class SlackRequest extends Request
         return $this->payload_json;
     }
 
-    public function event()
+    public function event(): array
     {
         if (is_null($this->event_json)) {
             $this->event_json = $this->json('event');

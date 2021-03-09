@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Slack\Events;
+
+
+use App\Actions\KickUserFromSlackChannel;
+use App\Http\Requests\SlackRequest;
+use App\TempBan;
+use Illuminate\Support\Facades\Log;
+
+class MemberJoinedChannel implements EventInterface
+{
+    public static function eventType(): string
+    {
+        return 'member_joined_channel';
+    }
+
+    public function handle(SlackRequest $request)
+    {
+        $event = $request->event();
+        $userId = $event['user'];
+        $channelId = $event['channel'];
+
+        if(TempBan::isBanned($userId, $channelId)) {
+            Log::info("Kicked slack id {$userId} from {$channelId}");
+            app(KickUserFromSlackChannel::class)->execute($userId, $channelId);
+        }
+    }
+}
