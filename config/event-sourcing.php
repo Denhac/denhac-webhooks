@@ -30,6 +30,7 @@ return [
      * Reactors can be registered in this array or a service provider.
      */
     'reactors' => [
+        \App\Reactors\AppHomeReactor::class,
         \App\Reactors\CardNotifierReactor::class,
         \App\Reactors\GoogleGroupsReactor::class,
         \App\Reactors\SlackReactor::class,
