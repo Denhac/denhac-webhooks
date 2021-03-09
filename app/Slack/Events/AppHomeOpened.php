@@ -17,6 +17,6 @@ class AppHomeOpened implements EventInterface
         $updateSpaceBotAppHome = app(UpdateSpaceBotAppHome::class);
         $updateSpaceBotAppHome
             ->onQueue()
-            ->execute($event('user'));
+            ->execute($event['user']);
     }
 }
