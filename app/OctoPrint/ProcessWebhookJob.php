@@ -3,6 +3,7 @@
 namespace App\OctoPrint;
 
 
+use App\Aggregates\OctoPrintAggregate;
 use Spatie\WebhookClient\Models\WebhookCall;
 
 class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
@@ -15,6 +16,10 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
 
     public function handle()
     {
+        $payload = $this->webhookCall->payload;
 
+        OctoPrintAggregate::make()
+            ->handle($payload)
+            ->persist();
     }
 }

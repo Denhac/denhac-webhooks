@@ -21,5 +21,7 @@ class OctoPrintAggregate extends AggregateRoot
     public function handle($payload)
     {
         $this->recordThat(new OctoPrintStatusUpdated($payload));
+
+        return $this;
     }
 }
