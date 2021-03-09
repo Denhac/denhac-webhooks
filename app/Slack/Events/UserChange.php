@@ -18,24 +18,28 @@ class UserChange implements EventInterface
     {
         $slack_id = $request->getSlackId();
         $profileFields = $request->event()['user']['profile']['fields'];
-        Log::info("Profile fields: ".print_r($profileFields, true));
+        Log::info("Profile fields: " . print_r($profileFields, true));
 
         $key = setting(UpdateSlackUserProfileMembership::MEMBERSHIP_FIELD_SETTING_KEY);
-        if(is_null($key)) {
+        if (is_null($key)) {
             return;
         }
 
-        if(! array_key_exists($key, $profileFields)) {
+        if (!array_key_exists($key, $profileFields)) {
             Log::info("{$key} is not in profile fields");
             self::updateMembershipField($slack_id);
         } else {
             $membershipValue = $profileFields[$key]['value'];
             $customer = $request->customer();
 
+            if (is_null($customer)) {
+                return;
+            }
+
             if ($customer->member && $membershipValue == 'No') {
                 Log::info("{$customer->username} is a member, but membership value is No");
                 self::updateMembershipField($slack_id);
-            } else if (! $customer->member && $membershipValue == 'Yes') {
+            } else if (!$customer->member && $membershipValue == 'Yes') {
                 Log::info("{$customer->username} is not a member, but membership value is Yes");
                 self::updateMembershipField($slack_id);
             }
