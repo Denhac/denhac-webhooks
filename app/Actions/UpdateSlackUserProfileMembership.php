@@ -27,21 +27,21 @@ class UpdateSlackUserProfileMembership
     public function execute(string $slackId)
     {
         $key = setting(UpdateSlackUserProfileMembership::MEMBERSHIP_FIELD_SETTING_KEY);
-        if(is_null($key)) {
+        if (is_null($key)) {
             return;
         }
 
         /** @var Customer $customer */
         $customer = Customer::whereSlackId($slackId)->first();
         $memberValue = "Yes";
-        if(is_null($customer) || !$customer->member) {
+        if (is_null($customer) || !$customer->member) {
             $memberValue = "No";
         }
 
         $this->slackApi->user_profile_set($slackId, [
             'fields' => [
                 $key => [
-                    'name' => $memberValue,
+                    'value' => $memberValue,
                 ],
             ],
         ]);

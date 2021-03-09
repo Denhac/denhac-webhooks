@@ -26,7 +26,7 @@ class UserChange implements EventInterface
         if(! in_array($key, $profileFields)) {
             self::updateMembershipField($slack_id);
         } else {
-            $membershipValue = $profileFields[$key];
+            $membershipValue = $profileFields[$key]['value'];
             $customer = $request->customer();
 
             if (is_null($customer)) {

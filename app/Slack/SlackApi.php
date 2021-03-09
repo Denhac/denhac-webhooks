@@ -349,8 +349,8 @@ class SlackApi
     {
         $this->ensureAdminClient();
 
-        $this->adminClient
-            ->post('https://denhac.slack.com/api/user.profile.set', [
+        return $this->adminClient
+            ->post('https://denhac.slack.com/api/users.profile.set', [
                 RequestOptions::JSON => [
                     'user' => $user_id,
                     'profile' => $profile,

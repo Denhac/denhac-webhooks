@@ -3,6 +3,8 @@
 namespace App\Reactors;
 
 use App\Actions\AddCustomerToSlackChannel;
+use App\Actions\UpdateSlackUserProfileMembership;
+use App\Customer;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
@@ -45,6 +47,10 @@ final class SlackReactor implements EventHandler
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
+        app(UpdateSlackUserProfileMembership::class)
+            ->onQueue()
+            ->execute(Customer::find($event->customerId)->slack_id);
+
         if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
             return;
         }
