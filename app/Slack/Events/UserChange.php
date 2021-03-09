@@ -18,6 +18,9 @@ class UserChange implements EventInterface
     {
         $slack_id = $request->getSlackId();
         $profileFields = $request->event()['user']['profile']['fields'];
+        if(is_null($profileFields)) {
+            $profileFields = [];
+        }
         Log::info("Profile fields: " . print_r($profileFields, true));
 
         $key = setting(UpdateSlackUserProfileMembership::MEMBERSHIP_FIELD_SETTING_KEY);
