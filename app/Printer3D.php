@@ -52,8 +52,8 @@ class Printer3D extends Model
         if(in_array($topic, ["Error"])) {
             return self::STATUS_ERROR;
         }
-        if(in_array($topic, [""])) {
-            return self::STATUS_PRINT_STARTED;
+        if(in_array($topic, ["User Action Needed"])) {
+            return self::STATUS_USER_ACTION_NEEDED;
         }
 
         return self::STATUS_UNKNOWN;
