@@ -17,14 +17,15 @@ class UserChange implements EventInterface
     public function handle(SlackRequest $request)
     {
         $slack_id = $request->getSlackId();
-        $profileFields = $request->json('event')['user']['profile']['fields'];
+        $profileFields = $request->event()['user']['profile']['fields'];
+        Log::info("Profile fields: ".print_r($profileFields, true));
 
         $key = setting(UpdateSlackUserProfileMembership::MEMBERSHIP_FIELD_SETTING_KEY);
         if(is_null($key)) {
             return;
         }
 
-        if(! in_array($key, $profileFields)) {
+        if(! array_key_exists($key, $profileFields)) {
             Log::info("{$key} is not in profile fields");
             self::updateMembershipField($slack_id);
         } else {

@@ -23,10 +23,10 @@ class SlackRequest extends Request
         return $this->payload_json;
     }
 
-    private function event()
+    public function event()
     {
         if (is_null($this->event_json)) {
-            $this->event_json = json_decode($this->get('event'), true);
+            $this->event_json = $this->json('event');
 
             if (is_null($this->event_json)) {
                 throw new \Exception('Slack request has no event');
