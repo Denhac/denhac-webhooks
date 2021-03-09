@@ -47,9 +47,13 @@ final class SlackReactor implements EventHandler
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
-        app(UpdateSlackUserProfileMembership::class)
-            ->onQueue()
-            ->execute(Customer::find($event->customerId)->slack_id);
+        $customer = Customer::find($event->customerId);
+
+        if(! is_null($customer)) {
+            app(UpdateSlackUserProfileMembership::class)
+                ->onQueue()
+                ->execute($customer->slack_id);
+        }
 
         if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
             return;
