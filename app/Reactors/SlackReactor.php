@@ -50,9 +50,7 @@ final class SlackReactor implements EventHandler
         $customer = Customer::find($event->customerId);
 
         if(! is_null($customer)) {
-            app(UpdateSlackUserProfileMembership::class)
-                ->onQueue()
-                ->execute($customer->slack_id);
+            app(UpdateSlackUserProfileMembership::class)->onQueue()->execute($customer->slack_id);
         }
 
         if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {

@@ -5,6 +5,7 @@ namespace App\Slack\Events;
 
 use App\Actions\UpdateSlackUserProfileMembership;
 use App\Http\Requests\SlackRequest;
+use Illuminate\Support\Facades\Log;
 
 class UserChange implements EventInterface
 {
@@ -24,16 +25,20 @@ class UserChange implements EventInterface
         }
 
         if(! in_array($key, $profileFields)) {
+            Log::info("{$key} is not in profile fields");
             self::updateMembershipField($slack_id);
         } else {
             $membershipValue = $profileFields[$key]['value'];
             $customer = $request->customer();
 
             if (is_null($customer)) {
+                Log::info("Couldn't find the customer!");
                 self::updateMembershipField($slack_id);
             } else if ($customer->member && $membershipValue == 'No') {
+                Log::info("{$customer->username} is a member, but membership value is No");
                 self::updateMembershipField($slack_id);
-            } else if (!$customer->member && $membershipValue == 'Yes') {
+            } else if (! $customer->member && $membershipValue == 'Yes') {
+                Log::info("{$customer->username} is not a member, but membership value is Yes");
                 self::updateMembershipField($slack_id);
             }
         }
