@@ -3,8 +3,6 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\StorableEvents\ADUserToBeDisabled;
-use App\StorableEvents\ADUserToBeEnabled;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -40,7 +38,6 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
                 new MembershipActivated($customer->id),
-                new ADUserToBeEnabled($customer->id),
             ]);
     }
 
@@ -60,7 +57,6 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
                 new MembershipActivated($customer->id),
-                new ADUserToBeEnabled($customer->id),
             ]);
     }
 
@@ -79,7 +75,6 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
                 new MembershipActivated($customer->id),
-                new ADUserToBeEnabled($customer->id),
             ]);
     }
 
@@ -99,7 +94,6 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
                 new MembershipDeactivated($customer->id),
-                new ADUserToBeDisabled($customer->id),
             ]);
     }
 
@@ -119,7 +113,6 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
                 new MembershipDeactivated($customer->id),
-                new ADUserToBeDisabled($customer->id),
             ]);
     }
 
@@ -139,7 +132,6 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new SubscriptionUpdated($newSubscription),
                 new MembershipDeactivated($customer->id),
-                new ADUserToBeDisabled($customer->id),
             ]);
     }
 

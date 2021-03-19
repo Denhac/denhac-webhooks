@@ -4,8 +4,6 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
-use App\StorableEvents\ADUserToBeDisabled;
-use App\StorableEvents\ADUserToBeEnabled;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;
@@ -51,7 +49,6 @@ class AccessCardTest extends TestCase
                 new SubscriptionUpdated($subscription),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
-                new ADUserToBeEnabled($customer->id),
             ]);
     }
 
@@ -137,7 +134,6 @@ class AccessCardTest extends TestCase
                 new MembershipDeactivated($customer->id),
                 new CardSentForDeactivation($customer->id, '42424'),
                 new CardSentForDeactivation($customer->id, '53535'),
-                new ADUserToBeDisabled($customer->id),
             ]);
     }
 
@@ -259,7 +255,6 @@ class AccessCardTest extends TestCase
                 new SubscriptionUpdated($subscription),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
-                new ADUserToBeEnabled($customer->id),
             ]);
     }
 

@@ -23,7 +23,4 @@ Route::middleware(["auth:api"])
         Route::post("/active_card_holders", [CardUpdateRequestsController::class, "updateActiveCardHolders"]);
 
         Route::post("/events/card_scanned", CardScannedController::class);
-
-        Route::get("/ad_updates", [ADUpdateRequestsController::class, "index"]);
-        Route::post("/card_updates/{ad_update_request}/status", [ADUpdateRequestsController::class, "updateStatus"]);
     });

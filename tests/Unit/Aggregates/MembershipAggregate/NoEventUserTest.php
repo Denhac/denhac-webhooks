@@ -113,20 +113,4 @@ class NoEventUserTest extends TestCase
             ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
             ->assertNothingRecorded();
     }
-
-    /** @test */
-    public function ad_update_request_does_not_make_event()
-    {
-        $customer = $this->customer();
-
-        $adUpdateRequest = ADUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-        ]);
-
-        MembershipAggregate::fakeCustomer($customer->id)
-            ->given(new CustomerIsNoEventTestUser($customer->id))
-            ->updateADStatus($adUpdateRequest, ADUpdateRequest::STATUS_SUCCESS)
-            ->assertNothingRecorded();
-    }
 }
