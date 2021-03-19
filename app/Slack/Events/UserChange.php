@@ -17,7 +17,13 @@ class UserChange implements EventInterface
     public function handle(SlackRequest $request)
     {
         $slack_id = $request->getSlackId();
-        $profileFields = $request->event()['user']['profile']['fields'];
+        $profile = $request->event()['user']['profile'];
+        $team_id = $request->json('team_id');
+        if(array_key_exists("team", $profile) && $profile['team'] == $team_id) {
+            return; // This person isn't a member in our slack, probably a connected slack
+        }
+
+        $profileFields = $profile['fields'];
         if(is_null($profileFields)) {
             $profileFields = [];
         }
