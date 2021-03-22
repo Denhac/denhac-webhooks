@@ -13,6 +13,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "anlutro/l4-settings": "^1.0",
+        "beyondcode/laravel-websockets": "^1.11",
         "doctrine/dbal": "^2.12",
         "fabpot/goutte": "^4.0",
         "fideloper/proxy": "^4.4",
