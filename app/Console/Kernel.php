@@ -49,6 +49,8 @@ class Kernel extends ConsoleKernel
                 CardNotifierAggregate::make()->sendNotificationEmail()->persist();
             })
             ->weeklyOn(6, '13:00');
+
+        $schedule->command('passport:purge')->hourly();
     }
 
     /**
