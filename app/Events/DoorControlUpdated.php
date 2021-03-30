@@ -4,6 +4,7 @@ namespace App\Events;
 
 use App\WinDSX\Door;
 use Carbon\Carbon;
+use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -11,6 +12,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 class DoorControlUpdated implements ShouldBroadcast
 {
     use Dispatchable;
+    use InteractsWithSockets;
 
     public int $duration;
     public array $doors;
