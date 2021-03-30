@@ -21,7 +21,6 @@ return [
         \App\Projectors\PaypalMemberProjector::class,
         \App\Projectors\PrinterProjector::class,
         \App\Projectors\SubscriptionProjector::class,
-        \App\Projectors\UserProjector::class,
     ],
 
     /*
