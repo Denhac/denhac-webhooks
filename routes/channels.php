@@ -13,6 +13,4 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('doors', function(\App\User $user) {
-    return $user->tokenCan('door:manage');
-});
+Broadcast::channel('doors', \App\Broadcasting\DoorChannel::class);
