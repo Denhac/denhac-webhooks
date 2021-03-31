@@ -36,6 +36,7 @@ class ManageOpenHouseModal implements ModalInterface
             ->callbackId(self::callbackId())
             ->title('Manage Open House Doors')
             ->clearOnClose(true)
+            ->submit("Update")
             ->close('Cancel');
 
         $timePicker = (new TimePicker())
@@ -46,8 +47,8 @@ class ManageOpenHouseModal implements ModalInterface
             ->mrkdwnText("When should these doors close?")
             ->setAccessory($timePicker);
 
-        $checkboxes = $this->modalView
-            ->newInput()
+        $checkboxes = $this->modalView->newInput()
+            ->label("Doors")
             ->blockId(self::DOORS_BLOCK_ID)
             ->newCheckboxes(self::DOORS_ACTION_ID);
 
