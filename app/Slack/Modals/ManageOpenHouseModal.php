@@ -82,7 +82,7 @@ class ManageOpenHouseModal implements ModalInterface
         $doors = Door::all();
         /** @var Door $door */
         foreach ($doors as $door) {
-            $shouldOpen = $selectedOptions->contains($door->dsxDeviceId);
+            $shouldOpen = $selectedOptions->contains("device-".$door->dsxDeviceId);
             $door->shouldOpen($shouldOpen);
         }
 
