@@ -19,6 +19,7 @@ class ManageOpenHouseModal implements ModalInterface
     private const EXPIRES_TIME_ACTION_ID = 'expires-time-action';
     private const DOORS_BLOCK_ID = 'doors-block-id';
     private const DOORS_ACTION_ID = 'doors-action-id';
+    private const CLOSE_ALL_DOORS = 'close-all-doors';
 
     /**
      * @var Modal
@@ -56,6 +57,8 @@ class ManageOpenHouseModal implements ModalInterface
             $option = Option::new($door->humanReadableName, "device-".$door->dsxDeviceId);
             $checkboxes->addOption($option, $door->openDuringOpenHouseByDefault);
         }
+
+        $checkboxes->option("Close all doors", self::CLOSE_ALL_DOORS);
     }
 
     public static function callbackId()
@@ -83,7 +86,11 @@ class ManageOpenHouseModal implements ModalInterface
         /** @var Door $door */
         foreach ($doors as $door) {
             $shouldOpen = $selectedOptions->contains("device-".$door->dsxDeviceId);
-            $door->shouldOpen($shouldOpen);
+            if($selectedOptions->contains(self::CLOSE_ALL_DOORS)) {
+                $door->shouldOpen(false);
+            } else {
+                $door->shouldOpen($shouldOpen);
+            }
         }
 
         event(new DoorControlUpdated($selectedTimeCarbon, ...$doors));
