@@ -2,11 +2,9 @@
 
 namespace App\Slack\Modals;
 
-use App\Customer;
+use App\Events\DoorControlUpdated;
 use App\Http\Requests\SlackRequest;
-use App\UserMembership;
 use App\WinDSX\Door;
-use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Inputs\TimePicker;
 use Jeremeamia\Slack\BlockKit\Kit;
@@ -17,7 +15,7 @@ class ManageOpenHouseModal implements ModalInterface
 {
     use ModalTrait;
 
-//    private const EXPIRES_TIME_BLOCK_ID = 'expires-time-block';
+    private const EXPIRES_TIME_BLOCK_ID = 'expires-time-block';
     private const EXPIRES_TIME_ACTION_ID = 'expires-time-action';
     private const DOORS_BLOCK_ID = 'doors-block-id';
     private const DOORS_ACTION_ID = 'doors-action-id';
@@ -45,6 +43,7 @@ class ManageOpenHouseModal implements ModalInterface
 
         $this->modalView->newSection()
             ->mrkdwnText("When should these doors close?")
+            ->blockId(self::EXPIRES_TIME_BLOCK_ID)
             ->setAccessory($timePicker);
 
         $checkboxes = $this->modalView->newInput()
@@ -66,7 +65,28 @@ class ManageOpenHouseModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info("Manage open house modal: " . print_r($request->payload(), true));
+        $values = $request->payload()['view']['state']['values'];
+        Log::info("Manage open house modal: " . print_r($values, true));
+
+        $selectedTime = $values[self::EXPIRES_TIME_BLOCK_ID][self::EXPIRES_TIME_ACTION_ID]['selected_time'];
+        $selectedOptions = collect($values[self::DOORS_BLOCK_ID][self::DOORS_ACTION_ID]['selected_options'])
+            ->map(function($option) {
+                return $option['value'];
+            });
+
+        $selectedTimeCarbon = now()->tz("America/Denver");
+        $selectedTime = explode(":", $selectedTime);
+        $selectedTimeCarbon->hour = $selectedTime[0];
+        $selectedTimeCarbon->minute = $selectedTime[1];
+
+        $doors = Door::all();
+        /** @var Door $door */
+        foreach ($doors as $door) {
+            $shouldOpen = $selectedOptions->contains($door->dsxDeviceId);
+            $door->shouldOpen($shouldOpen);
+        }
+
+        event(new DoorControlUpdated($selectedTimeCarbon, ...$doors));
 
         return self::clearViewStack();
     }
