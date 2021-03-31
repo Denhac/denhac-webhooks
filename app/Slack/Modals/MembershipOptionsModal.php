@@ -17,6 +17,7 @@ class MembershipOptionsModal implements ModalInterface
     private const CANCEL_MEMBERSHIP_VALUE = 'value-cancel-membership';
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
     private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
+    private const MANAGE_OPEN_HOUSE_VALUE = 'value-manage-open-house-doors';
     private const AUTHORIZE_3D_PRINTER_VALUE = 'value-authorize-3d-printer';
     private const AUTHORIZE_LASER_CUTTER_VALUE = 'value-authorize-laser-cutter';
 
@@ -60,6 +61,9 @@ class MembershipOptionsModal implements ModalInterface
             case self::MANAGE_MEMBERS_CARDS_VALUE:
                 $modal = new SelectAMemberModal(ManageMembersCardsModal::class);
                 break;
+            case self::MANAGE_OPEN_HOUSE_VALUE:
+                $modal = new ManageOpenHouseModal();
+                break;
             case self::CANCEL_MEMBERSHIP_VALUE:
                 $modal = new CancelMembershipConfirmationModal($request->customer());
                 break;
@@ -94,7 +98,9 @@ class MembershipOptionsModal implements ModalInterface
 
         if ($customer->hasCapability('denhac_can_verify_member_id')) {
             $options->option('Sign up new member', self::SIGN_UP_NEW_MEMBER_VALUE);
-            $options->option("Manage a member's access cards", self::MANAGE_MEMBERS_CARDS_VALUE);
+            $options->option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE);
+
+            $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
         }
 
         if ($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_TRAINER)) {
