@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DoorControlUpdated;
 use App\Http\Requests\SlackRequest;
 use App\Slack\Modals\ModalTrait;
 use App\Slack\Modals\SuccessModal;
+use App\WinDSX\Door;
 use Illuminate\Support\Facades\Log;
 
 class SlackInteractivityController extends Controller
@@ -48,8 +50,18 @@ class SlackInteractivityController extends Controller
         Log::info("Shortcut!");
         Log::info(print_r($request->payload(), true));
 
-        $modal = new SuccessModal();
-        $modal->open($request->payload()['trigger_id']);
+        $customer = $request->customer();
+
+        if ($customer->hasCapability('denhac_can_verify_member_id')) {
+            $callbackId = $request->payload()['callback_id'];
+
+            if($callbackId == "door.open.workshop_main") {
+                event(new DoorControlUpdated(5, Door::glassWorkshopDoor()));
+            }
+        }
+
+//        $modal = new SuccessModal();
+//        $modal->open($request->payload()['trigger_id']);
 
         return response('');
     }
