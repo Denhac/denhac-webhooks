@@ -7,7 +7,7 @@ use App\Notifications\CardAccessAllowedButNotAMemberRedAlert;
 use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
-use App\Notifications\MemberBadgedIn;
+use App\WinDSX\Door;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -16,16 +16,6 @@ use Illuminate\Support\Facades\Notification;
 
 class CardScannedController extends Controller
 {
-    /**
-     * @var string
-     */
-    private $slackCardScanRoute;
-
-    public function __construct()
-    {
-        $this->slackCardScanRoute = config('denhac.notifications.slack.card_scan_channel_webhook');
-    }
-
     public function __invoke(Request $request)
     {
         Log::info($request->getContent());
@@ -34,7 +24,6 @@ class CardScannedController extends Controller
         $cards = Card::where('number', $cardNumber)->get();
 
         if ($cards->count() > 1) {
-            // TODO What do we even do here? Should we still notify of scan in?
             report(new \Exception("More than one card listed with card {$cardNumber} on card scan"));
 
             return;
@@ -47,9 +36,6 @@ class CardScannedController extends Controller
         $card = $cards->first();
         if (is_null($card)) {
             Log::info("Couldn't find that card in our database");
-            if ($accessAllowed) {
-                $this->notifyBadgeInToSlack($request);
-            }
 
             return;
         }
@@ -61,27 +47,27 @@ class CardScannedController extends Controller
 
         if (is_null($customer)) {
             Log::info("Couldn't find that customer for that card");
-            if ($accessAllowed) {
-                $this->notifyBadgeInToSlack($request);
-            }
 
             return;
         }
 
         if ($customer->member) {
             Log::info("They're a member!");
-            if ($accessAllowed) {
-                $this->notifyBadgeInToSlack($request);
-            } else {
+            if (! $accessAllowed) {
                 Log::info('No access though.');
                 // They weren't given access
 
                 if ($scanTime->subMinutes(10) < $createdAt) {
-                    // We created this card less than 10 minutes ago. It might even be active yet.
+                    // We created this card less than 10 minutes ago. It might not even be active yet.
                     return;
                 }
 
-                if ($device == 0 || $device == 1 || $device == 3) { // Front and Side door
+                $door = Door::byDSXDeviceId($device);
+
+                if(is_null($door)) {
+                    // We don't know about this door. Do nothing
+                    return;
+                } else if($door->membersCanBadgeIn) {
                     $notification = new CardAccessDeniedButWereWorkingOnIt(
                         $request->json('first_name'),
                         $request->json('last_name'),
@@ -89,10 +75,9 @@ class CardScannedController extends Controller
                         $request->json('scan_time')
                     );
 
-                    Notification::route('slack', $this->slackCardScanRoute)
-                        ->route('mail', $customer->email)
+                    Notification::route('mail', $customer->email)
                         ->notify($notification);
-                } elseif ($device == 2) { // Back door
+                } else {
                     $notification = new CardAccessDeniedBadDoor();
 
                     Notification::route('mail', $customer->email)
@@ -108,8 +93,7 @@ class CardScannedController extends Controller
                     $request->json('scan_time')
                 );
 
-                Notification::route('slack', $this->slackCardScanRoute)
-                    ->route('mail', config('denhac.access_email'))
+                Notification::route('mail', config('denhac.access_email'))
                     ->notify($notification);
             } else {
                 $notification = new CardAccessDeniedBecauseNotAMember();
@@ -118,18 +102,5 @@ class CardScannedController extends Controller
                     ->notify($notification);
             }
         }
-    }
-
-    /**
-     * @param Request $request
-     */
-    private function notifyBadgeInToSlack(Request $request): void
-    {
-        Notification::route('slack', $this->slackCardScanRoute)
-            ->notify(new MemberBadgedIn(
-                $request->json('first_name'),
-                $request->json('last_name'),
-                $request->json('scan_time')
-            ));
     }
 }

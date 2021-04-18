@@ -41,7 +41,7 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'slack'];
+        return ['mail'];
     }
 
     /**
@@ -62,25 +62,6 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
                 'cardNum' => $this->cardNum,
                 'dateTime' => new DateTime($this->scanTime),
             ]);
-    }
-
-    /**
-     * Get the Slack representation of the notification.
-     *
-     * @param mixed $notifiable
-     * @return SlackMessage
-     * @throws \Exception
-     */
-    public function toSlack($notifiable)
-    {
-        $dateTime = new DateTime($this->scanTime);
-
-        return (new SlackMessage)
-            ->content(
-                "<!channel|channel> $this->firstName $this->lastName is NOT an active member but was able to ".
-                "scan in using card $this->cardNum at {$dateTime->format('g:i A')} on ".
-                "{$dateTime->format('M d, Y')}. Someone should check on that ASAP!"
-            );
     }
 
     /**

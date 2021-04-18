@@ -18,6 +18,7 @@ class Door
         public int $dsxRelayBoard, // The relay board ID in the stack attached to the Raspberry Pi
         public int $dsxRelayId, // The specific relay number on that board.
         public bool $openDuringOpenHouseByDefault,
+        public bool $membersCanBadgeIn
     ) {
         $this->shouldOpen = $this->openDuringOpenHouseByDefault;
     }
@@ -48,6 +49,14 @@ class Door
         ]);
     }
 
+    public static function byDSXDeviceId(int $dsxDeviceId): ?Door {
+        return self::all()
+            ->first(function($door) use ($dsxDeviceId) {
+                /** @var $door Door */
+                return $door->dsxDeviceId == $dsxDeviceId;
+            });
+    }
+
     #[Pure] public static function glassWorkshopDoor(): Door
     {
         return new Door(
@@ -55,7 +64,8 @@ class Door
             dsxDeviceId: 3,
             dsxRelayBoard: 0,
             dsxRelayId: 6,
-            openDuringOpenHouseByDefault: true
+            openDuringOpenHouseByDefault: true,
+            membersCanBadgeIn: true
         );
     }
 
@@ -66,7 +76,8 @@ class Door
             dsxDeviceId: 2,
             dsxRelayBoard: 0,
             dsxRelayId: 5,
-            openDuringOpenHouseByDefault: false
+            openDuringOpenHouseByDefault: false,
+            membersCanBadgeIn: false
         );
     }
 
@@ -77,7 +88,8 @@ class Door
             dsxDeviceId: 1,
             dsxRelayBoard: 0,
             dsxRelayId: 2,
-            openDuringOpenHouseByDefault: false
+            openDuringOpenHouseByDefault: false,
+            membersCanBadgeIn: true
         );
     }
 
@@ -88,7 +100,8 @@ class Door
             dsxDeviceId: 0,
             dsxRelayBoard: 0,
             dsxRelayId: 1,
-            openDuringOpenHouseByDefault: false
+            openDuringOpenHouseByDefault: false,
+            membersCanBadgeIn: true
         );
     }
 }
