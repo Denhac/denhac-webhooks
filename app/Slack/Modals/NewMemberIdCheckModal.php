@@ -63,9 +63,13 @@ class NewMemberIdCheckModal implements ModalInterface
 
         $cardsInput = $this->modalView->newInput()
             ->blockId(self::CARD_NUM_BLOCK_ID)
-            ->label('Card Number (comma separated)')
+            ->label('Card Number')
             ->newTextInput(self::CARD_NUM_ACTION_ID)
             ->placeholder('Enter Card Number');
+
+        $this->modalView->newSection()
+            ->plainText("The numbers on the card will look like \"01234 3300687-1\" and you should enter \"01234\""
+                . " in this field.");
 
         $cardString = $customer->cards->implode('number', ',');
         if (! empty($cardString)) {
