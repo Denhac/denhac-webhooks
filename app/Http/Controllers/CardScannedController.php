@@ -21,7 +21,9 @@ class CardScannedController extends Controller
         Log::info($request->getContent());
         $cardNumber = $request->get('card_num');
         /** @var Collection $cards */
-        $cards = Card::where('number', $cardNumber)->get();
+        $cards = Card::where('number', $cardNumber)
+            ->where('member_has_card', true)
+            ->get();
 
         if ($cards->count() > 1) {
             report(new \Exception("More than one card listed with card {$cardNumber} on card scan"));
