@@ -43,6 +43,9 @@ class Door
     public static function all(): Collection {
         return collect([
             self::glassWorkshopDoor(),
+            self::kitchenWorkshopDoor(),
+            self::studioBDoor(),
+            self::KGNUDoor(),
             self::dirtyRoomDoor(),
             self::kitchenGlassDoor(),
             self::glassDoubleDoors(),
@@ -64,6 +67,42 @@ class Door
             dsxDeviceId: 3,
             dsxRelayBoard: 0,
             dsxRelayId: 6,
+            openDuringOpenHouseByDefault: true,
+            membersCanBadgeIn: true
+        );
+    }
+
+    #[Pure] public static function kitchenWorkshopDoor(): Door
+    {
+        return new Door(
+            humanReadableName: "Kitchen Workshop Door",
+            dsxDeviceId: 8,
+            dsxRelayBoard: 0,
+            dsxRelayId: 3,
+            openDuringOpenHouseByDefault: true,
+            membersCanBadgeIn: true
+        );
+    }
+
+    #[Pure] public static function studioBDoor(): Door
+    {
+        return new Door(
+            humanReadableName: "Studio B Door",
+            dsxDeviceId: 9,
+            dsxRelayBoard: 0,
+            dsxRelayId: 4,
+            openDuringOpenHouseByDefault: true,
+            membersCanBadgeIn: true
+        );
+    }
+
+    #[Pure] public static function KGNUDoor(): Door
+    {
+        return new Door(
+            humanReadableName: "KGNU Door",
+            dsxDeviceId: 10,
+            dsxRelayBoard: 0,
+            dsxRelayId: 8,
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true
         );
