@@ -56,7 +56,7 @@ class SlackApi
     {
         $token = setting(self::ADMIN_TOKEN_CACHE_KEY);
 
-        if (is_null($token) || ! $this->isValidToken($token)) {
+        if (is_null($token) || !$this->isValidToken($token)) {
             $token = $this->makeAdminToken($email, $password);
             setting([self::ADMIN_TOKEN_CACHE_KEY => $token])->save();
         }
@@ -66,6 +66,27 @@ class SlackApi
                 'Authorization' => "Bearer $token",
             ],
         ]);
+    }
+
+    private function paginate($key, $request)
+    {
+        $cursor = "";
+        $collection = collect();
+        do {
+            $response = json_decode($request($cursor)->getBody(), true);
+            if (array_key_exists($key, $response)) {
+                $collection = $collection->merge($response[$key]);
+            } else {
+                return collect($response);
+            }
+
+            if (!array_key_exists("response_metadata", $response)) break;
+            if (!array_key_exists("next_cursor", $response["response_metadata"])) break;
+
+            $cursor = $response["response_metadata"]["next_cursor"];
+        } while ($cursor != "");
+
+        return $collection;
     }
 
     /**
@@ -85,7 +106,7 @@ class SlackApi
         $this->ensureAdminClient();
 
         $emails = Arr::wrap($emails);
-        if (! Arr::isAssoc($emails)) {
+        if (!Arr::isAssoc($emails)) {
             $emails = array_fill_keys($emails, 'regular');
         }
 
@@ -144,10 +165,15 @@ class SlackApi
 
     public function users_list()
     {
-        // TODO Make this handle errors/pagination
-        return collect(json_decode($this->managementApiClient
-            ->get('https://denhac.slack.com/api/users.list')
-            ->getBody(), true)['members']);
+        return $this->paginate('members', function ($cursor) {
+            return $this->managementApiClient
+                ->get(
+                    'https://denhac.slack.com/api/users.list', [
+                    RequestOptions::QUERY => [
+                        'cursor' => $cursor,
+                    ],
+                ]);
+        });
     }
 
     public function users_lookupByEmail($email)
@@ -171,7 +197,7 @@ class SlackApi
             return null;
         }
 
-        if (! array_key_exists('user', $data)) {
+        if (!array_key_exists('user', $data)) {
             report(new UnexpectedResponseException("No User key exists: {$response->getBody()}"));
 
             return null;
@@ -182,14 +208,15 @@ class SlackApi
 
     public function channels_list()
     {
-        // TODO Make this handle errors/pagination
-        return collect(json_decode($this->managementApiClient
-            ->get('https://denhac.slack.com/api/conversations.list', [
-                RequestOptions::QUERY => [
-                    'types' => 'public_channel,private_channel',
-                ],
-            ])
-            ->getBody(), true)['channels']);
+        return $this->paginate('channels', function ($cursor) {
+            return $this->managementApiClient
+                ->get('https://denhac.slack.com/api/conversations.list', [
+                    RequestOptions::QUERY => [
+                        'types' => 'public_channel,private_channel',
+                        'cursor' => $cursor,
+                    ],
+                ]);
+        });
     }
 
     private function isValidToken($token)
