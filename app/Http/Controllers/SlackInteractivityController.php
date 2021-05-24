@@ -23,6 +23,10 @@ class SlackInteractivityController extends Controller
             return $this->viewSubmission($request);
         } else if ($type == 'shortcut') {
             return $this->shortcut($request);
+        } else if ($type == 'block_actions') {
+            Log::info("Interactive request!");
+            Log::info(print_r($request->payload(), true));
+            return response(); // 200 OK so it doesn't error
         } else {
             throw new \Exception('Slack interactive payload has unknown type: ' . $type);
         }
