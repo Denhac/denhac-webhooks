@@ -524,6 +524,9 @@ class IdentifyIssues extends Command
         });
 
         $cards
+            ->filter(function ($card) {
+                return $card->member_has_card;
+            })
             ->groupBy(function ($card) {
                 return $card->number;
             })
@@ -539,7 +542,7 @@ class IdentifyIssues extends Command
                     ->implode(', ');
                 $numEntries = $cards->count();
 
-                $message = "$cardNum has $numEntries entries in the database for customer(s): $uniqueCustomers";
+                $message = "Card $cardNum has $numEntries entries in the database for customer(s): $uniqueCustomers";
                 $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
             });
     }
