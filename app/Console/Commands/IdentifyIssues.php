@@ -114,6 +114,11 @@ class IdentifyIssues extends Command
             });
     }
 
+    private function getMetaValue($meta_data, $key) {
+        $meta_entry = $meta_data->where('key', $key)->first();
+        return is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
+    }
+
     /**
      * @throws ApiCallFailed
      */
@@ -130,8 +135,7 @@ class IdentifyIssues extends Command
                 ->isNotEmpty();
 
             $meta_data = collect($customer['meta_data']);
-            $meta_entry = $meta_data->where('key', 'access_card_number')->first();
-            $card_string = is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
+            $card_string = $this->getMetaValue($meta_data, 'access_card_number');
             $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
                 ->map(function ($card) {
                     return ltrim($card, '0');
@@ -142,8 +146,7 @@ class IdentifyIssues extends Command
                 $emails->push(GmailEmailHelper::handleGmail(Str::lower($customer['email'])));
             }
 
-            $meta_entry = $meta_data->where('key', 'email_aliases')->first();
-            $email_aliases_string = is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
+            $email_aliases_string = $this->getMetaValue($meta_data, 'email_aliases');
             $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(',', $email_aliases_string));
             $emails = $emails->merge($email_aliases);
 
@@ -161,7 +164,7 @@ class IdentifyIssues extends Command
                 'is_member' => $isMember,
                 'subscriptions' => $subscriptionMap,
                 'cards' => $cards,
-                'slack_id' => $meta_data->where('key', 'access_slack_id')->first()['value'] ?? null,
+                'slack_id' => $this->getMetaValue($meta_data, 'access_slack_id'),
                 'system' => self::SYSTEM_WOOCOMMERCE,
             ];
         });
@@ -434,8 +437,6 @@ class IdentifyIssues extends Command
             /** @var Collection $memberEmails */
             $memberEmails = $member['email'];
 
-            $membersGroupMailing = 'members@denhac.org'; // TODO dedupe this
-
             if ($memberEmails->isEmpty()) {
                 return;
             }
@@ -524,20 +525,12 @@ class IdentifyIssues extends Command
         });
 
         $cards
-            ->filter(function ($card) {
-                return $card->member_has_card;
-            })
-            ->groupBy(function ($card) {
-                return $card->number;
-            })
-            ->filter(function ($value) {
-                return $value->count() > 1;
-            })
+            ->filter(fn($card) => $card->member_has_card)
+            ->groupBy(fn($card) => $card->number)
+            ->filter(fn($value) => $value->count() > 1)
             ->each(function ($cards, $cardNum) {
                 $uniqueCustomers = $cards
-                    ->map(function ($card) {
-                        return $card->woo_customer_id;
-                    })
+                    ->map(fn($card) => $card->woo_customer_id)
                     ->unique()
                     ->implode(', ');
                 $numEntries = $cards->count();
