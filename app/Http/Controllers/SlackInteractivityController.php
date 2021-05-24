@@ -26,7 +26,7 @@ class SlackInteractivityController extends Controller
         } else if ($type == 'block_actions') {
             Log::info("Interactive request!");
             Log::info(print_r($request->payload(), true));
-            return response(); // 200 OK so it doesn't error
+            return response()->json(); // 200 OK so it doesn't error
         } else {
             throw new \Exception('Slack interactive payload has unknown type: ' . $type);
         }
