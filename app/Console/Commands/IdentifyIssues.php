@@ -130,7 +130,8 @@ class IdentifyIssues extends Command
                 ->isNotEmpty();
 
             $meta_data = collect($customer['meta_data']);
-            $card_string = $meta_data->where('key', 'access_card_number')->first()['value'] ?: null;
+            $meta_entry = $meta_data->where('key', 'access_card_number')->first();
+            $card_string = is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
             $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
                 ->map(function ($card) {
                     return ltrim($card, '0');
@@ -141,7 +142,8 @@ class IdentifyIssues extends Command
                 $emails->push(GmailEmailHelper::handleGmail(Str::lower($customer['email'])));
             }
 
-            $email_aliases_string = $meta_data->where('key', 'email_aliases')->first()['value'] ?: null;
+            $meta_entry = $meta_data->where('key', 'email_aliases')->first();
+            $email_aliases_string = is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
             $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(',', $email_aliases_string));
             $emails = $emails->merge($email_aliases);
 
