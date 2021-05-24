@@ -117,7 +117,7 @@ class IdentifyIssues extends Command
     /**
      * @throws ApiCallFailed
      */
-    private function getMembers()
+    public function getMembers()
     {
         $customers = $this->wooCommerceApi->customers->list();
 
@@ -130,7 +130,7 @@ class IdentifyIssues extends Command
                 ->isNotEmpty();
 
             $meta_data = collect($customer['meta_data']);
-            $card_string = $meta_data->where('key', 'access_card_number')->first()['value'] ?? null;
+            $card_string = $meta_data->where('key', 'access_card_number')->first()['value'] ?: null;
             $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
                 ->map(function ($card) {
                     return ltrim($card, '0');
@@ -141,7 +141,7 @@ class IdentifyIssues extends Command
                 $emails->push(GmailEmailHelper::handleGmail(Str::lower($customer['email'])));
             }
 
-            $email_aliases_string = $meta_data->where('key', 'email_aliases')->first()['value'] ?? null;
+            $email_aliases_string = $meta_data->where('key', 'email_aliases')->first()['value'] ?: null;
             $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(',', $email_aliases_string));
             $emails = $emails->merge($email_aliases);
 
