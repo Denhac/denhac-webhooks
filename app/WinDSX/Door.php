@@ -66,7 +66,7 @@ class Door
             humanReadableName: "Glass Workshop Door",
             dsxDeviceId: 3,
             dsxRelayBoard: 0,
-            dsxRelayId: 6,
+            dsxRelayId: 1,
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true
         );
@@ -78,7 +78,7 @@ class Door
             humanReadableName: "Kitchen Workshop Door",
             dsxDeviceId: 8,
             dsxRelayBoard: 0,
-            dsxRelayId: 3,
+            dsxRelayId: 7,
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true
         );
@@ -87,10 +87,10 @@ class Door
     #[Pure] public static function studioBDoor(): Door
     {
         return new Door(
-            humanReadableName: "Studio B Door",
+            humanReadableName: "Electronics/Lounge Door",
             dsxDeviceId: 9,
             dsxRelayBoard: 0,
-            dsxRelayId: 4,
+            dsxRelayId: 8,
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true
         );
@@ -99,10 +99,10 @@ class Door
     #[Pure] public static function KGNUDoor(): Door
     {
         return new Door(
-            humanReadableName: "KGNU Door",
+            humanReadableName: "Craft/3D Room Door",
             dsxDeviceId: 10,
             dsxRelayBoard: 0,
-            dsxRelayId: 8,
+            dsxRelayId: 4,
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true
         );
@@ -114,7 +114,7 @@ class Door
             humanReadableName: "Dirty Room Door",
             dsxDeviceId: 2,
             dsxRelayBoard: 0,
-            dsxRelayId: 5,
+            dsxRelayId: 2,
             openDuringOpenHouseByDefault: false,
             membersCanBadgeIn: false
         );
@@ -126,7 +126,7 @@ class Door
             humanReadableName: "Kitchen Glass Door",
             dsxDeviceId: 1,
             dsxRelayBoard: 0,
-            dsxRelayId: 2,
+            dsxRelayId: 5,
             openDuringOpenHouseByDefault: false,
             membersCanBadgeIn: true
         );
@@ -138,7 +138,7 @@ class Door
             humanReadableName: "Glass Double Doors",
             dsxDeviceId: 0,
             dsxRelayBoard: 0,
-            dsxRelayId: 1,
+            dsxRelayId: 6,
             openDuringOpenHouseByDefault: false,
             membersCanBadgeIn: true
         );
