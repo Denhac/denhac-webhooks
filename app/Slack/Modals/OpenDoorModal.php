@@ -4,7 +4,9 @@ namespace App\Slack\Modals;
 
 use App\Events\DoorControlUpdated;
 use App\Http\Requests\SlackRequest;
+use App\Slack\SlackApi;
 use App\WinDSX\Door;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Partials\Option;
@@ -67,8 +69,21 @@ class OpenDoorModal implements ModalInterface
             throw new \Exception("The door for ${selectedOption['value']} was null");
         }
 
-        if ($customer->hasCapability('denhac_can_verify_member_id')) {
+        /** @var SlackApi $slackApi */
+        $slackApi = app(SlackApi::class);
+        $accessLogs = collect($slackApi->team_accessLogs());
+
+        $earliestAllowedTimestamp = Carbon::now()->subMinutes(5)->getTimestamp();
+        $atTheSpace = $accessLogs
+            ->where('user_id', $customer->slack_id)
+            ->where('ip', setting('ip.space'))
+            ->filter(fn($data) => $data['date_last'] >= $earliestAllowedTimestamp)
+            ->count() > 0;
+
+        if ($atTheSpace) {
             event(new DoorControlUpdated(5, $door));
+        } else {
+            return Kit::newMessage()->text("I'm sorry, I can't verify that you're at the space");
         }
 
         return self::clearViewStack();
