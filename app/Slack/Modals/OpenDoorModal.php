@@ -60,11 +60,11 @@ class OpenDoorModal implements ModalInterface
         $selectedOption = collect($values[self::DOORS_BLOCK_ID][self::DOORS_ACTION_ID]['selected_option']);
 
         $door = Door::all()
-            ->filter(fn($door) => $selectedOption == "device-".$door->dsxDeviceId)
+            ->filter(fn($door) => $selectedOption['value'] == "device-".$door->dsxDeviceId)
             ->first();
 
         if(is_null($door)) {
-            throw new \Exception("The door for $selectedOption was null");
+            throw new \Exception("The door for ${selectedOption['value']} was null");
         }
 
         if ($customer->hasCapability('denhac_can_verify_member_id')) {
