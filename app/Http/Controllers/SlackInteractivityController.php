@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\DoorControlUpdated;
 use App\Http\Requests\SlackRequest;
-use App\Slack\Modals\ModalTrait;
-use App\Slack\Modals\SuccessModal;
-use App\WinDSX\Door;
+use App\Slack\ClassFinder;
 use Illuminate\Support\Facades\Log;
 
 class SlackInteractivityController extends Controller
@@ -38,12 +35,12 @@ class SlackInteractivityController extends Controller
 //        Log::info(print_r($request->payload(), true));
 
         $view = $request->payload()['view'];
-        $callback_id = $view['callback_id'];
+        $callbackId = $view['callback_id'];
 
-        $modalClass = ModalTrait::getModal($callback_id);
+        $modalClass = ClassFinder::getModal($callbackId);
 
         if (is_null($modalClass)) {
-            throw new \Exception("Slack interactive view submission had unknown callback id: $callback_id");
+            throw new \Exception("Slack interactive view submission had unknown callback id: $callbackId");
         }
 
         return $modalClass::handle($request);
@@ -54,19 +51,13 @@ class SlackInteractivityController extends Controller
         Log::info("Shortcut!");
         Log::info(print_r($request->payload(), true));
 
-        $customer = $request->customer();
+        $callbackId = $request->payload()['callback_id'];
+        $shortcutClass = ClassFinder::getShortcut($callbackId);
 
-        if ($customer->hasCapability('denhac_can_verify_member_id')) {
-            $callbackId = $request->payload()['callback_id'];
-
-            if($callbackId == "door.open.workshop_main") {
-                event(new DoorControlUpdated(5, Door::glassWorkshopDoor()));
-            }
+        if (is_null($shortcutClass)) {
+            throw new \Exception("Slack interactive shortcut had unknown callback id: $callbackId");
         }
 
-//        $modal = new SuccessModal();
-//        $modal->open($request->payload()['trigger_id']);
-
-        return response('');
+        return $shortcutClass::handle($request);
     }
 }
