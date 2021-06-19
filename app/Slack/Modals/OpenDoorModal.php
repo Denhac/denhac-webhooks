@@ -61,6 +61,7 @@ class OpenDoorModal implements ModalInterface
 
         $selectedOption = collect($values[self::DOORS_BLOCK_ID][self::DOORS_ACTION_ID]['selected_option']);
 
+        /** @var Door $door */
         $door = Door::all()
             ->filter(fn($door) => $selectedOption['value'] == "device-".$door->dsxDeviceId)
             ->first();
@@ -81,7 +82,7 @@ class OpenDoorModal implements ModalInterface
             ->count() > 0;
 
         if ($atTheSpace) {
-            event(new DoorControlUpdated(5, $door));
+            event(new DoorControlUpdated($door->momentaryOpenTime, $door));
         } else {
             return response()->json([
                 'response_action' => 'push',

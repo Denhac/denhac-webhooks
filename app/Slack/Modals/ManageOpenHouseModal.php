@@ -93,7 +93,7 @@ class ManageOpenHouseModal implements ModalInterface
             }
         }
 
-        event(new DoorControlUpdated($selectedTimeCarbon, ...$doors));
+        event(new DoorControlUpdated($selectedTimeCarbon, ...$doors->toArray()));
 
         return self::clearViewStack();
     }

@@ -18,7 +18,8 @@ class Door
         public int $dsxRelayBoard, // The relay board ID in the stack attached to the Raspberry Pi
         public int $dsxRelayId, // The specific relay number on that board.
         public bool $openDuringOpenHouseByDefault,
-        public bool $membersCanBadgeIn
+        public bool $membersCanBadgeIn,
+        public int $momentaryOpenTime // How long to keep just this door open
     ) {
         $this->shouldOpen = $this->openDuringOpenHouseByDefault;
     }
@@ -68,7 +69,8 @@ class Door
             dsxRelayBoard: 0,
             dsxRelayId: 1,
             openDuringOpenHouseByDefault: true,
-            membersCanBadgeIn: true
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 5
         );
     }
 
@@ -80,7 +82,8 @@ class Door
             dsxRelayBoard: 0,
             dsxRelayId: 7,
             openDuringOpenHouseByDefault: true,
-            membersCanBadgeIn: true
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 3
         );
     }
 
@@ -92,7 +95,8 @@ class Door
             dsxRelayBoard: 0,
             dsxRelayId: 8,
             openDuringOpenHouseByDefault: true,
-            membersCanBadgeIn: true
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 3
         );
     }
 
@@ -104,7 +108,8 @@ class Door
             dsxRelayBoard: 0,
             dsxRelayId: 4,
             openDuringOpenHouseByDefault: true,
-            membersCanBadgeIn: true
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 3
         );
     }
 
@@ -116,7 +121,8 @@ class Door
             dsxRelayBoard: 0,
             dsxRelayId: 2,
             openDuringOpenHouseByDefault: false,
-            membersCanBadgeIn: false
+            membersCanBadgeIn: false,
+            momentaryOpenTime: 3
         );
     }
 
@@ -128,7 +134,8 @@ class Door
             dsxRelayBoard: 0,
             dsxRelayId: 5,
             openDuringOpenHouseByDefault: false,
-            membersCanBadgeIn: true
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 5
         );
     }
 
@@ -140,7 +147,8 @@ class Door
             dsxRelayBoard: 0,
             dsxRelayId: 6,
             openDuringOpenHouseByDefault: false,
-            membersCanBadgeIn: true
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 5
         );
     }
 }
