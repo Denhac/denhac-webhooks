@@ -29,7 +29,8 @@ class OpenDoorModalShortcut implements ShortcutInterface
         Log::info("Opening the door modal!");
         // TODO Verify if they're at the space and challenge if not
         $modal = new OpenDoorModal();
-        $modal->open($request->get('trigger_id'));
+        $response = $modal->open($request->get('trigger_id'));
+        Log::info($response->getBody());
 
         return response('');
     }

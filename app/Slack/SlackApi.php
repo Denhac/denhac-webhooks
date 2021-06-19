@@ -352,7 +352,7 @@ class SlackApi
 
     public function views_open($trigger_id, $view)
     {
-        $this->spaceBotApiClient
+        return $this->spaceBotApiClient
             ->post('https://denhac.slack.com/api/views.open', [
                 RequestOptions::JSON => [
                     'trigger_id' => $trigger_id,

@@ -29,7 +29,7 @@ trait ModalTrait
         /** @var SlackApi $slackApi */
         $slackApi = app(SlackApi::class);
 
-        $slackApi->views_open($trigger_id, $this);
+        return $slackApi->views_open($trigger_id, $this);
     }
 
     protected static function clearViewStack()
