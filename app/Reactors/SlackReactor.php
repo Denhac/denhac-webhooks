@@ -86,13 +86,13 @@ final class SlackReactor implements EventHandler
         if ($plan_id == UserMembership::MEMBERSHIP_3DP_USER) {
             app(AddCustomerToSlackChannel::class)
                 ->onQueue()
-                ->execute($customerId, '3d-printing');
+                ->execute($customerId, 'help-3d-printing');
         }
 
         if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_USER) {
             app(AddCustomerToSlackChannel::class)
                 ->onQueue()
-                ->execute($customerId, 'laser');
+                ->execute($customerId, 'help-laser-pew-pew');
         }
     }
 }
