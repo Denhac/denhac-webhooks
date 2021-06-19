@@ -86,6 +86,9 @@ class OpenDoorModal implements ModalInterface
             return response()->json([
                 'response_action' => 'push',
                 'view' => Kit::newModal()
+                    ->title("Failed")
+                    ->clearOnClose(true)
+                    ->close("Close")
                     ->text("I'm sorry, I can't verify that you're at the space"),
             ]);
         }
