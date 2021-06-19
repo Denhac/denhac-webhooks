@@ -83,7 +83,11 @@ class OpenDoorModal implements ModalInterface
         if ($atTheSpace) {
             event(new DoorControlUpdated(5, $door));
         } else {
-            return Kit::newMessage()->text("I'm sorry, I can't verify that you're at the space");
+            return response()->json([
+                'response_action' => 'push',
+                'view' => Kit::newModal()
+                    ->text("I'm sorry, I can't verify that you're at the space"),
+            ]);
         }
 
         return self::clearViewStack();
