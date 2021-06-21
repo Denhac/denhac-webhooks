@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SlackRequest;
+use App\Slack\ClassFinder;
 use App\Slack\Modals\ModalTrait;
 use App\Slack\SlackOptions;
 
@@ -28,7 +29,7 @@ class SlackOptionsController extends Controller
 
         $callback_id = $payload['view']['callback_id'];
 
-        $modalClass = ModalTrait::getModal($callback_id);
+        $modalClass = ClassFinder::getModal($callback_id);
         if (is_null($modalClass)) {
             throw new \Exception("Slack options payload has unknown callback id: $callback_id");
         }

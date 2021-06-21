@@ -4,6 +4,7 @@ namespace App\Slack\Modals;
 
 use App\Customer;
 use App\Http\Requests\SlackRequest;
+use App\Slack\ClassFinder;
 use App\Slack\SlackOptions;
 use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
@@ -61,7 +62,7 @@ class SelectAMemberModal implements ModalInterface
         $customer_id = $matches[1];
         $nextCallbackId = $request->payload()['view']['private_metadata'];
 
-        $modalClass = ModalTrait::getModal($nextCallbackId);
+        $modalClass = ClassFinder::getModal($nextCallbackId);
         /** @var ModalTrait $modal */
         $modal = new $modalClass($customer_id);
 
