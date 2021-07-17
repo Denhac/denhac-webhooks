@@ -20,7 +20,7 @@ class OpenWorkshopGlassDoor implements ShortcutInterface
 
         // TODO Verify if they're at the space and challenge if not
         if ($customer->hasCapability('denhac_can_verify_member_id')) {
-            event(new DoorControlUpdated(5, Door::glassWorkshopDoor()));
+            event(new DoorControlUpdated(5, Door::glassWorkshopDoor()->shouldOpen(true)));
         }
     }
 }

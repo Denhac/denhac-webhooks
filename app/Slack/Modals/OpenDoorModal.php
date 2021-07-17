@@ -82,7 +82,7 @@ class OpenDoorModal implements ModalInterface
             ->count() > 0;
 
         if ($atTheSpace) {
-            event(new DoorControlUpdated($door->momentaryOpenTime, $door));
+            event(new DoorControlUpdated($door->momentaryOpenTime, $door->shouldOpen(true)));
         } else {
             return response()->json([
                 'response_action' => 'push',
