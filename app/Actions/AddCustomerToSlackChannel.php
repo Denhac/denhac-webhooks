@@ -38,7 +38,7 @@ class AddCustomerToSlackChannel
 
         throw_if(is_null($customer->slack_id), "Customer $customerId cannot be added to slack channel $channel with null slack id!");
 
-        $channels = $this->slackApi->channelIdsByName($channel);
+        $channels = $this->slackApi->channels($channel);
 
         throw_unless(count($channels) == 1, "Expected 1 channel 'by name': $channel.");
 

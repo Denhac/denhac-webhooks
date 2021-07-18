@@ -43,7 +43,7 @@ class RemoveCustomerFromSlackChannel implements ShouldQueue
 
         throw_if(is_null($customer->slack_id), "Customer $this->customerId cannot be removed from slack channel $this->channel with null slack id!");
 
-        $channels = $slackApi->channelIdsByName($this->channel);
+        $channels = $slackApi->channels($this->channel);
 
         throw_unless(count($channels) == 1, "Expected 1 channel 'by name': $this->channel.");
 

@@ -270,23 +270,6 @@ class SlackApi
             ->all();
     }
 
-    /**
-     * @param $wantedChannels
-     * @return array
-     */
-    public function channelIdsByName($wantedChannels): array  // Just make this channels? Make it understand names and IDs?
-    {
-        $wantedChannels = Arr::wrap($wantedChannels);
-        $channels = $this->channels_list();
-
-        return $channels
-            ->whereIn('name', $wantedChannels)
-            ->map(function ($channel) {
-                return $channel['id'];
-            })
-            ->all();
-    }
-
     public function conversations_join($channelId)
     {
         $response = $this->managementApiClient
