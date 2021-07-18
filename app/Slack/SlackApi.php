@@ -264,7 +264,8 @@ class SlackApi
             ->filter(fn($ch) => (
                 in_array($ch['id'], $wantedChannels) || in_array($ch['name'], $wantedChannels)
             ))
-            ->map(fn($channel) => $channel['name'])
+            ->map(fn($channel) => $channel['id'])
+            ->values()
             ->unique()
             ->all();
     }
