@@ -6,7 +6,10 @@ use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Queue;
 use Spatie\EventSourcing\Projectionist;
+use Spatie\QueueableAction\ActionJob;
+use Tests\Helpers\ActionAssertion;
 use Tests\Helpers\OctoPrintUpdateBuilder;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 use Tests\Helpers\Wordpress\SubscriptionBuilder;
@@ -132,5 +135,24 @@ abstract class TestCase extends BaseTestCase
             })
             ->reject(null)
             ->all();
+    }
+
+    public function assertActionPushed($cls): ActionAssertion {
+        $jobs = Queue::pushedJobs();
+        if(! array_key_exists(ActionJob::class, $jobs)) {
+            $this->fail("No action jobs were pushed");
+        }
+
+        $actionJobs = collect($jobs[ActionJob::class])
+            ->map(fn($actionJob) => $actionJob['job'])
+            ->filter(fn($actionJob) => $actionJob->displayName() == $cls);
+
+        if($actionJobs->count() == 0) {
+            $this->fail("$cls was not pushed");
+        } else if($actionJobs->count() > 1) {
+            $this->fail("$cls had more than one job pushed which we don't support yet");
+        };
+
+        return new ActionAssertion($actionJobs->first());
     }
 }

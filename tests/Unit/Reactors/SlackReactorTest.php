@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Reactors;
 
+use App\Actions\Slack\AddCustomerToSlackChannel;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
@@ -10,13 +11,14 @@ use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Jobs\RemoveCustomerFromSlackChannel;
 use App\Jobs\RemoveCustomerFromSlackUserGroup;
 use App\Reactors\SlackReactor;
+use App\Slack\Channels;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Bus;
-use Spatie\QueueableAction\ActionJob;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 use YlsIdeas\FeatureFlags\Facades\Features;
 
@@ -28,8 +30,9 @@ class SlackReactorTest extends TestCase
 
         $this->withOnlyEventHandlerType(SlackReactor::class);
 
+        Queue::fake();
+
         Bus::fake([
-            ActionJob::class,
             AddCustomerToSlackUserGroup::class,
             RemoveCustomerFromSlackChannel::class,
             RemoveCustomerFromSlackUserGroup::class,
@@ -45,10 +48,8 @@ class SlackReactorTest extends TestCase
         $customerId = 1;
         event(new CustomerBecameBoardMember($customerId));
 
-//        Bus::assertDispatched(AddCustomerToSlackChannel::class,
-//            function (AddCustomerToSlackChannel $job) use ($customerId) {
-//            return $job->customerId == $customerId && $job->channel == "board";
-//        });
+        $this->assertActionPushed(AddCustomerToSlackChannel::class)
+            ->with($customerId, Channels::BOARD);
 
         Bus::assertDispatched(AddCustomerToSlackUserGroup::class,
             function (AddCustomerToSlackUserGroup $job) use ($customerId) {
