@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Slack\Channels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,7 +36,7 @@ class InviteCustomerPublicOnlyMemberInSlack implements ShouldQueue
              */
             report(new \Exception("Invite was called on an existing member: {$this->wooCustomerId}"));
         } else {
-            $this->inviteSingleChannelGuest('public');
+            $this->inviteSingleChannelGuest(Channels::PUBLIC);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Slack\Channels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +27,7 @@ class DemoteMemberToPublicOnlyMemberInSlack implements ShouldQueue
     public function handle()
     {
         if ($this->isExistingSlackUser()) {
-            $this->setSingleChannelGuest('public');
+            $this->setSingleChannelGuest(Channels::PUBLIC);
         } else {
             report(new \Exception("Demote was called on a new member: {$this->wooCustomerId}"));
         }

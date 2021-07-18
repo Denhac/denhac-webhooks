@@ -81,9 +81,9 @@ class SlackReactorTest extends TestCase
         event(new MembershipDeactivated($customerId));
 
         Bus::assertDispatched(DemoteMemberToPublicOnlyMemberInSlack::class,
-        function (DemoteMemberToPublicOnlyMemberInSlack $job) use ($customerId) {
-            return $job->wooCustomerId == $customerId;
-        });
+            function (DemoteMemberToPublicOnlyMemberInSlack $job) use ($customerId) {
+                return $job->wooCustomerId == $customerId;
+            });
     }
 
     /** @test */
