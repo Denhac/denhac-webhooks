@@ -29,18 +29,16 @@ class AuthorizeSlackRequest
             ]);
         }
 
-        if(Features::accessible(FeatureFlags::SLACK_CHECK_CLIENT_CERTIFICATE)) {
-            if (!$this->isCertificateValid($request)) {
-                return response()->json([
-                    'response_type' => 'ephemeral',
-                    'text' => "The certificate from slack didn't match the computed value. Did the certificate expire?",
-                ]);
-            }
+        if (!$this->isCertificateValid($request)) {
+            return response()->json([
+                'response_type' => 'ephemeral',
+                'text' => "The certificate from slack didn't match the computed value. Did the certificate expire?",
+            ]);
         }
 
         $type = $request->get('type');
 
-        if(! is_null($type) && $type == 'url_verification') {
+        if($type == 'url_verification') {
             $challenge = $request->get('challenge');
 
             return response($challenge);
