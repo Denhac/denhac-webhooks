@@ -6,7 +6,7 @@ use App\Actions\AddCustomerToSlackChannel;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
-use App\Jobs\InviteCustomerPublicOnlyMemberInSlack;
+use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Jobs\RemoveCustomerFromSlackChannel;
 use App\Jobs\RemoveCustomerFromSlackUserGroup;
@@ -36,7 +36,7 @@ class SlackReactorTest extends TestCase
             RemoveCustomerFromSlackUserGroup::class,
             DemoteMemberToPublicOnlyMemberInSlack::class,
             MakeCustomerRegularMemberInSlack::class,
-            InviteCustomerPublicOnlyMemberInSlack::class,
+            InviteCustomerNeedIdCheckOnlyMemberInSlack::class,
         ]);
     }
 
@@ -115,8 +115,8 @@ class SlackReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription->toArray()));
 
-        Bus::assertDispatched(InviteCustomerPublicOnlyMemberInSlack::class,
-            function (InviteCustomerPublicOnlyMemberInSlack $job) use ($subscription) {
+        Bus::assertDispatched(InviteCustomerNeedIdCheckOnlyMemberInSlack::class,
+            function (InviteCustomerNeedIdCheckOnlyMemberInSlack $job) use ($subscription) {
                 return $job->wooCustomerId == $subscription->customer_id;
             });
     }
@@ -143,7 +143,7 @@ class SlackReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription->toArray()));
 
-        Bus::assertNotDispatched(InviteCustomerPublicOnlyMemberInSlack::class);
+        Bus::assertNotDispatched(InviteCustomerNeedIdCheckOnlyMemberInSlack::class);
         Bus::assertNotDispatched(MakeCustomerRegularMemberInSlack::class);
     }
 }

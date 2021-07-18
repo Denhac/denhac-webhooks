@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class InviteCustomerPublicOnlyMemberInSlack implements ShouldQueue
+class InviteCustomerNeedIdCheckOnlyMemberInSlack implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use MakeCustomerMemberInSlackMixin;
@@ -36,7 +36,7 @@ class InviteCustomerPublicOnlyMemberInSlack implements ShouldQueue
              */
             report(new \Exception("Invite was called on an existing member: {$this->wooCustomerId}"));
         } else {
-            $this->inviteSingleChannelGuest(Channels::PUBLIC);
+            $this->inviteSingleChannelGuest(Channels::NEED_ID_CHECK);
         }
     }
 }

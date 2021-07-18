@@ -8,7 +8,7 @@ use App\Customer;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
-use App\Jobs\InviteCustomerPublicOnlyMemberInSlack;
+use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Jobs\RemoveCustomerFromSlackChannel;
 use App\Jobs\RemoveCustomerFromSlackUserGroup;
@@ -36,7 +36,7 @@ final class SlackReactor implements EventHandler
         if (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
             dispatch(new MakeCustomerRegularMemberInSlack($event->subscription['customer_id']));
         } else {
-            dispatch(new InviteCustomerPublicOnlyMemberInSlack($event->subscription['customer_id']));
+            dispatch(new InviteCustomerNeedIdCheckOnlyMemberInSlack($event->subscription['customer_id']));
         }
     }
 
