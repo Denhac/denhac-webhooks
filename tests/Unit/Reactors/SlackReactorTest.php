@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Reactors;
 
-use App\Actions\AddCustomerToSlackChannel;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Slack;
 
 use App\Customer;
 use App\Slack\SlackApi;
 use Spatie\QueueableAction\QueueableAction;
+use Throwable;
 
 class AddCustomerToSlackChannel
 {
@@ -13,7 +14,7 @@ class AddCustomerToSlackChannel
     /**
      * @var SlackApi
      */
-    private $slackApi;
+    private SlackApi $slackApi;
 
     /**
      * Create a new action instance.
@@ -30,6 +31,7 @@ class AddCustomerToSlackChannel
      *
      * @param $customerId
      * @param $channel
+     * @throws Throwable
      */
     public function execute($customerId, $channel)
     {

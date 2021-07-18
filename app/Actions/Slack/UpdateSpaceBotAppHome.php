@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Slack;
 
 use App\Customer;
 use App\Printer3D;
@@ -92,7 +92,7 @@ class UpdateSpaceBotAppHome
                 $message = ":question: The printer is in an unknown state.";
             }
 
-            $this->home->text("{$printer->name} $message");
+            $this->home->text("$printer->name $message");
         });
     }
 }

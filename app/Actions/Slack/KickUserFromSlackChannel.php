@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Slack;
 
 use App\Slack\SlackApi;
 use Illuminate\Support\Facades\Log;

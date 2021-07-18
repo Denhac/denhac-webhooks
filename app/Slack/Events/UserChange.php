@@ -3,7 +3,7 @@
 namespace App\Slack\Events;
 
 
-use App\Actions\UpdateSlackUserProfileMembership;
+use App\Actions\Slack\UpdateSlackUserProfileMembership;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Support\Facades\Log;
 

@@ -2,7 +2,7 @@
 
 namespace App\Reactors;
 
-use App\Actions\UpdateSpaceBotAppHome;
+use App\Actions\Slack\UpdateSpaceBotAppHome;
 use App\StorableEvents\OctoPrintStatusUpdated;
 use App\UserMembership;
 use Illuminate\Contracts\Queue\ShouldQueue;

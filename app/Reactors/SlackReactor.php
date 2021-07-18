@@ -2,8 +2,8 @@
 
 namespace App\Reactors;
 
-use App\Actions\AddCustomerToSlackChannel;
-use App\Actions\UpdateSlackUserProfileMembership;
+use App\Actions\Slack\AddCustomerToSlackChannel;
+use App\Actions\Slack\UpdateSlackUserProfileMembership;
 use App\Customer;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;

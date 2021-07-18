@@ -3,7 +3,7 @@
 namespace App\Slack\Events;
 
 
-use App\Actions\KickUserFromSlackChannel;
+use App\Actions\Slack\KickUserFromSlackChannel;
 use App\Http\Requests\SlackRequest;
 use App\TempBan;
 use Illuminate\Support\Facades\Log;

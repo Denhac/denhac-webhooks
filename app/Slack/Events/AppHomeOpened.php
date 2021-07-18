@@ -2,7 +2,7 @@
 
 namespace App\Slack\Events;
 
-use App\Actions\UpdateSpaceBotAppHome;
+use App\Actions\Slack\UpdateSpaceBotAppHome;
 use App\Http\Requests\SlackRequest;
 
 class AppHomeOpened implements EventInterface

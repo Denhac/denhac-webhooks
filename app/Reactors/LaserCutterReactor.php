@@ -2,7 +2,6 @@
 
 namespace App\Reactors;
 
-use App\Actions\AddCustomerToSlackChannel;
 use App\Customer;
 use App\Notifications\LaserCutterAccessAllowed;
 use App\StorableEvents\UserMembershipCreated;
