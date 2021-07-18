@@ -256,7 +256,24 @@ class SlackApi
      * @param $wantedChannels
      * @return array
      */
-    public function channelIdsByName($wantedChannels)
+    public function channels($wantedChannels): array
+    {
+        $wantedChannels = Arr::wrap($wantedChannels);
+
+        return $this->channels_list()
+            ->filter(fn($ch) => (
+                in_array($ch['id'], $wantedChannels) || in_array($ch['name'], $wantedChannels)
+            ))
+            ->map(fn($channel) => $channel['name'])
+            ->unique()
+            ->all();
+    }
+
+    /**
+     * @param $wantedChannels
+     * @return array
+     */
+    public function channelIdsByName($wantedChannels): array  // Just make this channels? Make it understand names and IDs?
     {
         $wantedChannels = Arr::wrap($wantedChannels);
         $channels = $this->channels_list();
