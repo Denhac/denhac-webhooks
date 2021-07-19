@@ -10,6 +10,7 @@ use Throwable;
 class AddCustomerToSlackChannel
 {
     use QueueableAction;
+    use SlackActionTrait;
 
     /**
      * @var SlackApi
@@ -29,37 +30,31 @@ class AddCustomerToSlackChannel
     /**
      * Execute the action.
      *
-     * @param $customerId
+     * @param string $userId The woo customer id or the slack id
      * @param $channel
      * @throws Throwable
      */
-    public function execute($customerId, $channel)
+    public function execute(string $userId, $channel)
     {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($customerId)->first();
+        $slackId = $this->slackIdFromGeneralId($userId);
+        $channelId = $this->channelIdFromChannel($channel);
 
-        throw_if(is_null($customer->slack_id), "Customer $customerId cannot be added to slack channel $channel with null slack id!");
-
-        $channels = $this->slackApi->channels($channel);
-
-        throw_unless(count($channels) == 1, "Expected 1 channel 'by name': $channel.");
-
-        $channelId = collect($channels)->first();
-
-        $response = $this->slackApi->conversations_invite($customer->slack_id, $channelId);
+        $response = $this->slackApi->conversations_kick($slackId, $channelId);
 
         if ($response['ok']) {
             return;
         }
 
-        if ($response['error'] == 'not_in_channel') {
-            $this->slackApi->conversations_join($channelId);
-            $response = $this->slackApi->conversations_invite($customer->slack_id, $channelId);
-        } elseif ($response['error'] == 'already_in_channel') {
-            return; // Everything's fine
-        }
+        throw new \Exception("Invite of $userId to $channel failed: ".print_r($response, true));
 
-        $response_s = json_encode($response);
-        throw_unless($response['ok'], "Could not join channel $channel: $response_s");
+//        if ($response['error'] == 'not_in_channel') {
+//            $this->slackApi->conversations_join($channelId);
+//            $response = $this->slackApi->conversations_invite($customerId, $channelId);
+//        } elseif ($response['error'] == 'already_in_channel') {
+//            return; // Everything's fine
+//        }
+//
+//        $response_s = json_encode($response);
+//        throw_unless($response['ok'], "Could not join channel $channel: $response_s");
     }
 }

@@ -44,6 +44,7 @@ class Customer extends Model
         'last_name',
         'github_username',
         'birthday',
+        'slack_id',
     ];
 
     protected $casts = [

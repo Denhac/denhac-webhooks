@@ -2,9 +2,11 @@
 
 namespace Tests;
 
+use App\Customer;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Spatie\EventSourcing\Projectionist;
@@ -24,6 +26,7 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
     use RefreshDatabase;
+    use WithFaker;
 
     private $_apiUser;
 
@@ -38,6 +41,17 @@ abstract class TestCase extends BaseTestCase
 
             return $this->_apiUser;
         }
+        return null;
+    }
+
+    public function customerModel(): Customer {
+        return Customer::create([
+            'username' => $this->faker->userName,
+            'email' => $this->faker->email,
+            'woo_id' => $this->faker->randomNumber(),
+            'member' => $this->faker->boolean,
+            'slack_id' => "U".$this->faker->numberBetween(1e5, 1e7)
+        ]);
     }
 
     public function customer()

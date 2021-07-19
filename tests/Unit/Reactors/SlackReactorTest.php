@@ -3,12 +3,12 @@
 namespace Tests\Unit\Reactors;
 
 use App\Actions\Slack\AddCustomerToSlackChannel;
+use App\Actions\Slack\KickUserFromSlackChannel;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
-use App\Jobs\RemoveCustomerFromSlackChannel;
 use App\Jobs\RemoveCustomerFromSlackUserGroup;
 use App\Reactors\SlackReactor;
 use App\Slack\Channels;
@@ -34,7 +34,6 @@ class SlackReactorTest extends TestCase
 
         Bus::fake([
             AddCustomerToSlackUserGroup::class,
-            RemoveCustomerFromSlackChannel::class,
             RemoveCustomerFromSlackUserGroup::class,
             DemoteMemberToPublicOnlyMemberInSlack::class,
             MakeCustomerRegularMemberInSlack::class,
@@ -60,17 +59,15 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function on_removal_from_board_customer_is_removed_from_board_slack_channel_and_group()
     {
-        $customerId = 1;
-        event(new CustomerRemovedFromBoard($customerId));
+        $customer = $this->customerModel();
+        event(new CustomerRemovedFromBoard($customer->id));
 
-        Bus::assertDispatched(RemoveCustomerFromSlackChannel::class,
-            function (RemoveCustomerFromSlackChannel $job) use ($customerId) {
-                return $job->customerId == $customerId && $job->channel == 'board';
-            });
+        $this->assertActionPushed(KickUserFromSlackChannel::class)
+            ->with($customer->id, Channels::BOARD);
 
         Bus::assertDispatched(RemoveCustomerFromSlackUserGroup::class,
-            function (RemoveCustomerFromSlackUserGroup $job) use ($customerId) {
-                return $job->customerId == $customerId && $job->usergroupHandle == 'theboard';
+            function (RemoveCustomerFromSlackUserGroup $job) use ($customer) {
+                return $job->customerId == $customer->id && $job->usergroupHandle == 'theboard';
             });
     }
 

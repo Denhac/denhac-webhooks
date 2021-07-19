@@ -3,6 +3,7 @@
 namespace App\Reactors;
 
 use App\Actions\Slack\AddCustomerToSlackChannel;
+use App\Actions\Slack\KickUserFromSlackChannel;
 use App\Actions\Slack\UpdateSlackUserProfileMembership;
 use App\Customer;
 use App\FeatureFlags;
@@ -10,7 +11,6 @@ use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
-use App\Jobs\RemoveCustomerFromSlackChannel;
 use App\Jobs\RemoveCustomerFromSlackUserGroup;
 use App\Slack\Channels;
 use App\StorableEvents\CustomerBecameBoardMember;
@@ -71,7 +71,10 @@ final class SlackReactor implements EventHandler
 
     public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
     {
-        dispatch(new RemoveCustomerFromSlackChannel($event->customerId, 'board'));
+        app(KickUserFromSlackChannel::class)
+            ->onQueue()
+            ->execute($event->customerId, Channels::BOARD);
+
         dispatch(new RemoveCustomerFromSlackUserGroup($event->customerId, 'theboard'));
     }
 

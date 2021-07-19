@@ -3,12 +3,12 @@
 namespace App\Actions\Slack;
 
 use App\Slack\SlackApi;
-use Illuminate\Support\Facades\Log;
 use Spatie\QueueableAction\QueueableAction;
 
 class KickUserFromSlackChannel
 {
     use QueueableAction;
+    use SlackActionTrait;
 
     private SlackApi $slackApi;
 
@@ -17,9 +17,27 @@ class KickUserFromSlackChannel
         $this->slackApi = $slackApi;
     }
 
-    public function execute($userId, $channelId)
+    public function execute($userId, $channel)
     {
-        $response = $this->slackApi->conversations_kick($userId, $channelId);
-        Log::info("Conversation kick response: " . print_r($response, true));
+        $slackId = $this->slackIdFromGeneralId($userId);
+        $channelId = $this->channelIdFromChannel($channel);
+
+        $response = $this->slackApi->conversations_kick($slackId, $channelId);
+
+        if ($response['ok']) {
+            return;
+        }
+
+        throw new \Exception("Kick of $userId from $channel failed: ".print_r($response, true));
+
+//        if ($response['error'] == 'not_in_channel') {
+//            $this->slackApi->conversations_join($channelId);
+//            $response = $this->slackApi->conversations_kick($customerId, $channelId);
+//        } elseif ($response['error'] == 'already_in_channel') {
+//            return; // Everything's fine
+//        }
+//
+//        $response_s = json_encode($response);
+//        throw_unless($response['ok'], "Could not join channel $channel: $response_s");
     }
 }
