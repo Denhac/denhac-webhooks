@@ -26,7 +26,7 @@ final class MembershipAggregate extends AggregateRoot
     use Github;
     use Subscription;
 
-    public $currentlyAMember = false;
+    public bool $currentlyAMember = false;
 
     public function __construct()
     {
