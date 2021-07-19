@@ -7,6 +7,7 @@ use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Jeremeamia\Slack\BlockKit\Surfaces\Message;
 
 class SlackApi
 {
@@ -306,6 +307,17 @@ class SlackApi
             ]);
 
         return json_decode($response->getBody(), true);
+    }
+
+    public function chat_postMessage($conversationId, Message $message)
+    {
+        return $this->spaceBotApiClient
+            ->post('https://denhac.slack.com/api/chat.postMessage', [
+                RequestOptions::JSON => [
+                    'channel' => $conversationId,
+                    'blocks' => json_encode($message->getBlocks()),
+                ],
+            ]);
     }
 
     public function team_accessLogs()
