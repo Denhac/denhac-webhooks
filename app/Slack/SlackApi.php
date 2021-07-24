@@ -33,11 +33,6 @@ class SlackApi
     private const ADMIN_TOKEN_CACHE_KEY = 'slack.admin.token';
     /**
      * @var Client
-     * This one is for the denhac management app.
-     */
-    private $managementApiClient;
-    /**
-     * @var Client
      */
     private $adminClient;
 
@@ -78,27 +73,6 @@ class SlackApi
                 'Authorization' => "Bearer $token",
             ],
         ]);
-    }
-
-    private function paginate($key, $request)
-    {
-        $cursor = "";
-        $collection = collect();
-        do {
-            $response = json_decode($request($cursor)->getBody(), true);
-            if (array_key_exists($key, $response)) {
-                $collection = $collection->merge($response[$key]);
-            } else {
-                return collect($response);
-            }
-
-            if (!array_key_exists("response_metadata", $response)) break;
-            if (!array_key_exists("next_cursor", $response["response_metadata"])) break;
-
-            $cursor = $response["response_metadata"]["next_cursor"];
-        } while ($cursor != "");
-
-        return $collection;
     }
 
     #[Pure] public function __get(string $name)
@@ -225,26 +199,5 @@ class SlackApi
         preg_match($regex, $html, $matches);
 
         return $matches[1];
-    }
-
-    public function usergroupForName($handle)
-    {
-        return $this->usergroups->list()
-            ->firstWhere('handle', $handle);
-    }
-
-    public function usergroups_users_update($usergroupId, Collection $users)
-    {
-        $this->ensureAdminClient();
-
-        $response = $this->adminClient
-            ->post('https://denhac.slack.com/api/usergroups.users.update', [
-                RequestOptions::FORM_PARAMS => [
-                    'usergroup' => $usergroupId,
-                    'users' => $users->implode(','),
-                ],
-            ]);
-
-        return json_decode($response->getBody(), true)['ok'];
     }
 }

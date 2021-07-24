@@ -43,7 +43,7 @@ class AddCustomerToSlackUserGroup implements ShouldQueue
 
         throw_if(is_null($customer->slack_id), "Customer $this->customerId cannot be added to usergroup $this->usergroupHandle with null slack id!");
 
-        $usergroup = $slackApi->usergroupForName($this->usergroupHandle);
+        $usergroup = $slackApi->usergroups->byName($this->usergroupHandle);
 
         throw_if(is_null($usergroup), "Couldn't find usergroup for $this->usergroupHandle");
 
@@ -51,6 +51,6 @@ class AddCustomerToSlackUserGroup implements ShouldQueue
         $users = collect($usergroup['users']);
         $users->add($customer->slack_id);
 
-        $slackApi->usergroups_users_update($id, $users);
+        $slackApi->usergroups->users->update($id, $users);
     }
 }
