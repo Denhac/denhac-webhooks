@@ -2,6 +2,7 @@
 
 namespace App\Slack;
 
+use App\Slack\api\ChatApi;
 use App\Slack\api\SlackClients;
 use App\Slack\api\TeamApi;
 use App\Slack\api\UsersApi;
@@ -13,6 +14,7 @@ use Jeremeamia\Slack\BlockKit\Surfaces\Message;
 use JetBrains\PhpStorm\Pure;
 
 /**
+ * @property ChatApi chat
  * @property TeamApi team
  * @property UsersApi users
  */
@@ -102,10 +104,12 @@ class SlackApi
 
     #[Pure] public function __get(string $name)
     {
-        if ($name == 'users') {
-            return new UsersApi($this->clients);
-        } else if($name == 'team') {
+        if ($name == 'chat') {
+            return new ChatApi($this->clients);
+        } if ($name == 'team') {
             return new TeamApi($this->clients);
+        } else if($name == 'users') {
+            return new UsersApi($this->clients);
         }
 
         return null;
@@ -315,17 +319,6 @@ class SlackApi
             ]);
 
         return json_decode($response->getBody(), true);
-    }
-
-    public function chat_postMessage($conversationId, Message $message)
-    {
-        return $this->spaceBotApiClient
-            ->post('https://denhac.slack.com/api/chat.postMessage', [
-                RequestOptions::JSON => [
-                    'channel' => $conversationId,
-                    'blocks' => json_encode($message->getBlocks()),
-                ],
-            ]);
     }
 
     public function usergroups_list()

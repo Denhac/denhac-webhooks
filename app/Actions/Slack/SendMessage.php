@@ -22,6 +22,6 @@ class SendMessage
     {
         $userId = $this->slackIdFromGeneralId($userId);
 
-        $this->api->chat_postMessage($userId, $message);
+        $this->api->chat->postMessage($userId, $message);
     }
 }
