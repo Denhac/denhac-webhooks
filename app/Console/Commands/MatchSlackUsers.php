@@ -65,7 +65,7 @@ class MatchSlackUsers extends Command
 
         $this->line("There are {$wooCustomers->count()} customers in WooCommerce we can try to look up.");
 
-        $slackMembers = $this->slackApi->users_list();
+        $slackMembers = $this->slackApi->users->list();
 
         $this->line("There are {$slackMembers->count()} members in slack.");
 

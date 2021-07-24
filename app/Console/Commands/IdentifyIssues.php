@@ -260,7 +260,7 @@ class IdentifyIssues extends Command
 
     private function extraSlackUsers(Collection $members)
     {
-        $slackUsers = $this->slackApi->users_list()
+        $slackUsers = $this->slackApi->users->list()
             ->filter(function ($user) {
                 if (array_key_exists('is_bot', $user) && $user['is_bot']) {
                     return false;
@@ -342,7 +342,7 @@ class IdentifyIssues extends Command
 
     private function missingSlackUsers(Collection $members)
     {
-        $slackUsers = $this->slackApi->users_list();
+        $slackUsers = $this->slackApi->users->list();
 
         $members
             ->each(function ($member) use ($slackUsers) {

@@ -2,13 +2,19 @@
 
 namespace App\Slack;
 
+use App\Slack\api\SlackClients;
+use App\Slack\api\UsersApi;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Jeremeamia\Slack\BlockKit\Surfaces\Message;
+use JetBrains\PhpStorm\Pure;
 
+/**
+ * @property UsersApi users
+ */
 class SlackApi
 {
     private const ADMIN_TOKEN_CACHE_KEY = 'slack.admin.token';
@@ -27,8 +33,11 @@ class SlackApi
      */
     private $adminClient;
 
+    private SlackClients $clients;
+
     public function __construct()
     {
+        $this->clients = new SlackClients();
         $managementApiToken = config('denhac.slack.management_api_token');
         $this->managementApiClient = new Client([
             RequestOptions::HEADERS => [
@@ -88,6 +97,15 @@ class SlackApi
         } while ($cursor != "");
 
         return $collection;
+    }
+
+    #[Pure] public function __get(string $name)
+    {
+        if ($name == 'users') {
+            return new UsersApi($this->clients);
+        }
+
+        return null;
     }
 
     /**
@@ -162,19 +180,6 @@ class SlackApi
             ]);
 
         return json_decode($response->getBody(), true)['ok'];
-    }
-
-    public function users_list()
-    {
-        return $this->paginate('members', function ($cursor) {
-            return $this->managementApiClient
-                ->get(
-                    'https://denhac.slack.com/api/users.list', [
-                    RequestOptions::QUERY => [
-                        'cursor' => $cursor,
-                    ],
-                ]);
-        });
     }
 
     public function users_lookupByEmail($email)
