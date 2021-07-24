@@ -21,9 +21,7 @@ class SlackInteractivityController extends Controller
         } else if ($type == 'shortcut') {
             return $this->shortcut($request);
         } else if ($type == 'block_actions') {
-            Log::info("Interactive request!");
-            Log::info(print_r($request->payload(), true));
-            return response()->json(); // 200 OK so it doesn't error
+            return $this->blockAction($request);
         } else {
             throw new \Exception('Slack interactive payload has unknown type: ' . $type);
         }
@@ -59,5 +57,31 @@ class SlackInteractivityController extends Controller
         }
 
         return $shortcutClass::handle($request);
+    }
+
+    private function blockAction(SlackRequest $request)
+    {
+        Log::info("Block Action!");
+        Log::info(print_r($request->payload(), true));
+
+
+        $actions = $request->payload()['actions'];
+
+        foreach ($actions as $action) {
+            $blockId = $action['block_id'];
+            $actionId = $action['action_id'];
+
+            $blockAction = ClassFinder::getBlockAction($blockId, $actionId);
+
+            if (is_null($blockAction)) {
+                throw new \Exception("No black action handled for {$blockId} and {$actionId}");
+            }
+
+            return $blockAction::handle($request);
+        }
+
+        throw new \Exception("No actions found in ".print_r($request->payload(), true));
+
+//        return $shortcutClass::handle($request);
     }
 }
