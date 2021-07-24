@@ -6,7 +6,11 @@ namespace App\Slack\api;
 use App\Slack\UnexpectedResponseException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\Pure;
 
+/**
+ * @property UsersProfileApi profile
+ */
 class UsersApi
 {
     use SlackApiTrait;
@@ -16,6 +20,15 @@ class UsersApi
     public function __construct(SlackClients $clients)
     {
         $this->clients = $clients;
+    }
+
+    #[Pure] public function __get(string $name)
+    {
+        if ($name == 'profile') {
+            return new UsersProfileApi($this->clients);
+        }
+
+        return null;
     }
 
     public function list(): Collection

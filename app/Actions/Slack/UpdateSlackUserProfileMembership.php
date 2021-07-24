@@ -38,7 +38,7 @@ class UpdateSlackUserProfileMembership
             $memberValue = "No";
         }
 
-        $this->slackApi->user_profile_set($slackId, [
+        $this->slackApi->users->profile->set($slackId, [
             'fields' => [
                 $key => [
                     'value' => $memberValue,
