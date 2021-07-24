@@ -6,6 +6,7 @@ use App\Slack\api\ChatApi;
 use App\Slack\api\ConversationsApi;
 use App\Slack\api\SlackClients;
 use App\Slack\api\TeamApi;
+use App\Slack\api\UsergroupsApi;
 use App\Slack\api\UsersApi;
 use App\Slack\api\ViewsApi;
 use GuzzleHttp\Client;
@@ -18,6 +19,7 @@ use JetBrains\PhpStorm\Pure;
  * @property ChatApi chat
  * @property ConversationsApi conversations
  * @property TeamApi team
+ * @property UsergroupsApi usergroups
  * @property UsersApi users
  * @property ViewsApi views
  */
@@ -107,6 +109,8 @@ class SlackApi
             return new ConversationsApi($this->clients);
         } else if ($name == 'team') {
             return new TeamApi($this->clients);
+        } else if ($name == 'usergroups') {
+            return new UsergroupsApi($this->clients);
         } else if ($name == 'users') {
             return new UsersApi($this->clients);
         } else if ($name == 'views') {
@@ -223,21 +227,9 @@ class SlackApi
         return $matches[1];
     }
 
-    public function usergroups_list()
-    {
-        // TODO Make this handle errors/pagination
-        return collect(json_decode($this->managementApiClient
-            ->get('https://denhac.slack.com/api/usergroups.list', [
-                RequestOptions::QUERY => [
-                    'include_users' => true,
-                ],
-            ])
-            ->getBody(), true)['usergroups']);
-    }
-
     public function usergroupForName($handle)
     {
-        return $this->usergroups_list()
+        return $this->usergroups->list()
             ->firstWhere('handle', $handle);
     }
 
