@@ -37,6 +37,19 @@ class ConversationsApi
             ->values();
     }
 
+    public function create($name, $private = false)
+    {
+        $response = $this->clients->managementApiClient
+            ->post('https://denhac.slack.com/api/conversations.create', [
+                RequestOptions::FORM_PARAMS => [
+                    'name' => $name,
+                    'is_private' => $private
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true);
+    }
+
     public function list(...$types): Collection
     {
         if(empty($types)) {
