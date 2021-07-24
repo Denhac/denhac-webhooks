@@ -17,17 +17,9 @@ class SlackMemberCleanup
     {
         $this->message = Kit::newMessage();
         $this->message->text("Hello! We're cleaning up our slack and making it denhac member's only.");
+        $this->message->text($this->getHelperMessage($slackId));
 
-        /** @var Customer $customer */
-        $customer = Customer::whereSlackId($slackId)->first();
-
-        if(is_null($customer)) {
-            $this->message->text("I don't have this slack account associated with a member account. If this is a mistake, please click this button to get connected to someone who can help.");
-        } else if(! $customer->member) {
-            $this->message->text("I do have your slack account associated with your membership, but it doesn't appear that you're a member in good standing. If this is a mistake, please click this button to get connected to someone who can help.");
-        } else {
-            throw new \Exception("I know this customer and they are a member: $slackId");
-        }
+        $this->message->text("If this is a mistake, please click this button to get connected to someone who can help.");
 
         $this->message
             ->newActions(HelpMemberCleanupButton::blockId())
@@ -45,5 +37,22 @@ class SlackMemberCleanup
         app(SendMessage::class)
             ->onQueue()
             ->execute($slackId, $instance->message);
+    }
+
+    /**
+     * @param $slackId
+     */
+    public static function getHelperMessage($slackId): string
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereSlackId($slackId)->first();
+
+        if (is_null($customer)) {
+            return "I don't have this slack account associated with a member account.";
+        } else if (!$customer->member) {
+            return "I do have your slack account associated with your membership, but it doesn't appear that you're a member in good standing.";
+        } else {
+            return "You seem to be a known customer and a member. I'm not sure how we got here";
+        }
     }
 }
