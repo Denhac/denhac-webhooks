@@ -56,8 +56,6 @@ class ConversationsApi
             $types = [
                 SlackApi::PUBLIC_CHANNEL,
                 SlackApi::PRIVATE_CHANNEL,
-                SlackApi::MULTI_PARTY_MESSAGE,
-                SlackApi::DIRECT_MESSAGE,
             ];
         }
 
