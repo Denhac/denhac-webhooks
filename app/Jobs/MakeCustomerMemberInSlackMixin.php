@@ -63,7 +63,7 @@ trait MakeCustomerMemberInSlackMixin
 
     protected function setSingleChannelGuest($channel)
     {
-        $channel = $this->slackApi->channels($channel)[0];
+        $channel = $this->slackApi->conversations->toSlackIds($channel)->first();
         $this->slackApi->users_admin_setUltraRestricted($this->customerSlackId, $channel);
     }
 
@@ -77,8 +77,8 @@ trait MakeCustomerMemberInSlackMixin
         $emails = [
             $this->customerEmail => $membershipType,
         ];
-        $channels = $this->slackApi->channels($channels);
-        $this->slackApi->users_admin_inviteBulk($emails, $channels);
+        $channels = $this->slackApi->conversations->toSlackIds($channels);
+        $this->slackApi->users_admin_inviteBulk($emails, $channels->all());
         // TODO Report exception if the overall request isn't okay or per user isn't okay
 
         // The slack API doesn't update fast enough

@@ -3,7 +3,10 @@
 namespace App\Slack\api;
 
 
+use App\Slack\SlackApi;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 class ConversationsApi
 {
@@ -14,6 +17,48 @@ class ConversationsApi
     public function __construct(SlackClients $clients)
     {
         $this->clients = $clients;
+    }
+
+    /**
+     * Note: Helper method, not official slack API
+     *
+     * @param $wantedChannels
+     * @return Collection
+     */
+    public function toSlackIds($wantedChannels): Collection
+    {
+        $wantedChannels = Arr::wrap($wantedChannels);
+
+        return $this->list()
+            ->filter(fn($ch) => (
+                in_array($ch['id'], $wantedChannels) || in_array($ch['name'], $wantedChannels)
+            ))
+            ->map(fn($channel) => $channel['id'])
+            ->values();
+    }
+
+    public function list(...$types): Collection
+    {
+        if(empty($types)) {
+            $types = [
+                SlackApi::PUBLIC_CHANNEL,
+                SlackApi::PRIVATE_CHANNEL,
+                SlackApi::MULTI_PARTY_MESSAGE,
+                SlackApi::DIRECT_MESSAGE,
+            ];
+        }
+
+        $typeString = implode(',', $types);
+
+        return $this->paginate('channels', function ($cursor) use ($typeString) {
+            return $this->clients->managementApiClient
+                ->get('https://denhac.slack.com/api/conversations.list', [
+                    RequestOptions::QUERY => [
+                        'types' => $typeString,
+                        'cursor' => $cursor,
+                    ],
+                ]);
+        });
     }
 
     public function join($channelId)

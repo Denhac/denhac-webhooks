@@ -23,6 +23,11 @@ use JetBrains\PhpStorm\Pure;
  */
 class SlackApi
 {
+    public const PUBLIC_CHANNEL = 'public_channel';
+    public const PRIVATE_CHANNEL = 'private_channel';
+    public const MULTI_PARTY_MESSAGE = 'mpim';
+    public const DIRECT_MESSAGE = 'im';
+
     private const ADMIN_TOKEN_CACHE_KEY = 'slack.admin.token';
     /**
      * @var Client
@@ -185,19 +190,6 @@ class SlackApi
         return json_decode($response->getBody(), true)['ok'];
     }
 
-    public function channels_list()
-    {
-        return $this->paginate('channels', function ($cursor) {
-            return $this->managementApiClient
-                ->get('https://denhac.slack.com/api/conversations.list', [
-                    RequestOptions::QUERY => [
-                        'types' => 'public_channel,private_channel',
-                        'cursor' => $cursor,
-                    ],
-                ]);
-        });
-    }
-
     private function isValidToken($token)
     {
         // TODO Handle errors/exceptions at some point if needed
@@ -229,24 +221,6 @@ class SlackApi
         preg_match($regex, $html, $matches);
 
         return $matches[1];
-    }
-
-    /**
-     * @param $wantedChannels
-     * @return array
-     */
-    public function channels($wantedChannels): array
-    {
-        $wantedChannels = Arr::wrap($wantedChannels);
-
-        return $this->channels_list()
-            ->filter(fn($ch) => (
-                in_array($ch['id'], $wantedChannels) || in_array($ch['name'], $wantedChannels)
-            ))
-            ->map(fn($channel) => $channel['id'])
-            ->values()
-            ->unique()
-            ->all();
     }
 
     public function usergroups_list()

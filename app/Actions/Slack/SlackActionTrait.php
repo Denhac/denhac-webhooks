@@ -24,9 +24,9 @@ trait SlackActionTrait
 
     public function channelIdFromChannel($channel)
     {
-        $channels = collect($this->slackApi->channels($channel));
+        $channels = collect($this->slackApi->conversations->toSlackIds($channel));
 
-        throw_unless(count($channels) == 1, "Expected 1 channel, got {$channels->count()}");
+        throw_unless($channels->count() == 1, "Expected 1 channel, got {$channels->count()}");
 
         return $channels->first();
     }
