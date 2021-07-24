@@ -51,7 +51,7 @@ class CleanupChannelSetup
 
         $message = Kit::newMessage();
         $message->text("This is just to give us some info to start with:");
-        $message->text(SlackMemberCleanup::getHelperMessage($slackId));
+        $message->text(SlackMemberCleanup::getHelperMessage($slackId, false));
         $message->text("If you have anything else to add, you can reply here or you can wait until we look into the issue.");
         $this->api->chat->postMessage($channelId, $message);
     }

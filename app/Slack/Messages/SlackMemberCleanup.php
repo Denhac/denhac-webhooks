@@ -42,17 +42,23 @@ class SlackMemberCleanup
     /**
      * @param $slackId
      */
-    public static function getHelperMessage($slackId): string
+    public static function getHelperMessage($slackId, $doNothingMessage=true): string
     {
         /** @var Customer $customer */
         $customer = Customer::whereSlackId($slackId)->first();
 
-        if (is_null($customer)) {
-            return "I don't have this slack account associated with a member account.";
-        } else if (!$customer->member) {
-            return "I do have your slack account associated with your membership, but it doesn't appear that you're a member in good standing.";
+        if($doNothingMessage) {
+            $doNothingContent = " If you do nothing, your account will become a single channel guest in #public on August 15th.";
         } else {
-            return "You seem to be a known customer and a member. I'm not sure how we got here";
+            $doNothingContent = "";
+        }
+
+        if (is_null($customer)) {
+            return "I don't have this slack account associated with a member account.$doNothingContent";
+        } else if (!$customer->member) {
+            return "I do have this slack account associated with your membership, but it doesn't appear that you're a member in good standing.$doNothingContent";
+        } else {
+            return "You seem to be a known customer and a member. I'm not sure how we got here.";
         }
     }
 }
