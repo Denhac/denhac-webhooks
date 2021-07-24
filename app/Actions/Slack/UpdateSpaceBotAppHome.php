@@ -44,7 +44,7 @@ class UpdateSpaceBotAppHome
             $this->activeMember($member);
         }
 
-        $this->slackApi->views_publish($slack_id, $this->home);
+        $this->slackApi->views->publish($slack_id, $this->home);
     }
 
     private function activeMember(Customer $member)

@@ -6,17 +6,18 @@ use App\Slack\api\ChatApi;
 use App\Slack\api\SlackClients;
 use App\Slack\api\TeamApi;
 use App\Slack\api\UsersApi;
+use App\Slack\api\ViewsApi;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Jeremeamia\Slack\BlockKit\Surfaces\Message;
 use JetBrains\PhpStorm\Pure;
 
 /**
  * @property ChatApi chat
  * @property TeamApi team
  * @property UsersApi users
+ * @property ViewsApi views
  */
 class SlackApi
 {
@@ -110,7 +111,9 @@ class SlackApi
             return new TeamApi($this->clients);
         } else if($name == 'users') {
             return new UsersApi($this->clients);
-        }
+        } else if($name == 'views') {
+            return new ViewsApi($this->clients);
+    }
 
         return null;
     }
@@ -352,28 +355,6 @@ class SlackApi
             ]);
 
         return json_decode($response->getBody(), true)['ok'];
-    }
-
-    public function views_open($trigger_id, $view)
-    {
-        return $this->spaceBotApiClient
-            ->post('https://denhac.slack.com/api/views.open', [
-                RequestOptions::JSON => [
-                    'trigger_id' => $trigger_id,
-                    'view' => json_encode($view),
-                ],
-            ]);
-    }
-
-    public function views_publish($user_id, $view)
-    {
-        $this->spaceBotApiClient
-            ->post('https://denhac.slack.com/api/views.publish', [
-                RequestOptions::JSON => [
-                    'user_id' => $user_id,
-                    'view' => json_encode($view),
-                ],
-            ]);
     }
 
     public function user_profile_set($user_id, $profile)
