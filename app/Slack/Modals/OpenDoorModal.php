@@ -72,7 +72,7 @@ class OpenDoorModal implements ModalInterface
 
         /** @var SlackApi $slackApi */
         $slackApi = app(SlackApi::class);
-        $accessLogs = collect($slackApi->team_accessLogs());
+        $accessLogs = collect($slackApi->team->accessLogs());
 
         $earliestAllowedTimestamp = Carbon::now()->subMinutes(5)->getTimestamp();
         $atTheSpace = $accessLogs

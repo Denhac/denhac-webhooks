@@ -26,6 +26,7 @@ class SlackClients
         } else if($name == 'spaceBotApiClient') {
             $client = $this->clientFromToken(config('denhac.slack.spacebot_api_token'));
         } else if($name == 'adminClient') {
+            // TODO Try to verify how long this key lasts and when we need to refresh it
             $client = $this->clientFromToken(setting(self::ADMIN_TOKEN_CACHE_KEY));
         }
 

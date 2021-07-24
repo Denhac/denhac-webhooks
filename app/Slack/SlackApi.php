@@ -3,16 +3,17 @@
 namespace App\Slack;
 
 use App\Slack\api\SlackClients;
+use App\Slack\api\TeamApi;
 use App\Slack\api\UsersApi;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Jeremeamia\Slack\BlockKit\Surfaces\Message;
 use JetBrains\PhpStorm\Pure;
 
 /**
+ * @property TeamApi team
  * @property UsersApi users
  */
 class SlackApi
@@ -103,6 +104,8 @@ class SlackApi
     {
         if ($name == 'users') {
             return new UsersApi($this->clients);
+        } else if($name == 'team') {
+            return new TeamApi($this->clients);
         }
 
         return null;
@@ -323,16 +326,6 @@ class SlackApi
                     'blocks' => json_encode($message->getBlocks()),
                 ],
             ]);
-    }
-
-    public function team_accessLogs()
-    {
-        $this->ensureAdminClient();
-
-        $response = $this->adminClient
-            ->get('https://denhac.slack.com/api/team.accessLogs');
-
-        return json_decode($response->getBody(), true)['logins'];
     }
 
     public function usergroups_list()
