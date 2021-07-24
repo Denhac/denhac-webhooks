@@ -14,21 +14,11 @@ class CleanupChannelSetup
 
     private SlackApi $api;
 
-    /**
-     * Create a new action instance.
-     *
-     * @return void
-     */
     public function __construct(SlackApi $api)
     {
         $this->api = $api;
     }
 
-    /**
-     * Execute the action.
-     *
-     * @return mixed
-     */
     public function execute($slackId)
     {
         // Get a unique hash for that user and this cleanup action
@@ -50,7 +40,7 @@ class CleanupChannelSetup
             $this->api->conversations->invite($helper, $channelId);
         }
 
-        $this->api->conversations->invite($slackId, $channel_name);
+        $this->api->conversations->invite($slackId, $channelId);
 
         $message = Kit::newMessage();
         $message->text("This is just to give us some info to start with:");
