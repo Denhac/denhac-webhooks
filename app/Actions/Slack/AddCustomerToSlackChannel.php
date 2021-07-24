@@ -39,7 +39,7 @@ class AddCustomerToSlackChannel
         $slackId = $this->slackIdFromGeneralId($userId);
         $channelId = $this->channelIdFromChannel($channel);
 
-        $response = $this->slackApi->conversations_kick($slackId, $channelId);
+        $response = $this->slackApi->conversations_invite($slackId, $channelId);
 
         if ($response['ok']) {
             return;
