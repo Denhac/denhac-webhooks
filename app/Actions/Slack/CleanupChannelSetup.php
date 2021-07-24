@@ -31,7 +31,10 @@ class CleanupChannelSetup
      */
     public function execute($slackId)
     {
-        $channel_name = "help-access-cleanup-$slackId";
+        // Get a unique hash for that user and this cleanup action
+        $hash_source = $slackId . "help-access-cleanup";
+        $channel_hash = substr(hash('sha256', $hash_source), 0, 8);
+        $channel_name = "help-access-cleanup-$channel_hash";
 
         $channelIds = $this->api->conversations->toSlackIds($channel_name);
 
