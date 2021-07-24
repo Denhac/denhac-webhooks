@@ -29,11 +29,6 @@ class SlackApi
     private $managementApiClient;
     /**
      * @var Client
-     * This one is for the spacebot bot client.
-     */
-    private $spaceBotApiClient;
-    /**
-     * @var Client
      */
     private $adminClient;
 
@@ -46,12 +41,6 @@ class SlackApi
         $this->managementApiClient = new Client([
             RequestOptions::HEADERS => [
                 'Authorization' => "Bearer $managementApiToken",
-            ],
-        ]);
-        $spaceBotApiToken = config('denhac.slack.spacebot_api_token');
-        $this->spaceBotApiClient = new Client([
-            RequestOptions::HEADERS => [
-                'Authorization' => "Bearer $spaceBotApiToken",
             ],
         ]);
     }
@@ -190,36 +179,6 @@ class SlackApi
             ]);
 
         return json_decode($response->getBody(), true)['ok'];
-    }
-
-    public function users_lookupByEmail($email)
-    {
-        // TODO Handle user not found/ok is false
-        $response = $this->managementApiClient->get('https://denhac.slack.com/api/users.lookupByEmail', [
-            RequestOptions::QUERY => [
-                'email' => $email,
-            ],
-        ]);
-
-        $data = json_decode($response->getBody(), true);
-
-        if ($data['ok']) {
-            return $data['user'];
-        }
-
-        if ($data['error'] == 'users_not_found') {
-            report(new UnexpectedResponseException("Some error: {$response->getBody()}"));
-
-            return null;
-        }
-
-        if (!array_key_exists('user', $data)) {
-            report(new UnexpectedResponseException("No User key exists: {$response->getBody()}"));
-
-            return null;
-        }
-
-        return null;
     }
 
     public function channels_list()

@@ -3,6 +3,7 @@
 namespace App\Slack\api;
 
 
+use App\Slack\UnexpectedResponseException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
 
@@ -28,5 +29,35 @@ class UsersApi
                     ],
                 ]);
         });
+    }
+
+    public function lookupByEmail($email)
+    {
+        // TODO Handle user not found/ok is false
+        $response = $this->clients->managementApiClient->get('https://denhac.slack.com/api/users.lookupByEmail', [
+            RequestOptions::QUERY => [
+                'email' => $email,
+            ],
+        ]);
+
+        $data = json_decode($response->getBody(), true);
+
+        if ($data['ok']) {
+            return $data['user'];
+        }
+
+        if ($data['error'] == 'users_not_found') {
+            report(new UnexpectedResponseException("Some error: {$response->getBody()}"));
+
+            return null;
+        }
+
+        if (!array_key_exists('user', $data)) {
+            report(new UnexpectedResponseException("No User key exists: {$response->getBody()}"));
+
+            return null;
+        }
+
+        return null;
     }
 }

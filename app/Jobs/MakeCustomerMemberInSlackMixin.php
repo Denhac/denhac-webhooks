@@ -84,7 +84,7 @@ trait MakeCustomerMemberInSlackMixin
         // The slack API doesn't update fast enough
         sleep(10);
 
-        $slackObject = $this->slackApi->users_lookupByEmail($this->customerEmail);
+        $slackObject = $this->slackApi->users->lookupByEmail($this->customerEmail);
         if (is_null($slackObject)) {
             throw new \Exception('Slack user was null, unsure if invite worked');
         }
