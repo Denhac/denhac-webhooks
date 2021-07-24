@@ -3,6 +3,7 @@
 namespace App\Slack;
 
 use App\Slack\api\ChatApi;
+use App\Slack\api\ConversationsApi;
 use App\Slack\api\SlackClients;
 use App\Slack\api\TeamApi;
 use App\Slack\api\UsersApi;
@@ -15,6 +16,7 @@ use JetBrains\PhpStorm\Pure;
 
 /**
  * @property ChatApi chat
+ * @property ConversationsApi conversations
  * @property TeamApi team
  * @property UsersApi users
  * @property ViewsApi views
@@ -96,13 +98,15 @@ class SlackApi
     {
         if ($name == 'chat') {
             return new ChatApi($this->clients);
-        } if ($name == 'team') {
+        } else if ($name == 'conversations') {
+            return new ConversationsApi($this->clients);
+        } else if ($name == 'team') {
             return new TeamApi($this->clients);
-        } else if($name == 'users') {
+        } else if ($name == 'users') {
             return new UsersApi($this->clients);
-        } else if($name == 'views') {
+        } else if ($name == 'views') {
             return new ViewsApi($this->clients);
-    }
+        }
 
         return null;
     }
@@ -243,44 +247,6 @@ class SlackApi
             ->values()
             ->unique()
             ->all();
-    }
-
-    public function conversations_join($channelId)
-    {
-        $response = $this->managementApiClient
-            ->post('https://denhac.slack.com/api/conversations.join', [
-                RequestOptions::FORM_PARAMS => [
-                    'channel' => $channelId,
-                ],
-            ]);
-
-        return json_decode($response->getBody(), true);
-    }
-
-    public function conversations_invite(string $userId, $channelId)
-    {
-        $response = $this->managementApiClient
-            ->post('https://denhac.slack.com/api/conversations.invite', [
-                RequestOptions::FORM_PARAMS => [
-                    'channel' => $channelId,
-                    'users' => $userId,
-                ],
-            ]);
-
-        return json_decode($response->getBody(), true);
-    }
-
-    public function conversations_kick(string $userId, $channelId)
-    {
-        $response = $this->managementApiClient
-            ->post('https://denhac.slack.com/api/conversations.kick', [
-                RequestOptions::FORM_PARAMS => [
-                    'channel' => $channelId,
-                    'user' => $userId,
-                ],
-            ]);
-
-        return json_decode($response->getBody(), true);
     }
 
     public function usergroups_list()
