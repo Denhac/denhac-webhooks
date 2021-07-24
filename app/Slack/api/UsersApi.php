@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 
 /**
+ * @property UsersAdminApi admin
  * @property UsersProfileApi profile
  */
 class UsersApi
@@ -24,7 +25,9 @@ class UsersApi
 
     #[Pure] public function __get(string $name)
     {
-        if ($name == 'profile') {
+        if ($name == 'admin') {
+            return new UsersAdminApi($this->clients);
+        } else if ($name == 'profile') {
             return new UsersProfileApi($this->clients);
         }
 
