@@ -74,7 +74,7 @@ class SlackInteractivityController extends Controller
             $blockAction = ClassFinder::getBlockAction($blockId, $actionId);
 
             if (is_null($blockAction)) {
-                throw new \Exception("No black action handled for {$blockId} and {$actionId}");
+                throw new \Exception("No block action handled for {$blockId} and {$actionId}");
             }
 
             return $blockAction::handle($request);
