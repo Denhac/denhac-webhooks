@@ -6,6 +6,7 @@ namespace App\Slack\Messages;
 use App\Actions\Slack\SendMessage;
 use App\Customer;
 use App\Slack\BlockActions\HelpMemberCleanupButton;
+use App\Subscription;
 use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Message;
 
@@ -48,7 +49,11 @@ class SlackMemberCleanup
         $customer = Customer::whereSlackId($slackId)->first();
 
         if($doNothingMessage) {
-            $doNothingContent = " If you do nothing, your account will become a single channel guest in #public on August 15th.";
+            $hasNeedIdCheckSubscription = $customer->subscriptions->where('status', 'need-id-check')->isNotEmpty();
+
+            $singleChannel = $hasNeedIdCheckSubscription ? "need-id-check" : "public";
+
+            $doNothingContent = " If you do nothing, your account will become a single channel guest in #{$singleChannel} on August 15th.";
         } else {
             $doNothingContent = "";
         }
