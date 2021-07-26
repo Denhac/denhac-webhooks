@@ -45,13 +45,15 @@ class AddCustomerToSlackChannel
             return;
         }
 
+        if ($response['error'] == 'already_in_channel') {
+            return; // Everything is fine, they're already in the channel
+        }
+
         throw new \Exception("Invite of $userId to $channel failed: ".print_r($response, true));
 
 //        if ($response['error'] == 'not_in_channel') {
 //            $this->slackApi->conversations->join($channelId);
 //            $response = $this->slackApi->conversations->invite($customerId, $channelId);
-//        } elseif ($response['error'] == 'already_in_channel') {
-//            return; // Everything's fine
 //        }
 //
 //        $response_s = json_encode($response);
