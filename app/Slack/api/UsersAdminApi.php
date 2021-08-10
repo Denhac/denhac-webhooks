@@ -28,10 +28,9 @@ class UsersAdminApi
      *
      * @param $emails
      * @param $channels
-     * @return array
      * @throws GuzzleException
      */
-    public function inviteBulk($emails, $channels): array
+    public function inviteBulk($emails, $channels)
     {
         $emails = Arr::wrap($emails);
         if (!Arr::isAssoc($emails)) {
@@ -46,16 +45,26 @@ class UsersAdminApi
             return [
                 'email' => $key,
                 'type' => $value,
-                'source' => 'invite_modal',
                 'mode' => 'manual',
             ];
         });
 
+        $restricted = ! $invites->where('type', 'restricted')->isEmpty();
+        $ultraRestricted = ! $invites->where('type', 'ultra_restricted')->isEmpty();
+
         $response = $this->clients->adminClient
             ->post('https://denhac.slack.com/api/users.admin.inviteBulk', [
-                RequestOptions::FORM_PARAMS => [
-                    'invites' => json_encode($invites->all()),
-                    'channels' => $channels,
+                RequestOptions::MULTIPART => [
+                    $this->_multipart('invites', json_encode($invites->all())),
+                    $this->_multipart('source', 'invite_modal'),
+                    $this->_multipart('campaign', 'team_site_admin'),
+                    $this->_multipart('mode', 'manual'),
+                    $this->_multipart('restricted', $restricted),
+                    $this->_multipart('ultra_restricted', $ultraRestricted),
+                    $this->_multipart('email_password_policy_enabled', false),
+                    $this->_multipart('channels', $channels),
+                    $this->_multipart('_x_reason', 'invite_bulk'),
+                    $this->_multipart('_x_mode', 'online'),
                 ],
             ]);
 

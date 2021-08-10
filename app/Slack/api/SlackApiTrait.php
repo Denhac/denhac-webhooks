@@ -4,10 +4,11 @@ namespace App\Slack\api;
 
 
 use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\ArrayShape;
 
 trait SlackApiTrait
 {
-    private function paginate($key, $request): Collection
+    protected function paginate($key, $request): Collection
     {
         $cursor = "";
         $collection = collect();
@@ -26,5 +27,12 @@ trait SlackApiTrait
         } while ($cursor != "");
 
         return $collection;
+    }
+
+    #[ArrayShape(['name' => "", 'contents' => ""])] protected function _multipart($name, $content) {
+        return [
+            'name' => $name,
+            'contents' => $content,
+        ];
     }
 }
