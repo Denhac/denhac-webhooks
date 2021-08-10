@@ -3,10 +3,10 @@
 namespace Tests\Unit\Reactors;
 
 
+use App\Actions\Google\AddCustomerToGroup;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
-use App\Jobs\AddCustomerToGoogleGroup;
 use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\Reactors\GoogleGroupsReactor;
 use App\StorableEvents\CustomerBecameBoardMember;
@@ -19,6 +19,7 @@ use App\StorableEvents\UserMembershipCreated;
 use App\UserMembership;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 use Tests\TestCase;
 use YlsIdeas\FeatureFlags\Facades\Features;
@@ -39,8 +40,9 @@ class GoogleGroupsReactorTest extends TestCase
         $googleGroupReactor = new GoogleGroupsReactor($this->googleApi);
         $this->withEventHandlers($googleGroupReactor);
 
+        Queue::fake();
+
         Bus::fake([
-            AddCustomerToGoogleGroup::class,
             RemoveCustomerFromGoogleGroup::class,
         ]);
 
@@ -64,17 +66,10 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription));
 
-        Bus::assertDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_DENHAC;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
 
-        Bus::assertNotDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_MEMBERS;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class);
     }
 
     /** @test */
@@ -86,17 +81,11 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription));
 
-        Bus::assertDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_DENHAC;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
 
-        Bus::assertDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_MEMBERS;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
     }
 
     /**
@@ -117,7 +106,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription));
 
-        Bus::assertNotDispatched(AddCustomerToGoogleGroup::class);
+        $this->assertActionNotPushed(AddCustomerToGroup::class);
     }
 
     /** @test */
@@ -125,11 +114,8 @@ class GoogleGroupsReactorTest extends TestCase
     {
         event(new MembershipActivated($this->customer->id));
 
-        Bus::assertDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_MEMBERS;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
     }
 
     /** @test */
@@ -209,11 +195,8 @@ class GoogleGroupsReactorTest extends TestCase
     {
         event(new CustomerBecameBoardMember($this->customer->id));
 
-        Bus::assertDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_BOARD;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_BOARD);
     }
 
     /** @test */
@@ -247,7 +230,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new UserMembershipCreated($userMembership));
 
-        Bus::assertNotDispatched(AddCustomerToGoogleGroup::class);
+        $this->assertActionNotPushed(AddCustomerToGroup::class);
     }
 
     /** @test */
@@ -260,11 +243,8 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new UserMembershipCreated($userMembership));
 
-        Bus::assertDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_3DP;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_3DP);
     }
 
     /** @test */
@@ -277,10 +257,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new UserMembershipCreated($userMembership));
 
-        Bus::assertDispatched(AddCustomerToGoogleGroup::class,
-            function ($job) {
-                /** @var AddCustomerToGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_LASER;
-            });
+        $this->assertActionPushed(AddCustomerToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_LASER);
     }
 }

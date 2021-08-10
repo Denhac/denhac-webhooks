@@ -2,10 +2,10 @@
 
 namespace App\Reactors;
 
+use App\Actions\Google\AddCustomerToGroup;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
-use App\Jobs\AddCustomerToGoogleGroup;
 use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerDeleted;
@@ -48,10 +48,10 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
 
-        dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_DENHAC));
+        app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_DENHAC);
 
         if (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-            dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_MEMBERS));
+            app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_MEMBERS);
         }
     }
 
@@ -60,7 +60,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_MEMBERS));
+        app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_MEMBERS);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
@@ -100,7 +100,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_BOARD));
+        app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_BOARD);
     }
 
     public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
@@ -124,11 +124,11 @@ final class GoogleGroupsReactor implements EventHandler
         $customer = Customer::whereWooId($customerId)->first();
 
         if ($plan_id == UserMembership::MEMBERSHIP_3DP_TRAINER) {
-            dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_3DP));
+            app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_3DP);
         }
 
         if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER) {
-            dispatch(new AddCustomerToGoogleGroup($customer->email, self::GROUP_LASER));
+            app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_LASER);
         }
     }
 }

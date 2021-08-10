@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Assert;
 use Spatie\EventSourcing\Projectionist;
 use Spatie\QueueableAction\ActionJob;
 use Tests\Helpers\ActionAssertion;
@@ -163,10 +164,21 @@ abstract class TestCase extends BaseTestCase
 
         if($actionJobs->count() == 0) {
             $this->fail("$cls was not pushed");
-        } else if($actionJobs->count() > 1) {
-            $this->fail("$cls had more than one job pushed which we don't support yet");
-        };
+        }
 
-        return new ActionAssertion($actionJobs->first());
+        return new ActionAssertion($actionJobs);
+    }
+
+    public function assertActionNotPushed($cls): void {
+        $jobs = Queue::pushedJobs();
+        if(array_key_exists(ActionJob::class, $jobs)) {
+            $actionJobs = collect($jobs[ActionJob::class])
+                ->map(fn($actionJob) => $actionJob['job'])
+                ->filter(fn($actionJob) => $actionJob->displayName() == $cls);
+        } else {
+            $actionJobs = collect();
+        }
+
+        Assert::assertEquals(0, $actionJobs->count(), "$cls had an action pushed");
     }
 }
