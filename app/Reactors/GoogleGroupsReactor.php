@@ -3,10 +3,10 @@
 namespace App\Reactors;
 
 use App\Actions\Google\AddCustomerToGroup;
+use App\Actions\Google\RemoveCustomerFromGroup;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
-use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerRemovedFromBoard;
@@ -77,7 +77,7 @@ final class GoogleGroupsReactor implements EventHandler
                 return $group != 'denhac@denhac.org';
             })
             ->each(function ($group) use ($customer) {
-                dispatch(new RemoveCustomerFromGoogleGroup($customer->email, $group));
+                app(RemoveCustomerFromGroup::class)->onQueue()->execute($customer->email, $group);
             });
     }
 
@@ -91,7 +91,7 @@ final class GoogleGroupsReactor implements EventHandler
 
         $this->googleApi->groupsForMember($customer->email)
             ->each(function ($group) use ($customer) {
-                dispatch(new RemoveCustomerFromGoogleGroup($customer->email, $group));
+                app(RemoveCustomerFromGroup::class)->onQueue()->execute($customer->email, $group);
             });
     }
 
@@ -108,7 +108,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        dispatch(new RemoveCustomerFromGoogleGroup($customer->email, self::GROUP_BOARD));
+        app(RemoveCustomerFromGroup::class)->onQueue()->execute($customer->email, self::GROUP_BOARD);
     }
 
     public function onUserMembershipCreated(UserMembershipCreated $event)

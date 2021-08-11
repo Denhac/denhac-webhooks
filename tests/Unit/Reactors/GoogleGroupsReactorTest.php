@@ -4,10 +4,10 @@ namespace Tests\Unit\Reactors;
 
 
 use App\Actions\Google\AddCustomerToGroup;
+use App\Actions\Google\RemoveCustomerFromGroup;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
-use App\Jobs\RemoveCustomerFromGoogleGroup;
 use App\Reactors\GoogleGroupsReactor;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerDeleted;
@@ -18,7 +18,6 @@ use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\UserMembership;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -41,10 +40,6 @@ class GoogleGroupsReactorTest extends TestCase
         $this->withEventHandlers($googleGroupReactor);
 
         Queue::fake();
-
-        Bus::fake([
-            RemoveCustomerFromGoogleGroup::class,
-        ]);
 
         /** @var Customer $customer */
         $this->customer = Customer::create([
@@ -133,23 +128,12 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new MembershipDeactivated($this->customer->id));
 
-        Bus::assertDispatched(RemoveCustomerFromGoogleGroup::class,
-            function ($job) {
-                /** @var RemoveCustomerFromGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_MEMBERS;
-            });
-
-        Bus::assertDispatched(RemoveCustomerFromGoogleGroup::class,
-            function ($job) {
-                /** @var RemoveCustomerFromGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_3DP;
-            });
-
-        Bus::assertNotDispatched(RemoveCustomerFromGoogleGroup::class,
-            function ($job) {
-                /** @var RemoveCustomerFromGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_DENHAC;
-            });
+        $this->assertActionPushed(RemoveCustomerFromGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
+        $this->assertActionPushed(RemoveCustomerFromGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_3DP);
+//        $this->assertActionNotPushed(RemoveCustomerFromGroup::class)
+//            ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
     }
 
     /** @test */
@@ -167,7 +151,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new MembershipDeactivated($this->customer->id));
 
-        Bus::assertNotDispatched(RemoveCustomerFromGoogleGroup::class);
+        $this->assertActionNotPushed(RemoveCustomerFromGroup::class);
     }
 
     /** @test */
@@ -183,11 +167,8 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new CustomerDeleted($this->customer->id));
 
-        Bus::assertDispatched(RemoveCustomerFromGoogleGroup::class,
-            function ($job) use ($group) {
-                /** @var RemoveCustomerFromGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == $group;
-            });
+        $this->assertActionPushed(RemoveCustomerFromGroup::class)
+            ->with($this->customer->email, $group);
     }
 
     /** @test */
@@ -204,11 +185,8 @@ class GoogleGroupsReactorTest extends TestCase
     {
         event(new CustomerRemovedFromBoard($this->customer->id));
 
-        Bus::assertDispatched(RemoveCustomerFromGoogleGroup::class,
-            function ($job) {
-                /** @var RemoveCustomerFromGoogleGroup $job */
-                return $job->email == $this->customer->email && $job->group == GoogleGroupsReactor::GROUP_BOARD;
-            });
+        $this->assertActionPushed(RemoveCustomerFromGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_BOARD);
     }
 
     /**
