@@ -5,11 +5,11 @@ namespace Tests\Unit\Reactors;
 use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\AddToUserGroup;
 use App\Actions\Slack\RemoveFromChannel;
+use App\Actions\Slack\RemoveFromUserGroup;
 use App\FeatureFlags;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
-use App\Jobs\RemoveCustomerFromSlackUserGroup;
 use App\Reactors\SlackReactor;
 use App\Slack\Channels;
 use App\StorableEvents\CustomerBecameBoardMember;
@@ -36,7 +36,6 @@ class SlackReactorTest extends TestCase
         Queue::fake();
 
         Bus::fake([
-            RemoveCustomerFromSlackUserGroup::class,
             DemoteMemberToPublicOnlyMemberInSlack::class,
             MakeCustomerRegularMemberInSlack::class,
             InviteCustomerNeedIdCheckOnlyMemberInSlack::class,
@@ -65,10 +64,8 @@ class SlackReactorTest extends TestCase
         $this->assertAction(RemoveFromChannel::class)
             ->with($customer->id, Channels::BOARD);
 
-        Bus::assertDispatched(RemoveCustomerFromSlackUserGroup::class,
-            function (RemoveCustomerFromSlackUserGroup $job) use ($customer) {
-                return $job->customerId == $customer->id && $job->usergroupHandle == 'theboard';
-            });
+        $this->assertAction(RemoveFromUserGroup::class)
+            ->with($customer->id, 'theboard');
     }
 
     /** @test */
