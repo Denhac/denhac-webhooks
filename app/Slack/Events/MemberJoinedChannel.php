@@ -3,7 +3,7 @@
 namespace App\Slack\Events;
 
 
-use App\Actions\Slack\KickUserFromSlackChannel;
+use App\Actions\Slack\RemoveFromChannel;
 use App\Http\Requests\SlackRequest;
 use App\TempBan;
 use Illuminate\Support\Facades\Log;
@@ -23,7 +23,7 @@ class MemberJoinedChannel implements EventInterface
 
         if(TempBan::isBanned($userId, $channelId)) {
             Log::info("Kicked slack id {$userId} from {$channelId}");
-            app(KickUserFromSlackChannel::class)->execute($userId, $channelId);
+            app(RemoveFromChannel::class)->execute($userId, $channelId);
         }
     }
 }

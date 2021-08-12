@@ -2,8 +2,8 @@
 
 namespace App\Reactors;
 
-use App\Actions\Slack\AddCustomerToSlackChannel;
-use App\Actions\Slack\KickUserFromSlackChannel;
+use App\Actions\Slack\AddToChannel;
+use App\Actions\Slack\RemoveFromChannel;
 use App\Actions\Slack\UpdateSlackUserProfileMembership;
 use App\Customer;
 use App\FeatureFlags;
@@ -64,13 +64,13 @@ final class SlackReactor implements EventHandler
 
     public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)
     {
-        AddCustomerToSlackChannel::queue()->execute($event->customerId, Channels::BOARD);
+        AddToChannel::queue()->execute($event->customerId, Channels::BOARD);
         dispatch(new AddCustomerToSlackUserGroup($event->customerId, 'theboard'));
     }
 
     public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
     {
-        KickUserFromSlackChannel::queue()->execute($event->customerId, Channels::BOARD);
+        RemoveFromChannel::queue()->execute($event->customerId, Channels::BOARD);
         dispatch(new RemoveCustomerFromSlackUserGroup($event->customerId, 'theboard'));
     }
 
@@ -84,11 +84,11 @@ final class SlackReactor implements EventHandler
         $plan_id = $event->membership['plan_id'];
 
         if ($plan_id == UserMembership::MEMBERSHIP_3DP_USER) {
-            AddCustomerToSlackChannel::queue()->execute($customerId, 'help-3d-printing');
+            AddToChannel::queue()->execute($customerId, 'help-3d-printing');
         }
 
         if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_USER) {
-            AddCustomerToSlackChannel::queue()->execute($customerId, 'help-3d-printing');
+            AddToChannel::queue()->execute($customerId, 'help-3d-printing');
         }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Reactors;
 
-use App\Actions\Slack\AddCustomerToSlackChannel;
-use App\Actions\Slack\KickUserFromSlackChannel;
+use App\Actions\Slack\AddToChannel;
+use App\Actions\Slack\RemoveFromChannel;
 use App\FeatureFlags;
 use App\Jobs\AddCustomerToSlackUserGroup;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
@@ -50,7 +50,7 @@ class SlackReactorTest extends TestCase
         $customerId = 1;
         event(new CustomerBecameBoardMember($customerId));
 
-        $this->assertAction(AddCustomerToSlackChannel::class)
+        $this->assertAction(AddToChannel::class)
             ->with($customerId, Channels::BOARD);
 
         Bus::assertDispatched(AddCustomerToSlackUserGroup::class,
@@ -65,7 +65,7 @@ class SlackReactorTest extends TestCase
         $customer = $this->customerModel();
         event(new CustomerRemovedFromBoard($customer->id));
 
-        $this->assertAction(KickUserFromSlackChannel::class)
+        $this->assertAction(RemoveFromChannel::class)
             ->with($customer->id, Channels::BOARD);
 
         Bus::assertDispatched(RemoveCustomerFromSlackUserGroup::class,
