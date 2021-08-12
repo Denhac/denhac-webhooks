@@ -1,34 +1,23 @@
 <?php
 
-namespace App\Github;
+namespace App\GitHub;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
 class TeamApi
 {
-    private $name;
-    /**
-     * @var mixed
-     */
-    private $accessToken;
-    /**
-     * @var Client
-     */
-    private $client;
-    /**
-     * @var string
-     */
-    private $teamUrl;
+    private string $accessToken;
+    private Client $client;
+    private string $teamUrl;
 
     /**
      * TeamApi constructor.
      * @param $name
      * @param string $accessToken
      */
-    public function __construct($name, $accessToken)
+    public function __construct($name, string $accessToken)
     {
-        $this->name = $name;
         $this->accessToken = $accessToken;
 
         $this->teamUrl = "https://api.github.com/orgs/denhac/teams/$name";

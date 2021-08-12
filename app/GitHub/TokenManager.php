@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Github;
+namespace App\GitHub;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -32,7 +32,6 @@ class TokenManager
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
     }
 
-    // TODO Refactor this to work for specific logins / organizations to get installation id automatically
     public function getInstallationAccessToken()
     {
         $this->lateBindProperties();
@@ -51,7 +50,7 @@ class TokenManager
         return json_decode($response->getBody(), true)['token'];
     }
 
-    private function getAppAccessToken()
+    private function getAppAccessToken(): string
     {
         $this->lateBindProperties();
 

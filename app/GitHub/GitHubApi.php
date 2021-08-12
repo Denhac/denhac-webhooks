@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Github;
+namespace App\GitHub;
 
-class GithubApi
+class GitHubApi
 {
     /**
      * @var TokenManager
      */
-    private $tokenManager;
+    private TokenManager $tokenManager;
 
     public function __construct(TokenManager $tokenManager)
     {

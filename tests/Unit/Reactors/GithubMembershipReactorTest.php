@@ -2,26 +2,31 @@
 
 namespace Tests\Unit\Reactors;
 
+use App\Actions\GitHub\AddToGitHubTeam;
 use App\Customer;
-use App\Jobs\AddMemberToGithub;
 use App\Jobs\RemoveMemberFromGithub;
 use App\Reactors\GithubMembershipReactor;
 use App\StorableEvents\GithubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
+use Tests\AssertsActions;
 use Tests\TestCase;
 
 class GithubMembershipReactorTest extends TestCase
 {
+    use AssertsActions;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->withOnlyEventHandlerType(GithubMembershipReactor::class);
 
+        Queue::fake();
+
         Bus::fake([
-            AddMemberToGithub::class,
             RemoveMemberFromGithub::class,
         ]);
     }
@@ -32,11 +37,9 @@ class GithubMembershipReactorTest extends TestCase
         $username = 'test';
         event(new GithubUsernameUpdated(null, $username, true));
 
-        Bus::assertDispatched(AddMemberToGithub::class,
-            function (AddMemberToGithub $job) use ($username) {
-                return $job->username == $username &&
-                    $job->team == 'members';
-            });
+        $this->assertAction(AddToGitHubTeam::class)
+            ->with($username, 'members');
+
         Bus::assertNotDispatched(RemoveMemberFromGithub::class);
     }
 
@@ -46,7 +49,7 @@ class GithubMembershipReactorTest extends TestCase
         $username = 'test';
         event(new GithubUsernameUpdated(null, $username, false));
 
-        Bus::assertNotDispatched(AddMemberToGithub::class);
+        $this->assertAction(AddToGitHubTeam::class)->never();
         Bus::assertNotDispatched(RemoveMemberFromGithub::class);
     }
 
@@ -56,7 +59,7 @@ class GithubMembershipReactorTest extends TestCase
         $username = 'test';
         event(new GithubUsernameUpdated($username, null, true));
 
-        Bus::assertNotDispatched(AddMemberToGithub::class);
+        $this->assertAction(AddToGitHubTeam::class)->never();
         Bus::assertDispatched(RemoveMemberFromGithub::class,
             function (RemoveMemberFromGithub $job) use ($username) {
                 return $job->username == $username &&
@@ -70,7 +73,7 @@ class GithubMembershipReactorTest extends TestCase
         $username = 'test';
         event(new GithubUsernameUpdated($username, null, false));
 
-        Bus::assertNotDispatched(AddMemberToGithub::class);
+        $this->assertAction(AddToGitHubTeam::class)->never();
         Bus::assertDispatched(RemoveMemberFromGithub::class,
             function (RemoveMemberFromGithub $job) use ($username) {
                 return $job->username == $username &&
@@ -93,11 +96,8 @@ class GithubMembershipReactorTest extends TestCase
 
         event(new MembershipActivated($customer->woo_id));
 
-        Bus::assertDispatched(AddMemberToGithub::class,
-            function (AddMemberToGithub $job) use ($customer) {
-                return $job->username == $customer->github_username &&
-                    $job->team == 'members';
-            });
+        $this->assertAction(AddToGitHubTeam::class)
+            ->with($customer->github_username, 'members');
         Bus::assertNotDispatched(RemoveMemberFromGithub::class);
     }
 
@@ -116,7 +116,7 @@ class GithubMembershipReactorTest extends TestCase
 
         event(new MembershipDeactivated($customer->woo_id));
 
-        Bus::assertNotDispatched(AddMemberToGithub::class);
+        $this->assertAction(AddToGitHubTeam::class)->never();
         Bus::assertDispatched(RemoveMemberFromGithub::class,
             function (RemoveMemberFromGithub $job) use ($customer) {
                 return $job->username == $customer->github_username &&
@@ -139,7 +139,7 @@ class GithubMembershipReactorTest extends TestCase
 
         event(new MembershipActivated($customer->woo_id));
 
-        Bus::assertNotDispatched(AddMemberToGithub::class);
+        $this->assertAction(AddToGitHubTeam::class)->never();
         Bus::assertNotDispatched(RemoveMemberFromGithub::class);
     }
 
@@ -158,7 +158,7 @@ class GithubMembershipReactorTest extends TestCase
 
         event(new MembershipDeactivated($customer->woo_id));
 
-        Bus::assertNotDispatched(AddMemberToGithub::class);
+        $this->assertAction(AddToGitHubTeam::class)->never();
         Bus::assertNotDispatched(RemoveMemberFromGithub::class);
     }
 }

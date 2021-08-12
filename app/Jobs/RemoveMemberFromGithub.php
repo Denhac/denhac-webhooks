@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Github\GithubApi;
+use App\GitHub\GitHubApi;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -31,10 +31,10 @@ class RemoveMemberFromGithub implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param GithubApi $githubApi
+     * @param GitHubApi $githubApi
      * @return void
      */
-    public function handle(GithubApi $githubApi)
+    public function handle(GitHubApi $githubApi)
     {
         $githubApi->team($this->team)->remove($this->username);
     }

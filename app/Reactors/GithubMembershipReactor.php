@@ -2,8 +2,8 @@
 
 namespace App\Reactors;
 
+use App\Actions\GitHub\AddToGitHubTeam;
 use App\Customer;
-use App\Jobs\AddMemberToGithub;
 use App\Jobs\RemoveMemberFromGithub;
 use App\StorableEvents\GithubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
@@ -29,7 +29,8 @@ final class GithubMembershipReactor implements EventHandler
         // The customer can update their github without having an active subscription.
         // If they update the username, then become a member again, membership activated will take care of it
         if (! is_null($event->newUsername) && $event->isMember) {
-            dispatch(new AddMemberToGithub($event->newUsername, self::MEMBERS_TEAM));
+            app(AddToGitHubTeam::class)
+                ->onQueue()->execute($event->newUsername, self::MEMBERS_TEAM);
         }
     }
 
@@ -39,10 +40,8 @@ final class GithubMembershipReactor implements EventHandler
         $customer = Customer::whereWooId($event->customerId)->first();
 
         if (! is_null($customer->github_username)) {
-            dispatch(new AddMemberToGithub(
-                $customer->github_username,
-                self::MEMBERS_TEAM
-            ));
+            app(AddToGitHubTeam::class)
+                ->onQueue()->execute($customer->github_username, self::MEMBERS_TEAM);
         }
     }
 

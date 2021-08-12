@@ -17,7 +17,6 @@ use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\UserMembership;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 use Tests\AssertsActions;
