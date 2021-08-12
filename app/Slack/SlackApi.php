@@ -2,13 +2,13 @@
 
 namespace App\Slack;
 
-use App\Slack\api\ChatApi;
-use App\Slack\api\ConversationsApi;
-use App\Slack\api\SlackClients;
-use App\Slack\api\TeamApi;
-use App\Slack\api\UsergroupsApi;
-use App\Slack\api\UsersApi;
-use App\Slack\api\ViewsApi;
+use App\Slack\Api\ChatApi;
+use App\Slack\Api\ConversationsApi;
+use App\Slack\Api\SlackClients;
+use App\Slack\Api\TeamApi;
+use App\Slack\Api\UsergroupsApi;
+use App\Slack\Api\UsersApi;
+use App\Slack\Api\ViewsApi;
 use JetBrains\PhpStorm\Pure;
 
 /**

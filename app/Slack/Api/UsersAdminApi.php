@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Slack\api;
+namespace App\Slack\Api;
 
 
 use GuzzleHttp\Exception\GuzzleException;
