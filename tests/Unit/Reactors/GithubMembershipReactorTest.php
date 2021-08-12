@@ -3,8 +3,8 @@
 namespace Tests\Unit\Reactors;
 
 use App\Actions\GitHub\AddToGitHubTeam;
+use App\Actions\GitHub\RemoveFromGitHubTeam;
 use App\Customer;
-use App\Jobs\RemoveMemberFromGithub;
 use App\Reactors\GithubMembershipReactor;
 use App\StorableEvents\GithubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
@@ -25,10 +25,6 @@ class GithubMembershipReactorTest extends TestCase
         $this->withOnlyEventHandlerType(GithubMembershipReactor::class);
 
         Queue::fake();
-
-        Bus::fake([
-            RemoveMemberFromGithub::class,
-        ]);
     }
 
     /** @test */
@@ -40,7 +36,7 @@ class GithubMembershipReactorTest extends TestCase
         $this->assertAction(AddToGitHubTeam::class)
             ->with($username, 'members');
 
-        Bus::assertNotDispatched(RemoveMemberFromGithub::class);
+        $this->assertAction(RemoveFromGitHubTeam::class)->never();
     }
 
     /** @test */
@@ -50,7 +46,7 @@ class GithubMembershipReactorTest extends TestCase
         event(new GithubUsernameUpdated(null, $username, false));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
-        Bus::assertNotDispatched(RemoveMemberFromGithub::class);
+        $this->assertAction(RemoveFromGitHubTeam::class)->never();
     }
 
     /** @test */
@@ -60,11 +56,8 @@ class GithubMembershipReactorTest extends TestCase
         event(new GithubUsernameUpdated($username, null, true));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
-        Bus::assertDispatched(RemoveMemberFromGithub::class,
-            function (RemoveMemberFromGithub $job) use ($username) {
-                return $job->username == $username &&
-                    $job->team == 'members';
-            });
+        $this->assertAction(RemoveFromGitHubTeam::class)
+            ->with($username, 'members');
     }
 
     /** @test */
@@ -74,11 +67,8 @@ class GithubMembershipReactorTest extends TestCase
         event(new GithubUsernameUpdated($username, null, false));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
-        Bus::assertDispatched(RemoveMemberFromGithub::class,
-            function (RemoveMemberFromGithub $job) use ($username) {
-                return $job->username == $username &&
-                    $job->team == 'members';
-            });
+        $this->assertAction(RemoveFromGitHubTeam::class)
+            ->with($username, 'members');
     }
 
     /** @test */
@@ -98,7 +88,7 @@ class GithubMembershipReactorTest extends TestCase
 
         $this->assertAction(AddToGitHubTeam::class)
             ->with($customer->github_username, 'members');
-        Bus::assertNotDispatched(RemoveMemberFromGithub::class);
+        $this->assertAction(RemoveFromGitHubTeam::class)->never();
     }
 
     /** @test */
@@ -117,11 +107,8 @@ class GithubMembershipReactorTest extends TestCase
         event(new MembershipDeactivated($customer->woo_id));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
-        Bus::assertDispatched(RemoveMemberFromGithub::class,
-            function (RemoveMemberFromGithub $job) use ($customer) {
-                return $job->username == $customer->github_username &&
-                    $job->team == 'members';
-            });
+        $this->assertAction(RemoveFromGitHubTeam::class)
+            ->with($customer->github_username, 'members');
     }
 
     /** @test */
@@ -140,7 +127,7 @@ class GithubMembershipReactorTest extends TestCase
         event(new MembershipActivated($customer->woo_id));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
-        Bus::assertNotDispatched(RemoveMemberFromGithub::class);
+        $this->assertAction(RemoveFromGitHubTeam::class)->never();
     }
 
     /** @test */
@@ -159,6 +146,6 @@ class GithubMembershipReactorTest extends TestCase
         event(new MembershipDeactivated($customer->woo_id));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
-        Bus::assertNotDispatched(RemoveMemberFromGithub::class);
+        $this->assertAction(RemoveFromGitHubTeam::class)->never();
     }
 }
