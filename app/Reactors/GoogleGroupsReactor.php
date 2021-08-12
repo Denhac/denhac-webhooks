@@ -2,8 +2,8 @@
 
 namespace App\Reactors;
 
-use App\Actions\Google\AddCustomerToGroup;
-use App\Actions\Google\RemoveCustomerFromGroup;
+use App\Actions\Google\AddToGroup;
+use App\Actions\Google\RemoveFromGroup;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
@@ -48,10 +48,10 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
 
-        app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_DENHAC);
+        app(AddToGroup::class)->onQueue()->execute($customer->email, self::GROUP_DENHAC);
 
         if (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-            app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_MEMBERS);
+            app(AddToGroup::class)->onQueue()->execute($customer->email, self::GROUP_MEMBERS);
         }
     }
 
@@ -60,7 +60,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_MEMBERS);
+        app(AddToGroup::class)->onQueue()->execute($customer->email, self::GROUP_MEMBERS);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
@@ -77,7 +77,7 @@ final class GoogleGroupsReactor implements EventHandler
                 return $group != 'denhac@denhac.org';
             })
             ->each(function ($group) use ($customer) {
-                app(RemoveCustomerFromGroup::class)->onQueue()->execute($customer->email, $group);
+                app(RemoveFromGroup::class)->onQueue()->execute($customer->email, $group);
             });
     }
 
@@ -91,7 +91,7 @@ final class GoogleGroupsReactor implements EventHandler
 
         $this->googleApi->groupsForMember($customer->email)
             ->each(function ($group) use ($customer) {
-                app(RemoveCustomerFromGroup::class)->onQueue()->execute($customer->email, $group);
+                app(RemoveFromGroup::class)->onQueue()->execute($customer->email, $group);
             });
     }
 
@@ -100,7 +100,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_BOARD);
+        app(AddToGroup::class)->onQueue()->execute($customer->email, self::GROUP_BOARD);
     }
 
     public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
@@ -108,7 +108,7 @@ final class GoogleGroupsReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        app(RemoveCustomerFromGroup::class)->onQueue()->execute($customer->email, self::GROUP_BOARD);
+        app(RemoveFromGroup::class)->onQueue()->execute($customer->email, self::GROUP_BOARD);
     }
 
     public function onUserMembershipCreated(UserMembershipCreated $event)
@@ -124,11 +124,11 @@ final class GoogleGroupsReactor implements EventHandler
         $customer = Customer::whereWooId($customerId)->first();
 
         if ($plan_id == UserMembership::MEMBERSHIP_3DP_TRAINER) {
-            app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_3DP);
+            app(AddToGroup::class)->onQueue()->execute($customer->email, self::GROUP_3DP);
         }
 
         if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER) {
-            app(AddCustomerToGroup::class)->onQueue()->execute($customer->email, self::GROUP_LASER);
+            app(AddToGroup::class)->onQueue()->execute($customer->email, self::GROUP_LASER);
         }
     }
 }

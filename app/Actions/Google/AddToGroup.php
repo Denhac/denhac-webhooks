@@ -5,7 +5,7 @@ namespace App\Actions\Google;
 use App\Google\GoogleApi;
 use Spatie\QueueableAction\QueueableAction;
 
-class RemoveCustomerFromGroup
+class AddToGroup
 {
     use QueueableAction;
 
@@ -18,6 +18,6 @@ class RemoveCustomerFromGroup
 
     public function execute($email, $group)
     {
-        $this->googleApi->group($group)->remove($email);
+        $this->googleApi->group($group)->add($email);
     }
 }

@@ -3,8 +3,8 @@
 namespace Tests\Unit\Reactors;
 
 
-use App\Actions\Google\AddCustomerToGroup;
-use App\Actions\Google\RemoveCustomerFromGroup;
+use App\Actions\Google\AddToGroup;
+use App\Actions\Google\RemoveFromGroup;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
@@ -62,10 +62,10 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription));
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->never()
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
     }
@@ -79,10 +79,10 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription));
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
     }
 
@@ -104,7 +104,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new SubscriptionUpdated($subscription));
 
-        $this->assertAction(AddCustomerToGroup::class)->never();
+        $this->assertAction(AddToGroup::class)->never();
     }
 
     /** @test */
@@ -112,7 +112,7 @@ class GoogleGroupsReactorTest extends TestCase
     {
         event(new MembershipActivated($this->customer->id));
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
     }
 
@@ -131,11 +131,11 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new MembershipDeactivated($this->customer->id));
 
-        $this->assertAction(RemoveCustomerFromGroup::class)
+        $this->assertAction(RemoveFromGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
-        $this->assertAction(RemoveCustomerFromGroup::class)
+        $this->assertAction(RemoveFromGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_3DP);
-        $this->assertAction(RemoveCustomerFromGroup::class)
+        $this->assertAction(RemoveFromGroup::class)
             ->never()
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
     }
@@ -155,7 +155,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new MembershipDeactivated($this->customer->id));
 
-        $this->assertAction(RemoveCustomerFromGroup::class)->never();
+        $this->assertAction(RemoveFromGroup::class)->never();
     }
 
     /** @test */
@@ -171,7 +171,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new CustomerDeleted($this->customer->id));
 
-        $this->assertAction(RemoveCustomerFromGroup::class)
+        $this->assertAction(RemoveFromGroup::class)
             ->with($this->customer->email, $group);
     }
 
@@ -180,7 +180,7 @@ class GoogleGroupsReactorTest extends TestCase
     {
         event(new CustomerBecameBoardMember($this->customer->id));
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_BOARD);
     }
 
@@ -189,7 +189,7 @@ class GoogleGroupsReactorTest extends TestCase
     {
         event(new CustomerRemovedFromBoard($this->customer->id));
 
-        $this->assertAction(RemoveCustomerFromGroup::class)
+        $this->assertAction(RemoveFromGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_BOARD);
     }
 
@@ -212,7 +212,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new UserMembershipCreated($userMembership));
 
-        $this->assertAction(AddCustomerToGroup::class)->never();
+        $this->assertAction(AddToGroup::class)->never();
     }
 
     /** @test */
@@ -225,7 +225,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new UserMembershipCreated($userMembership));
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_3DP);
     }
 
@@ -239,7 +239,7 @@ class GoogleGroupsReactorTest extends TestCase
 
         event(new UserMembershipCreated($userMembership));
 
-        $this->assertAction(AddCustomerToGroup::class)
+        $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_LASER);
     }
 }
