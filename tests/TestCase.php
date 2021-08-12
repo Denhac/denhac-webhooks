@@ -8,11 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Queue;
-use PHPUnit\Framework\Assert;
 use Spatie\EventSourcing\Projectionist;
-use Spatie\QueueableAction\ActionJob;
-use Tests\Helpers\ActionAssertion;
 use Tests\Helpers\OctoPrintUpdateBuilder;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 use Tests\Helpers\Wordpress\SubscriptionBuilder;
@@ -28,6 +24,18 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
     use RefreshDatabase;
     use WithFaker;
+
+    protected function setUpTraits()
+    {
+        $uses = parent::setUpTraits();
+
+        if (isset($uses[AssertsActions::class])) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->setUpActionAssertion();
+        }
+
+        return $uses;
+    }
 
     private $_apiUser;
 
@@ -150,35 +158,5 @@ abstract class TestCase extends BaseTestCase
             })
             ->reject(null)
             ->all();
-    }
-
-    public function assertActionPushed($cls): ActionAssertion {
-        $jobs = Queue::pushedJobs();
-        if(! array_key_exists(ActionJob::class, $jobs)) {
-            $this->fail("No action jobs were pushed");
-        }
-
-        $actionJobs = collect($jobs[ActionJob::class])
-            ->map(fn($actionJob) => $actionJob['job'])
-            ->filter(fn($actionJob) => $actionJob->displayName() == $cls);
-
-        if($actionJobs->count() == 0) {
-            $this->fail("$cls was not pushed");
-        }
-
-        return new ActionAssertion($actionJobs);
-    }
-
-    public function assertActionNotPushed($cls): void {
-        $jobs = Queue::pushedJobs();
-        if(array_key_exists(ActionJob::class, $jobs)) {
-            $actionJobs = collect($jobs[ActionJob::class])
-                ->map(fn($actionJob) => $actionJob['job'])
-                ->filter(fn($actionJob) => $actionJob->displayName() == $cls);
-        } else {
-            $actionJobs = collect();
-        }
-
-        Assert::assertEquals(0, $actionJobs->count(), "$cls had an action pushed");
     }
 }

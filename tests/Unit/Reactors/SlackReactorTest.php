@@ -19,11 +19,14 @@ use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
+use Tests\AssertsActions;
 use Tests\TestCase;
 use YlsIdeas\FeatureFlags\Facades\Features;
 
 class SlackReactorTest extends TestCase
 {
+    use AssertsActions;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -47,7 +50,7 @@ class SlackReactorTest extends TestCase
         $customerId = 1;
         event(new CustomerBecameBoardMember($customerId));
 
-        $this->assertActionPushed(AddCustomerToSlackChannel::class)
+        $this->assertAction(AddCustomerToSlackChannel::class)
             ->with($customerId, Channels::BOARD);
 
         Bus::assertDispatched(AddCustomerToSlackUserGroup::class,
@@ -62,7 +65,7 @@ class SlackReactorTest extends TestCase
         $customer = $this->customerModel();
         event(new CustomerRemovedFromBoard($customer->id));
 
-        $this->assertActionPushed(KickUserFromSlackChannel::class)
+        $this->assertAction(KickUserFromSlackChannel::class)
             ->with($customer->id, Channels::BOARD);
 
         Bus::assertDispatched(RemoveCustomerFromSlackUserGroup::class,
