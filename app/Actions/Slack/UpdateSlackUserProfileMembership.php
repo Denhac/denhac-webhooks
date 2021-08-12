@@ -2,6 +2,7 @@
 
 namespace App\Actions\Slack;
 
+use App\Actions\StaticAction;
 use App\Customer;
 use App\Slack\SlackApi;
 use Spatie\QueueableAction\QueueableAction;
@@ -11,6 +12,7 @@ class UpdateSlackUserProfileMembership
     const MEMBERSHIP_FIELD_SETTING_KEY = 'slack.fields.membership';
 
     use QueueableAction;
+    use StaticAction;
 
     private SlackApi $slackApi;
 

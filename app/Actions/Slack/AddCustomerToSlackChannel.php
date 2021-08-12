@@ -2,7 +2,7 @@
 
 namespace App\Actions\Slack;
 
-use App\Customer;
+use App\Actions\StaticAction;
 use App\Slack\SlackApi;
 use Spatie\QueueableAction\QueueableAction;
 use Throwable;
@@ -10,6 +10,7 @@ use Throwable;
 class AddCustomerToSlackChannel
 {
     use QueueableAction;
+    use StaticAction;
     use SlackActionTrait;
 
     /**

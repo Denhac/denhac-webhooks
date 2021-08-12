@@ -2,6 +2,7 @@
 
 namespace App\Actions\Slack;
 
+use App\Actions\StaticAction;
 use App\Customer;
 use App\Printer3D;
 use App\Slack\CommonResponses;
@@ -14,6 +15,7 @@ use Spatie\QueueableAction\QueueableAction;
 class UpdateSpaceBotAppHome
 {
     use QueueableAction;
+    use StaticAction;
 
     private SlackApi $slackApi;
 

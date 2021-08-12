@@ -32,9 +32,7 @@ class OctoPrintReactor implements EventHandler
             return;
         }
 
-        app(AddUserToOctoPrintHosts::class)
-            ->onQueue()
-            ->execute($customer);
+        AddUserToOctoPrintHosts::queue()->execute($customer);
     }
 
     public function onMembershipActivated(MembershipActivated $event)
@@ -46,9 +44,7 @@ class OctoPrintReactor implements EventHandler
             return;
         }
 
-        app(AddUserToOctoPrintHosts::class)
-            ->onQueue()
-            ->execute($customer);
+        AddUserToOctoPrintHosts::queue()->execute($customer);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
@@ -60,8 +56,6 @@ class OctoPrintReactor implements EventHandler
             return;
         }
 
-        app(DeactivateOctoPrintUser::class)
-            ->onQueue('event-sourcing')
-            ->execute($customer);
+        DeactivateOctoPrintUser::queue()->execute($customer);
     }
 }

@@ -48,10 +48,11 @@ final class SlackReactor implements EventHandler
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
+        /** @var Customer $customer */
         $customer = Customer::find($event->customerId);
 
         if(! is_null($customer)) {
-            app(UpdateSlackUserProfileMembership::class)->onQueue()->execute($customer->slack_id);
+            UpdateSlackUserProfileMembership::queue()->execute($customer->slack_id);
         }
 
         if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
@@ -63,18 +64,13 @@ final class SlackReactor implements EventHandler
 
     public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)
     {
-        app(AddCustomerToSlackChannel::class)
-            ->onQueue()
-            ->execute($event->customerId, Channels::BOARD);
+        AddCustomerToSlackChannel::queue()->execute($event->customerId, Channels::BOARD);
         dispatch(new AddCustomerToSlackUserGroup($event->customerId, 'theboard'));
     }
 
     public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
     {
-        app(KickUserFromSlackChannel::class)
-            ->onQueue()
-            ->execute($event->customerId, Channels::BOARD);
-
+        KickUserFromSlackChannel::queue()->execute($event->customerId, Channels::BOARD);
         dispatch(new RemoveCustomerFromSlackUserGroup($event->customerId, 'theboard'));
     }
 
@@ -88,15 +84,11 @@ final class SlackReactor implements EventHandler
         $plan_id = $event->membership['plan_id'];
 
         if ($plan_id == UserMembership::MEMBERSHIP_3DP_USER) {
-            app(AddCustomerToSlackChannel::class)
-                ->onQueue()
-                ->execute($customerId, 'help-3d-printing');
+            AddCustomerToSlackChannel::queue()->execute($customerId, 'help-3d-printing');
         }
 
         if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_USER) {
-            app(AddCustomerToSlackChannel::class)
-                ->onQueue()
-                ->execute($customerId, 'help-laser-pew-pew');
+            AddCustomerToSlackChannel::queue()->execute($customerId, 'help-3d-printing');
         }
     }
 }

@@ -2,12 +2,14 @@
 
 namespace App\Actions\Google;
 
+use App\Actions\StaticAction;
 use App\Google\GoogleApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddToGroup
 {
     use QueueableAction;
+    use StaticAction;
 
     private GoogleApi $googleApi;
 

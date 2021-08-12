@@ -2,12 +2,14 @@
 
 namespace App\Actions\GitHub;
 
+use App\Actions\StaticAction;
 use App\GitHub\GitHubApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddToGitHubTeam
 {
     use QueueableAction;
+    use StaticAction;
 
     private GitHubApi $githubApi;
 

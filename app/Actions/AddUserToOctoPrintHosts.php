@@ -9,13 +9,11 @@ use Spatie\QueueableAction\QueueableAction;
 class AddUserToOctoPrintHosts
 {
     use QueueableAction;
+    use StaticAction;
 
-    public $queue = 'event-sourcing';
+    public string $queue = 'event-sourcing';
 
-    /**
-     * @var AddOrActivateUserToOctoPrintHost
-     */
-    private $activateUserToOctoPrintHost;
+    private AddOrActivateUserToOctoPrintHost $activateUserToOctoPrintHost;
 
     public function __construct(AddOrActivateUserToOctoPrintHost $activateUserToOctoPrintHost)
     {

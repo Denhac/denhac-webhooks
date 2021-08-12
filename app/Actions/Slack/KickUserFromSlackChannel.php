@@ -2,12 +2,14 @@
 
 namespace App\Actions\Slack;
 
+use App\Actions\StaticAction;
 use App\Slack\SlackApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class KickUserFromSlackChannel
 {
     use QueueableAction;
+    use StaticAction;
     use SlackActionTrait;
 
     private SlackApi $slackApi;

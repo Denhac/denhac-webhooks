@@ -9,6 +9,9 @@ use Spatie\QueueableAction\QueueableAction;
 class DeactivateOctoPrintUser
 {
     use QueueableAction;
+    use StaticAction;
+
+    public string $queue = 'event-sourcing';
 
     /**
      * @param Customer $customer

@@ -40,11 +40,7 @@ class AppHomeReactor extends Reactor implements ShouldQueue
     protected function updateHomeForSlackIDs(Collection $slack_ids): void
     {
         $slack_ids->each(function ($slack_id) {
-            /** @var UpdateSpaceBotAppHome $updateSpaceBotAppHome */
-            $updateSpaceBotAppHome = app(UpdateSpaceBotAppHome::class);
-            $updateSpaceBotAppHome
-                ->onQueue()
-                ->execute($slack_id);
+            UpdateSpaceBotAppHome::queue()->execute($slack_id);
         });
     }
 }
