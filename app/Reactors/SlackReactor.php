@@ -49,7 +49,7 @@ final class SlackReactor implements EventHandler
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::find($event->customerId);
+        $customer = Customer::whereWooId($event->customerId)->first();
 
         if(! is_null($customer)) {
             UpdateSlackUserProfileMembership::queue()->execute($customer->slack_id);
