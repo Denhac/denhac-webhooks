@@ -17,8 +17,8 @@ class CreateTrainableEquipment implements ModalInterface
 
     private const EQUIPMENT_NAME_BLOCK_ID = 'equipment-name-block';
     private const EQUIPMENT_NAME_ACTION_ID = 'equipment-name-action';
-    private const INITIAL_TRAINER_BLOCK_ID = 'initial_trainer-block';
-    private const INITIAL_TRAINER_ACTION_ID = 'initial_trainer-action';
+    private const INITIAL_TRAINER_BLOCK_ID = 'initial-trainer-block';
+    private const INITIAL_TRAINER_ACTION_ID = 'initial-trainer-action';
     private const USER_SLACK_CHANNEL_BLOCK_ID = 'user-slack-channel-block';
     private const USER_SLACK_CHANNEL_ACTION_ID = 'user-slack-channel-action';
     private const USER_EMAIL_BLOCK_ID = 'user-email-block';
@@ -60,9 +60,11 @@ class CreateTrainableEquipment implements ModalInterface
 
         $this->modalView->divider();
 
+        $this->modalView->header("Slack Channels & Email Groups");
+
         $this->modalView->newContext()
             ->mrkdwnText(
-                "Users/trainers will be automatically added to these channels. All are optional. " .
+                "Users/trainers will be automatically added to these channels/emails. All are optional. " .
                 "Email must be an existing group, for now. Please ask in #general and we'll help make one " .
                 "if needed."
             );
