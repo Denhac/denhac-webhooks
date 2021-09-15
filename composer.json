@@ -19,7 +19,6 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
-        "slack-php/slack-block-kit": "^0.16.0",
         "laravel/framework": "^8.50.0",
         "laravel/horizon": "^5.7.0",
         "laravel/passport": "^10.1",
@@ -28,11 +27,13 @@
         "php-http/curl-client": "^1.4",
         "predis/predis": "^1.1",
         "sentry/sentry-laravel": "^2.4.1",
+        "slack-php/slack-block-kit": "^0.16.0",
         "spatie/laravel-event-sourcing": "^4.8.0",
         "spatie/laravel-failed-job-monitor": "^3.4",
         "spatie/laravel-queueable-action": "^2.10.3",
         "spatie/laravel-webhook-client": "^2.7.5",
         "spatie/ssl-certificate": "^1.22",
+        "stripe/stripe-php": "^7.94",
         "ylsideas/feature-flags": "^1.4.0"
     },
     "require-dev": {
