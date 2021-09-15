@@ -21,6 +21,7 @@ class MembershipOptionsModal implements ModalInterface
     private const AUTHORIZE_3D_PRINTER_VALUE = 'value-authorize-3d-printer';
     private const AUTHORIZE_LASER_CUTTER_VALUE = 'value-authorize-laser-cutter';
     private const AUTHORIZE_LASER_CUTTER_TRAINER_VALUE = 'value-authorize-laser-cutter-trainer';
+    private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
 
     /**
      * @var Modal
@@ -68,6 +69,8 @@ class MembershipOptionsModal implements ModalInterface
             case self::CANCEL_MEMBERSHIP_VALUE:
                 $modal = new CancelMembershipConfirmationModal($request->customer());
                 break;
+            case self::CREATE_TRAINABLE_EQUIPMENT_VALUE:
+                $modal = new CreateTrainableEquipment($request->customer());
             case self::AUTHORIZE_3D_PRINTER_VALUE:
                 $modal = new SelectAMemberModal(Authorize3DPrinterUse::class);
                 break;
@@ -105,6 +108,10 @@ class MembershipOptionsModal implements ModalInterface
             $options->option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE);
 
             $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
+        }
+
+        if ($customer->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
+            $options->option('Create Trainable Equipment', self::CREATE_TRAINABLE_EQUIPMENT_VALUE);
         }
 
         if ($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_TRAINER)) {
