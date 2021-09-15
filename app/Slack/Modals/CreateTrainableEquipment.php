@@ -60,6 +60,7 @@ class CreateTrainableEquipment implements ModalInterface
             ->optional(true)
             ->newSelectMenu()
             ->forChannels()
+            ->placeholder("Select a channel")
             ->actionId(self::USER_SLACK_CHANNEL_ACTION_ID);
 
         $this->modalView->newInput()
@@ -75,6 +76,7 @@ class CreateTrainableEquipment implements ModalInterface
             ->optional(true)
             ->newSelectMenu()
             ->forChannels()
+            ->placeholder("Select a channel")
             ->actionId(self::TRAINER_SLACK_CHANNEL_ACTION_ID);
 
         $this->modalView->newInput()
