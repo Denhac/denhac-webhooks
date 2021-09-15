@@ -4,6 +4,7 @@ namespace App\Slack\Modals;
 
 use App\Events\DoorControlUpdated;
 use App\Http\Requests\SlackRequest;
+use App\Slack\BlockActions\BlockActionInterface;
 use App\WinDSX\Door;
 use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Inputs\TimePicker;
@@ -101,6 +102,25 @@ class ManageOpenHouseModal implements ModalInterface
     public static function getOptions(SlackRequest $request)
     {
         return [];
+    }
+
+    /**
+     * @return BlockActionInterface[]
+     */
+    public static function getBlockActions(): array
+    {
+        return [
+            new class() implements BlockActionInterface {
+                public static function blockId(): string {return "expires-time-block";}
+                public static function actionId(): string {return "expires-time-action";}
+
+                public static function handle(SlackRequest $request)
+                {
+                    // TODO Maybe handle if time is before now so it rolls over?
+                    return response('');  // Do nothing, accept the action.
+                }
+            }
+        ];
     }
 
     /**

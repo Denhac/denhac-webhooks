@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SlackRequest;
+use App\Slack\BlockActions\BlockActionInterface;
 use App\Slack\ClassFinder;
 use Illuminate\Support\Facades\Log;
 
@@ -64,9 +65,34 @@ class SlackInteractivityController extends Controller
         Log::info("Block Action!");
         Log::info(print_r($request->payload(), true));
 
+        $payload = $request->payload();
+        $actions = $payload['actions'];
 
-        $actions = $request->payload()['actions'];
+        // If we're a modal, try to find a block action on the modal
+        if(array_key_exists('view', $payload) && $payload['view']['type'] == 'modal') {
+            Log::info("View is a modal!");
+            $view = $request->payload()['view'];
+            $callbackId = $view['callback_id'];
 
+            $modalClass = ClassFinder::getModal($callbackId);
+
+            if (method_exists($modalClass, 'getBlockActions')) {
+                $modalBlockActions = $modalClass::getBlockActions();
+                foreach ($actions as $action) {
+                    $blockId = $action['block_id'];
+                    $actionId = $action['action_id'];
+                    /** @var BlockActionInterface $blockAction */
+                    foreach ($modalBlockActions as $blockAction) {
+                        if($blockAction::blockId() == $blockId && $blockAction::actionId() == $actionId) {
+                            Log::info("We found a match for that modal, block, and action combo.");
+                            return $blockAction::handle($request);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Otherwise, try to find a standalone block action
         foreach ($actions as $action) {
             $blockId = $action['block_id'];
             $actionId = $action['action_id'];
@@ -80,8 +106,6 @@ class SlackInteractivityController extends Controller
             return $blockAction::handle($request);
         }
 
-        throw new \Exception("No actions found in ".print_r($request->payload(), true));
-
-//        return $shortcutClass::handle($request);
+        throw new \Exception("No actions found in ".print_r($payload, true));
     }
 }
