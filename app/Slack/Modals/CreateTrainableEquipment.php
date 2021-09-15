@@ -15,6 +15,8 @@ class CreateTrainableEquipment implements ModalInterface
 
     private Modal $modalView;
 
+    private const EQUIPMENT_NAME_BLOCK_ID = 'equipment-name-block';
+    private const EQUIPMENT_NAME_ACTION_ID = 'equipment-name-action';
     private const INITIAL_TRAINER_BLOCK_ID = 'initial_trainer-block';
     private const INITIAL_TRAINER_ACTION_ID = 'initial_trainer-action';
     private const USER_SLACK_CHANNEL_BLOCK_ID = 'user-slack-channel-block';
@@ -28,8 +30,6 @@ class CreateTrainableEquipment implements ModalInterface
 
     public function __construct(?Customer $user)
     {
-        $name = "{$user->first_name} {$user->last_name}";
-
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('New Trainable Equipment')
@@ -38,20 +38,33 @@ class CreateTrainableEquipment implements ModalInterface
             ->submit('Submit');
 
         $this->modalView->newInput()
+            ->label("Equipment Name")
+            ->blockId(self::EQUIPMENT_NAME_BLOCK_ID)
+            ->newTextInput()
+            ->actionId(self::EQUIPMENT_NAME_BLOCK_ID)
+            ->placeholder("Name");
+
+        $trainerInput = $this->modalView->newInput()
             ->label('Initial Trainer')
             ->blockId(self::INITIAL_TRAINER_BLOCK_ID)
             ->newSelectMenu()
             ->forExternalOptions()
             ->actionId(self::INITIAL_TRAINER_ACTION_ID)
-            ->initialOption($name, "customer-{$user->woo_id}")
             ->placeholder("Select a customer")
             ->minQueryLength(0);
+
+        if (!is_null($user)) {
+            $name = "{$user->first_name} {$user->last_name}";
+            $trainerInput->initialOption($name, "customer-{$user->woo_id}");
+        }
+
+        $this->modalView->divider();
 
         $this->modalView->newContext()
             ->mrkdwnText(
                 "Users/trainers will be automatically added to these channels. All are optional. " .
                 "Email must be an existing group, for now. Please ask in #general and we'll help make one " .
-                "if needed"
+                "if needed."
             );
 
         $this->modalView->newInput()
@@ -65,10 +78,10 @@ class CreateTrainableEquipment implements ModalInterface
 
         $this->modalView->newInput()
             ->label('User email')
-            ->blockId(self::USER_SLACK_CHANNEL_BLOCK_ID)
+            ->blockId(self::USER_EMAIL_BLOCK_ID)
             ->optional(true)
             ->newTextInput()
-            ->actionId(self::USER_SLACK_CHANNEL_ACTION_ID);
+            ->actionId(self::USER_EMAIL_ACTION_ID);
 
         $this->modalView->newInput()
             ->label('Trainer slack channel')
@@ -81,10 +94,10 @@ class CreateTrainableEquipment implements ModalInterface
 
         $this->modalView->newInput()
             ->label('Trainer email')
-            ->blockId(self::USER_SLACK_CHANNEL_BLOCK_ID)
+            ->blockId(self::TRAINER_EMAIL_BLOCK_ID)
             ->optional(true)
             ->newTextInput()
-            ->actionId(self::USER_SLACK_CHANNEL_ACTION_ID);
+            ->actionId(self::TRAINER_EMAIL_ACTION_ID);
     }
 
     public static function callbackId(): string
