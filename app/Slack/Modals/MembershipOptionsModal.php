@@ -71,6 +71,7 @@ class MembershipOptionsModal implements ModalInterface
                 break;
             case self::CREATE_TRAINABLE_EQUIPMENT_VALUE:
                 $modal = new CreateTrainableEquipment($request->customer());
+                break;
             case self::AUTHORIZE_3D_PRINTER_VALUE:
                 $modal = new SelectAMemberModal(Authorize3DPrinterUse::class);
                 break;
