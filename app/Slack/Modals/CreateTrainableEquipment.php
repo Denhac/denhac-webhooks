@@ -44,6 +44,7 @@ class CreateTrainableEquipment implements ModalInterface
             ->forExternalOptions()
             ->actionId(self::INITIAL_TRAINER_ACTION_ID)
             ->initialOption($name, "customer-{$user->woo_id}")
+            ->placeholder("Select a customer")
             ->minQueryLength(0);
 
         $this->modalView->newContext()
