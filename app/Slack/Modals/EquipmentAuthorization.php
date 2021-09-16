@@ -151,7 +151,7 @@ class EquipmentAuthorization implements ModalInterface
                     ->blockId(self::USER_CHECK)
                     ->newCheckboxes()
                     ->actionId(self::USER_CHECK)
-                    ->option($option, true);
+                    ->addOption($option, true);
             }
 
             if($person->hasMembership($equipment->trainerPlanId)) {
@@ -165,7 +165,7 @@ class EquipmentAuthorization implements ModalInterface
                     ->blockId(self::TRAINER_CHECK)
                     ->newCheckboxes()
                     ->actionId(self::TRAINER_CHECK)
-                    ->option($option, false);
+                    ->addOption($option, false);
             }
         }
 
