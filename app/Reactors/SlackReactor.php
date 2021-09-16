@@ -19,7 +19,9 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
+use App\TrainableEquipment;
 use App\UserMembership;
+use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 use YlsIdeas\FeatureFlags\Facades\Features;
@@ -82,6 +84,24 @@ final class SlackReactor implements EventHandler
 
         $customerId = $event->membership['customer_id'];
         $plan_id = $event->membership['plan_id'];
+
+        /** @var Collection $userSlackIds */
+        $userSlackIds = TrainableEquipment::select('user_slack_id')
+            ->where('user_plan_id', $plan_id)
+            ->get()
+            ->map(fn($row) => $row['user_slack_id']);
+
+        /** @var Collection $trainerSlackIds */
+        $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
+            ->where('trainer_plan_id', $plan_id)
+            ->get()
+            ->map(fn($row) => $row['trainer_slack_id']);
+
+        $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
+
+        foreach ($slackIds as $slackId) {
+            AddToChannel::queue()->execute($customerId, $slackId);
+        }
 
         if ($plan_id == UserMembership::MEMBERSHIP_3DP_USER) {
             AddToChannel::queue()->execute($customerId, Channels::PRINTER_3D);
