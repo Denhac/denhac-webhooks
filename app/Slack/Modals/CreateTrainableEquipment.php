@@ -43,7 +43,7 @@ class CreateTrainableEquipment implements ModalInterface
             ->label("Equipment Name")
             ->blockId(self::EQUIPMENT_NAME_BLOCK_ID)
             ->newTextInput()
-            ->actionId(self::EQUIPMENT_NAME_BLOCK_ID)
+            ->actionId(self::EQUIPMENT_NAME_ACTION_ID)
             ->placeholder("Name");
 
         $trainerInput = $this->modalView->newInput()
