@@ -174,7 +174,7 @@ class EquipmentAuthorization implements ModalInterface
             }
         }
 
-        return $modal->update();
+        return $modal->updateViaApi($request);
     }
 
     private function noEquipment()

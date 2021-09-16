@@ -37,4 +37,21 @@ class ViewsApi
                 ],
             ]);
     }
+
+    public function update($view_id, $view, $hash = null)
+    {
+        $data = [
+            'view_id' => $view_id,
+            'view' => json_encode($view),
+        ];
+
+        if (!is_null($hash)) {
+            $data['hash'] = $hash;
+        }
+
+        $this->clients->spaceBotApiClient
+            ->post('https://denhac.slack.com/api/views.update', [
+                RequestOptions::JSON => $data,
+            ]);
+    }
 }
