@@ -3,6 +3,7 @@
 namespace App\Slack\Modals;
 
 use App\Http\Requests\SlackRequest;
+use App\Slack\BlockActions\BlockActionInterface;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
@@ -58,8 +59,37 @@ class EquipmentAuthorization implements ModalInterface
         return (new SuccessModal())->update();
     }
 
+    /**
+     * @return BlockActionInterface[]
+     */
+    public static function getBlockActions(): array
+    {
+        return [
+            new class() implements BlockActionInterface {
+                public static function blockId(): string {return "equipment-dropdown";}  // TODO find a way to not duplicate
+                public static function actionId(): string {return "equipment-dropdown";}  // TODO find a way to not duplicate
+
+                public static function handle(SlackRequest $request)
+                {
+                    return response('');  // Do nothing, accept the action.
+                }
+            },
+            new class() implements BlockActionInterface {
+                public static function blockId(): string {return "person-dropdown";}  // TODO find a way to not duplicate
+                public static function actionId(): string {return "person-dropdown";}  // TODO find a way to not duplicate
+
+                public static function handle(SlackRequest $request)
+                {
+                    return response('');  // Do nothing, accept the action.
+                }
+            }
+        ];
+    }
+
     public static function getOptions(SlackRequest $request)
     {
+        Log::info("Equipment auth options request");
+        Log::info(print_r($request->payload(), true));
         return [];
     }
 
