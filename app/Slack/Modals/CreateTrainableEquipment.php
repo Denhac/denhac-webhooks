@@ -120,6 +120,13 @@ class CreateTrainableEquipment implements ModalInterface
         $trainerSlackChannel = $values[self::TRAINER_SLACK_CHANNEL_BLOCK_ID][self::TRAINER_SLACK_CHANNEL_ACTION_ID]['selected_channel'];
         $trainerEmail = $values[self::TRAINER_EMAIL_BLOCK_ID][self::TRAINER_EMAIL_ACTION_ID]['value'];
 
+        $matches = [];
+        $result = preg_match('/customer-(\d+)/', $initialTrainerValue, $matches);
+        if (! $result) {
+            throw new \Exception("Option wasn't valid for customer: $initialTrainerValue");
+        }
+        $initialTrainerId = $matches[1];
+
         /** @var WooCommerceApi $wooCommerceApi */
         $wooCommerceApi = app(WooCommerceApi::class);
         $responseTrainer = $wooCommerceApi->denhac->createUserPlan(
@@ -147,7 +154,7 @@ class CreateTrainableEquipment implements ModalInterface
 
         TrainableEquipment::create($trainableEquipmentData);
 
-        $wooCommerceApi->members->addMembership($initialTrainerValue, $trainerPlanId);
+        $wooCommerceApi->members->addMembership($initialTrainerId, $trainerPlanId);
 
         return response('');
     }
