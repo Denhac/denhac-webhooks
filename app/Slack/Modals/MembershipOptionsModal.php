@@ -12,8 +12,7 @@ class MembershipOptionsModal implements ModalInterface
 {
     use ModalTrait;
 
-    private const MEMBERSHIP_OPTION_BLOCK_ID = 'membership-option-block';
-    private const MEMBERSHIP_OPTION_ACTION_ID = 'membership-option-action';
+    private const MEMBERSHIP_OPTION = 'membership-option';
     private const CANCEL_MEMBERSHIP_VALUE = 'value-cancel-membership';
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
     private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
@@ -39,10 +38,10 @@ class MembershipOptionsModal implements ModalInterface
 
         $this->modalView->newInput()
             ->label('Membership Option')
-            ->blockId(self::MEMBERSHIP_OPTION_BLOCK_ID)
+            ->blockId(self::MEMBERSHIP_OPTION)
             ->newSelectMenu()
             ->forExternalOptions()
-            ->actionId(self::MEMBERSHIP_OPTION_ACTION_ID)
+            ->actionId(self::MEMBERSHIP_OPTION)
             ->placeholder('Select an Item')
             ->minQueryLength(0);
     }
@@ -54,7 +53,7 @@ class MembershipOptionsModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        $selectedOption = $request->payload()['view']['state']['values'][self::MEMBERSHIP_OPTION_BLOCK_ID][self::MEMBERSHIP_OPTION_ACTION_ID]['selected_option']['value'];
+        $selectedOption = $request->payload()['view']['state']['values'][self::MEMBERSHIP_OPTION][self::MEMBERSHIP_OPTION]['selected_option']['value'];
 
         switch ($selectedOption) {
             case self::SIGN_UP_NEW_MEMBER_VALUE:
