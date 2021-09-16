@@ -121,8 +121,12 @@ class EquipmentAuthorization implements ModalInterface
         $modal->setUpModalCommon();
 
         $state = self::getStateValues($request);
+        Log::info("State: ".print_r($state, true));
         $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
         $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
+
+        Log::info("EquipmentValue: ".$equipmentValue);
+        Log::info("PersonValue: ".$personValue);
 
         if(is_null($equipmentValue)) {
             $modal->noEquipment();

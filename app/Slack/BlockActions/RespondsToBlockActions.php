@@ -45,7 +45,6 @@ trait RespondsToBlockActions
 
             public function handle(SlackRequest $request)
             {
-                Log::info("responds to handle called");
                 $r = new \ReflectionClass($this->className);
 
                 /** @var RespondsToBlockActions $instance */
