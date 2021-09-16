@@ -2,17 +2,21 @@
 
 namespace App\Slack\Modals;
 
+use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\BlockActions\BlockActionInterface;
+use App\Slack\BlockActions\RespondsToBlockActions;
 use App\Slack\SlackOptions;
 use App\TrainableEquipment;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
 class EquipmentAuthorization implements ModalInterface
 {
     use ModalTrait;
+    use RespondsToBlockActions;
 
     private const EQUIPMENT_DROPDOWN = 'equipment-dropdown';
     private const PERSON_DROPDOWN = 'person-dropdown';
@@ -23,6 +27,13 @@ class EquipmentAuthorization implements ModalInterface
 
     public function __construct()
     {
+        $this->setUpModalCommon();
+
+        $this->noEquipment();
+        $this->noPerson();
+    }
+
+    private function setUpModalCommon() {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('Equipment Authorization')
@@ -37,7 +48,8 @@ class EquipmentAuthorization implements ModalInterface
             ->newSelectMenu()
             ->forExternalOptions()
             ->actionId(self::EQUIPMENT_DROPDOWN)
-            ->placeholder("Select equipment");
+            ->placeholder("Select equipment")
+            ->minQueryLength(0);
 
         $this->modalView->newInput()
             ->dispatchAction()
@@ -46,10 +58,11 @@ class EquipmentAuthorization implements ModalInterface
             ->newSelectMenu()
             ->forExternalOptions()
             ->actionId(self::PERSON_DROPDOWN)
-            ->placeholder("Select a user");
+            ->placeholder("Select a member")
+            ->minQueryLength(2);
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'equipment-authorization-modal';
     }
@@ -68,24 +81,8 @@ class EquipmentAuthorization implements ModalInterface
     public static function getBlockActions(): array
     {
         return [
-            new class() implements BlockActionInterface {
-                public static function blockId(): string {return "equipment-dropdown";}  // TODO find a way to not duplicate
-                public static function actionId(): string {return "equipment-dropdown";}  // TODO find a way to not duplicate
-
-                public static function handle(SlackRequest $request)
-                {
-                    return response('');  // Do nothing, accept the action.
-                }
-            },
-            new class() implements BlockActionInterface {
-                public static function blockId(): string {return "person-dropdown";}  // TODO find a way to not duplicate
-                public static function actionId(): string {return "person-dropdown";}  // TODO find a way to not duplicate
-
-                public static function handle(SlackRequest $request)
-                {
-                    return response('');  // Do nothing, accept the action.
-                }
-            }
+            self::blockActionUpdate(self::EQUIPMENT_DROPDOWN),
+            self::blockActionUpdate(self::PERSON_DROPDOWN),
         ];
     }
 
@@ -115,5 +112,75 @@ class EquipmentAuthorization implements ModalInterface
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();
+    }
+
+    static function onBlockAction(SlackRequest $request)
+    {
+        $modal = new EquipmentAuthorization();
+        $modal->setUpModalCommon();
+
+        $state = self::getStateValues($request);
+        $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
+        $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
+
+        if(is_null($equipmentValue)) {
+            $modal->noEquipment();
+        }
+
+        if(is_null($personValue)) {
+            $modal->noPerson();
+        }
+
+        if(!is_null($equipmentValue) && !is_null($personValue)) {
+            $equipmentId = str_replace('equipment-', '', $equipmentValue);
+            $personId = str_replace('customer-', '', $personValue);
+            /** @var Customer $person */
+            $person = Customer::whereWooId($personId)->first();
+            $name = "{$person->first_name} {$person->last_name}";
+
+            /** @var TrainableEquipment $equipment */
+            $equipment = TrainableEquipment::find($equipmentId);
+            if($person->hasMembership($equipment->userPlanId)) {
+                $modal->modalView->newSection()
+                    ->plainText(":white_check_mark: $name is already an authorized user.");
+            } else {
+                $option = Option::new("User")
+                    ->description("The person can use the equipment.")
+                    ->value('true');
+                $modal->modalView->newActions()
+                    ->blockId(self::USER_CHECK)
+                    ->newCheckboxes()
+                    ->actionId(self::USER_CHECK)
+                    ->option($option, true);
+            }
+
+            if($person->hasMembership($equipment->trainerPlanId)) {
+                $modal->modalView->newSection()
+                    ->plainText(":white_check_mark: $name is already an authorized trainer.");
+            } else {
+                $option = Option::new("Trainer")
+                    ->description("The person can train others to use the equipment and add new trainers.")
+                    ->value('true');
+                $modal->modalView->newActions()
+                    ->blockId(self::TRAINER_CHECK)
+                    ->newCheckboxes()
+                    ->actionId(self::TRAINER_CHECK)
+                    ->option($option, false);
+            }
+        }
+
+        return $modal->update();
+    }
+
+    private function noEquipment()
+    {
+        $this->modalView->newSection()
+            ->mrkdwnText("Please select the Equipment you're training for.");
+    }
+
+    private function noPerson()
+    {
+        $this->modalView->newSection()
+            ->mrkdwnText("Please select who you're authorization.");
     }
 }

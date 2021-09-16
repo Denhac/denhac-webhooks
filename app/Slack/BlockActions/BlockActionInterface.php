@@ -7,9 +7,9 @@ use App\Http\Requests\SlackRequest;
 
 interface BlockActionInterface
 {
-    public static function blockId(): string;
+    public function blockId(): string;
 
-    public static function actionId(): string;
+    public function actionId(): string;
 
-    public static function handle(SlackRequest $request);
+    public function handle(SlackRequest $request);
 }

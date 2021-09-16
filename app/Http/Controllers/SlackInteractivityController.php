@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SlackRequest;
 use App\Slack\BlockActions\BlockActionInterface;
+use App\Slack\BlockActions\BlockActionStatic;
 use App\Slack\ClassFinder;
 use Illuminate\Support\Facades\Log;
 
@@ -83,9 +84,9 @@ class SlackInteractivityController extends Controller
                     $actionId = $action['action_id'];
                     /** @var BlockActionInterface $blockAction */
                     foreach ($modalBlockActions as $blockAction) {
-                        if($blockAction::blockId() == $blockId && $blockAction::actionId() == $actionId) {
+                        if($blockAction->blockId() == $blockId && $blockAction->actionId() == $actionId) {
                             Log::info("We found a match for that modal, block, and action combo.");
-                            return $blockAction::handle($request);
+                            return $blockAction->handle($request);
                         }
                     }
                 }
@@ -97,6 +98,7 @@ class SlackInteractivityController extends Controller
             $blockId = $action['block_id'];
             $actionId = $action['action_id'];
 
+            /** @var BlockActionStatic $blockAction */
             $blockAction = ClassFinder::getBlockAction($blockId, $actionId);
 
             if (is_null($blockAction)) {

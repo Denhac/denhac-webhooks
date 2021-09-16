@@ -3,7 +3,7 @@
 namespace App\Slack;
 
 
-use App\Slack\BlockActions\BlockActionInterface;
+use App\Slack\BlockActions\BlockActionStatic;
 use App\Slack\Events\EventInterface;
 use App\Slack\Modals\ModalInterface;
 use App\Slack\Modals\ModalTrait;
@@ -51,7 +51,7 @@ class ClassFinder
     public static function getBlockAction($blockId, $actionId)
     {
         return self::getReflectionClasses('App\\Slack\\BlockActions')
-            ->filter(fn($reflect) => $reflect->implementsInterface(BlockActionInterface::class))
+            ->filter(fn($reflect) => $reflect->implementsInterface(BlockActionStatic::class))
             ->filter(fn($reflect) => $reflect->getMethod('blockId')->invoke(null) == $blockId)
             ->filter(fn($reflect) => $reflect->getMethod('actionId')->invoke(null) == $actionId)
             ->map(fn($reflect) => $reflect->getName())

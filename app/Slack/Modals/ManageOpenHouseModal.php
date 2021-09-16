@@ -5,6 +5,8 @@ namespace App\Slack\Modals;
 use App\Events\DoorControlUpdated;
 use App\Http\Requests\SlackRequest;
 use App\Slack\BlockActions\BlockActionInterface;
+use App\Slack\BlockActions\BlockActionStatic;
+use App\Slack\BlockActions\RespondsToBlockActions;
 use App\WinDSX\Door;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Inputs\TimePicker;
@@ -15,6 +17,7 @@ use SlackPhp\BlockKit\Surfaces\Modal;
 class ManageOpenHouseModal implements ModalInterface
 {
     use ModalTrait;
+    use RespondsToBlockActions;
 
     protected const EXPIRES_TIME = 'expires-time';
     private const DOORS = 'doors';
@@ -102,21 +105,18 @@ class ManageOpenHouseModal implements ModalInterface
     public static function getBlockActions(): array
     {
         return [
-            new class() implements BlockActionInterface {
-                public static function blockId(): string {return "expires-time";}  // TODO find a way to not duplicate
-                public static function actionId(): string {return "expires-time";}  // TODO find a way to not duplicate
-
-                public static function handle(SlackRequest $request)
-                {
-                    // TODO Maybe handle if time is before now so it rolls over?
-                    return response('');  // Do nothing, accept the action.
-                }
-            }
+            self::blockActionUpdate(self::EXPIRES_TIME),
         ];
     }
 
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();
+    }
+
+    static function onBlockAction(SlackRequest $request)
+    {
+        // TODO Maybe handle if time is before now so it rolls over?
+        return response('');
     }
 }

@@ -8,7 +8,7 @@ use App\Http\Requests\SlackRequest;
 use App\Slack\SlackApi;
 use Illuminate\Support\Facades\Log;
 
-class HelpMemberCleanupButton implements BlockActionInterface
+class HelpMemberCleanupButton implements BlockActionStatic
 {
 
     public static function blockId(): string
