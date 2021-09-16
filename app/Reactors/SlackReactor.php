@@ -102,13 +102,5 @@ final class SlackReactor implements EventHandler
         foreach ($slackIds as $slackId) {
             AddToChannel::queue()->execute($customerId, $slackId);
         }
-
-        if ($plan_id == UserMembership::MEMBERSHIP_3DP_USER) {
-            AddToChannel::queue()->execute($customerId, Channels::PRINTER_3D);
-        }
-
-        if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_USER) {
-            AddToChannel::queue()->execute($customerId, Channels::LASER);
-        }
     }
 }

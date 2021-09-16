@@ -4,7 +4,6 @@ namespace App\Reactors;
 
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
-use App\Actions\Slack\AddToChannel;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
@@ -16,7 +15,6 @@ use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\TrainableEquipment;
-use App\UserMembership;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
@@ -27,8 +25,6 @@ final class GoogleGroupsReactor implements EventHandler
     public const GROUP_MEMBERS = 'members@denhac.org';
     public const GROUP_DENHAC = 'denhac@denhac.org';
     public const GROUP_BOARD = 'board@denhac.org';
-    public const GROUP_3DP = '3dp@denhac.org';
-    public const GROUP_LASER = 'laser@denhac.org';
 
     use HandlesEvents;
 
@@ -142,14 +138,6 @@ final class GoogleGroupsReactor implements EventHandler
 
         foreach ($emailGroups as $emailGroup) {
             AddToGroup::queue()->execute($customer->email, $emailGroup);
-        }
-
-        if ($plan_id == UserMembership::MEMBERSHIP_3DP_TRAINER) {
-            AddToGroup::queue()->execute($customer->email, self::GROUP_3DP);
-        }
-
-        if ($plan_id == UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER) {
-            AddToGroup::queue()->execute($customer->email, self::GROUP_LASER);
         }
     }
 }

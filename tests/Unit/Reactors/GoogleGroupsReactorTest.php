@@ -126,15 +126,12 @@ class GoogleGroupsReactorTest extends TestCase
             ->andReturn(collect([
                 GoogleGroupsReactor::GROUP_DENHAC,
                 GoogleGroupsReactor::GROUP_MEMBERS,
-                GoogleGroupsReactor::GROUP_3DP
             ]));
 
         event(new MembershipDeactivated($this->customer->id));
 
         $this->assertAction(RemoveFromGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
-        $this->assertAction(RemoveFromGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_3DP);
         $this->assertAction(RemoveFromGroup::class)
             ->never()
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
@@ -150,7 +147,6 @@ class GoogleGroupsReactorTest extends TestCase
             ->andReturn(collect([
                 GoogleGroupsReactor::GROUP_DENHAC,
                 GoogleGroupsReactor::GROUP_MEMBERS,
-                GoogleGroupsReactor::GROUP_3DP
             ]));
 
         event(new MembershipDeactivated($this->customer->id));
@@ -213,34 +209,6 @@ class GoogleGroupsReactorTest extends TestCase
         event(new UserMembershipCreated($userMembership));
 
         $this->assertAction(AddToGroup::class)->never();
-    }
-
-    /** @test */
-    public function on_user_membership_activated_for_3dp_trainer_add_to_google_group()
-    {
-        $userMembership = $this->userMembership()
-            ->customer($this->customer)
-            ->status('active')
-            ->plan(UserMembership::MEMBERSHIP_3DP_TRAINER);
-
-        event(new UserMembershipCreated($userMembership));
-
-        $this->assertAction(AddToGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_3DP);
-    }
-
-    /** @test */
-    public function on_user_membership_activated_for_laser_trainer_add_to_google_group()
-    {
-        $userMembership = $this->userMembership()
-            ->customer($this->customer)
-            ->status('active')
-            ->plan(UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER);
-
-        event(new UserMembershipCreated($userMembership));
-
-        $this->assertAction(AddToGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_LASER);
     }
 
     /** @test */
