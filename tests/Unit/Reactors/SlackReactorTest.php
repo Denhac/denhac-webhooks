@@ -19,6 +19,7 @@ use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\TrainableEquipment;
+use App\UserMembership;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Tests\AssertsActions;
@@ -157,11 +158,12 @@ class SlackReactorTest extends TestCase
             "trainer_plan_id" => 5678,
         ]);
 
-        event(new UserMembershipCreated([
-            "customer_id" => $customerId,
-            "plan_id" => $planId,
-            "status" => 'active',
-        ]));
+        $userMembership = $this->userMembership()
+            ->customer($customerId)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
 
         $this->assertAction(AddToChannel::class)
             ->with($customerId, $slackId);
@@ -181,11 +183,12 @@ class SlackReactorTest extends TestCase
             "trainer_slack_id" => $slackId,
         ]);
 
-        event(new UserMembershipCreated([
-            "customer_id" => $customerId,
-            "plan_id" => $planId,
-            "status" => 'active',
-        ]));
+        $userMembership = $this->userMembership()
+            ->customer($customerId)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
 
         $this->assertAction(AddToChannel::class)
             ->with($customerId, $slackId);

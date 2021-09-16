@@ -16,6 +16,7 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
+use App\TrainableEquipment;
 use App\UserMembership;
 use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
@@ -240,5 +241,53 @@ class GoogleGroupsReactorTest extends TestCase
 
         $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_LASER);
+    }
+
+    /** @test */
+    public function being_added_to_trainable_equipment_as_user_adds_to_slack_channel()
+    {
+        $planId = 1234;
+        $groupEmail = "test@denhac.org";
+
+        TrainableEquipment::create([
+            "name" => "Test",
+            "user_plan_id" => $planId,
+            "user_email" => $groupEmail,
+            "trainer_plan_id" => 5678,
+        ]);
+
+        $userMembership = $this->userMembership()
+            ->customer($this->customer)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
+
+        $this->assertAction(AddToGroup::class)
+            ->with($this->customer->email, $groupEmail);
+    }
+
+    /** @test */
+    public function being_added_to_trainable_equipment_as_trainer_adds_to_slack_channel()
+    {
+        $planId = 1234;
+        $groupEmail = "test@denhac.org";
+
+        TrainableEquipment::create([
+            "name" => "Test",
+            "user_plan_id" => 5678,
+            "trainer_plan_id" => $planId,
+            "trainer_email" => $groupEmail,
+        ]);
+
+        $userMembership = $this->userMembership()
+            ->customer($this->customer)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
+
+        $this->assertAction(AddToGroup::class)
+            ->with($this->customer->email, $groupEmail);
     }
 }

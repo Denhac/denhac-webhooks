@@ -4,6 +4,7 @@ namespace App\Reactors;
 
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
+use App\Actions\Slack\AddToChannel;
 use App\Customer;
 use App\FeatureFlags;
 use App\Google\GoogleApi;
@@ -14,7 +15,9 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
+use App\TrainableEquipment;
 use App\UserMembership;
+use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 use YlsIdeas\FeatureFlags\Facades\Features;
@@ -122,6 +125,24 @@ final class GoogleGroupsReactor implements EventHandler
 
         /** @var Customer $customer */
         $customer = Customer::whereWooId($customerId)->first();
+
+        /** @var Collection $userSlackIds */
+        $userEmailGroups = TrainableEquipment::select('user_email')
+            ->where('user_plan_id', $plan_id)
+            ->get()
+            ->map(fn($row) => $row['user_email']);
+
+        /** @var Collection $trainerSlackIds */
+        $trainerEmailGroups = TrainableEquipment::select('trainer_email')
+            ->where('trainer_plan_id', $plan_id)
+            ->get()
+            ->map(fn($row) => $row['trainer_email']);
+
+        $emailGroups = collect($userEmailGroups->union($trainerEmailGroups))->unique();
+
+        foreach ($emailGroups as $emailGroup) {
+            AddToGroup::queue()->execute($customer->email, $emailGroup);
+        }
 
         if ($plan_id == UserMembership::MEMBERSHIP_3DP_TRAINER) {
             AddToGroup::queue()->execute($customer->email, self::GROUP_3DP);
