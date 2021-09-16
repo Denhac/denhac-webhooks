@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\OctoPrint;
 
 use App\Customer;
 use App\Notifications\OctoPrintNewUser;

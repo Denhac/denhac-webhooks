@@ -2,8 +2,8 @@
 
 namespace App\Reactors;
 
-use App\Actions\AddUserToOctoPrintHosts;
-use App\Actions\DeactivateOctoPrintUser;
+use App\Actions\OctoPrint\AddUserToOctoPrintHosts;
+use App\Actions\OctoPrint\DeactivateOctoPrintUser;
 use App\Customer;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -32,7 +32,8 @@ class OctoPrintReactor implements EventHandler
             return;
         }
 
-        AddUserToOctoPrintHosts::queue()->execute($customer);
+        // Currently doesn't work because the webhooks server cannot access these hosts
+        // AddUserToOctoPrintHosts::queue()->execute($customer);
     }
 
     public function onMembershipActivated(MembershipActivated $event)
@@ -44,7 +45,8 @@ class OctoPrintReactor implements EventHandler
             return;
         }
 
-        AddUserToOctoPrintHosts::queue()->execute($customer);
+        // Currently doesn't work because the webhooks server cannot access these hosts
+        // AddUserToOctoPrintHosts::queue()->execute($customer);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)
@@ -56,6 +58,7 @@ class OctoPrintReactor implements EventHandler
             return;
         }
 
-        DeactivateOctoPrintUser::queue()->execute($customer);
+        // Currently doesn't work because the webhooks server cannot access these hosts
+        // DeactivateOctoPrintUser::queue()->execute($customer);
     }
 }

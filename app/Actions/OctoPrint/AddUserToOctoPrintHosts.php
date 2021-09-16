@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\OctoPrint;
 
+use App\Actions\StaticAction;
 use App\Customer;
 use Illuminate\Support\Str;
 use Spatie\QueueableAction\QueueableAction;
