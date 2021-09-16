@@ -25,7 +25,8 @@ class EquipmentAuthorization implements ModalInterface
             ->callbackId(self::callbackId())
             ->title('Equipment Authorization')
             ->clearOnClose(true)
-            ->close('Cancel');
+            ->close('Cancel')
+            ->submit('Submit');
 
         $this->modalView->newInput()
             ->dispatchAction()
