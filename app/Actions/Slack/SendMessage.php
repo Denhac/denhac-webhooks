@@ -3,7 +3,7 @@
 namespace App\Actions\Slack;
 
 use App\Slack\SlackApi;
-use Jeremeamia\Slack\BlockKit\Surfaces\Message;
+use SlackPhp\BlockKit\Surfaces\Message;
 use Spatie\QueueableAction\QueueableAction;
 
 class SendMessage

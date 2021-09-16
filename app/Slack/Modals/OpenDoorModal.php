@@ -8,9 +8,9 @@ use App\Slack\SlackApi;
 use App\WinDSX\Door;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Partials\Option;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Partials\Option;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class OpenDoorModal implements ModalInterface
 {

@@ -7,10 +7,10 @@ use App\Http\Requests\SlackRequest;
 use App\Slack\BlockActions\BlockActionInterface;
 use App\WinDSX\Door;
 use Illuminate\Support\Facades\Log;
-use Jeremeamia\Slack\BlockKit\Inputs\TimePicker;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Partials\Option;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Inputs\TimePicker;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Partials\Option;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class ManageOpenHouseModal implements ModalInterface
 {

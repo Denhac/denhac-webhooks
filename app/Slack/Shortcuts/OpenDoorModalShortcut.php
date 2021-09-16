@@ -6,7 +6,7 @@ namespace App\Slack\Shortcuts;
 use App\Http\Requests\SlackRequest;
 use App\Slack\CommonResponses;
 use App\Slack\Modals\OpenDoorModal;
-use Jeremeamia\Slack\BlockKit\Kit;
+use SlackPhp\BlockKit\Kit;
 
 class OpenDoorModalShortcut implements ShortcutInterface
 {

@@ -7,8 +7,8 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\TrainableEquipment;
 use App\WooCommerce\Api\WooCommerceApi;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class CreateTrainableEquipment implements ModalInterface
 {

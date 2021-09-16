@@ -6,8 +6,8 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\ClassFinder;
 use App\Slack\SlackOptions;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class SelectAMemberModal implements ModalInterface
 {

@@ -4,7 +4,7 @@ namespace App\Slack\Api;
 
 
 use GuzzleHttp\RequestOptions;
-use Jeremeamia\Slack\BlockKit\Surfaces\Message;
+use SlackPhp\BlockKit\Surfaces\Message;
 use Psr\Http\Message\ResponseInterface;
 
 class ChatApi

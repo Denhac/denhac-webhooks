@@ -6,8 +6,8 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\UserMembership;
 use App\WooCommerce\Api\WooCommerceApi;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class Authorize3DPrinterUse implements ModalInterface
 {

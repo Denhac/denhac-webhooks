@@ -6,8 +6,8 @@ namespace App\Slack\Messages;
 use App\Actions\Slack\SendMessage;
 use App\Customer;
 use App\Slack\BlockActions\HelpMemberCleanupButton;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\Message;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\Message;
 
 class SlackMemberCleanup
 {

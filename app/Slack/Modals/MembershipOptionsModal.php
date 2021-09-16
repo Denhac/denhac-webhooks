@@ -5,8 +5,8 @@ namespace App\Slack\Modals;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
 use App\UserMembership;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class MembershipOptionsModal implements ModalInterface
 {
@@ -21,6 +21,7 @@ class MembershipOptionsModal implements ModalInterface
     private const AUTHORIZE_LASER_CUTTER_VALUE = 'value-authorize-laser-cutter';
     private const AUTHORIZE_LASER_CUTTER_TRAINER_VALUE = 'value-authorize-laser-cutter-trainer';
     private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
+    private const EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
 
     private Modal $modalView;
 
@@ -77,6 +78,9 @@ class MembershipOptionsModal implements ModalInterface
             case self::AUTHORIZE_LASER_CUTTER_TRAINER_VALUE:
                 $modal = new SelectAMemberModal(AuthorizeLaserCutterTrainer::class);
                 break;
+            case self::EQUIPMENT_AUTHORIZATION_VALUE:
+                $modal = new EquipmentAuthorization();
+                break;
             default:
                 throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
         }
@@ -105,6 +109,11 @@ class MembershipOptionsModal implements ModalInterface
             $options->option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE);
 
             $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
+        }
+
+        // TODO Make this be isATrainer. Don't want to show this until it's done
+        if (/*$customer->isATrainer()*/ $customer->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
+            $options->option('Equipment Authorization', self::EQUIPMENT_AUTHORIZATION_VALUE);
         }
 
         if ($customer->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {

@@ -6,8 +6,8 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
 use App\Subscription;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class NeedIdCheckModal implements ModalInterface
 {

@@ -2,9 +2,9 @@
 
 namespace App\Slack;
 
-use Jeremeamia\Slack\BlockKit\Element;
-use Jeremeamia\Slack\BlockKit\Partials\HasOptions;
-use Jeremeamia\Slack\BlockKit\Partials\Option;
+use SlackPhp\BlockKit\Element;
+use SlackPhp\BlockKit\Partials\HasOptions;
+use SlackPhp\BlockKit\Partials\Option;
 
 class SlackOptions extends Element
 {

@@ -8,8 +8,8 @@ use App\Printer3D;
 use App\Slack\CommonResponses;
 use App\Slack\SlackApi;
 use App\UserMembership;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\AppHome;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\AppHome;
 use Spatie\QueueableAction\QueueableAction;
 
 class UpdateSpaceBotAppHome

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\CommonResponses;
-use Jeremeamia\Slack\BlockKit\Kit;
+use SlackPhp\BlockKit\Kit;
 
 class SlackDoorCodeCommandController extends Controller
 {

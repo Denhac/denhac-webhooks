@@ -5,7 +5,7 @@ namespace App\Actions\Slack;
 use App\Slack\Messages\SlackMemberCleanup;
 use App\Slack\SlackApi;
 use Illuminate\Support\Facades\Log;
-use Jeremeamia\Slack\BlockKit\Kit;
+use SlackPhp\BlockKit\Kit;
 use Spatie\QueueableAction\QueueableAction;
 
 class CleanupChannelSetup

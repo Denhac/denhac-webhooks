@@ -6,8 +6,8 @@ use App\Http\Requests\SlackRequest;
 use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
 use Carbon\Carbon;
-use Jeremeamia\Slack\BlockKit\Kit;
-use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
+use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 class NewMemberIdCheckModal implements ModalInterface
 {
