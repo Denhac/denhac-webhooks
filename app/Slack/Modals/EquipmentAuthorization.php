@@ -4,6 +4,8 @@ namespace App\Slack\Modals;
 
 use App\Http\Requests\SlackRequest;
 use App\Slack\BlockActions\BlockActionInterface;
+use App\Slack\SlackOptions;
+use App\TrainableEquipment;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
@@ -91,6 +93,22 @@ class EquipmentAuthorization implements ModalInterface
     {
         Log::info("Equipment auth options request");
         Log::info(print_r($request->payload(), true));
+
+        $blockId = $request->payload()['block_id'];
+
+        if($blockId == self::EQUIPMENT_DROPDOWN) {
+            $options = SlackOptions::new();
+            $trainingList = $request->customer()->equipmentTrainer;
+
+            foreach ($trainingList as $equipment) {
+                /** @var TrainableEquipment $equipment */
+                $options->option($equipment->name, "equipment-{$equipment->id}");
+            }
+            return $options;
+        } else if($blockId == self::PERSON_DROPDOWN) {
+            return SelectAMemberModal::getOptions($request);
+        }
+
         return [];
     }
 

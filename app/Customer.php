@@ -28,6 +28,7 @@ use Laravel\Passport\HasApiTokens;
  * @property Collection subscriptions
  * @property Collection cards
  * @property Collection memberships
+ * @property Collection equipmentTrainer
  * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)
  */
