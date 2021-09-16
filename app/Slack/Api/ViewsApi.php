@@ -4,6 +4,7 @@ namespace App\Slack\Api;
 
 
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Facades\Log;
 
 class ViewsApi
 {
@@ -49,9 +50,11 @@ class ViewsApi
             $data['hash'] = $hash;
         }
 
-        $this->clients->spaceBotApiClient
+        $response = $this->clients->spaceBotApiClient
             ->post('https://denhac.slack.com/api/views.update', [
                 RequestOptions::JSON => $data,
             ]);
+
+        Log::info("Update response: ".print_r(json_decode($response->getBody(), true), true));
     }
 }
