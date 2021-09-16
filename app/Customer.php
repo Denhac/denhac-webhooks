@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 
 /**
@@ -86,6 +87,25 @@ class Customer extends Model
     public function isBoardMember()
     {
         return $this->hasCapability('denhac_board_member');
+    }
+
+    public function equipmentTrainer()
+    {
+        return $this->hasManyThrough(
+            TrainableEquipment::class,
+            UserMembership::class,
+            'customer_id',  // Foreign key on the user memberships table
+            'trainer_plan_id', // Foreign key on the trainable equipment table
+            'woo_id', // Local key on the customer table
+            'plan_id' // Local key on the user membership table
+        );
+    }
+
+    public function isATrainer()
+    {
+        return $this->equipmentTrainer()
+                ->where('status', 'active')
+                ->count() > 0;
     }
 
     /**
