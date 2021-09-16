@@ -52,7 +52,7 @@ trait ModalTrait
 
         /** @var SlackApi $api */
         $api = app(SlackApi::class);
-        $api->views->update($view_id, $view, $view_hash);
+        $api->views->update($view_id, $this, $view_hash);
 
         return response('');
     }
