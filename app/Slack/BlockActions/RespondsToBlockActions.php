@@ -54,4 +54,36 @@ trait RespondsToBlockActions
             }
         };
     }
+
+    protected static function blockActionDoNothing($blockId, $actionId = null): BlockActionInterface {
+        if(is_null($actionId)) {
+            $actionId = $blockId;
+        }
+
+        return new class($blockId, $actionId) implements BlockActionInterface {
+            private string $blockId;
+            private string $actionId;
+
+            public function __construct($blockId, $actionId)
+            {
+                $this->blockId = $blockId;
+                $this->actionId = $actionId;
+            }
+
+            public function blockId(): string
+            {
+                return $this->blockId;
+            }
+
+            public function actionId(): string
+            {
+                return $this->actionId;
+            }
+
+            public function handle(SlackRequest $request)
+            {
+                return response('');
+            }
+        };
+    }
 }

@@ -111,6 +111,8 @@ class EquipmentAuthorization implements ModalInterface
         return [
             self::blockActionUpdate(self::EQUIPMENT_DROPDOWN),
             self::blockActionUpdate(self::PERSON_DROPDOWN),
+            self::blockActionDoNothing(self::USER_CHECK),
+            self::blockActionDoNothing(self::TRAINER_CHECK),
         ];
     }
 
@@ -209,6 +211,6 @@ class EquipmentAuthorization implements ModalInterface
     private function noPerson()
     {
         $this->modalView->newSection()
-            ->mrkdwnText("Please select who you're authorization.");
+            ->mrkdwnText("Please select who you're authorizing.");
     }
 }
