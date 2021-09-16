@@ -145,7 +145,7 @@ class EquipmentAuthorization implements ModalInterface
 
             /** @var TrainableEquipment $equipment */
             $equipment = TrainableEquipment::find($equipmentId);
-            if($person->hasMembership($equipment->userPlanId)) {
+            if($person->hasMembership($equipment->user_plan_id)) {
                 $modal->modalView->newSection()
                     ->plainText(":white_check_mark: $name is already an authorized user.");
             } else {
@@ -159,7 +159,7 @@ class EquipmentAuthorization implements ModalInterface
                     ->addOption($option, true);
             }
 
-            if($person->hasMembership($equipment->trainerPlanId)) {
+            if($person->hasMembership($equipment->trainer_plan_id)) {
                 $modal->modalView->newSection()
                     ->plainText(":white_check_mark: $name is already an authorized trainer.");
             } else {
