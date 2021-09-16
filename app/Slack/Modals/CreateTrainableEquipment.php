@@ -5,6 +5,8 @@ namespace App\Slack\Modals;
 
 use App\Customer;
 use App\Http\Requests\SlackRequest;
+use App\TrainableEquipment;
+use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
@@ -109,8 +111,43 @@ class CreateTrainableEquipment implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info("Create trainable equipment!");
-        Log::info(print_r($request->payload(), true));
+        $values = $request->payload()['view']['state']['values'];
+
+        $equipmentName = $values[self::EQUIPMENT_NAME_BLOCK_ID][self::EQUIPMENT_NAME_ACTION_ID]['value'];
+        $initialTrainerValue = $values[self::INITIAL_TRAINER_BLOCK_ID][self::INITIAL_TRAINER_ACTION_ID]['selected_option']['value'];
+        $userSlackChannel = $values[self::USER_SLACK_CHANNEL_BLOCK_ID][self::USER_SLACK_CHANNEL_ACTION_ID]['selected_channel'];
+        $userEmail = $values[self::USER_EMAIL_BLOCK_ID][self::USER_EMAIL_ACTION_ID]['value'];
+        $trainerSlackChannel = $values[self::TRAINER_SLACK_CHANNEL_BLOCK_ID][self::TRAINER_SLACK_CHANNEL_ACTION_ID]['selected_channel'];
+        $trainerEmail = $values[self::TRAINER_EMAIL_BLOCK_ID][self::TRAINER_EMAIL_ACTION_ID]['value'];
+
+        /** @var WooCommerceApi $wooCommerceApi */
+        $wooCommerceApi = app(WooCommerceApi::class);
+        $responseTrainer = $wooCommerceApi->denhac->createUserPlan(
+            "$equipmentName Trainer",
+            $request->customer()->woo_id
+        );
+        $trainerPlanId = $responseTrainer['id'];
+
+        $responseUser = $wooCommerceApi->denhac->createUserPlan(
+            "$equipmentName User",
+            $request->customer()->woo_id
+        );
+        $userPlanId = $responseUser['id'];
+
+        $trainableEquipmentData = [
+            'name' => $equipmentName,
+            'user_plan_id' => $userPlanId,
+            'trainer_plan_id' => $trainerPlanId
+        ];
+
+        if(!empty($userSlackChannel)) $trainableEquipmentData['user_slack_id'] = $userSlackChannel;
+        if(!empty($userEmail)) $trainableEquipmentData['user_email'] = $userEmail;
+        if(!empty($trainerSlackChannel)) $trainableEquipmentData['trainer_slack_id'] = $trainerSlackChannel;
+        if(!empty($trainerEmail)) $trainableEquipmentData['trainer_email'] = $trainerEmail;
+
+        TrainableEquipment::create($trainableEquipmentData);
+
+        $wooCommerceApi->members->addMembership($initialTrainerValue, $trainerPlanId);
 
         return response('');
     }
