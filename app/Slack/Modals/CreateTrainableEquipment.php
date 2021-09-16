@@ -7,7 +7,6 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\TrainableEquipment;
 use App\WooCommerce\Api\WooCommerceApi;
-use Illuminate\Support\Facades\Log;
 use Jeremeamia\Slack\BlockKit\Kit;
 use Jeremeamia\Slack\BlockKit\Surfaces\Modal;
 
@@ -164,9 +163,6 @@ class CreateTrainableEquipment implements ModalInterface
         return SelectAMemberModal::getOptions($request);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

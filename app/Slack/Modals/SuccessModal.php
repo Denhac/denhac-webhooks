@@ -11,10 +11,7 @@ class SuccessModal implements ModalInterface
 {
     use ModalTrait;
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     /**
      * ManageMembersCardsModal constructor.
@@ -30,7 +27,7 @@ class SuccessModal implements ModalInterface
         $this->modalView->text(" ");
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'success-modal';
     }
@@ -45,9 +42,6 @@ class SuccessModal implements ModalInterface
         return [];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

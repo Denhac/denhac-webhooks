@@ -13,22 +13,16 @@ class NewMemberIdCheckModal implements ModalInterface
 {
     use ModalTrait;
 
-    private const FIRST_NAME_BLOCK_ID = 'first-name-block';
-    private const FIRST_NAME_ACTION_ID = 'first-name-action';
-    private const LAST_NAME_BLOCK_ID = 'last-name-block';
-    private const LAST_NAME_ACTION_ID = 'last-name-action';
-    private const BIRTHDAY_BLOCK_ID = 'birthday-block';
-    private const BIRTHDAY_ACTION_ID = 'birthday-action';
-    private const CARD_NUM_BLOCK_ID = 'card-num-block';
-    private const CARD_NUM_ACTION_ID = 'card-num-action';
+    private const FIRST_NAME = 'first-name';
+    private const LAST_NAME = 'last-name';
+    private const BIRTHDAY = 'birthday';
+    private const CARD_NUM = 'card-num';
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     public function __construct($subscription_id)
-    {        /** @var Subscription $subscription */
+    {
+        /** @var Subscription $subscription */
         $subscription = Subscription::findOrFail($subscription_id);
         $customer = $subscription->customer;
 
@@ -41,30 +35,30 @@ class NewMemberIdCheckModal implements ModalInterface
             ->privateMetadata($customer->woo_id);
 
         $this->modalView->newInput()
-            ->blockId(self::FIRST_NAME_BLOCK_ID)
+            ->blockId(self::FIRST_NAME)
             ->label('First Name')
-            ->newTextInput(self::FIRST_NAME_ACTION_ID)
+            ->newTextInput(self::FIRST_NAME)
             ->initialValue($customer->first_name);
 
         $this->modalView->newInput()
-            ->blockId(self::LAST_NAME_BLOCK_ID)
+            ->blockId(self::LAST_NAME)
             ->label('Last Name')
-            ->newTextInput(self::LAST_NAME_ACTION_ID)
+            ->newTextInput(self::LAST_NAME)
             ->initialValue($customer->last_name);
 
         $birthdayInput = $this->modalView->newInput()
-            ->blockId(self::BIRTHDAY_BLOCK_ID)
+            ->blockId(self::BIRTHDAY)
             ->label('Birthday')
-            ->newDatePicker(self::BIRTHDAY_ACTION_ID);
+            ->newDatePicker(self::BIRTHDAY);
 
         if (! is_null($customer->birthday)) {
             $birthdayInput->initialDate($customer->birthday->format('Y-m-d'));
         }
 
         $cardsInput = $this->modalView->newInput()
-            ->blockId(self::CARD_NUM_BLOCK_ID)
+            ->blockId(self::CARD_NUM)
             ->label('Card Number')
-            ->newTextInput(self::CARD_NUM_ACTION_ID)
+            ->newTextInput(self::CARD_NUM)
             ->placeholder('Enter Card Number');
 
         $this->modalView->newSection()
@@ -77,27 +71,27 @@ class NewMemberIdCheckModal implements ModalInterface
         }
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'membership-new-member-id-check-modal';
     }
 
     public static function handle(SlackRequest $request)
     {
-        $firstName = $request->payload()['view']['state']['values'][self::FIRST_NAME_BLOCK_ID][self::FIRST_NAME_ACTION_ID]['value'];
-        $lastName = $request->payload()['view']['state']['values'][self::LAST_NAME_BLOCK_ID][self::LAST_NAME_ACTION_ID]['value'];
-        $birthday = Carbon::parse($request->payload()['view']['state']['values'][self::BIRTHDAY_BLOCK_ID][self::BIRTHDAY_ACTION_ID]['selected_date']);
-        $cards = $request->payload()['view']['state']['values'][self::CARD_NUM_BLOCK_ID][self::CARD_NUM_ACTION_ID]['value'];
+        $firstName = $request->payload()['view']['state']['values'][self::FIRST_NAME][self::FIRST_NAME]['value'];
+        $lastName = $request->payload()['view']['state']['values'][self::LAST_NAME][self::LAST_NAME]['value'];
+        $birthday = Carbon::parse($request->payload()['view']['state']['values'][self::BIRTHDAY][self::BIRTHDAY]['selected_date']);
+        $cards = $request->payload()['view']['state']['values'][self::CARD_NUM][self::CARD_NUM]['value'];
 
         $errors = [];
 
         if ($birthday > Carbon::today()->subYears(18)) {
-            $errors[self::BIRTHDAY_BLOCK_ID] = 'New member is not at least 18';
+            $errors[self::BIRTHDAY] = 'New member is not at least 18';
         }
 
         foreach (explode(',', $cards) as $card) {
             if (preg_match("/^\d+$/", $card) == 0) {
-                $errors[self::CARD_NUM_BLOCK_ID] = 'This is a comma separated list of cards (no spaces!)';
+                $errors[self::CARD_NUM] = 'This is a comma separated list of cards (no spaces!)';
             }
         }
 
@@ -133,13 +127,9 @@ class NewMemberIdCheckModal implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
-        // No options on this modal
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

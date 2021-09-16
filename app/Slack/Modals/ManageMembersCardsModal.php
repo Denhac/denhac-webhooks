@@ -12,16 +12,11 @@ class ManageMembersCardsModal implements ModalInterface
 {
     use ModalTrait;
 
-    private const CARD_NUM_BLOCK_ID = 'card-num-block';
-    private const CARD_NUM_ACTION_ID = 'card-num-action';
+    private const CARD_NUM = 'card-num';
+
+    private Modal $modalView;
 
     /**
-     * @var Modal
-     */
-    private $modalView;
-
-    /**
-     * ManageMembersCardsModal constructor.
      * @param int $customerId The customer's Woo Commerce ID
      */
     public function __construct(int $customerId)
@@ -38,9 +33,9 @@ class ManageMembersCardsModal implements ModalInterface
         $customer = Customer::whereWooId($customerId)->first();
 
         $cardsInput = $this->modalView->newInput()
-            ->blockId(self::CARD_NUM_BLOCK_ID)
+            ->blockId(self::CARD_NUM)
             ->label('Card Number (comma separated)')
-            ->newTextInput(self::CARD_NUM_ACTION_ID)
+            ->newTextInput(self::CARD_NUM)
             ->placeholder('Enter Card Number');
 
         $cardString = $customer->cards
@@ -58,13 +53,13 @@ class ManageMembersCardsModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        $cards = $request->payload()['view']['state']['values'][self::CARD_NUM_BLOCK_ID][self::CARD_NUM_ACTION_ID]['value'];
+        $cards = $request->payload()['view']['state']['values'][self::CARD_NUM][self::CARD_NUM]['value'];
 
         $errors = [];
 
         foreach (explode(',', $cards) as $card) {
             if (preg_match("/^\d+$/", $card) == 0) {
-                $errors[self::CARD_NUM_BLOCK_ID] = 'This is a comma separated list of cards (no spaces!)';
+                $errors[self::CARD_NUM] = 'This is a comma separated list of cards (no spaces!)';
             }
         }
 
@@ -97,9 +92,6 @@ class ManageMembersCardsModal implements ModalInterface
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

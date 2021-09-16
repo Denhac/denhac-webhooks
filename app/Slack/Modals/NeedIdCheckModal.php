@@ -13,13 +13,9 @@ class NeedIdCheckModal implements ModalInterface
 {
     use ModalTrait;
 
-    private const NEW_MEMBER_BLOCK_ID = 'new-member-block';
-    private const NEW_MEMBER_ACTION_ID = 'new-member-action';
+    private const NEW_MEMBER = 'new-member';
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     public function __construct()
     {
@@ -32,22 +28,22 @@ class NeedIdCheckModal implements ModalInterface
 
         $this->modalView->newInput()
             ->label('New Member')
-            ->blockId(self::NEW_MEMBER_BLOCK_ID)
+            ->blockId(self::NEW_MEMBER)
             ->newSelectMenu()
             ->forExternalOptions()
-            ->actionId(self::NEW_MEMBER_ACTION_ID)
+            ->actionId(self::NEW_MEMBER)
             ->placeholder('Select a Customer')
             ->minQueryLength(0);
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'membership-need-id-check-modal';
     }
 
     public static function handle(SlackRequest $request)
     {
-        $selectedOption = $request->payload()['view']['state']['values'][self::NEW_MEMBER_BLOCK_ID][self::NEW_MEMBER_ACTION_ID]['selected_option']['value'];
+        $selectedOption = $request->payload()['view']['state']['values'][self::NEW_MEMBER][self::NEW_MEMBER]['selected_option']['value'];
 
         $matches = [];
         $result = preg_match('/subscription\-(\d+)/', $selectedOption, $matches);
@@ -89,9 +85,6 @@ class NeedIdCheckModal implements ModalInterface
         return $options;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

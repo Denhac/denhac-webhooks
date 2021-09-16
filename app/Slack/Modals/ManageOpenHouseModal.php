@@ -16,20 +16,12 @@ class ManageOpenHouseModal implements ModalInterface
 {
     use ModalTrait;
 
-    private const EXPIRES_TIME_BLOCK_ID = 'expires-time-block';
-    private const EXPIRES_TIME_ACTION_ID = 'expires-time-action';
-    private const DOORS_BLOCK_ID = 'doors-block-id';
-    private const DOORS_ACTION_ID = 'doors-action-id';
+    protected const EXPIRES_TIME = 'expires-time';
+    private const DOORS = 'doors';
     private const CLOSE_ALL_DOORS = 'close-all-doors';
 
-    /**
-     * @var Modal
-     */
     private Modal $modalView;
 
-    /**
-     * ManageMembersCardsModal constructor.
-     */
     public function __construct()
     {
         $this->modalView = Kit::newModal()
@@ -41,17 +33,17 @@ class ManageOpenHouseModal implements ModalInterface
 
         $timePicker = (new TimePicker())
             ->initialTime("23:00")
-            ->actionId(self::EXPIRES_TIME_ACTION_ID);
+            ->actionId(self::EXPIRES_TIME);
 
         $this->modalView->newSection()
             ->mrkdwnText("When should these doors close?")
-            ->blockId(self::EXPIRES_TIME_BLOCK_ID)
+            ->blockId(self::EXPIRES_TIME)
             ->setAccessory($timePicker);
 
         $checkboxes = $this->modalView->newInput()
             ->label("Doors")
-            ->blockId(self::DOORS_BLOCK_ID)
-            ->newCheckboxes(self::DOORS_ACTION_ID);
+            ->blockId(self::DOORS)
+            ->newCheckboxes(self::DOORS);
 
         /** @var Door $door */
         foreach (Door::all() as $door) {
@@ -62,7 +54,7 @@ class ManageOpenHouseModal implements ModalInterface
         $checkboxes->option("Close all doors", self::CLOSE_ALL_DOORS);
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'manage-open-house-modal';
     }
@@ -72,8 +64,8 @@ class ManageOpenHouseModal implements ModalInterface
         $values = $request->payload()['view']['state']['values'];
         Log::info("Manage open house modal: " . print_r($values, true));
 
-        $selectedTime = $values[self::EXPIRES_TIME_BLOCK_ID][self::EXPIRES_TIME_ACTION_ID]['selected_time'];
-        $selectedOptions = collect($values[self::DOORS_BLOCK_ID][self::DOORS_ACTION_ID]['selected_options'])
+        $selectedTime = $values[self::EXPIRES_TIME][self::EXPIRES_TIME]['selected_time'];
+        $selectedOptions = collect($values[self::DOORS][self::DOORS]['selected_options'])
             ->map(function($option) {
                 return $option['value'];
             });
@@ -111,8 +103,8 @@ class ManageOpenHouseModal implements ModalInterface
     {
         return [
             new class() implements BlockActionInterface {
-                public static function blockId(): string {return "expires-time-block";}
-                public static function actionId(): string {return "expires-time-action";}
+                public static function blockId(): string {return "expires-time";}  // TODO find a way to not duplicate
+                public static function actionId(): string {return "expires-time";}  // TODO find a way to not duplicate
 
                 public static function handle(SlackRequest $request)
                 {
@@ -123,9 +115,6 @@ class ManageOpenHouseModal implements ModalInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

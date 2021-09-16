@@ -24,9 +24,6 @@ class OpenDoorModal implements ModalInterface
      */
     private Modal $modalView;
 
-    /**
-     * ManageMembersCardsModal constructor.
-     */
     public function __construct()
     {
         $this->modalView = Kit::newModal()
@@ -102,9 +99,6 @@ class OpenDoorModal implements ModalInterface
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

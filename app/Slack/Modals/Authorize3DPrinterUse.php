@@ -13,13 +13,9 @@ class Authorize3DPrinterUse implements ModalInterface
 {
     use ModalTrait;
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     /**
-     * ManageMembersCardsModal constructor.
      * @param int $customerId The customer's Woo Commerce ID
      */
     public function __construct(int $customerId)
@@ -67,9 +63,6 @@ class Authorize3DPrinterUse implements ModalInterface
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

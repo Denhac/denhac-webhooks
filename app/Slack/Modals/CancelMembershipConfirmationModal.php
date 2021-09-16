@@ -13,10 +13,7 @@ class CancelMembershipConfirmationModal implements ModalInterface
 {
     use ModalTrait;
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     public function __construct(Customer $customer)
     {
@@ -64,9 +61,6 @@ class CancelMembershipConfirmationModal implements ModalInterface
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

@@ -13,13 +13,9 @@ class AuthorizeLaserCutterTrainer implements ModalInterface
 {
     use ModalTrait;
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     /**
-     * ManageMembersCardsModal constructor.
      * @param int $customerId The customer's Woo Commerce ID
      */
     public function __construct(int $customerId)
@@ -46,7 +42,7 @@ class AuthorizeLaserCutterTrainer implements ModalInterface
         }
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'authorize-laser-cutter-trainer-modal';
     }
@@ -67,9 +63,6 @@ class AuthorizeLaserCutterTrainer implements ModalInterface
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();

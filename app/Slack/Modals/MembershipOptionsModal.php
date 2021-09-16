@@ -22,10 +22,7 @@ class MembershipOptionsModal implements ModalInterface
     private const AUTHORIZE_LASER_CUTTER_TRAINER_VALUE = 'value-authorize-laser-cutter-trainer';
     private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
 
-    /**
-     * @var Modal
-     */
-    private $modalView;
+    private Modal $modalView;
 
     public function __construct()
     {

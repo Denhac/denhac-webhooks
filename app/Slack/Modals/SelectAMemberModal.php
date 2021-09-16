@@ -13,8 +13,7 @@ class SelectAMemberModal implements ModalInterface
 {
     use ModalTrait;
 
-    private const SELECT_A_MEMBER_BLOCK_ID = 'select-a-member-block';
-    private const SELECT_A_MEMBER_ACTION_ID = 'select-a-member-action';
+    private const SELECT_A_MEMBER = 'select-a-member';
 
     private Modal $modalView;
 
@@ -35,22 +34,22 @@ class SelectAMemberModal implements ModalInterface
 
         $this->modalView->newInput()
             ->label('Member')
-            ->blockId(self::SELECT_A_MEMBER_BLOCK_ID)
+            ->blockId(self::SELECT_A_MEMBER)
             ->newSelectMenu()
             ->forExternalOptions()
-            ->actionId(self::SELECT_A_MEMBER_ACTION_ID)
+            ->actionId(self::SELECT_A_MEMBER)
             ->placeholder('Select a Member')
             ->minQueryLength(2);
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'select-a-member-modal';
     }
 
     public static function handle(SlackRequest $request)
     {
-        $selectedOption = $request->payload()['view']['state']['values'][self::SELECT_A_MEMBER_BLOCK_ID][self::SELECT_A_MEMBER_ACTION_ID]['selected_option']['value'];
+        $selectedOption = $request->payload()['view']['state']['values'][self::SELECT_A_MEMBER][self::SELECT_A_MEMBER]['selected_option']['value'];
 
         $matches = [];
         $result = preg_match('/customer-(\d+)/', $selectedOption, $matches);
@@ -100,9 +99,6 @@ class SelectAMemberModal implements ModalInterface
         return $options;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function jsonSerialize()
     {
         return $this->modalView->jsonSerialize();
