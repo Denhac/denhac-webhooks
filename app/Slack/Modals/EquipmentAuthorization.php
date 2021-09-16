@@ -116,6 +116,7 @@ class EquipmentAuthorization implements ModalInterface
 
     static function onBlockAction(SlackRequest $request)
     {
+        Log::info("onBlockAction is called");
         $modal = new EquipmentAuthorization();
         $modal->setUpModalCommon();
 

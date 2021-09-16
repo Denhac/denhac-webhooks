@@ -4,6 +4,7 @@ namespace App\Slack\BlockActions;
 
 
 use App\Http\Requests\SlackRequest;
+use Illuminate\Support\Facades\Log;
 
 trait RespondsToBlockActions
 {
@@ -44,6 +45,7 @@ trait RespondsToBlockActions
 
             public function handle(SlackRequest $request)
             {
+                Log::info("responds to handle called");
                 $r = new \ReflectionClass($this->className);
 
                 /** @var RespondsToBlockActions $instance */
