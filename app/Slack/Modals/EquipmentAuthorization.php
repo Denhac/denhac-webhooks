@@ -8,6 +8,7 @@ use App\Slack\BlockActions\BlockActionInterface;
 use App\Slack\BlockActions\RespondsToBlockActions;
 use App\Slack\SlackOptions;
 use App\TrainableEquipment;
+use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Partials\Option;
@@ -72,6 +73,33 @@ class EquipmentAuthorization implements ModalInterface
         Log::info("Equipment authorization");
         Log::info(print_r($request->payload(), true));
 
+        $state = self::getStateValues($request);
+        $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
+        $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
+        $makeUser = !is_null($state[self::USER_CHECK][self::USER_CHECK] ?? null);
+        $makeTrainer = !is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
+
+        $equipmentId = str_replace('equipment-', '', $equipmentValue);
+        $personId = str_replace('customer-', '', $personValue);
+
+        /** @var Customer $person */
+        $person = Customer::whereWooId($personId)->first();
+
+        /** @var TrainableEquipment $equipment */
+        $equipment = TrainableEquipment::find($equipmentId);
+
+        /** @var WooCommerceApi $api */
+        $api = app(WooCommerceApi::class);
+
+        if($makeUser) {
+            $api->members->addMembership($person->woo_id, $equipment->user_plan_id);
+        }
+
+        if($makeTrainer) {
+            $api->members->addMembership($person->woo_id, $equipment->trainer_plan_id);
+        }
+
+        // TODO actually check error before sending success
         return (new SuccessModal())->update();
     }
 
@@ -116,17 +144,12 @@ class EquipmentAuthorization implements ModalInterface
 
     static function onBlockAction(SlackRequest $request)
     {
-        Log::info("onBlockAction is called");
         $modal = new EquipmentAuthorization();
         $modal->setUpModalCommon();
 
         $state = self::getStateValues($request);
-        Log::info("State: ".print_r($state, true));
         $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
         $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
-
-        Log::info("EquipmentValue: ".$equipmentValue);
-        Log::info("PersonValue: ".$personValue);
 
         if(is_null($equipmentValue)) {
             $modal->noEquipment();
