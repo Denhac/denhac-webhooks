@@ -7,6 +7,7 @@ use App\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpFoundation\Response;
 
 class MembersApi
 {
@@ -43,9 +44,19 @@ class MembersApi
                 'customer_id' => $woo_id,
                 'plan_id' => $plan_id,
             ],
+            RequestOptions::HTTP_ERRORS => false,
         ]);
 
-        return $this->jsonOrError($response);
+        $data = json_decode($response->getBody(), true);
+
+        if($response->getStatusCode() == Response::HTTP_BAD_REQUEST) {
+            $code = $data['code'];
+            if($code == 'woocommerce_rest_wc_user_membership_exists') {
+                return null; // Everything worked out fine.
+            }
+        }
+
+        $this->jsonOrError($response);
     }
 
     /**
