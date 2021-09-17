@@ -263,7 +263,6 @@ class GoogleGroupsReactorTest extends TestCase
     public function being_added_to_trainable_equipment_as_user_does_not_add_to_google_group_if_it_is_null()
     {
         $planId = 1234;
-        $groupEmail = "test@denhac.org";
 
         TrainableEquipment::create([
             "name" => "Test",
@@ -285,7 +284,6 @@ class GoogleGroupsReactorTest extends TestCase
     public function being_added_to_trainable_equipment_as_trainer_does_not_add_to_google_group_if_it_is_null()
     {
         $planId = 1234;
-        $groupEmail = "test@denhac.org";
 
         TrainableEquipment::create([
             "name" => "Test",
