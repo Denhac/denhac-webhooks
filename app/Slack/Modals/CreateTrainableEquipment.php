@@ -17,18 +17,12 @@ class CreateTrainableEquipment implements ModalInterface
 
     private Modal $modalView;
 
-    private const EQUIPMENT_NAME_BLOCK_ID = 'equipment-name-block';
-    private const EQUIPMENT_NAME_ACTION_ID = 'equipment-name-action';
-    private const INITIAL_TRAINER_BLOCK_ID = 'initial-trainer-block';
-    private const INITIAL_TRAINER_ACTION_ID = 'initial-trainer-action';
-    private const USER_SLACK_CHANNEL_BLOCK_ID = 'user-slack-channel-block';
-    private const USER_SLACK_CHANNEL_ACTION_ID = 'user-slack-channel-action';
-    private const USER_EMAIL_BLOCK_ID = 'user-email-block';
-    private const USER_EMAIL_ACTION_ID = 'user-email-action';
-    private const TRAINER_SLACK_CHANNEL_BLOCK_ID = 'trainer-slack-channel-block';
-    private const TRAINER_SLACK_CHANNEL_ACTION_ID = 'trainer-slack-channel-action';
-    private const TRAINER_EMAIL_BLOCK_ID = 'trainer-email-block';
-    private const TRAINER_EMAIL_ACTION_ID = 'trainer-email-action';
+    private const EQUIPMENT_NAME = 'equipment-name';
+    private const INITIAL_TRAINER = 'initial-trainer-block';
+    private const USER_SLACK_CHANNEL = 'user-slack-channel';
+    private const USER_EMAIL = 'user-email';
+    private const TRAINER_SLACK_CHANNEL = 'trainer-slack-channel';
+    private const TRAINER_EMAIL = 'trainer-email';
 
     public function __construct(?Customer $user)
     {
@@ -41,17 +35,17 @@ class CreateTrainableEquipment implements ModalInterface
 
         $this->modalView->newInput()
             ->label("Equipment Name")
-            ->blockId(self::EQUIPMENT_NAME_BLOCK_ID)
+            ->blockId(self::EQUIPMENT_NAME)
             ->newTextInput()
-            ->actionId(self::EQUIPMENT_NAME_ACTION_ID)
+            ->actionId(self::EQUIPMENT_NAME)
             ->placeholder("Name");
 
         $trainerInput = $this->modalView->newInput()
             ->label('Initial Trainer')
-            ->blockId(self::INITIAL_TRAINER_BLOCK_ID)
+            ->blockId(self::INITIAL_TRAINER)
             ->newSelectMenu()
             ->forExternalOptions()
-            ->actionId(self::INITIAL_TRAINER_ACTION_ID)
+            ->actionId(self::INITIAL_TRAINER)
             ->placeholder("Select a customer")
             ->minQueryLength(0);
 
@@ -73,35 +67,35 @@ class CreateTrainableEquipment implements ModalInterface
 
         $this->modalView->newInput()
             ->label('User slack channel')
-            ->blockId(self::USER_SLACK_CHANNEL_BLOCK_ID)
+            ->blockId(self::USER_SLACK_CHANNEL)
             ->optional(true)
             ->newSelectMenu()
             ->forChannels()
             ->placeholder("Select a channel")
-            ->actionId(self::USER_SLACK_CHANNEL_ACTION_ID);
+            ->actionId(self::USER_SLACK_CHANNEL);
 
         $this->modalView->newInput()
             ->label('User email')
-            ->blockId(self::USER_EMAIL_BLOCK_ID)
+            ->blockId(self::USER_EMAIL)
             ->optional(true)
             ->newTextInput()
-            ->actionId(self::USER_EMAIL_ACTION_ID);
+            ->actionId(self::USER_EMAIL);
 
         $this->modalView->newInput()
             ->label('Trainer slack channel')
-            ->blockId(self::TRAINER_SLACK_CHANNEL_BLOCK_ID)
+            ->blockId(self::TRAINER_SLACK_CHANNEL)
             ->optional(true)
             ->newSelectMenu()
             ->forChannels()
             ->placeholder("Select a channel")
-            ->actionId(self::TRAINER_SLACK_CHANNEL_ACTION_ID);
+            ->actionId(self::TRAINER_SLACK_CHANNEL);
 
         $this->modalView->newInput()
             ->label('Trainer email')
-            ->blockId(self::TRAINER_EMAIL_BLOCK_ID)
+            ->blockId(self::TRAINER_EMAIL)
             ->optional(true)
             ->newTextInput()
-            ->actionId(self::TRAINER_EMAIL_ACTION_ID);
+            ->actionId(self::TRAINER_EMAIL);
     }
 
     public static function callbackId(): string
@@ -115,12 +109,12 @@ class CreateTrainableEquipment implements ModalInterface
         Log::info(print_r($request->payload(), true));
         $values = $request->payload()['view']['state']['values'];
 
-        $equipmentName = $values[self::EQUIPMENT_NAME_BLOCK_ID][self::EQUIPMENT_NAME_ACTION_ID]['value'];
-        $initialTrainerValue = $values[self::INITIAL_TRAINER_BLOCK_ID][self::INITIAL_TRAINER_ACTION_ID]['selected_option']['value'];
-        $userSlackChannel = $values[self::USER_SLACK_CHANNEL_BLOCK_ID][self::USER_SLACK_CHANNEL_ACTION_ID]['selected_channel'];
-        $userEmail = $values[self::USER_EMAIL_BLOCK_ID][self::USER_EMAIL_ACTION_ID]['value'];
-        $trainerSlackChannel = $values[self::TRAINER_SLACK_CHANNEL_BLOCK_ID][self::TRAINER_SLACK_CHANNEL_ACTION_ID]['selected_channel'];
-        $trainerEmail = $values[self::TRAINER_EMAIL_BLOCK_ID][self::TRAINER_EMAIL_ACTION_ID]['value'];
+        $equipmentName = $values[self::EQUIPMENT_NAME][self::EQUIPMENT_NAME]['value'];
+        $initialTrainerValue = $values[self::INITIAL_TRAINER][self::INITIAL_TRAINER]['selected_option']['value'];
+        $userSlackChannel = $values[self::USER_SLACK_CHANNEL][self::USER_SLACK_CHANNEL]['selected_channel'];
+        $userEmail = $values[self::USER_EMAIL][self::USER_EMAIL]['value'];
+        $trainerSlackChannel = $values[self::TRAINER_SLACK_CHANNEL][self::TRAINER_SLACK_CHANNEL]['selected_channel'];
+        $trainerEmail = $values[self::TRAINER_EMAIL][self::TRAINER_EMAIL]['value'];
 
         $matches = [];
         $result = preg_match('/customer-(\d+)/', $initialTrainerValue, $matches);
