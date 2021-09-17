@@ -7,6 +7,7 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\TrainableEquipment;
 use App\WooCommerce\Api\WooCommerceApi;
+use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -110,6 +111,8 @@ class CreateTrainableEquipment implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
+        Log::info("Create Trainable Equipment");
+        Log::info(print_r($request->payload(), true));
         $values = $request->payload()['view']['state']['values'];
 
         $equipmentName = $values[self::EQUIPMENT_NAME_BLOCK_ID][self::EQUIPMENT_NAME_ACTION_ID]['value'];
