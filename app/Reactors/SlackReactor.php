@@ -53,7 +53,7 @@ final class SlackReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if(! is_null($customer)) {
+        if (!is_null($customer)) {
             UpdateSlackUserProfileMembership::queue()->execute($customer->slack_id);
         }
 
@@ -100,6 +100,8 @@ final class SlackReactor implements EventHandler
         $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
 
         foreach ($slackIds as $slackId) {
+            if (is_null($slackId)) continue;
+
             AddToChannel::queue()->execute($customerId, $slackId);
         }
     }

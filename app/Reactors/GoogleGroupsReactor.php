@@ -137,6 +137,8 @@ final class GoogleGroupsReactor implements EventHandler
         $emailGroups = collect($userEmailGroups->union($trainerEmailGroups))->unique();
 
         foreach ($emailGroups as $emailGroup) {
+            if (is_null($emailGroup)) continue;
+
             AddToGroup::queue()->execute($customer->email, $emailGroup);
         }
     }

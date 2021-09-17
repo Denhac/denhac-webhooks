@@ -193,4 +193,48 @@ class SlackReactorTest extends TestCase
         $this->assertAction(AddToChannel::class)
             ->with($customerId, $slackId);
     }
+
+    /** @test */
+    public function being_added_to_trainable_equipment_as_user_does_not_add_to_slack_channel_with_null_channel()
+    {
+        $planId = 1234;
+        $customerId = 27;
+
+        TrainableEquipment::create([
+            "name" => "Test",
+            "user_plan_id" => $planId,
+            "trainer_plan_id" => 5678,
+        ]);
+
+        $userMembership = $this->userMembership()
+            ->customer($customerId)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
+
+        $this->assertAction(AddToChannel::class)->never();
+    }
+
+    /** @test */
+    public function being_added_to_trainable_equipment_as_trainer_does_not_add_to_slack_channel_with_null_channel()
+    {
+        $planId = 1234;
+        $customerId = 27;
+
+        TrainableEquipment::create([
+            "name" => "Test",
+            "user_plan_id" => 5678,
+            "trainer_plan_id" => $planId,
+        ]);
+
+        $userMembership = $this->userMembership()
+            ->customer($customerId)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
+
+        $this->assertAction(AddToChannel::class)->never();
+    }
 }
