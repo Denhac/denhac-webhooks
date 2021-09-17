@@ -99,6 +99,11 @@ class EquipmentAuthorization implements ModalInterface
             $api->members->addMembership($person->woo_id, $equipment->trainer_plan_id);
         }
 
+        if(!$makeTrainer && !$makeUser) {
+            return (new FailureModal("Neither user nor trainer appear to have been selected. Try again?"))
+                ->update();
+        }
+
         // TODO actually check error before sending success
         return (new SuccessModal())->update();
     }

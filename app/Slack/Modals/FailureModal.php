@@ -7,26 +7,26 @@ use App\Http\Requests\SlackRequest;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
-class SuccessModal implements ModalInterface
+class FailureModal implements ModalInterface
 {
     use ModalTrait;
 
     private Modal $modalView;
 
-    public function __construct()
+    public function __construct($message)
     {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
-            ->title("Success!")
+            ->title("Failure! :(")
             ->clearOnClose(true)
             ->close("Close");
 
-        $this->modalView->text(" ");
+        $this->modalView->text($message);
     }
 
     public static function callbackId(): string
     {
-        return 'success-modal';
+        return 'failure-modal';
     }
 
     public static function handle(SlackRequest $request)
