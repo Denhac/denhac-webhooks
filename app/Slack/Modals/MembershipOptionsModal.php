@@ -111,8 +111,7 @@ class MembershipOptionsModal implements ModalInterface
             $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
         }
 
-        // TODO Make this be isATrainer. Don't want to show this until it's done
-        if (/*$customer->isATrainer()*/ $customer->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
+        if ($customer->isATrainer()) {
             $options->option('Equipment Authorization', self::EQUIPMENT_AUTHORIZATION_VALUE);
         }
 
