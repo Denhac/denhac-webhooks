@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Actions\Slack\RemoveFromChannel;
+use App\Slack\Channels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -27,6 +29,10 @@ class MakeCustomerRegularMemberInSlack implements ShouldQueue
     {
         if ($this->isExistingSlackUser()) {
             $this->setRegularMember();
+
+            /** @var RemoveFromChannel $removeFromChannel */
+            $removeFromChannel = app(RemoveFromChannel::class);
+            $removeFromChannel->execute($this->customerSlackId, Channels::NEED_ID_CHECK);
         } else {
             $this->inviteRegularMember(['general', 'public', 'random']);
         }

@@ -30,16 +30,13 @@ class RemoveFromChannel
             return;
         }
 
-        throw new \Exception("Kick of $userId from $channel failed: ".print_r($response, true));
+        if ($response['error'] == 'not_in_channel') {
+            $this->slackApi->conversations->join($channelId);
+            $response = $this->slackApi->conversations->kick($slackId, $channelId);
+        } elseif ($response['error'] == 'already_in_channel') {
+            return; // Everything's fine
+        }
 
-//        if ($response['error'] == 'not_in_channel') {
-//            $this->slackApi->conversations->join($channelId);
-//            $response = $this->slackApi->conversations->kick($customerId, $channelId);
-//        } elseif ($response['error'] == 'already_in_channel') {
-//            return; // Everything's fine
-//        }
-//
-//        $response_s = json_encode($response);
-//        throw_unless($response['ok'], "Could not join channel $channel: $response_s");
+        throw new \Exception("Kick of $userId from $channel failed: ".print_r($response, true));
     }
 }

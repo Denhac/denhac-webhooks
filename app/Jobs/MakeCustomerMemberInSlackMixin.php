@@ -21,7 +21,7 @@ trait MakeCustomerMemberInSlackMixin
 
     private $customerInfoFetched = false;
     private $customerEmail = null;
-    private $customerSlackId = null;
+    protected $customerSlackId = null;
 
     private function fetchCustomerInfo()
     {

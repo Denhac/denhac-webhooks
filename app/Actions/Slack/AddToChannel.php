@@ -50,14 +50,11 @@ class AddToChannel
             return; // Everything is fine, they're already in the channel
         }
 
-        throw new \Exception("Invite of $userId to $channel failed: ".print_r($response, true));
+        if ($response['error'] == 'not_in_channel') {
+            $this->slackApi->conversations->join($channelId);
+            $response = $this->slackApi->conversations->invite($slackId, $channelId);
+        }
 
-//        if ($response['error'] == 'not_in_channel') {
-//            $this->slackApi->conversations->join($channelId);
-//            $response = $this->slackApi->conversations->invite($customerId, $channelId);
-//        }
-//
-//        $response_s = json_encode($response);
-//        throw_unless($response['ok'], "Could not join channel $channel: $response_s");
+        throw new \Exception("Invite of $userId to $channel failed: ".print_r($response, true));
     }
 }
