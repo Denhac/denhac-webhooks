@@ -119,15 +119,6 @@ class MembershipOptionsModal implements ModalInterface
             $options->option('Create Trainable Equipment', self::CREATE_TRAINABLE_EQUIPMENT_VALUE);
         }
 
-        if ($customer->hasMembership(UserMembership::MEMBERSHIP_3DP_TRAINER)) {
-            $options->option('Authorize a member to use the 3d printer', self::AUTHORIZE_3D_PRINTER_VALUE);
-        }
-
-        if ($customer->hasMembership(UserMembership::MEMBERSHIP_LASER_CUTTER_TRAINER)) {
-            $options->option('Authorize a member to use the laser cutter', self::AUTHORIZE_LASER_CUTTER_VALUE);
-            $options->option('Authorize a member to train on the laser cutter', self::AUTHORIZE_LASER_CUTTER_TRAINER_VALUE);
-        }
-
         $subscriptions = $customer->subscriptions;
         $hasActiveMembership = $subscriptions->where('status', 'active')->count() > 0;
 
