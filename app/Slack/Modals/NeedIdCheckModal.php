@@ -68,7 +68,7 @@ class NeedIdCheckModal implements ModalInterface
             /** @var Subscription $subscription */
             /** @var Customer $customer */
             $customer = $subscription->customer;
-            $subscription_id = $subscription->getKey();
+            $subscription_id = $subscription->woo_id;
 
             if (is_null($customer)) {
                 $name = 'Unknown Customer';
