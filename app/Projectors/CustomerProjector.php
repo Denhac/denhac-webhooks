@@ -13,6 +13,7 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
 use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
@@ -174,6 +175,13 @@ final class CustomerProjector extends Projector
     {
         $string = $this->getMetadataField($customer, $key);
 
-        return is_null($string) ? null : Carbon::parse($string);
+        if (is_null($string)) {
+            return null;
+        }
+        try {
+            return Carbon::parse($string);
+        } catch (InvalidFormatException) {
+            return null;
+        }
     }
 }
