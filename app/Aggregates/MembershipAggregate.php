@@ -30,14 +30,14 @@ final class MembershipAggregate extends AggregateRoot
 
     public function __construct()
     {
-        $class = static::class;
+        $class = MembershipAggregate::class;
 
         $booted = [];
 
         foreach (class_uses_recursive($class) as $trait) {
-            $method = 'boot'.class_basename($trait);
+            $method = 'boot' . class_basename($trait);
 
-            if (method_exists($class, $method) && ! in_array($method, $booted)) {
+            if (method_exists($class, $method) && !in_array($method, $booted)) {
                 $this->$method();
 
                 $booted[] = $method;
@@ -45,16 +45,40 @@ final class MembershipAggregate extends AggregateRoot
         }
     }
 
-    public function customerIsNoEventTestUser()
+    public function customerIsNoEventTestUser(): MembershipAggregate
     {
         $this->recordThat(new CustomerIsNoEventTestUser($this->customerId));
 
         return $this;
     }
 
-    public function createCustomer($customer)
+    public function checkDenhacTestUser($customer): MembershipAggregate
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
+            return $this;
+        }
+
+        $metadata = collect($customer['meta_data']);
+        $isDenhacTestUser = $metadata->firstWhere('key', 'is_denhac_test_user');
+
+        if ($isDenhacTestUser == null) {
+            return $this;
+        }
+
+        $value = $isDenhacTestUser['value'];
+
+        if ($value === "1") {
+            $this->customerIsNoEventTestUser();
+        }
+
+        return $this;
+    }
+
+    public function createCustomer($customer): MembershipAggregate
+    {
+        $this->checkDenhacTestUser($customer);
+
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -67,9 +91,11 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function updateCustomer($customer)
+    public function updateCustomer($customer): MembershipAggregate
     {
-        if (! $this->respondToEvents) {
+        $this->checkDenhacTestUser($customer);
+
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -84,7 +110,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteCustomer($customer)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -95,7 +121,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importCustomer($customer)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -108,7 +134,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function createSubscription($subscription)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -121,7 +147,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateSubscription($subscription)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -134,7 +160,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importSubscription($subscription)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -147,7 +173,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function createUserMembership($membership)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -158,7 +184,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateUserMembership($membership)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -169,7 +195,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteUserMembership($membership)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -180,7 +206,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importUserMembership($membership)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
