@@ -51,7 +51,7 @@ class UpdateBaseData extends Command
      */
     public function handle()
     {
-        $this->isDryRun = $this->argument('--dry-run');
+        $this->isDryRun = $this->option('dry-run');
         if ($this->isDryRun) {
             $this->line("Dry run, will not actually update anything.");
         }
