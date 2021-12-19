@@ -23,6 +23,7 @@ use YlsIdeas\FeatureFlags\Facades\Features;
 final class GoogleGroupsReactor implements EventHandler
 {
     public const GROUP_MEMBERS = 'members@denhac.org';
+    public const GROUP_ANNOUNCE = 'announce@denhac.org';
     public const GROUP_DENHAC = 'denhac@denhac.org';
     public const GROUP_BOARD = 'board@denhac.org';
 
@@ -51,6 +52,7 @@ final class GoogleGroupsReactor implements EventHandler
 
         if (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
             AddToGroup::queue()->execute($customer->email, self::GROUP_MEMBERS);
+            AddToGroup::queue()->execute($customer->email, self::GROUP_ANNOUNCE);
         }
     }
 
@@ -60,6 +62,7 @@ final class GoogleGroupsReactor implements EventHandler
         $customer = Customer::whereWooId($event->customerId)->first();
 
         AddToGroup::queue()->execute($customer->email, self::GROUP_MEMBERS);
+        AddToGroup::queue()->execute($customer->email, self::GROUP_ANNOUNCE);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event)

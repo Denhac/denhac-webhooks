@@ -68,6 +68,10 @@ class GoogleGroupsReactorTest extends TestCase
         $this->assertAction(AddToGroup::class)
             ->never()
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
+
+        $this->assertAction(AddToGroup::class)
+            ->never()
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_ANNOUNCE);
     }
 
     /** @test */
@@ -84,6 +88,9 @@ class GoogleGroupsReactorTest extends TestCase
 
         $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
+
+        $this->assertAction(AddToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_ANNOUNCE);
     }
 
     /**
@@ -114,6 +121,9 @@ class GoogleGroupsReactorTest extends TestCase
 
         $this->assertAction(AddToGroup::class)
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
+
+        $this->assertAction(AddToGroup::class)
+            ->with($this->customer->email, GoogleGroupsReactor::GROUP_ANNOUNCE);
     }
 
     /** @test */
@@ -126,6 +136,7 @@ class GoogleGroupsReactorTest extends TestCase
             ->andReturn(collect([
                 GoogleGroupsReactor::GROUP_DENHAC,
                 GoogleGroupsReactor::GROUP_MEMBERS,
+                GoogleGroupsReactor::GROUP_ANNOUNCE,
             ]));
 
         event(new MembershipDeactivated($this->customer->id));
@@ -147,6 +158,7 @@ class GoogleGroupsReactorTest extends TestCase
             ->andReturn(collect([
                 GoogleGroupsReactor::GROUP_DENHAC,
                 GoogleGroupsReactor::GROUP_MEMBERS,
+                GoogleGroupsReactor::GROUP_ANNOUNCE,
             ]));
 
         event(new MembershipDeactivated($this->customer->id));
