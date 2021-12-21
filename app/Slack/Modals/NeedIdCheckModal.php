@@ -46,7 +46,7 @@ class NeedIdCheckModal implements ModalInterface
         $selectedOption = $request->payload()['view']['state']['values'][self::NEW_MEMBER][self::NEW_MEMBER]['selected_option']['value'];
 
         $matches = [];
-        $result = preg_match('/subscription\-(\d+)/', $selectedOption, $matches);
+        $result = preg_match('/subscription-(\d+)/', $selectedOption, $matches);
 
         if (! $result) {
             throw new \Exception("Option wasn't valid for subscription: $selectedOption");
@@ -68,7 +68,7 @@ class NeedIdCheckModal implements ModalInterface
             /** @var Subscription $subscription */
             /** @var Customer $customer */
             $customer = $subscription->customer;
-            $subscription_id = $subscription->woo_id;
+            $subscription_id = $subscription->id;
 
             if (is_null($customer)) {
                 $name = 'Unknown Customer';
