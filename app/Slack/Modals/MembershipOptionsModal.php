@@ -20,6 +20,8 @@ class MembershipOptionsModal implements ModalInterface
     private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
     private const EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
 
+    private const COUNTDOWN_TEST_VALUE = 'value-countdown-test';
+
     private Modal $modalView;
 
     public function __construct()
@@ -69,6 +71,9 @@ class MembershipOptionsModal implements ModalInterface
             case self::EQUIPMENT_AUTHORIZATION_VALUE:
                 $modal = new EquipmentAuthorization();
                 break;
+            case self::COUNTDOWN_TEST_VALUE:
+                $modal = new CountdownTestModal(null);
+                break;
             default:
                 throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
         }
@@ -97,6 +102,8 @@ class MembershipOptionsModal implements ModalInterface
             $options->option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE);
 
             $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
+
+            $options->option('Countdown Test', self::COUNTDOWN_TEST_VALUE);
         }
 
         if ($customer->isATrainer()) {
