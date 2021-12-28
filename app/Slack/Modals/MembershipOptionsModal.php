@@ -17,9 +17,6 @@ class MembershipOptionsModal implements ModalInterface
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
     private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
     private const MANAGE_OPEN_HOUSE_VALUE = 'value-manage-open-house-doors';
-    private const AUTHORIZE_3D_PRINTER_VALUE = 'value-authorize-3d-printer';
-    private const AUTHORIZE_LASER_CUTTER_VALUE = 'value-authorize-laser-cutter';
-    private const AUTHORIZE_LASER_CUTTER_TRAINER_VALUE = 'value-authorize-laser-cutter-trainer';
     private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
     private const EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
 
@@ -68,15 +65,6 @@ class MembershipOptionsModal implements ModalInterface
                 break;
             case self::CREATE_TRAINABLE_EQUIPMENT_VALUE:
                 $modal = new CreateTrainableEquipment($request->customer());
-                break;
-            case self::AUTHORIZE_3D_PRINTER_VALUE:
-                $modal = new SelectAMemberModal(Authorize3DPrinterUse::class);
-                break;
-            case self::AUTHORIZE_LASER_CUTTER_VALUE:
-                $modal = new SelectAMemberModal(AuthorizeLaserCutterUse::class);
-                break;
-            case self::AUTHORIZE_LASER_CUTTER_TRAINER_VALUE:
-                $modal = new SelectAMemberModal(AuthorizeLaserCutterTrainer::class);
                 break;
             case self::EQUIPMENT_AUTHORIZATION_VALUE:
                 $modal = new EquipmentAuthorization();
