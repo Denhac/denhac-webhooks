@@ -40,7 +40,8 @@ class CountdownTestModal implements ModalInterface
                 ->asPrimary()
                 ->text("Start Countdown");
         } else if ($timeLeft == -1) {
-            $this->modalView->newSection("Countdown hopefully started!");
+            $this->modalView->newSection()
+                ->mrkdwnText("Countdown hopefully started!");
         } else if ($timeLeft > 0) {
             $this->modalView->newSection()
                 ->mrkdwnText("The countdown has {$timeLeft} seconds left.");
