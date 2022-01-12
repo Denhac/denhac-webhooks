@@ -85,9 +85,17 @@ class Customer extends Model
         return $capabilities->has($capability);
     }
 
-    public function isBoardMember()
+    public function isBoardMember(): bool
     {
-        return $this->hasCapability('denhac_board_member');
+        return $this->hasCapability('denhac_board_member') ||
+            $this->hasMembership(UserMembership::MEMBERSHIP_BOARD);
+    }
+
+    public function canIDCheck(): bool
+    {
+        return $this->hasCapability('denhac_can_verify_member_id') ||
+            $this->hasMembership(UserMembership::MEMBERSHIP_CAN_ID_CHECK) ||
+            $this->isBoardMember();
     }
 
     public function equipmentTrainer()

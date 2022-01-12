@@ -97,7 +97,7 @@ class MembershipOptionsModal implements ModalInterface
             return $options;
         }
 
-        if ($customer->hasCapability('denhac_can_verify_member_id')) {
+        if ($customer->canIDCheck()) {
             $options->option('Sign up new member', self::SIGN_UP_NEW_MEMBER_VALUE);
             $options->option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE);
 
