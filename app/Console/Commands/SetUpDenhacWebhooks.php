@@ -136,7 +136,10 @@ class SetUpDenhacWebhooks extends Command
                 }
             }
         } else {
-            $this->line("We found {$count} hooks for topic {$topicKey} which is more than we expected");
+            $this->line("We found {$count} hooks for topic {$topicKey} which is more than we expected:");
+            foreach ($filtered as $hook) {
+                $this->line(" - Hook ID: {$hook['id']}");
+            }
         }
     }
 
