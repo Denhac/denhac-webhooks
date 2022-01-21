@@ -4,12 +4,16 @@ namespace App\Aggregates;
 
 use App\Aggregates\MembershipTraits\Cards;
 use App\Aggregates\MembershipTraits\Github;
+use App\Aggregates\MembershipTraits\IdWasCheckedTrait;
 use App\Aggregates\MembershipTraits\Subscription;
+use App\Aggregates\MembershipTraits\UserMembership;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerIsNoEventTestUser;
 use App\StorableEvents\CustomerUpdated;
+use App\StorableEvents\MembershipActivated;
+use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
@@ -25,6 +29,8 @@ final class MembershipAggregate extends AggregateRoot
     use Cards;
     use Github;
     use Subscription;
+    use UserMembership;
+    use IdWasCheckedTrait;
 
     public bool $currentlyAMember = false;
 
@@ -45,14 +51,14 @@ final class MembershipAggregate extends AggregateRoot
         }
     }
 
-    public function customerIsNoEventTestUser(): MembershipAggregate
+    public function customerIsNoEventTestUser(): static
     {
         $this->recordThat(new CustomerIsNoEventTestUser($this->customerId));
 
         return $this;
     }
 
-    public function checkDenhacTestUser($customer): MembershipAggregate
+    public function checkDenhacTestUser($customer): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -74,7 +80,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function createCustomer($customer): MembershipAggregate
+    public function createCustomer($customer): static
     {
         $this->checkDenhacTestUser($customer);
 
@@ -84,6 +90,8 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new CustomerCreated($customer));
 
+        $this->handleIdCheck($customer);
+
         $this->handleCards($customer);
 
         $this->handleGithub($customer);
@@ -91,7 +99,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function updateCustomer($customer): MembershipAggregate
+    public function updateCustomer($customer): static
     {
         $this->checkDenhacTestUser($customer);
 
@@ -101,6 +109,8 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new CustomerUpdated($customer));
 
+        $this->handleIdCheck($customer);
+
         $this->handleCards($customer);
 
         $this->handleGithub($customer);
@@ -108,7 +118,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function deleteCustomer($customer)
+    public function deleteCustomer($customer): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -119,7 +129,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function importCustomer($customer)
+    public function importCustomer($customer): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -127,12 +137,14 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new CustomerImported($customer));
 
+        $this->handleIdCheck($customer);
+
         $this->handleCards($customer);
 
         return $this;
     }
 
-    public function createSubscription($subscription)
+    public function createSubscription($subscription): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -145,7 +157,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function updateSubscription($subscription)
+    public function updateSubscription($subscription): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -158,7 +170,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function importSubscription($subscription)
+    public function importSubscription($subscription): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -171,7 +183,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function createUserMembership($membership)
+    public function createUserMembership($membership): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -179,10 +191,12 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new UserMembershipCreated($membership));
 
+        $this->handleUserMembership($membership);
+
         return $this;
     }
 
-    public function updateUserMembership($membership)
+    public function updateUserMembership($membership): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -190,10 +204,12 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new UserMembershipUpdated($membership));
 
+        $this->handleUserMembership($membership);
+
         return $this;
     }
 
-    public function deleteUserMembership($membership)
+    public function deleteUserMembership($membership): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -204,7 +220,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function importUserMembership($membership)
+    public function importUserMembership($membership): static
     {
         if (!$this->respondToEvents) {
             return $this;
@@ -212,16 +228,22 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new UserMembershipImported($membership));
 
+        $this->handleUserMembership($membership);
+
         return $this;
     }
 
-    public function handleMembershipActivated()
+    public function activateMembership()
     {
+        $this->recordThat(new MembershipActivated($this->customerId));
+
         $this->activateCardsNeedingActivation();
     }
 
-    public function handleMembershipDeactivated()
+    public function deactivateMembership()
     {
+        $this->recordThat(new MembershipDeactivated($this->customerId));
+
         $this->deactivateAllCards();
     }
 
@@ -240,7 +262,7 @@ final class MembershipAggregate extends AggregateRoot
         $this->respondToEvents = false;
     }
 
-    private function isActiveMember()
+    private function isActiveMember(): bool
     {
         return $this->currentlyAMember;
     }

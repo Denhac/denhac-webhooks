@@ -16,6 +16,7 @@ class UserMembership extends Model
 {
     use SoftDeletes;
 
+    public const MEMBERSHIP_FULL_MEMBER = 6410;
     public const MEMBERSHIP_3DP_USER = 8749;
     public const MEMBERSHIP_3DP_TRAINER = 8750;
     public const MEMBERSHIP_LASER_CUTTER_TRAINER = 8761;

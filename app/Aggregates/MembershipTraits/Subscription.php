@@ -2,11 +2,11 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\StorableEvents\MembershipActivated;
-use App\StorableEvents\MembershipDeactivated;
+use App\FeatureFlags;
 use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 trait Subscription
 {
@@ -32,9 +32,9 @@ trait Subscription
             (in_array($oldStatus, ['need-id-check', 'id-was-checked']) || $oldStatus == null)
             && $newStatus == 'active'
         ) {
-            $this->recordThat(new MembershipActivated($this->customerId));
-
-            $this->handleMembershipActivated();
+            if (! Features::accessible(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE)) {
+                $this->activateMembership();
+            }
         }
 
         if (in_array($newStatus, ['cancelled', 'suspended-payment', 'suspended-manual'])) {
@@ -43,14 +43,10 @@ trait Subscription
             })->isNotEmpty();
 
             if (! $anyActive) {
-                $this->recordThat(new MembershipDeactivated($this->customerId));
-
-                $this->handleMembershipDeactivated();
+                if (! Features::accessible(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE)) {
+                    $this->deactivateMembership();
+                }
             }
-        }
-
-        if ($newStatus == 'active') {
-            $this->currentlyAMember = true;
         }
 
         $this->subscriptionsOldStatus->put($subscriptionId, $newStatus);
