@@ -119,6 +119,14 @@ class NewMemberIdCheckModal implements ModalInterface
                         'key' => 'account_birthday',
                         'value' => $birthday->format('Y-m-d'),
                     ],
+                    [
+                        'key' => 'id_was_checked_by',
+                        'value' => $request->customer()->woo_id,
+                    ],
+                    [
+                        'key' => 'id_was_checked_when',
+                        'value' => Carbon::now(),
+                    ],
                 ],
             ]);
 
