@@ -29,8 +29,10 @@ class UpdateSlackUserProfile
     public function execute(string $slackId, array $fields)
     {
         Log::info("Updating fields for {$slackId}: " . print_r($fields, true));
-        $this->slackApi->users->profile->set($slackId, [
+        $response = $this->slackApi->users->profile->set($slackId, [
             'fields' => $fields,
         ]);
+        Log::info("Response status: {$response->getStatusCode()}");
+        Log::info("Response body: {$response->getBody()->getContents()}");
     }
 }
