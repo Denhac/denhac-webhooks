@@ -235,6 +235,10 @@ final class MembershipAggregate extends AggregateRoot
 
     public function activateMembership()
     {
+        if($this->currentlyAMember) {
+            return;
+        }
+
         $this->recordThat(new MembershipActivated($this->customerId));
 
         $this->activateCardsNeedingActivation();
@@ -242,6 +246,10 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deactivateMembership()
     {
+        if(! $this->currentlyAMember) {
+            return;
+        }
+
         $this->recordThat(new MembershipDeactivated($this->customerId));
 
         $this->deactivateAllCards();
