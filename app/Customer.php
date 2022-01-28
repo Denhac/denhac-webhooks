@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,6 +30,7 @@ use Laravel\Passport\HasApiTokens;
  * @property Collection cards
  * @property Collection memberships
  * @property Collection equipmentTrainer
+ * @property string member_code
  * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)
  */
@@ -47,6 +49,10 @@ class Customer extends Model
         'github_username',
         'birthday',
         'slack_id',
+    ];
+
+    protected $appends = [
+        'member_code'
     ];
 
     protected $casts = [
@@ -124,5 +130,16 @@ class Customer extends Model
     public function routeNotificationForMail($notification)
     {
         return $this->email;
+    }
+
+    public function getMemberCodeAttribute(): string
+    {
+        $hashids = new Hashids(
+            'denhac',
+            4,
+            '23456789ABCDEFGHKNQRSTUVXZ',
+        );
+
+        return $hashids->encode($this->woo_id);
     }
 }

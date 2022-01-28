@@ -6,7 +6,7 @@ use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\AddToUserGroup;
 use App\Actions\Slack\RemoveFromChannel;
 use App\Actions\Slack\RemoveFromUserGroup;
-use App\Actions\Slack\UpdateSlackUserProfileMembership;
+use App\Actions\Slack\UpdateSlackUserProfile;
 use App\Customer;
 use App\FeatureFlags;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
@@ -54,7 +54,7 @@ final class SlackReactor implements EventHandler
         $customer = Customer::whereWooId($event->customerId)->first();
 
         if (!is_null($customer)) {
-            UpdateSlackUserProfileMembership::queue()->execute($customer->slack_id);
+            UpdateSlackUserProfile::queue()->execute($customer->slack_id);
         }
 
         if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {

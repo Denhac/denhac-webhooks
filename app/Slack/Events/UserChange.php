@@ -3,8 +3,9 @@
 namespace App\Slack\Events;
 
 
-use App\Actions\Slack\UpdateSlackUserProfileMembership;
+use App\Actions\Slack\UpdateSlackUserProfile;
 use App\Http\Requests\SlackRequest;
+use App\Slack\SlackProfileFields;
 use Illuminate\Support\Facades\Log;
 
 class UserChange implements EventInterface
@@ -29,41 +30,14 @@ class UserChange implements EventInterface
         }
         Log::info("Profile fields: " . print_r($profileFields, true));
 
-        $key = setting(UpdateSlackUserProfileMembership::MEMBERSHIP_FIELD_SETTING_KEY);
-        if (is_null($key)) {
-            return;
+        $updated = SlackProfileFields::compareExpectedFieldValues($request->customer(), $profileFields);
+
+        if(count($updated) != 0) {
+            /** @var UpdateSlackUserProfile $action */
+            $action = app(UpdateSlackUserProfile::class);
+            $action
+                ->onQueue()
+                ->execute($slack_id, $updated);
         }
-
-        if (!array_key_exists($key, $profileFields)) {
-            Log::info("{$key} is not in profile fields");
-            self::updateMembershipField($slack_id);
-        } else {
-            $membershipValue = $profileFields[$key]['value'];
-            $customer = $request->customer();
-
-            if (is_null($customer)) {
-                return;
-            }
-
-            if ($customer->member && $membershipValue == 'No') {
-                Log::info("{$customer->username} is a member, but membership value is No");
-                self::updateMembershipField($slack_id);
-            } else if (!$customer->member && $membershipValue == 'Yes') {
-                Log::info("{$customer->username} is not a member, but membership value is Yes");
-                self::updateMembershipField($slack_id);
-            }
-        }
-    }
-
-    /**
-     * @param $id
-     */
-    protected static function updateMembershipField($id): void
-    {
-        /** @var UpdateSlackUserProfileMembership $action */
-        $action = app(UpdateSlackUserProfileMembership::class);
-        $action
-            ->onQueue()
-            ->execute($id);
     }
 }
