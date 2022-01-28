@@ -44,11 +44,12 @@ class SlackProfileFieldsUpdate extends Command
     {
         $this->api->users->list()
             ->filter(function($user) {
-                if($user["is_admin"]) return false;         // Spacebot can't update these
-                if($user["is_owner"]) return false;         // Spacebot can't update these
-                if($user["is_primary_owner"]) return false; // Spacebot can't update these
-                if($user["is_bot"]) return false;
-                if($user["is_app_user"]) return false;
+                if(array_key_exists("deleted", $user) && $user["deleted"]) return false;
+                if(array_key_exists("is_admin", $user) && $user["is_admin"]) return false;         // Spacebot can't update these
+                if(array_key_exists("is_owner", $user) && $user["is_owner"]) return false;         // Spacebot can't update these
+                if(array_key_exists("is_primary_owner", $user) && $user["is_primary_owner"]) return false; // Spacebot can't update these
+                if(array_key_exists("is_bot", $user) && $user["is_bot"]) return false;
+                if(array_key_exists("is_app_user", $user) && $user["is_app_user"]) return false;
 
                 return true;
             })
