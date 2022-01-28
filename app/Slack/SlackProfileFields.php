@@ -33,10 +33,8 @@ class SlackProfileFields
 
         if (!array_key_exists(self::IS_MEMBER_FIELD, $profileFields) ||
             $profileFields[self::IS_MEMBER_FIELD]['value'] != $expectedValue) {
-            $updated[] = [
-                self::IS_MEMBER_FIELD => [
-                    'value' => $expectedValue,
-                ],
+            $updated[self::IS_MEMBER_FIELD] = [
+                'value' => $expectedValue,
             ];
         }
     }
@@ -45,11 +43,9 @@ class SlackProfileFields
     {
         if (is_null($customer)) {
             if (array_key_exists(self::MEMBER_CODE_FIELD, $profileFields)) {
-                $updated[] = [
-                    self::MEMBER_CODE_FIELD => [
-                        'value' => '',
-                        'alt' => '',
-                    ],
+                $updated[self::MEMBER_CODE_FIELD] = [
+                    'value' => '',
+                    'alt' => '',
                 ];
             }
             return;
@@ -60,24 +56,22 @@ class SlackProfileFields
 
         $needsUpdate = false;
 
-        if(! array_key_exists(self::MEMBER_CODE_FIELD, $profileFields)) {
+        if (!array_key_exists(self::MEMBER_CODE_FIELD, $profileFields)) {
             $needsUpdate = true;
         } else {
             $field = $profileFields[self::MEMBER_CODE_FIELD];
-            if(! array_key_exists('value', $field) || $field['value'] != $memberCodeUrl) {
+            if (!array_key_exists('value', $field) || $field['value'] != $memberCodeUrl) {
                 $needsUpdate = true;
             }
-            if(! array_key_exists('alt', $field) || $field['alt'] != $memberCode) {
+            if (!array_key_exists('alt', $field) || $field['alt'] != $memberCode) {
                 $needsUpdate = true;
             }
         }
 
-        if($needsUpdate) {
-            $updated[] = [
-                self::MEMBER_CODE_FIELD => [
-                    'value' => $memberCodeUrl,
-                    'alt' => $memberCode,
-                ],
+        if ($needsUpdate) {
+            $updated[self::MEMBER_CODE_FIELD] = [
+                'value' => $memberCodeUrl,
+                'alt' => $memberCode,
             ];
         }
     }
