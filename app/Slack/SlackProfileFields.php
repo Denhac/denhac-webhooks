@@ -3,12 +3,31 @@
 namespace App\Slack;
 
 
+use App\Actions\Slack\UpdateSlackUserProfile;
 use App\Customer;
+use Illuminate\Support\Facades\Log;
 
 class SlackProfileFields
 {
     private const IS_MEMBER_FIELD = 'Xf017FTYKWA3';
     private const MEMBER_CODE_FIELD = 'Xf030ZFYLUDP';
+
+    public static function updateIfNeeded(string $slack_id, array $profileFields)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereSlackId($slack_id)->first();
+
+        $updated = SlackProfileFields::compareExpectedFieldValues($customer, $profileFields);
+
+        if(count($updated) != 0) {
+            Log::info("User {$slack_id}'s profile fields need updating.");
+            /** @var UpdateSlackUserProfile $action */
+            $action = app(UpdateSlackUserProfile::class);
+            $action
+                ->onQueue()
+                ->execute($slack_id, $updated);
+        }
+    }
 
     /**
      * @param Customer|null $customer

@@ -30,14 +30,6 @@ class UserChange implements EventInterface
         }
         Log::info("Profile fields: " . print_r($profileFields, true));
 
-        $updated = SlackProfileFields::compareExpectedFieldValues($request->customer(), $profileFields);
-
-        if(count($updated) != 0) {
-            /** @var UpdateSlackUserProfile $action */
-            $action = app(UpdateSlackUserProfile::class);
-            $action
-                ->onQueue()
-                ->execute($slack_id, $updated);
-        }
+        SlackProfileFields::updateIfNeeded($slack_id, $profileFields);
     }
 }
