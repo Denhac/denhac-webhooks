@@ -14,12 +14,16 @@ class SlackProfileFields
 
     public static function updateIfNeeded(string $slack_id, array $profileFields)
     {
+        if ($slack_id === "USLACKBOT") {
+            return;
+        }
+
         /** @var Customer $customer */
         $customer = Customer::whereSlackId($slack_id)->first();
 
         $updated = SlackProfileFields::compareExpectedFieldValues($customer, $profileFields);
 
-        if(count($updated) != 0) {
+        if (count($updated) != 0) {
             Log::info("User {$slack_id}'s profile fields need updating.");
             /** @var UpdateSlackUserProfile $action */
             $action = app(UpdateSlackUserProfile::class);
@@ -46,11 +50,11 @@ class SlackProfileFields
     private static function compareIsMemberField(?Customer $customer, array $profileFields, array &$updated)
     {
         $expectedValue = "Yes";
-        if (is_null($customer) || !$customer->member) {
+        if (is_null($customer) || ! $customer->member) {
             $expectedValue = "No";
         }
 
-        if (!array_key_exists(self::IS_MEMBER_FIELD, $profileFields) ||
+        if (! array_key_exists(self::IS_MEMBER_FIELD, $profileFields) ||
             $profileFields[self::IS_MEMBER_FIELD]['value'] != $expectedValue) {
             $updated[self::IS_MEMBER_FIELD] = [
                 'value' => $expectedValue,
@@ -75,14 +79,14 @@ class SlackProfileFields
 
         $needsUpdate = false;
 
-        if (!array_key_exists(self::MEMBER_CODE_FIELD, $profileFields)) {
+        if (! array_key_exists(self::MEMBER_CODE_FIELD, $profileFields)) {
             $needsUpdate = true;
         } else {
             $field = $profileFields[self::MEMBER_CODE_FIELD];
-            if (!array_key_exists('value', $field) || $field['value'] != $memberCodeUrl) {
+            if (! array_key_exists('value', $field) || $field['value'] != $memberCodeUrl) {
                 $needsUpdate = true;
             }
-            if (!array_key_exists('alt', $field) || $field['alt'] != $memberCode) {
+            if (! array_key_exists('alt', $field) || $field['alt'] != $memberCode) {
                 $needsUpdate = true;
             }
         }
