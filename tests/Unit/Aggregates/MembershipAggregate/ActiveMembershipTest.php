@@ -162,6 +162,7 @@ class ActiveMembershipTest extends TestCase
             ->given([
                 new CustomerCreated($customer),
                 new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
@@ -203,6 +204,7 @@ class ActiveMembershipTest extends TestCase
             ->given([
                 new CustomerCreated($customer),
                 new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
@@ -244,6 +246,7 @@ class ActiveMembershipTest extends TestCase
             ->given([
                 new CustomerCreated($customer),
                 new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([

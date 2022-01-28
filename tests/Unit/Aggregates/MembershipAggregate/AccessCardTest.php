@@ -4,6 +4,7 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
+use App\FeatureFlags;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;
@@ -20,12 +21,15 @@ use App\StorableEvents\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 class AccessCardTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
+        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
 
         Event::fake();
         Projectionist::withoutEventHandlers();
@@ -127,6 +131,7 @@ class AccessCardTest extends TestCase
                 new CardAdded($customer->id, '42424'),
                 new CardAdded($customer->id, '53535'),
                 new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
             ])
             ->updateSubscription($cancelledSubscription)
             ->assertRecorded([

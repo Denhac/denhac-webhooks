@@ -76,9 +76,9 @@ trait Subscription
 
     protected function updateStatus($subscriptionId, $newStatus)
     {
-        if ($newStatus == 'active') {
-            $this->currentlyAMember = true;
-        }
+//        if ($newStatus == 'active') {
+//            $this->currentlyAMember = true;
+//        }
 
         $oldStatus = $this->subscriptionsNewStatus->get($subscriptionId);
         $this->subscriptionsOldStatus->put($subscriptionId, $oldStatus);
