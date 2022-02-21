@@ -3,7 +3,6 @@
 namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
-use App\Customer;
 use App\Slack\SlackApi;
 use Illuminate\Support\Facades\Log;
 use Spatie\QueueableAction\QueueableAction;
