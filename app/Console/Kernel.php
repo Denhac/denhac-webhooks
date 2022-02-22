@@ -50,8 +50,8 @@ class Kernel extends ConsoleKernel
             })
             ->weeklyOn(6, '13:00');
 
-        $schedule->command('denhac:slack-profile-fields-update')
-            ->everySixHours();
+//        $schedule->command('denhac:slack-profile-fields-update')
+//            ->everySixHours();
 
         $schedule->command('passport:purge')->hourly();
     }
