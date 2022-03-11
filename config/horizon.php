@@ -167,6 +167,15 @@ return [
                 'tries' => 1,
                 'timeout' => 900,
             ],
+            'no-timeout' => [
+                'connection' => 'redis',
+                'queue' => ['slack-live'],
+                'balance' => 'simple',
+                'processes' => 5,
+                'memory' => 50,
+                'tries' => 1,
+                'timeout' => 0,
+            ],
         ],
 
         'local' => [

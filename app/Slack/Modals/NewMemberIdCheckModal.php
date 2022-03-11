@@ -2,10 +2,13 @@
 
 namespace App\Slack\Modals;
 
+use App\Actions\NewMemberCardSlackLiveView;
 use App\Http\Requests\SlackRequest;
+use App\NewMemberCardActivation;
 use App\Subscription;
 use App\WooCommerce\Api\WooCommerceApi;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -78,10 +81,12 @@ class NewMemberIdCheckModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        $firstName = $request->payload()['view']['state']['values'][self::FIRST_NAME][self::FIRST_NAME]['value'];
-        $lastName = $request->payload()['view']['state']['values'][self::LAST_NAME][self::LAST_NAME]['value'];
-        $birthday = Carbon::parse($request->payload()['view']['state']['values'][self::BIRTHDAY][self::BIRTHDAY]['selected_date']);
-        $cards = $request->payload()['view']['state']['values'][self::CARD_NUM][self::CARD_NUM]['value'];
+        $view = $request->payload()['view'];
+        $viewId = $view['id'];
+        $firstName = $view['state']['values'][self::FIRST_NAME][self::FIRST_NAME]['value'];
+        $lastName = $view['state']['values'][self::LAST_NAME][self::LAST_NAME]['value'];
+        $birthday = Carbon::parse($view['state']['values'][self::BIRTHDAY][self::BIRTHDAY]['selected_date']);
+        $card = $view['state']['values'][self::CARD_NUM][self::CARD_NUM]['value'];
 
         $errors = [];
 
@@ -89,10 +94,8 @@ class NewMemberIdCheckModal implements ModalInterface
             $errors[self::BIRTHDAY] = 'New member is not at least 18';
         }
 
-        foreach (explode(',', $cards) as $card) {
-            if (preg_match("/^\d+$/", $card) == 0) {
-                $errors[self::CARD_NUM] = 'This is a comma separated list of cards (no spaces!)';
-            }
+        if (preg_match("/^\d+$/", $card) == 0) {
+            $errors[self::CARD_NUM] = 'Card should be a number';
         }
 
         if (! empty($errors)) {
@@ -102,7 +105,7 @@ class NewMemberIdCheckModal implements ModalInterface
             ]);
         }
 
-        $customerId = $request->payload()['view']['private_metadata'];
+        $customerId = $view['private_metadata'];
 
         $wooCommerceApi = app(WooCommerceApi::class);
 
@@ -113,7 +116,7 @@ class NewMemberIdCheckModal implements ModalInterface
                 'meta_data' => [
                     [
                         'key' => 'access_card_number',
-                        'value' => $cards,
+                        'value' => $card,
                     ],
                     [
                         'key' => 'account_birthday',
@@ -130,7 +133,19 @@ class NewMemberIdCheckModal implements ModalInterface
                 ],
             ]);
 
-        return (new SuccessModal())->update();
+        $newMemberCardActivation = NewMemberCardActivation::create([
+            'woo_customer_id' => $request->customer()->woo_id,
+            'card_number' => ltrim($card, '0'),
+            'state' => NewMemberCardActivation::SUBMITTED,
+        ]);
+
+        app(NewMemberCardSlackLiveView::class)
+            ->queue()
+            ->execute($viewId, $newMemberCardActivation);
+
+        return (new NewMemberCardActivationLiveModal())->placeholder()->update();
+
+        //return (new SuccessModal())->update();
     }
 
     public static function getOptions(SlackRequest $request)

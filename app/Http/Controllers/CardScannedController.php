@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Card;
+use App\NewMemberCardActivation;
 use App\Notifications\CardAccessAllowedButNotAMemberRedAlert;
 use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
@@ -53,23 +54,39 @@ class CardScannedController extends Controller
             return;
         }
 
+        $newMemberCardActivation = NewMemberCardActivation::search($customer, $card);
+
         if ($customer->member) {
             Log::info("They're a member!");
-            if (! $accessAllowed) {
+            if ($accessAllowed) {
+                if (! is_null($newMemberCardActivation)) {
+                    if ($newMemberCardActivation->state === NewMemberCardActivation::CARD_ACTIVATED) {
+                        $newMemberCardActivation->state = $newMemberCardActivation::SUCCESS;
+                        $newMemberCardActivation->save();
+                    }
+                }
+            } else {
                 Log::info('No access though.');
                 // They weren't given access
 
-                if ($scanTime->subMinutes(10) < $createdAt) {
-                    // We created this card less than 10 minutes ago. It might not even be active yet.
-                    return;
-                }
-
                 $door = Door::byDSXDeviceId($device);
 
-                if(is_null($door)) {
+                if (is_null($door)) {
                     // We don't know about this door. Do nothing
                     return;
-                } else if($door->membersCanBadgeIn) {
+                } else if ($door->membersCanBadgeIn) {
+                    if (! is_null($newMemberCardActivation)) {
+                        if ($newMemberCardActivation->state === NewMemberCardActivation::CARD_ACTIVATED) {
+                            $newMemberCardActivation->state = $newMemberCardActivation::SCAN_FAILED;
+                            $newMemberCardActivation->save();
+                        }
+                    }
+
+                    if ($scanTime->subMinutes(10) < $createdAt) {
+                        // We created this card less than 10 minutes ago. It might not even be active yet.
+                        return;
+                    }
+
                     $notification = new CardAccessDeniedButWereWorkingOnIt(
                         $request->json('first_name'),
                         $request->json('last_name'),
