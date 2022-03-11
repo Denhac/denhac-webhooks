@@ -446,11 +446,25 @@ class IdentifyIssues extends Command
             }
 
             $membersGroupMailing = 'members@denhac.org'; // TODO dedupe this
+            $memberGroupEmails = [
+                'members@denhac.org',
+                'announce@denhac.org',
+            ];
+
+            // TODO At least one email is on some list
+
 
             $memberHasEmailInMembersList = $memberEmails
-                ->filter(function ($memberEmail) use ($emailsToGroups, $membersGroupMailing) {
-                    return $emailsToGroups->has($memberEmail) &&
-                        $emailsToGroups->get($memberEmail)->contains($membersGroupMailing);
+                ->filter(function ($memberEmail) use ($emailsToGroups, $memberGroupEmails) {
+                    if(! $emailsToGroups->has($memberEmail)) {
+                        return false;
+                    }
+                    foreach ($memberGroupEmails as $groupEmail) {
+                        if($emailsToGroups->get($memberEmail)->contains($groupEmail)) {
+                            return false;
+                        }
+                    }
+                    return True;
                 })
                 ->isNotEmpty();
 
@@ -461,11 +475,6 @@ class IdentifyIssues extends Command
             if ($member['is_member']) {
                 $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
-            } elseif (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-                if ($member['subscriptions']->contains('need-id-check')) {
-                    $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) needs an id check but is not part of $membersGroupMailing";
-                    $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
-                }
             }
         });
     }
