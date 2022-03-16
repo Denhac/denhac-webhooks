@@ -140,7 +140,7 @@ class NewMemberIdCheckModal implements ModalInterface
         ]);
 
         app(NewMemberCardSlackLiveView::class)
-            ->queue()
+            ->onQueue()
             ->execute($viewId, $newMemberCardActivation);
 
         return (new NewMemberCardActivationLiveModal())->placeholder()->update();
