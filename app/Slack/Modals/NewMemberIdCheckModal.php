@@ -134,7 +134,7 @@ class NewMemberIdCheckModal implements ModalInterface
             ]);
 
         $newMemberCardActivation = NewMemberCardActivation::create([
-            'woo_customer_id' => $request->customer()->woo_id,
+            'woo_customer_id' => $customerId,
             'card_number' => ltrim($card, '0'),
             'state' => NewMemberCardActivation::SUBMITTED,
         ]);
