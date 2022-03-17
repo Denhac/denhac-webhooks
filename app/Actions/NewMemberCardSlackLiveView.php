@@ -11,7 +11,7 @@ class NewMemberCardSlackLiveView
 {
     use QueueableAction;
 
-    public string $queue = 'no-timeout';
+    public string $queue = 'slack-live';
 
     private SlackApi $api;
 
