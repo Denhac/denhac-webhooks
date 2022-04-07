@@ -42,12 +42,12 @@ class NewMemberCardSlackLiveView
                 $timeout = 0;
             }
 
+            $this->api->views->update($viewId, $updatedModal); // TODO check that the modal isn't closed already.
+
             if ($timeout == 0) {
                 $newMemberCardActivation->delete();
                 return;
             }
-
-            $this->api->views->update($viewId, $updatedModal); // TODO check that the modal isn't closed already.
 
             $timeout -= 1;
             sleep(1);
@@ -55,10 +55,10 @@ class NewMemberCardSlackLiveView
             if ($currentState != $newMemberCardActivation->state) {
                 $currentState = $newMemberCardActivation->state;
 
-                if ($currentState == NewMemberCardActivation::CARD_SENT_FOR_ACTIVATION) {
-                    $timeout = 120;
-                } else if ($currentState == NewMemberCardActivation::CARD_ACTIVATED) {
+                if ($currentState == NewMemberCardActivation::CARD_ACTIVATED) {
                     $timeout = 300;
+                } else {
+                    $timeout = 120;
                 }
             }
         }

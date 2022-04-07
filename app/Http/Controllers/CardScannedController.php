@@ -60,7 +60,7 @@ class CardScannedController extends Controller
             Log::info("They're a member!");
             if ($accessAllowed) {
                 if (! is_null($newMemberCardActivation)) {
-                    if ($newMemberCardActivation->state === NewMemberCardActivation::CARD_ACTIVATED) {
+                    if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
                         $newMemberCardActivation->state = $newMemberCardActivation::SUCCESS;
                         $newMemberCardActivation->save();
                     }
@@ -76,7 +76,7 @@ class CardScannedController extends Controller
                     return;
                 } else if ($door->membersCanBadgeIn) {
                     if (! is_null($newMemberCardActivation)) {
-                        if ($newMemberCardActivation->state === NewMemberCardActivation::CARD_ACTIVATED) {
+                        if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
                             $newMemberCardActivation->state = $newMemberCardActivation::SCAN_FAILED;
                             $newMemberCardActivation->save();
                         }
