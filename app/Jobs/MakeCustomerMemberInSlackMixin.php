@@ -48,7 +48,7 @@ trait MakeCustomerMemberInSlackMixin
     {
         $this->fetchCustomerInfo();
 
-        return ! is_null($this->customerSlackId);
+        return ! empty($this->customerSlackId);
     }
 
     protected function inviteSingleChannelGuest($channel)
