@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\NewMemberCardActivation;
 use App\Slack\Modals\NewMemberCardActivationLiveModal;
 use App\Slack\SlackApi;
+use Illuminate\Support\Facades\Log;
 use Spatie\QueueableAction\QueueableAction;
 
 class NewMemberCardSlackLiveView
@@ -36,16 +37,18 @@ class NewMemberCardSlackLiveView
                 $updatedModal->showCardActivated($timeout);
             } else if ($currentState == NewMemberCardActivation::SCAN_FAILED) {
                 $updatedModal->showScanFailed();
+                Log::info("NMA Failed for {$newMemberCardActivation->wooCustomerId}");
                 $timeout = 0;
             } else if ($currentState == NewMemberCardActivation::SUCCESS) {
                 $updatedModal->showScanSuccess();
+                Log::info("NMA Success for {$newMemberCardActivation->wooCustomerId}");
                 $timeout = 0;
             }
 
             $this->api->views->update($viewId, $updatedModal); // TODO check that the modal isn't closed already.
 
             if ($timeout == 0) {
-                $newMemberCardActivation->delete();
+                // $newMemberCardActivation->delete();
                 return;
             }
 
