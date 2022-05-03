@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\CardUpdateRequest;
 use App\Customer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -12,6 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string card
  * @property string type
  * @property Customer customer
+ * @property Carbon created_at
  */
 class CardUpdateRequestResource extends JsonResource
 {
@@ -31,6 +33,7 @@ class CardUpdateRequestResource extends JsonResource
             'card' => $this->card,
             'company' => self::COMPANY_DENHAC,
             'woo_id' => $this->customer->woo_id,
+            'created_at' => $this->created_at,
             $this->mergeWhen($this->type == CardUpdateRequest::ACTIVATION_TYPE, [
                 'first_name' => $this->customer->first_name,
                 'last_name' => $this->customer->last_name,
