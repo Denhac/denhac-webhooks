@@ -34,10 +34,8 @@ class CardUpdateRequestResource extends JsonResource
             'company' => self::COMPANY_DENHAC,
             'woo_id' => $this->customer->woo_id,
             'created_at' => $this->created_at,
-            $this->mergeWhen($this->type == CardUpdateRequest::ACTIVATION_TYPE, [
-                'first_name' => $this->customer->first_name,
-                'last_name' => $this->customer->last_name,
-            ]),
+            'first_name' => $this->customer->first_name,
+            'last_name' => $this->customer->last_name,
         ];
     }
 
@@ -50,5 +48,7 @@ class CardUpdateRequestResource extends JsonResource
         if ($this->type == CardUpdateRequest::DEACTIVATION_TYPE) {
             return 'disable';
         }
+
+        return "unknown";
     }
 }
