@@ -30,6 +30,7 @@ class CardUpdateRequestResource extends JsonResource
             'id' => $this->id,
             'card' => $this->card,
             'company' => self::COMPANY_DENHAC,
+            'woo_id' => $this->customer->woo_id,
             $this->mergeWhen($this->type == CardUpdateRequest::ACTIVATION_TYPE, [
                 'first_name' => $this->customer->first_name,
                 'last_name' => $this->customer->last_name,
