@@ -60,7 +60,9 @@ class CardScannedController extends Controller
             Log::info("They're a member!");
             if ($accessAllowed) {
                 if (! is_null($newMemberCardActivation)) {
+                    Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
                     if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
+                        Log::info("Updated to success");
                         $newMemberCardActivation->state = $newMemberCardActivation::SUCCESS;
                         $newMemberCardActivation->save();
                     }
@@ -72,11 +74,14 @@ class CardScannedController extends Controller
                 $door = Door::byDSXDeviceId($device);
 
                 if (is_null($door)) {
+                    Log::info("We don't know about this door {$device}");
                     // We don't know about this door. Do nothing
                     return;
                 } else if ($door->membersCanBadgeIn) {
                     if (! is_null($newMemberCardActivation)) {
+                        Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
                         if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
+                            Log::info("Updated to failed");
                             $newMemberCardActivation->state = $newMemberCardActivation::SCAN_FAILED;
                             $newMemberCardActivation->save();
                         }
