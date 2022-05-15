@@ -10,6 +10,7 @@ use Tests\Helpers\BaseBuilder;
  */
 class UserMembershipBuilder extends BaseBuilder
 {
+    use HasMetaData;
 
     public function __construct()
     {
@@ -36,28 +37,28 @@ class UserMembershipBuilder extends BaseBuilder
         ];
     }
 
-    public function id($id)
+    public function id($id): static
     {
         $this->data['id'] = $id;
 
         return $this;
     }
 
-    public function status($status)
+    public function status($status): static
     {
         $this->data['status'] = $status;
 
         return $this;
     }
 
-    public function plan($plan)
+    public function plan($plan): static
     {
         $this->data['plan_id'] = $plan;
 
         return $this;
     }
 
-    public function customer($customer)
+    public function customer($customer): static
     {
         if (is_int($customer)) {
             $this->data['customer_id'] = $customer;
@@ -66,5 +67,10 @@ class UserMembershipBuilder extends BaseBuilder
         }
 
         return $this;
+    }
+
+    public function team($teamId): static
+    {
+        return $this->meta_data('_team_id', $teamId);
     }
 }

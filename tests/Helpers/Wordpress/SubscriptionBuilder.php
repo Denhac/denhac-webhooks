@@ -90,21 +90,21 @@ class SubscriptionBuilder extends BaseBuilder
         ];
     }
 
-    public function id($id)
+    public function id($id): static
     {
         $this->data['id'] = $id;
 
         return $this;
     }
 
-    public function status($status)
+    public function status($status): static
     {
         $this->data['status'] = $status;
 
         return $this;
     }
 
-    public function customer($customer)
+    public function customer($customer): static
     {
         if (is_int($customer)) {
             $this->data['customer_id'] = $customer;

@@ -63,17 +63,17 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    public function customer()
+    public function customer(): CustomerBuilder
     {
         return new CustomerBuilder();
     }
 
-    public function subscription()
+    public function subscription(): SubscriptionBuilder
     {
         return new SubscriptionBuilder();
     }
 
-    public function userMembership()
+    public function userMembership(): UserMembershipBuilder
     {
         return new UserMembershipBuilder();
     }
@@ -109,7 +109,7 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function octoPrintUpdate()
+    public function octoPrintUpdate(): OctoPrintUpdateBuilder
     {
         return new OctoPrintUpdateBuilder();
     }

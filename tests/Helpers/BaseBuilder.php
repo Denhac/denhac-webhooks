@@ -6,19 +6,19 @@ use Illuminate\Contracts\Support\Arrayable;
 
 abstract class BaseBuilder implements \JsonSerializable, Arrayable, \ArrayAccess
 {
-    protected $data;
+    protected array $data;
 
     public function jsonSerialize()
     {
         return $this->data;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->data);
     }

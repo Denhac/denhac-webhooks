@@ -10,7 +10,7 @@ use Tests\Helpers\BaseBuilder;
  */
 class CustomerBuilder extends BaseBuilder
 {
-    private $metaKeyId = 1;
+    use HasMetaData;
 
     public function __construct()
     {
@@ -43,40 +43,24 @@ class CustomerBuilder extends BaseBuilder
         ];
     }
 
-    public function id($id)
+    public function id($id): static
     {
         $this->data['id'] = $id;
 
         return $this;
     }
 
-    public function meta_data($key, $value)
+    public function id_was_checked(): static
     {
-        foreach ($this->data['meta_data'] as $index => $item) {
-            if ($item['key'] == $key) {
-                $this->data['meta_data'][$index]['value'] = $value;
-
-                return $this;
-            }
-        }
-
-        $this->data['meta_data'][] = [
-            'id' => $this->metaKeyId,
-            'key' => $key,
-            'value' => $value,
-        ];
-
-        $this->metaKeyId++;
-
-        return $this;
+        return $this->meta_data('id_was_checked', true);
     }
 
-    public function access_card($card)
+    public function access_card($card): static
     {
         return $this->meta_data('access_card_number', $card);
     }
 
-    public function github_username($username)
+    public function github_username($username): static
     {
         return $this->meta_data('github_username', $username);
     }
