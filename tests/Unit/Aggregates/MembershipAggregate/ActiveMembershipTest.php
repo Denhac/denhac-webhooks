@@ -25,15 +25,33 @@ class ActiveMembershipTest extends TestCase
     {
         parent::setUp();
 
+        Features::turnOff(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
+
         Event::fake();
         Projectionist::withoutEventHandlers();
     }
 
     /** @test */
+    public function going_from_paused_to_active_subscription_does_nothing()
+    {
+        $customer = $this->customer();
+
+        $newSubscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionCreated($this->subscription()->status('paused')),
+            ])
+            ->updateSubscription($newSubscription)
+            ->assertRecorded([
+                new SubscriptionUpdated($newSubscription),
+            ]);
+    }
+
+    /** @test */
     public function going_from_need_id_check_to_active_subscription_activates_membership()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $newSubscription = $this->subscription()->status('active');
@@ -51,9 +69,9 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_on_going_from_need_id_check_to_active_subscription_does_not_activate_membership()
+    public function ff_going_from_need_id_check_to_active_subscription_does_not_activate_membership()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         $customer = $this->customer();
 
@@ -73,8 +91,6 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function going_from_id_was_check_to_active_subscription_activates_membership()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $newSubscription = $this->subscription()->status('active');
@@ -90,10 +106,11 @@ class ActiveMembershipTest extends TestCase
                 new MembershipActivated($customer->id),
             ]);
     }
+
     /** @test */
-    public function ff_on_going_from_id_was_check_to_active_subscription_does_not_activate_membership()
+    public function ff_going_from_id_was_check_to_active_subscription_does_not_activate_membership()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         $customer = $this->customer();
 
@@ -113,8 +130,6 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function going_from_null_to_active_subscription_activates_membership()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $newSubscription = $this->subscription()->status('active');
@@ -131,9 +146,9 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_on_going_from_null_to_active_subscription_does_not_activate_membership()
+    public function ff_going_from_null_to_active_subscription_does_not_activate_membership()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         $customer = $this->customer();
 
@@ -152,8 +167,6 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function going_from_active_to_cancelled_subscription_deactivates_membership()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $newSubscription = $this->subscription()->status('cancelled');
@@ -172,9 +185,9 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_on_going_from_active_to_cancelled_subscription_does_not_deactivate_membership()
+    public function ff_going_from_active_to_cancelled_subscription_does_not_deactivate_membership()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         $customer = $this->customer();
 
@@ -184,6 +197,7 @@ class ActiveMembershipTest extends TestCase
             ->given([
                 new CustomerCreated($customer),
                 new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
@@ -194,8 +208,6 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function going_from_active_to_suspended_payment_subscription_deactivates_membership()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $newSubscription = $this->subscription()->status('suspended-payment');
@@ -214,9 +226,9 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_on_going_from_active_to_suspended_payment_subscription_deactivates_membership()
+    public function ff_going_from_active_to_suspended_payment_subscription_does_not_deactivate_membership()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         $customer = $this->customer();
 
@@ -226,6 +238,7 @@ class ActiveMembershipTest extends TestCase
             ->given([
                 new CustomerCreated($customer),
                 new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
@@ -236,8 +249,6 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function going_from_active_to_suspended_manual_subscription_deactivates_membership()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $newSubscription = $this->subscription()->status('suspended-manual');
@@ -256,9 +267,49 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_on_going_from_active_to_suspended_manual_subscription_does_not_deactivate_membership()
+    public function going_from_active_to_active_subscription_does_nothing()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        $customer = $this->customer();
+
+        $subscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($subscription),
+                new MembershipActivated($customer->id),
+            ])
+            ->updateSubscription($subscription)
+            ->assertRecorded([
+                new SubscriptionUpdated($subscription),
+            ]);
+    }
+
+    /** @test */
+    public function ff_going_from_active_to_active_subscription_does_nothing()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
+
+        $customer = $this->customer();
+
+        $subscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($subscription),
+                new MembershipActivated($customer->id),
+            ])
+            ->updateSubscription($subscription)
+            ->assertRecorded([
+                new SubscriptionUpdated($subscription),
+            ]);
+    }
+
+    /** @test */
+    public function ff_going_from_active_to_suspended_manual_subscription_deactivates_membership()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         $customer = $this->customer();
 
@@ -268,6 +319,7 @@ class ActiveMembershipTest extends TestCase
             ->given([
                 new CustomerCreated($customer),
                 new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
             ])
             ->updateSubscription($newSubscription)
             ->assertRecorded([
@@ -278,7 +330,29 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function canceling_one_subscription_with_another_still_active_does_not_deactivate_membership()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        $subscriptionA = $this->subscription()->id(1)->status('active');
+        $subscriptionB = $this->subscription()->id(2)->status('active');
+        $customer = $this->customer();
+
+        $aggregate = MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new SubscriptionCreated($subscriptionA),
+                new SubscriptionCreated($subscriptionB),
+            ]);
+
+        $subscriptionB->status('cancelled');
+
+        $aggregate
+            ->updateSubscription($subscriptionB)
+            ->assertRecorded([
+                new SubscriptionUpdated($subscriptionB),
+            ]);
+    }
+
+    /** @test */
+    public function ff_canceling_one_subscription_with_another_still_active_does_not_deactivate_membership()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         $subscriptionA = $this->subscription()->id(1)->status('active');
         $subscriptionB = $this->subscription()->id(2)->status('active');
@@ -300,38 +374,12 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_on_canceling_one_subscription_with_another_still_active_does_not_deactivate_membership()
+    public function user_membership_from_paused_to_active_activates_membership_with_id_check()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $subscriptionA = $this->subscription()->id(1)->status('active');
-        $subscriptionB = $this->subscription()->id(2)->status('active');
-        $customer = $this->customer();
-
-        $aggregate = MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new SubscriptionCreated($subscriptionA),
-                new SubscriptionCreated($subscriptionB),
-            ]);
-
-        $subscriptionB->status('cancelled');
-
-        $aggregate
-            ->updateSubscription($subscriptionB)
-            ->assertRecorded([
-                new SubscriptionUpdated($subscriptionB),
-            ]);
-    }
-
-    /** @test */
-    public function user_membership_from_need_id_check_to_active_activates_membership_with_id_check()
-    {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('need-id-check');
+            ->status('paused');
         $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
 
@@ -345,115 +393,16 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new UserMembershipUpdated($newUserMembership),
                 new MembershipActivated($customer->id),
-            ]);
-    }
-
-    /** @test */
-    public function ff_off_user_membership_from_need_id_check_to_active_does_not_activate_membership_with_id_check()
-    {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $customer = $this->customer();
-
-        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('need-id-check');
-        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new UserMembershipCreated($oldUserMembership),
-                new IdWasChecked($customer->id),
-            ])
-            ->updateUserMembership($newUserMembership)
-            ->assertRecorded([
-                new UserMembershipUpdated($newUserMembership),
-            ]);
-    }
-
-    /** @test */
-    public function user_membership_from_id_was_checked_to_active_activates_membership_with_id_check()
-    {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $customer = $this->customer();
-
-        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('id-was-checked');
-        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new UserMembershipCreated($oldUserMembership),
-                new IdWasChecked($customer->id),
-            ])
-            ->updateUserMembership($newUserMembership)
-            ->assertRecorded([
-                new UserMembershipUpdated($newUserMembership),
-                new MembershipActivated($customer->id),
-            ]);
-    }
-
-    /** @test */
-    public function ff_off_user_membership_from_id_was_checked_to_active_does_not_activate_membership_with_id_check()
-    {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $customer = $this->customer();
-
-        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('id-was-checked');
-        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new UserMembershipCreated($oldUserMembership),
-                new IdWasChecked($customer->id),
-            ])
-            ->updateUserMembership($newUserMembership)
-            ->assertRecorded([
-                new UserMembershipUpdated($newUserMembership),
             ]);
     }
 
     /** @test */
     public function user_membership_with_different_plan_to_active_does_not_activate_membership()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_3DP_USER)
-            ->status('need-id-check');
-        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_3DP_USER)
-            ->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new UserMembershipCreated($oldUserMembership),
-                new IdWasChecked($customer->id),
-            ])
-            ->updateUserMembership($newUserMembership)
-            ->assertRecorded([
-                new UserMembershipUpdated($newUserMembership),
-            ]);
-    }
-
-    /** @test */
-    public function ff_off_user_membership_with_different_plan_to_active_does_not_activate_membership()
-    {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $customer = $this->customer();
-
-        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_3DP_USER)
-            ->status('need-id-check');
+            ->status('paused');
         $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_3DP_USER)
             ->status('active');
 
@@ -472,8 +421,6 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function user_membership_with_different_plan_to_active_does_not_activate_membership_on_id_check()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_3DP_USER)
@@ -484,7 +431,7 @@ class ActiveMembershipTest extends TestCase
                 new CustomerCreated($customer),
                 new UserMembershipCreated($newUserMembership),
             ])
-            ->updateCustomer($customer->meta_data('id_was_checked', true))
+            ->updateCustomer($customer->id_was_checked())
             ->assertRecorded([
                 new CustomerUpdated($customer),
                 new IdWasChecked($customer->id),
@@ -492,59 +439,12 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_off_user_membership_with_different_plan_to_active_does_not_activate_membership_on_id_check()
+    public function user_membership_from_paused_to_active_does_not_activate_membership_without_id_check()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $customer = $this->customer();
-
-        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_3DP_USER)
-            ->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new UserMembershipCreated($newUserMembership),
-            ])
-            ->updateCustomer($customer->meta_data('id_was_checked', true))
-            ->assertRecorded([
-                new CustomerUpdated($customer),
-                new IdWasChecked($customer->id),
-            ]);
-    }
-
-    /** @test */
-    public function user_membership_from_need_id_check_to_active_does_not_activate_membership_without_id_check()
-    {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('need-id-check');
-        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new UserMembershipCreated($oldUserMembership),
-            ])
-            ->updateUserMembership($newUserMembership)
-            ->assertRecorded([
-                new UserMembershipUpdated($newUserMembership),
-            ]);
-    }
-
-    /** @test */
-    public function ff_off_user_membership_from_need_id_check_to_active_does_not_activate_membership_without_id_check()
-    {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $customer = $this->customer();
-
-        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('need-id-check');
+            ->status('paused');
         $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
 
@@ -562,8 +462,6 @@ class ActiveMembershipTest extends TestCase
     /** @test */
     public function user_membership_when_active_emits_membership_activated_if_id_is_checked()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $userMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
@@ -574,7 +472,7 @@ class ActiveMembershipTest extends TestCase
                 new CustomerCreated($customer),
                 new UserMembershipCreated($userMembership),
             ])
-            ->updateCustomer($customer->meta_data('id_was_checked', true))
+            ->updateCustomer($customer->id_was_checked())
             ->assertRecorded([
                 new CustomerUpdated($customer),
                 new IdWasChecked($customer->id),
@@ -583,32 +481,8 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_off_user_membership_when_active_emits_does_not_emit_membership_activated_if_id_is_checked()
-    {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
-        $customer = $this->customer();
-
-        $userMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('active');
-
-        MembershipAggregate::fakeCustomer($customer)
-            ->given([
-                new CustomerCreated($customer),
-                new UserMembershipCreated($userMembership),
-            ])
-            ->updateCustomer($customer->meta_data('id_was_checked', true))
-            ->assertRecorded([
-                new CustomerUpdated($customer),
-                new IdWasChecked($customer->id),
-            ]);
-    }
-
-    /** @test */
     public function user_membership_from_active_to_cancelled_deactivates_membership()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
@@ -630,77 +504,254 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function ff_off_user_membership_from_active_to_cancelled_does_not_deactivate_membership()
+    public function user_membership_from_active_to_active_does_nothing()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
-        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+        $userMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
-        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('cancelled');
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
-                new UserMembershipCreated($oldUserMembership),
+                new UserMembershipCreated($userMembership),
                 new MembershipActivated($customer->id),
             ])
-            ->updateUserMembership($newUserMembership)
+            ->updateUserMembership($userMembership)
             ->assertRecorded([
-                new UserMembershipUpdated($newUserMembership),
+                new UserMembershipUpdated($userMembership),
             ]);
     }
 
     /** @test */
-    public function user_membership_with_two_updates_works()
+    public function active_subscription_then_active_user_membership_with_id_check_activates_once()
     {
-        Features::turnOn(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('need-id-check');
+            ->status('paused');
         $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
+        $newSubscription = $this->subscription()->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
                 new IdWasChecked($customer->id),
                 new UserMembershipCreated($oldUserMembership),
-                new UserMembershipUpdated($oldUserMembership->status('id-was-checked'))
+                new SubscriptionCreated($this->subscription()->status('need-id-check')),
             ])
+            ->updateSubscription($newSubscription)
             ->updateUserMembership($newUserMembership)
             ->assertRecorded([
-                new UserMembershipUpdated($newUserMembership),
+                new SubscriptionUpdated($newSubscription),
                 new MembershipActivated($customer->id),
+                new UserMembershipUpdated($newUserMembership),
             ]);
     }
 
     /** @test */
-    public function ff_off_user_membership_with_two_updates_works()
+    public function active_user_membership_then_active_subscription_with_id_check_activates_once()
     {
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
-
         $customer = $this->customer();
 
         $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->status('need-id-check');
+            ->status('paused');
         $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
+        $newSubscription = $this->subscription()->status('active');
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
                 new IdWasChecked($customer->id),
                 new UserMembershipCreated($oldUserMembership),
-                new UserMembershipUpdated($oldUserMembership->status('id-was-checked'))
+                new SubscriptionCreated($this->subscription()->status('need-id-check')),
             ])
             ->updateUserMembership($newUserMembership)
+            ->updateSubscription($newSubscription)
             ->assertRecorded([
                 new UserMembershipUpdated($newUserMembership),
+                new MembershipActivated($customer->id),
+                new SubscriptionUpdated($newSubscription),
+            ]);
+    }
+
+    /** @test */
+    public function active_subscription_then_active_user_membership_without_explicit_id_check_activates()
+    {
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newSubscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new SubscriptionCreated($this->subscription()->status('need-id-check')),
+            ])
+            ->updateSubscription($newSubscription)
+            ->updateUserMembership($newUserMembership)
+            ->assertRecorded([
+                new SubscriptionUpdated($newSubscription),
+                new MembershipActivated($customer->id),
+                new UserMembershipUpdated($newUserMembership),
+            ]);
+    }
+
+    /** @test */
+    public function active_user_membership_then_active_subscription_without_explicit_id_check_activates()
+    {
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newSubscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new SubscriptionCreated($this->subscription()->status('need-id-check')),
+            ])
+            ->updateUserMembership($newUserMembership)
+            ->updateSubscription($newSubscription)
+            ->assertRecorded([
+                new UserMembershipUpdated($newUserMembership),
+                new SubscriptionUpdated($newSubscription),
+                new MembershipActivated($customer->id),
+            ]);
+    }
+
+    /** @test */
+    public function ff_active_subscription_then_active_user_membership_without_explicit_id_check_activates()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
+
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newSubscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new SubscriptionCreated($this->subscription()->status('need-id-check')),
+            ])
+            ->updateSubscription($newSubscription)
+            ->updateUserMembership($newUserMembership)
+            ->assertRecorded([
+                new SubscriptionUpdated($newSubscription),
+                new UserMembershipUpdated($newUserMembership),
+            ]);
+    }
+
+    /** @test */
+    public function ff_active_user_membership_then_active_subscription_without_explicit_id_check_does_not_activate()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
+
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newSubscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new SubscriptionCreated($this->subscription()->status('need-id-check')),
+            ])
+            ->updateUserMembership($newUserMembership)
+            ->updateSubscription($newSubscription)
+            ->assertRecorded([
+                new UserMembershipUpdated($newUserMembership),
+                new SubscriptionUpdated($newSubscription),
+            ]);
+    }
+
+    /** @test */
+    public function user_membership_active_then_paused_does_not_activate_membership_on_id_check()
+    {
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new UserMembershipUpdated($newUserMembership),
+            ])
+            ->updateCustomer($customer->id_was_checked())
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+                new IdWasChecked($customer->id),
+            ]);
+    }
+
+    /** @test */
+    public function user_membership_active_then_paused_then_active_again_activates_membership_on_id_check()
+    {
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new UserMembershipUpdated($newUserMembership),
+                new UserMembershipUpdated($oldUserMembership),
+            ])
+            ->updateCustomer($customer->id_was_checked())
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+                new IdWasChecked($customer->id),
+                new MembershipActivated($customer->id),
+            ]);
+    }
+
+    /** @test */
+    public function user_membership_active_then_paused_then_active_again_activates_membership_after_id_check()
+    {
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new UserMembershipUpdated($newUserMembership),
+                new IdWasChecked($customer->id),
+            ])
+            ->updateUserMembership($oldUserMembership)
+            ->assertRecorded([
+                new UserMembershipUpdated($oldUserMembership),
+                new MembershipActivated($customer->id),
             ]);
     }
 }

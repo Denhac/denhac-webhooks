@@ -32,8 +32,8 @@ trait Subscription
             (in_array($oldStatus, ['need-id-check', 'id-was-checked']) || $oldStatus == null)
             && $newStatus == 'active'
         ) {
-            if (! Features::accessible(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE)) {
-                $this->activateMembership();
+            if (! Features::accessible(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED)) {
+                $this->activateMembershipIfNeeded();
             }
         }
 
@@ -43,8 +43,8 @@ trait Subscription
             })->isNotEmpty();
 
             if (! $anyActive) {
-                if (! Features::accessible(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE)) {
-                    $this->deactivateMembership();
+                if (! Features::accessible(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED)) {
+                    $this->deactivateMembershipIfNeeded();
                 }
             }
         }

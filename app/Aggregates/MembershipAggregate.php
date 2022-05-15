@@ -233,7 +233,7 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function activateMembership()
+    public function activateMembershipIfNeeded()
     {
         if($this->currentlyAMember) {
             return;
@@ -244,7 +244,7 @@ final class MembershipAggregate extends AggregateRoot
         $this->activateCardsNeedingActivation();
     }
 
-    public function deactivateMembership()
+    public function deactivateMembershipIfNeeded()
     {
         if(! $this->currentlyAMember) {
             return;

@@ -29,7 +29,7 @@ class AccessCardTest extends TestCase
     {
         parent::setUp();
 
-        Features::turnOff(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE);
+        Features::turnOff(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
 
         Event::fake();
         Projectionist::withoutEventHandlers();
@@ -53,6 +53,27 @@ class AccessCardTest extends TestCase
                 new SubscriptionUpdated($subscription),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function ff_access_card_is_not_sent_for_activation_when_subscription_is_activated()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
+
+        $card = '42424';
+        $customer = $this->customer();
+        $subscription = $this->subscription()->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new SubscriptionUpdated($this->subscription()->status('need-id-check')),
+                new CardAdded($customer->id, $card),
+            ])
+            ->updateSubscription($subscription)
+            ->assertRecorded([
+                new SubscriptionUpdated($subscription),
             ]);
     }
 
@@ -143,6 +164,28 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
+    public function ff_all_cards_are_not_sent_for_deactivation_on_subscription_deactivated()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
+
+        $customer = $this->customer();
+        $cancelledSubscription = $this->subscription()->status('cancelled');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, '42424'),
+                new CardAdded($customer->id, '53535'),
+                new SubscriptionUpdated($this->subscription()->status('active')),
+                new MembershipActivated($customer->id),
+            ])
+            ->updateSubscription($cancelledSubscription)
+            ->assertRecorded([
+                new SubscriptionUpdated($cancelledSubscription),
+            ]);
+    }
+
+    /** @test */
     public function card_is_not_sent_for_activation_if_it_has_already_been_sent()
     {
         $card = '42424';
@@ -165,7 +208,6 @@ class AccessCardTest extends TestCase
     /** @test */
     public function card_is_not_added_if_card_number_is_null()
     {
-        $card = '42424';
         $customer = $this->customer()
             ->access_card(null);
 
@@ -260,6 +302,33 @@ class AccessCardTest extends TestCase
                 new SubscriptionUpdated($subscription),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function ff_former_member_becoming_a_member_through_their_subscription_does_nothing()
+    {
+        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
+
+        $card = '42424';
+        $customer = $this->customer();
+        $subscription = $this->subscription()->status('need-id-check');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $card),
+                new CardSentForActivation($customer->id, $card),
+                new CardActivated($customer->id, $card),
+                new MembershipDeactivated($customer->id),
+                new CardSentForDeactivation($customer->id, $card),
+                new CardDeactivated($customer->id, $card),
+                new SubscriptionCreated($subscription),
+            ])
+            ->updateSubscription($subscription->status('active'))
+            ->assertRecorded([
+                new SubscriptionUpdated($subscription),
             ]);
     }
 

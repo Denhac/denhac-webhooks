@@ -11,7 +11,7 @@ trait IdWasCheckedTrait
 {
     public bool $idWasChecked = false;
 
-    private function handleIdCheck($customer)
+    private function handleIdCheck($customer): void
     {
         $metadata = collect($customer['meta_data']);
         $idWasCheckedValue = $metadata
@@ -22,14 +22,12 @@ trait IdWasCheckedTrait
             $this->recordThat(new IdWasChecked($this->customerId));
 
             if($this->activeFullMemberPlan) {
-                if (Features::accessible(FeatureFlags::USER_MEMBERSHIP_CONTROLS_ACTIVE)) {
-                    $this->activateMembership();
-                }
+                    $this->activateMembershipIfNeeded();
             }
         }
     }
 
-    public function applyIdWasChecked(IdWasChecked $_)
+    public function applyIdWasChecked(IdWasChecked $_): void
     {
         $this->idWasChecked = true;
     }
