@@ -52,7 +52,6 @@ class Door
             self::classroom1(),
             self::classroom2(),
             self::fishbowl(),
-            self::dirtyRoomDoor(),
         ]);
     }
 
