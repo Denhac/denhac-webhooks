@@ -4,6 +4,7 @@
 namespace App\WinDSX;
 
 
+use App\Events\DoorControlUpdated;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
@@ -14,14 +15,31 @@ class Door
 
     private function __construct(
         public string $humanReadableName,
-        public int $dsxDeviceId, // The specific hardware ID based on what 1042 card this door is wired to.
-        public int $dsxRelayBoard, // The relay board ID in the stack attached to the Raspberry Pi
-        public int $dsxRelayId, // The specific relay number on that board.
-        public bool $openDuringOpenHouseByDefault,
-        public bool $membersCanBadgeIn,
-        public int $momentaryOpenTime // How long to keep just this door open
-    ) {
+        public int    $dsxDeviceId, // The specific hardware ID based on what 1042 card this door is wired to.
+        public int    $dsxRelayBoard, // The relay board ID in the stack attached to the Raspberry Pi
+        public int    $dsxRelayId, // The specific relay number on that board.
+        public bool   $openDuringOpenHouseByDefault,
+        public bool   $membersCanBadgeIn,
+        public int    $momentaryOpenTime // How long to keep just this door open
+    )
+    {
         $this->shouldOpen = $this->openDuringOpenHouseByDefault;
+    }
+
+    public static function quickOpenHouse(): void
+    {
+        $doors = self::all()->filter(fn($d) => $d->openDuringOpenHouseByDefault);
+        $elevenPM = now()->tz("America/Denver");
+        $elevenPM->hour = 23;
+        $elevenPM->minute = 00;
+
+        event(new DoorControlUpdated($elevenPM, ...$doors->toArray()));
+    }
+
+    public static function quickDefaultDoors(): void
+    {
+        $doors = self::all()->map(fn($d) => $d->shouldOpen(false));
+        event(new DoorControlUpdated(1, ...$doors->toArray()));
     }
 
     public function shouldOpen(bool $shouldOpen): static
@@ -32,7 +50,8 @@ class Door
     }
 
     #[ArrayShape(["device" => "int", "board" => "int", "relay" => "int", "open" => "bool"])]
-    public function toRelay(): array {
+    public function toRelay(): array
+    {
         return [
             "device" => $this->dsxDeviceId,
             "board" => $this->dsxRelayBoard,
@@ -41,7 +60,8 @@ class Door
         ];
     }
 
-    public static function all(): Collection {
+    public static function all(): Collection
+    {
         return collect([
             self::glassWorkshopDoor(),
             self::kitchenWorkshopDoor(),
@@ -55,9 +75,10 @@ class Door
         ]);
     }
 
-    public static function byDSXDeviceId(int $dsxDeviceId): ?Door {
+    public static function byDSXDeviceId(int $dsxDeviceId): ?Door
+    {
         return self::all()
-            ->first(function($door) use ($dsxDeviceId) {
+            ->first(function ($door) use ($dsxDeviceId) {
                 /** @var $door Door */
                 return $door->dsxDeviceId == $dsxDeviceId;
             });

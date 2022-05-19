@@ -5,6 +5,7 @@ namespace App\Slack\Modals;
 use App\Http\Requests\SlackRequest;
 use App\Slack\SlackOptions;
 use App\UserMembership;
+use App\WinDSX\Door;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -17,6 +18,8 @@ class MembershipOptionsModal implements ModalInterface
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
     private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
     private const MANAGE_OPEN_HOUSE_VALUE = 'value-manage-open-house-doors';
+    private const QUICK_OPEN_HOUSE_VALUE = 'value-quick-open-house';
+    private const ALL_DOORS_DEFAULT_VALUE = 'value-all-doors-default';
     private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
     private const EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
 
@@ -62,6 +65,12 @@ class MembershipOptionsModal implements ModalInterface
             case self::MANAGE_OPEN_HOUSE_VALUE:
                 $modal = new ManageOpenHouseModal();
                 break;
+            case self::QUICK_OPEN_HOUSE_VALUE:
+                Door::quickOpenHouse();
+                return self::clearViewStack();
+            case self::ALL_DOORS_DEFAULT_VALUE:
+                Door::quickDefaultDoors();
+                return self::clearViewStack();
             case self::CANCEL_MEMBERSHIP_VALUE:
                 $modal = new CancelMembershipConfirmationModal($request->customer());
                 break;
@@ -101,9 +110,9 @@ class MembershipOptionsModal implements ModalInterface
             $options->option('Sign up new member', self::SIGN_UP_NEW_MEMBER_VALUE);
             $options->option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE);
 
+            $options->option('Quick Open House', self::QUICK_OPEN_HOUSE_VALUE);
+            $options->option('All doors to default state', self::ALL_DOORS_DEFAULT_VALUE);
             $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
-
-            $options->option('Countdown Test', self::COUNTDOWN_TEST_VALUE);
         }
 
         if ($customer->isATrainer()) {
