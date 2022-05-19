@@ -32,7 +32,7 @@ class SlackDoorCodeCommandController extends Controller
 
         if ($doorCodeSetting != '') {
             return Kit::newMessage()
-                ->text("Hello! The door access code is $doorCodeSetting.");
+                ->text("Did you know that you shouldn't need this anymore?!!! That's so cool! Your badge should just work! But if you really need it, the door access code is $doorCodeSetting.");
         } else {
             return Kit::newMessage()
                 ->text("So here's the thing... I'd tell you the door code, but I seem to have misplaced it. Maybe ask an admin?");
