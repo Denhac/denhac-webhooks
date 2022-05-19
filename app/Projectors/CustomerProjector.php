@@ -3,6 +3,7 @@
 namespace App\Projectors;
 
 use App\Customer;
+use App\FeatureFlags;
 use App\StorableEvents\CustomerCapabilitiesImported;
 use App\StorableEvents\CustomerCapabilitiesUpdated;
 use App\StorableEvents\CustomerCreated;
@@ -17,6 +18,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class CustomerProjector extends Projector
 {
@@ -75,7 +77,8 @@ final class CustomerProjector extends Projector
             throw new Exception("Failed to find customer {$event->subscription['customer_id']}");
         }
 
-        if ($event->subscription['status'] == 'active') {
+        if ($event->subscription['status'] == 'active' &&
+            ! Features::accessible(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED)) {
             $customer->member = true;
             $customer->save();
         }

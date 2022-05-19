@@ -31,4 +31,19 @@ trait HasMetaData
 
         return $this;
     }
+
+    protected function get_meta_data($key): mixed
+    {
+        if (! array_key_exists('meta_data', $this->data)) {
+            return null;
+        }
+
+        foreach ($this->data['meta_data'] as $index => $item) {
+            if ($item['key'] == $key) {
+                return $item['value'];
+            }
+        }
+
+        return null;
+    }
 }

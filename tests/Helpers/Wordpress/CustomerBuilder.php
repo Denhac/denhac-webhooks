@@ -2,11 +2,19 @@
 
 namespace Tests\Helpers\Wordpress;
 
+use Carbon\Carbon;
 use Tests\Helpers\BaseBuilder;
 
 /**
  * Class CustomerBuilder.
  * @property int id
+ * @property string email
+ * @property string username
+ * @property string first_name
+ * @property string last_name
+ * @property string|null github_username
+ * @property string|null slack_id
+ * @property string|null birthday
  */
 class CustomerBuilder extends BaseBuilder
 {
@@ -63,5 +71,42 @@ class CustomerBuilder extends BaseBuilder
     public function github_username($username): static
     {
         return $this->meta_data('github_username', $username);
+    }
+
+    public function slack_id($slack_id): static
+    {
+        return $this->meta_data('access_slack_id', $slack_id);
+    }
+
+    public function birthday($birthday): static
+    {
+        return $this->meta_data('account_birthday', $birthday);
+    }
+
+    public function __set(string $name, $value): void
+    {
+        switch ($name) {
+            case "github_username":
+                $this->github_username($value);
+                break;
+            case "slack_id":
+                $this->slack_id($value);
+                break;
+            case "birthday":
+                $this->birthday($value);
+                break;
+            default:
+                parent::__set($name, $value);
+        }
+    }
+
+    public function __get($name)
+    {
+        return match ($name) {
+            "github_username" => $this->get_meta_data($name),
+            "slack_id" => $this->get_meta_data("access_slack_id"),
+            "birthday" => $this->get_meta_data("account_birthday"),
+            default => parent::__get($name),
+        };
     }
 }

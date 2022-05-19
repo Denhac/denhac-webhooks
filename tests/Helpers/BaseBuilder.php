@@ -38,6 +38,12 @@ abstract class BaseBuilder implements \JsonSerializable, Arrayable, \ArrayAccess
         unset($this->data[$offset]);
     }
 
+    public function __set(string $name, $value): void
+    {
+        // TODO Make this work on methods that return an object like billing
+        $this->data[$name] = $value;
+    }
+
     public function __get($name)
     {
         // TODO Make this work on methods that return an object like billing
