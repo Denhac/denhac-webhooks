@@ -45,11 +45,15 @@ class Door
         return collect([
             self::glassWorkshopDoor(),
             self::kitchenWorkshopDoor(),
-            self::studioBDoor(),
-            self::KGNUDoor(),
-            self::dirtyRoomDoor(),
+            self::electronicsAndLavaRoom(),
+            self::printersAndCrafts(),
             self::kitchenGlassDoor(),
-            self::glassDoubleDoors(),
+            self::dirtyRoomDoor(),
+            self::classroom1(),
+            self::classroom2(),
+            self::fishbowl(),
+            self::dirtyRoomDoor(),
+            self::dirtyRoomDoor(),
         ]);
     }
 
@@ -87,7 +91,7 @@ class Door
         );
     }
 
-    #[Pure] public static function studioBDoor(): Door
+    #[Pure] public static function electronicsAndLavaRoom(): Door
     {
         return new Door(
             humanReadableName: "Electronics/Lounge Door",
@@ -100,7 +104,7 @@ class Door
         );
     }
 
-    #[Pure] public static function KGNUDoor(): Door
+    #[Pure] public static function printersAndCrafts(): Door
     {
         return new Door(
             humanReadableName: "Craft/3D Room Door",
@@ -133,7 +137,7 @@ class Door
             dsxDeviceId: 1,
             dsxRelayBoard: 0,
             dsxRelayId: 5,
-            openDuringOpenHouseByDefault: false,
+            openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true,
             momentaryOpenTime: 5
         );
@@ -149,6 +153,45 @@ class Door
             openDuringOpenHouseByDefault: false,
             membersCanBadgeIn: true,
             momentaryOpenTime: 5
+        );
+    }
+
+    #[Pure] public static function classroom1(): Door
+    {
+        return new Door(
+            humanReadableName: "Classroom 1",
+            dsxDeviceId: 12,
+            dsxRelayBoard: 1,  # Actually, None
+            dsxRelayId: 0,  # Actually, None
+            openDuringOpenHouseByDefault: true,
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 3
+        );
+    }
+
+    #[Pure] public static function classroom2(): Door
+    {
+        return new Door(
+            humanReadableName: "classroom 2",
+            dsxDeviceId: 11,
+            dsxRelayBoard: 1,  # Actually, None
+            dsxRelayId: 0,  # Actually, None
+            openDuringOpenHouseByDefault: true,
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 3
+        );
+    }
+
+    #[Pure] public static function fishbowl(): Door
+    {
+        return new Door(
+            humanReadableName: "Glass Double Doors",
+            dsxDeviceId: 13,
+            dsxRelayBoard: 1,  # Actually, None
+            dsxRelayId: 0,  # Actually, None
+            openDuringOpenHouseByDefault: true,
+            membersCanBadgeIn: true,
+            momentaryOpenTime: 3
         );
     }
 }
