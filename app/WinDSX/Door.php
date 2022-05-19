@@ -48,10 +48,10 @@ class Door
             self::electronicsAndLavaRoom(),
             self::printersAndCrafts(),
             self::kitchenGlassDoor(),
-            self::dirtyRoomDoor(),
             self::classroom1(),
             self::classroom2(),
             self::fishbowl(),
+            self::glassDoubleDoors(),
         ]);
     }
 
@@ -183,7 +183,7 @@ class Door
     #[Pure] public static function fishbowl(): Door
     {
         return new Door(
-            humanReadableName: "Glass Double Doors",
+            humanReadableName: "Fishbowl",
             dsxDeviceId: 13,
             dsxRelayBoard: 1,  # Actually, None
             dsxRelayId: 0,  # Actually, None
