@@ -53,7 +53,6 @@ class Door
             self::classroom2(),
             self::fishbowl(),
             self::dirtyRoomDoor(),
-            self::dirtyRoomDoor(),
         ]);
     }
 
