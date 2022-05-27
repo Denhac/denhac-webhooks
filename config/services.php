@@ -30,4 +30,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'horizon' => [
+        'secret' => env('HORIZON_SECRET')
+    ],
 ];
