@@ -19,7 +19,7 @@ class OpenKitchenGlassDoor implements ShortcutInterface
         $customer = $request->customer();
 
         // TODO Verify if they're at the space and challenge if not
-        if ($customer->hasCapability('denhac_can_verify_member_id')) {
+        if ($customer->canIDCheck()) {
             event(new DoorControlUpdated(5, Door::kitchenGlassDoor()->shouldOpen(true)));
         }
     }

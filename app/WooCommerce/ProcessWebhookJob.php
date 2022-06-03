@@ -2,7 +2,6 @@
 
 namespace App\WooCommerce;
 
-use App\Aggregates\CapabilityAggregate;
 use App\Aggregates\MembershipAggregate;
 use App\UserMembership;
 use Illuminate\Support\Facades\Log;
@@ -76,10 +75,6 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->updateSubscription($payload)
                     ->persist();
                 break;
-            case 'action.wc_denhac_capabilities_updated':
-                CapabilityAggregate::make($payload['arg']['customer_id'])
-                    ->updateCapabilities($payload['arg']['capabilities'])
-                    ->persist();
         }
     }
 }

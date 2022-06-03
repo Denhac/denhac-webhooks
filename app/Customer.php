@@ -24,7 +24,6 @@ use Laravel\Passport\HasApiTokens;
  * @property bool member
  * @property string github_username
  * @property string slack_id
- * @property array capabilities
  * @property Carbon birthday
  * @property Collection subscriptions
  * @property Collection cards
@@ -57,7 +56,6 @@ class Customer extends Model
 
     protected $casts = [
         'member' => 'boolean',
-        'capabilities' => 'json',
     ];
 
     protected $dates = [
@@ -84,23 +82,14 @@ class Customer extends Model
         return $this->hasMany(Card::class, 'woo_customer_id', 'woo_id');
     }
 
-    public function hasCapability($capability)
-    {
-        $capabilities = collect($this->capabilities) ?? collect();
-
-        return $capabilities->has($capability);
-    }
-
     public function isBoardMember(): bool
     {
-        return $this->hasCapability('denhac_board_member') ||
-            $this->hasMembership(UserMembership::MEMBERSHIP_BOARD);
+        return $this->hasMembership(UserMembership::MEMBERSHIP_BOARD);
     }
 
     public function canIDCheck(): bool
     {
-        return $this->hasCapability('denhac_can_verify_member_id') ||
-            $this->hasMembership(UserMembership::MEMBERSHIP_CAN_ID_CHECK) ||
+        return $this->hasMembership(UserMembership::MEMBERSHIP_CAN_ID_CHECK) ||
             $this->isBoardMember();
     }
 

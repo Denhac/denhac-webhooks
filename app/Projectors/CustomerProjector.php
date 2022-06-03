@@ -4,8 +4,6 @@ namespace App\Projectors;
 
 use App\Customer;
 use App\FeatureFlags;
-use App\StorableEvents\CustomerCapabilitiesImported;
-use App\StorableEvents\CustomerCapabilitiesUpdated;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
@@ -107,32 +105,6 @@ final class CustomerProjector extends Projector
         }
 
         $customer->member = false;
-        $customer->save();
-    }
-
-    public function onCustomerCapabilitiesImported(CustomerCapabilitiesImported $event)
-    {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
-
-        if (is_null($customer)) {
-            throw new Exception("Failed to find customer {$event->customerId}");
-        }
-
-        $customer->capabilities = $event->capabilities;
-        $customer->save();
-    }
-
-    public function onCustomerCapabilitiesUpdated(CustomerCapabilitiesUpdated $event)
-    {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
-
-        if (is_null($customer)) {
-            throw new Exception("Failed to find customer {$event->customerId}");
-        }
-
-        $customer->capabilities = $event->capabilities;
         $customer->save();
     }
 
