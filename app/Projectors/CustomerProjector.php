@@ -8,6 +8,7 @@ use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
+use App\StorableEvents\IdWasChecked;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
@@ -105,6 +106,19 @@ final class CustomerProjector extends Projector
         }
 
         $customer->member = false;
+        $customer->save();
+    }
+
+    public function onIdWasChecked(IdWasChecked $event)
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->customerId)->first();
+
+        if (is_null($customer)) {
+            throw new Exception("Failed to find customer {$event->customerId}");
+        }
+
+        $customer->id_checked = true;
         $customer->save();
     }
 

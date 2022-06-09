@@ -9,6 +9,7 @@ use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
+use App\StorableEvents\IdWasChecked;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
@@ -264,5 +265,36 @@ class CustomerProjectorTest extends TestCase
         $this->expectException(\Exception::class);
 
         event(new MembershipDeactivated($customer->id));
+    }
+
+    /** @test */
+    public function id_checked_field_set_to_false_by_default()
+    {
+        $builder = $this->customer();
+
+        $this->assertNull(Customer::find($builder->id));
+
+        event(new CustomerCreated($builder->toArray()));
+
+        /** @var Customer $customer */
+        $customer = Customer::find($builder->id);
+
+        $this->assertFalse($customer->id_checked);
+    }
+
+    /** @test */
+    public function id_checked_field_set_to_true_on_id_checked()
+    {
+        $builder = $this->customer();
+
+        $this->assertNull(Customer::find($builder->id));
+
+        event(new CustomerCreated($builder->toArray()));
+        event(new IdWasChecked($builder->id));
+
+        /** @var Customer $customer */
+        $customer = Customer::find($builder->id);
+
+        $this->assertTrue($customer->id_checked);
     }
 }

@@ -30,6 +30,7 @@ use Laravel\Passport\HasApiTokens;
  * @property Collection memberships
  * @property Collection equipmentTrainer
  * @property string member_code
+ * @property bool id_checked
  * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)
  */
@@ -56,6 +57,7 @@ class Customer extends Model
 
     protected $casts = [
         'member' => 'boolean',
+        'id_checked' => 'boolean',
     ];
 
     protected $dates = [
