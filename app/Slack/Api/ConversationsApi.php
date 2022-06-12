@@ -72,6 +72,19 @@ class ConversationsApi
         });
     }
 
+    public function members($channelId): Collection
+    {
+        return $this->paginate('members', function ($cursor) use ($channelId) {
+            return $this->clients->managementApiClient
+                ->get('https://denhac.slack.com/api/conversations.members', [
+                    RequestOptions::QUERY => [
+                        'channel' => $channelId,
+                        'cursor' => $cursor,
+                    ],
+                ]);
+        });
+    }
+
     public function join($channelId)
     {
         $response = $this->clients->managementApiClient
