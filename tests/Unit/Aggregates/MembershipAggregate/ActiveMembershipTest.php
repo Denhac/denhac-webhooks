@@ -504,6 +504,29 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
+    public function user_membership_from_active_to_expired_deactivates_membership()
+    {
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $newUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('expired');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new MembershipActivated($customer->id),
+            ])
+            ->updateUserMembership($newUserMembership)
+            ->assertRecorded([
+                new UserMembershipUpdated($newUserMembership),
+                new MembershipDeactivated($customer->id),
+            ]);
+    }
+
+    /** @test */
     public function user_membership_from_active_to_active_does_nothing()
     {
         $customer = $this->customer();

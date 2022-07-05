@@ -30,7 +30,7 @@ trait UserMembership
             $this->activateMembershipIfNeeded();
         }
 
-        if ($currentStatus == 'cancelled') {
+        if (in_array($currentStatus, ['cancelled', 'expired'])) {
             $this->deactivateMembershipIfNeeded();
         }
     }

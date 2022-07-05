@@ -3,6 +3,7 @@
 namespace App\Slack\Modals;
 
 use App\Actions\NewMemberCardSlackLiveView;
+use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\NewMemberCardActivation;
 use App\Subscription;
@@ -23,11 +24,10 @@ class NewMemberIdCheckModal implements ModalInterface
 
     private Modal $modalView;
 
-    public function __construct($subscription_id)
+    public function __construct($customer_id)
     {
-        /** @var Subscription $subscription */
-        $subscription = Subscription::findOrFail($subscription_id);
-        $customer = $subscription->customer;
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($customer_id);
 
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
@@ -130,6 +130,10 @@ class NewMemberIdCheckModal implements ModalInterface
                         'key' => 'id_was_checked_when',
                         'value' => Carbon::now(),
                     ],
+                    [
+                        'key' => 'id_was_checked',
+                        'value' => true,
+                    ]
                 ],
             ]);
 

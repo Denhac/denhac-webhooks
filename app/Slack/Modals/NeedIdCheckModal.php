@@ -46,40 +46,35 @@ class NeedIdCheckModal implements ModalInterface
         $selectedOption = $request->payload()['view']['state']['values'][self::NEW_MEMBER][self::NEW_MEMBER]['selected_option']['value'];
 
         $matches = [];
-        $result = preg_match('/subscription-(\d+)/', $selectedOption, $matches);
+        $result = preg_match('/customer-(\d+)/', $selectedOption, $matches);
 
         if (! $result) {
-            throw new \Exception("Option wasn't valid for subscription: $selectedOption");
+            throw new \Exception("Option wasn't valid for customer: $selectedOption");
         }
 
-        $subscription_id = $matches[1];
-        $modal = new NewMemberIdCheckModal($subscription_id);
+        $customer_id = $matches[1];
+        $modal = new NewMemberIdCheckModal($customer_id);
 
         return $modal->update();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): SlackOptions
     {
         $options = SlackOptions::new();
 
-        $needIdCheckSubscriptions = Subscription::whereStatus('need-id-check')->with('customer')->get();
+        $customersNeedingIdCheck = Customer::with('memberships')
+            ->where('id_checked', false)
+            ->whereRelation('memberships', 'status', 'paused')
+            ->orderBy('woo_id', 'desc')
+            ->get();
 
-        foreach ($needIdCheckSubscriptions as $subscription) {
-            /** @var Subscription $subscription */
+        foreach ($customersNeedingIdCheck as $customer) {
             /** @var Customer $customer */
-            $customer = $subscription->customer;
-            $subscription_id = $subscription->id;
+            $name = "{$customer->first_name} {$customer->last_name}";
 
-            if (is_null($customer)) {
-                $name = 'Unknown Customer';
-            } else {
-                $name = "{$customer->first_name} {$customer->last_name}";
-            }
+            $value = "customer-$customer->woo_id";
 
-            $text = "$name (Subscription #$subscription_id)";
-            $value = "subscription-$subscription_id";
-
-            $options->option($text, $value);
+            $options->option($name, $value);
         }
 
         return $options;
