@@ -27,7 +27,7 @@ class NewMemberIdCheckModal implements ModalInterface
     public function __construct($customer_id)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($customer_id);
+        $customer = Customer::whereWooId($customer_id)->first();
 
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
