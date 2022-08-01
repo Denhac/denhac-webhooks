@@ -14,6 +14,7 @@ use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Slack\Channels;
 use App\Slack\SlackProfileFields;
 use App\StorableEvents\CustomerBecameBoardMember;
+use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -41,6 +42,12 @@ final class SlackReactor implements EventHandler
         } else {
             dispatch(new InviteCustomerNeedIdCheckOnlyMemberInSlack($event->subscription['customer_id']));
         }
+    }
+
+    public function onCustomerCreated(CustomerCreated $event)
+    {
+        // TODO Technically this should be specific to a new customer who is signing up, vs something like a manual user
+        dispatch(new InviteCustomerNeedIdCheckOnlyMemberInSlack($event->customer['id']));
     }
 
     public function onMembershipActivated(MembershipActivated $event)
