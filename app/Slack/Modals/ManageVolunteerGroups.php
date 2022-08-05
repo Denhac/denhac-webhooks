@@ -38,7 +38,8 @@ class ManageVolunteerGroups implements ModalInterface
             ->blockId(self::GROUP)
             ->label('Group')
             ->newSelectMenu(self::GROUP)
-            ->forExternalOptions();
+            ->forExternalOptions()
+            ->placeholder("Select Volunteer Group");
 
         $this->modalView->divider();
 
