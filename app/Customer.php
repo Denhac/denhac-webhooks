@@ -69,7 +69,7 @@ class Customer extends Model
         return $this->hasMany(UserMembership::class, 'customer_id', 'woo_id');
     }
 
-    public function hasMembership($planId)
+    public function hasMembership($planId): bool
     {
         return $this->memberships->where('plan_id', $planId)->count() > 0;
     }

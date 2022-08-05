@@ -25,6 +25,8 @@ class SlackProfileFields
 
         if (count($updated) != 0) {
             Log::info("User {$slack_id}'s profile fields need updating.");
+            Log::info("Profile Fields: ". print_r($profileFields, true));
+            Log::info("Updated Fields: ". print_r($updated, true));
             /** @var UpdateSlackUserProfile $action */
             $action = app(UpdateSlackUserProfile::class);
             $action
