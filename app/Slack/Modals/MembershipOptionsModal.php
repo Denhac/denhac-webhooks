@@ -86,6 +86,7 @@ class MembershipOptionsModal implements ModalInterface
                 break;
             case self::MANAGE_VOLUNTEER_GROUPS:
                 $modal = new ManageVolunteerGroups();
+                $modal->initialView();
                 break;
             default:
                 throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
