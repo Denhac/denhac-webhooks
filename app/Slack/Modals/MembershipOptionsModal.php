@@ -22,6 +22,7 @@ class MembershipOptionsModal implements ModalInterface
     private const ALL_DOORS_DEFAULT_VALUE = 'value-all-doors-default';
     private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
     private const EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
+    private const MANAGE_VOLUNTEER_GROUPS = 'value-manage-volunteer-groups';
 
     private const COUNTDOWN_TEST_VALUE = 'value-countdown-test';
 
@@ -83,6 +84,9 @@ class MembershipOptionsModal implements ModalInterface
             case self::COUNTDOWN_TEST_VALUE:
                 $modal = new CountdownTestModal(null);
                 break;
+            case self::MANAGE_VOLUNTEER_GROUPS:
+                $modal = new ManageVolunteerGroups();
+                break;
             default:
                 throw new \Exception("Slack membership model had unknown selected option: $selectedOption");
         }
@@ -113,6 +117,10 @@ class MembershipOptionsModal implements ModalInterface
             $options->option('Quick Open House', self::QUICK_OPEN_HOUSE_VALUE);
             $options->option('All doors to default state', self::ALL_DOORS_DEFAULT_VALUE);
             $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
+        }
+
+        if ($customer->isABoardMember() || $customer->isAManager()) {
+            $options->option('Manage Volunteer Group', self::MANAGE_VOLUNTEER_GROUPS);
         }
 
         if ($customer->isATrainer()) {

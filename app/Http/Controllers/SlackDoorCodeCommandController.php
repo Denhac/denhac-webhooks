@@ -41,7 +41,7 @@ class SlackDoorCodeCommandController extends Controller
 
     private function handleDoorCodeUpdate(SlackRequest $request, Customer $member, string $text)
     {
-        if (!$member->isBoardMember()) {
+        if (!$member->isABoardMember()) {
             return Kit::newMessage()
                 ->text('This functionality is for updating the door code, and only denhac board members can do that.');
         }

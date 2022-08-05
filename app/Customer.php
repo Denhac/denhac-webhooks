@@ -84,15 +84,25 @@ class Customer extends Model
         return $this->hasMany(Card::class, 'woo_customer_id', 'woo_id');
     }
 
-    public function isBoardMember(): bool
+    public function isABoardMember(): bool
     {
         return $this->hasMembership(UserMembership::MEMBERSHIP_BOARD);
+    }
+
+    public function isAManager(): bool
+    {
+        return $this->hasMembership(UserMembership::MEMBERSHIP_OPS_MANAGER) ||
+            $this->hasMembership(UserMembership::MEMBERSHIP_BUSINESS_MANAGER) ||
+            $this->hasMembership(UserMembership::MEMBERSHIP_TREASURER) ||
+            $this->hasMembership(UserMembership::MEMBERSHIP_SAFETY_MANAGER) ||
+            $this->hasMembership(UserMembership::MEMBERSHIP_EVENTS_MANAGER);
     }
 
     public function canIDCheck(): bool
     {
         return $this->hasMembership(UserMembership::MEMBERSHIP_CAN_ID_CHECK) ||
-            $this->isBoardMember();
+            $this->isAManager() ||
+            $this->isABoardMember();
     }
 
     public function equipmentTrainer()
