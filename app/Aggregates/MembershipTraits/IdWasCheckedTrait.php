@@ -15,14 +15,14 @@ trait IdWasCheckedTrait
     {
         $metadata = collect($customer['meta_data']);
         $idWasCheckedValue = $metadata
-                ->where('key', 'id_was_checked')
-                ->first()['value'] ?? null;
+            ->where('key', 'id_was_checked')
+            ->first()['value'] ?? null;
 
-        if (!is_null($idWasCheckedValue) && !$this->idWasChecked) {
+        if (! is_null($idWasCheckedValue) && ! $this->idWasChecked) {
             $this->recordThat(new IdWasChecked($this->customerId));
 
-            if($this->activeFullMemberPlan) {
-                    $this->activateMembershipIfNeeded();
+            if ($this->activeFullMemberPlan) {
+                $this->activateMembershipIfNeeded();
             }
         }
     }

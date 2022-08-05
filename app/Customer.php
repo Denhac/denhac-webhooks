@@ -71,7 +71,7 @@ class Customer extends Model
 
     public function hasMembership($planId): bool
     {
-        return $this->memberships->where('plan_id', $planId)->count() > 0;
+        return $this->memberships->where('plan_id', $planId)->count() > 0;  // TODO Where status is active
     }
 
     public function subscriptions()

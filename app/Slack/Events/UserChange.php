@@ -28,7 +28,6 @@ class UserChange implements EventInterface
         if(is_null($profileFields)) {
             $profileFields = [];
         }
-        Log::info("Profile fields: " . print_r($profileFields, true));
 
         SlackProfileFields::updateIfNeeded($slack_id, $profileFields);
     }

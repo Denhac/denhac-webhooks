@@ -64,7 +64,7 @@ class NeedIdCheckModal implements ModalInterface
 
         $customersNeedingIdCheck = Customer::with('memberships')
             ->where('id_checked', false)
-            ->whereRelation('memberships', 'status', 'paused')
+            ->whereRelation('memberships', 'status', 'paused') // TODO Verify User Membership is 6410
             ->orderBy('woo_id', 'desc')
             ->get();
 
