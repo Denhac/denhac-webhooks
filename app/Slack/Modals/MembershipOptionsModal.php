@@ -135,9 +135,9 @@ class MembershipOptionsModal implements ModalInterface
         $subscriptions = $customer->subscriptions;
         $hasActiveMembership = $subscriptions->where('status', 'active')->count() > 0;
 
-        if ($hasActiveMembership) {
-            $options->option('Cancel My Membership', self::CANCEL_MEMBERSHIP_VALUE);
-        }
+//        if ($hasActiveMembership) {
+//            $options->option('Cancel My Membership', self::CANCEL_MEMBERSHIP_VALUE);
+//        }
 
         return $options;
     }
