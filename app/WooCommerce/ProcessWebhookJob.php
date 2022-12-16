@@ -52,15 +52,20 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->persist();
                 break;
             case 'user_membership.updated':
-                MembershipAggregate::make($payload['customer_id'])
+                if(array_key_exists('customer_id', $payload)) {
+                    $customerId = $payload['customer_id'];
+                } else {
+                    $customerId = $this->customerIdFromUserMembershipId($payload['id']);
+                }
+                MembershipAggregate::make($customerId)
                     ->updateUserMembership($payload)
                     ->persist();
                 break;
             case 'user_membership.deleted':
-                $user_membership = UserMembership::find($payload['id']);
+                $customerId = $this->customerIdFromUserMembershipId($payload['id']);
 
-                if (! is_null($user_membership)) {
-                    MembershipAggregate::make($user_membership->customer_id)
+                if (! is_null($customerId)) {
+                    MembershipAggregate::make($customerId)
                         ->deleteUserMembership($payload)
                         ->persist();
                 }
@@ -76,5 +81,15 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->persist();
                 break;
         }
+    }
+
+    protected function customerIdFromUserMembershipId($id)
+    {
+        $user_membership = UserMembership::find($id);
+
+        if (! is_null($user_membership)) {
+            return $user_membership->customer_id;
+        }
+        return null;
     }
 }
