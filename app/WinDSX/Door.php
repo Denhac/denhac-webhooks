@@ -156,7 +156,7 @@ class Door
             dsxDeviceId: 1,
             dsxRelayBoard: 0,
             dsxRelayId: 5,
-            openDuringOpenHouseByDefault: true,
+            openDuringOpenHouseByDefault: false,
             membersCanBadgeIn: true,
             momentaryOpenTime: 5
         );
