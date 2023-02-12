@@ -44,6 +44,16 @@ class EquipmentAuthorization implements ModalInterface
 
         $this->modalView->newInput()
             ->dispatchAction()
+            ->blockId(self::PERSON_DROPDOWN)
+            ->label("Person")
+            ->newSelectMenu()
+            ->forExternalOptions()
+            ->actionId(self::PERSON_DROPDOWN)
+            ->placeholder("Select a member")
+            ->minQueryLength(2);
+
+        $this->modalView->newInput()
+            ->dispatchAction()
             ->blockId(self::EQUIPMENT_DROPDOWN)
             ->label("Equipment")
             ->newSelectMenu()
@@ -52,15 +62,6 @@ class EquipmentAuthorization implements ModalInterface
             ->placeholder("Select equipment")
             ->minQueryLength(0);
 
-        $this->modalView->newInput()
-            ->dispatchAction()
-            ->blockId(self::PERSON_DROPDOWN)
-            ->label("Person")
-            ->newSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::PERSON_DROPDOWN)
-            ->placeholder("Select a member")
-            ->minQueryLength(2);
     }
 
     public static function callbackId(): string
