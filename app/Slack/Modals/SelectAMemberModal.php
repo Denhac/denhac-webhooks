@@ -6,6 +6,7 @@ use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\Slack\ClassFinder;
 use App\Slack\SlackOptions;
+use App\UserMembership;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -72,20 +73,18 @@ class SelectAMemberModal implements ModalInterface
     {
         $options = SlackOptions::new();
 
-        $customers = Customer::with('subscriptions')->get();
+        $customers = Customer::with('memberships')->get();
 
         foreach ($customers as $customer) {
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
 
-            $hasAnySubscriptions = $customer->subscriptions->count() > 0;
-            $hasNeedIdCheck = $customer->subscriptions->where('status', 'need-id-check')->count() > 0;
+            /** @var UserMembership $userMembership */
+            $userMembership = $customer->memberships->where('customer_id', UserMembership::MEMBERSHIP_FULL_MEMBER)->first();
 
-            if (! $hasAnySubscriptions) {
+            if (is_null($userMembership)) {
                 continue;
-            } elseif ($hasNeedIdCheck) {
-                $text = "$name (Need ID Check)";
-            } elseif ($customer->member) {
+            } elseif($userMembership->status = "active") {
                 $text = "$name (Member)";
             } else {
                 $text = "$name (Not a Member)";
