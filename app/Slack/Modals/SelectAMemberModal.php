@@ -80,7 +80,7 @@ class SelectAMemberModal implements ModalInterface
             $name = "{$customer->first_name} {$customer->last_name}";
 
             /** @var UserMembership $userMembership */
-            $userMembership = $customer->memberships->where('customer_id', UserMembership::MEMBERSHIP_FULL_MEMBER)->first();
+            $userMembership = $customer->memberships->where('plan_id', UserMembership::MEMBERSHIP_FULL_MEMBER)->first();
 
             if (is_null($userMembership)) {
                 continue;
