@@ -6,47 +6,31 @@ use App\FeatureFlags;
 use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
+use Illuminate\Support\Collection;
 use YlsIdeas\FeatureFlags\Facades\Features;
 
+/**
+ * We don't actually use subscription status changes to do anything anymore, but we keep them here just in case that is
+ * useful in the future.
+ */
 trait Subscription
 {
-    public $subscriptionsOldStatus;
-    public $subscriptionsNewStatus;
+    public Collection $subscriptionsOldStatus;
+    public Collection $subscriptionsNewStatus;
 
-    public function bootSubscription()
+    public function bootSubscription(): void
     {
         $this->subscriptionsOldStatus = collect();
         $this->subscriptionsNewStatus = collect();
     }
 
-    public function handleSubscriptionStatus($subscriptionId, $newStatus)
+    public function handleSubscriptionStatus($subscriptionId, $newStatus): void
     {
         $oldStatus = $this->subscriptionsOldStatus->get($subscriptionId);
 
         if ($newStatus == $oldStatus) {
-            // Probably just a renewal, but there's nothing for us to do
+            // Probably just a renewal, there's nothing for us to do
             return;
-        }
-
-        if (
-            (in_array($oldStatus, ['need-id-check', 'id-was-checked']) || $oldStatus == null)
-            && $newStatus == 'active'
-        ) {
-            if (! Features::accessible(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED)) {
-                $this->activateMembershipIfNeeded();
-            }
-        }
-
-        if (in_array($newStatus, ['cancelled', 'suspended-payment', 'suspended-manual'])) {
-            $anyActive = $this->subscriptionsNewStatus->filter(function ($status) {
-                return $status == 'active';
-            })->isNotEmpty();
-
-            if (! $anyActive) {
-                if (! Features::accessible(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED)) {
-                    $this->deactivateMembershipIfNeeded();
-                }
-            }
         }
 
         $this->subscriptionsOldStatus->put($subscriptionId, $newStatus);
@@ -76,10 +60,6 @@ trait Subscription
 
     protected function updateStatus($subscriptionId, $newStatus)
     {
-//        if ($newStatus == 'active') {
-//            $this->currentlyAMember = true;
-//        }
-
         $oldStatus = $this->subscriptionsNewStatus->get($subscriptionId);
         $this->subscriptionsOldStatus->put($subscriptionId, $oldStatus);
         $this->subscriptionsNewStatus->put($subscriptionId, $newStatus);

@@ -67,22 +67,6 @@ final class CustomerProjector extends Projector
         $customer->delete();
     }
 
-    public function onSubscriptionImported(SubscriptionImported $event)
-    {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
-
-        if (is_null($customer)) {
-            throw new Exception("Failed to find customer {$event->subscription['customer_id']}");
-        }
-
-        if ($event->subscription['status'] == 'active' &&
-            ! Features::accessible(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED)) {
-            $customer->member = true;
-            $customer->save();
-        }
-    }
-
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */

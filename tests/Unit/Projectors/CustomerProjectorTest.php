@@ -25,8 +25,6 @@ class CustomerProjectorTest extends TestCase
     {
         parent::setUp();
 
-        Features::turnOff(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
-
         $this->withOnlyEventHandlerType(CustomerProjector::class);
     }
 
@@ -161,7 +159,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function member_field_set_to_true_on_active_membership_import()
+    public function member_field_kept_as_false_on_active_membership_import()
     {
         $customer = $this->customer();
         $subscription = $this->subscription()->customer($customer)->status("active");
@@ -171,7 +169,7 @@ class CustomerProjectorTest extends TestCase
 
         event(new SubscriptionImported($subscription));
 
-        $this->assertTrue(Customer::find($customer->id)->member);
+        $this->assertFalse(Customer::find($customer->id)->member);
     }
 
     /** @test */
@@ -202,19 +200,6 @@ class CustomerProjectorTest extends TestCase
         event(new SubscriptionImported($subscription));
 
         $this->assertFalse(Customer::find($customer->id)->member);
-    }
-
-    /** @test */
-    public function subscription_imported_with_unknown_customer_throws_exception()
-    {
-        $customer = $this->customer();
-        $subscription = $this->subscription()->customer($customer);
-
-        $this->assertNull(Customer::find($customer->id));
-
-        $this->expectException(\Exception::class);
-
-        event(new SubscriptionImported($subscription->toArray()));
     }
 
     /** @test */
