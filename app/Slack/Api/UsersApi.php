@@ -42,6 +42,7 @@ class UsersApi
                     'https://denhac.slack.com/api/users.list', [
                     RequestOptions::QUERY => [
                         'cursor' => $cursor,
+                        'limit' => 200,
                     ],
                 ]);
         });

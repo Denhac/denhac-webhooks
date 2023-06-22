@@ -7,6 +7,8 @@ use App\Card;
 use App\FeatureFlags;
 use App\Google\GmailEmailHelper;
 use App\Google\GoogleApi;
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\IssueChecker;
 use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\Subscription;
@@ -14,6 +16,7 @@ use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use YlsIdeas\FeatureFlags\Facades\Features;
@@ -67,8 +70,8 @@ class IdentifyIssues extends Command
      * @param GoogleApi $googleApi
      */
     public function __construct(WooCommerceApi $wooCommerceApi,
-                                SlackApi $slackApi,
-                                GoogleApi $googleApi)
+                                SlackApi       $slackApi,
+                                GoogleApi      $googleApi)
     {
         parent::__construct();
 
@@ -86,15 +89,30 @@ class IdentifyIssues extends Command
     public function handle()
     {
         $this->info('Identifying issues');
-        $members = $this->getMembers();
-        $this->unknownActiveCard($members);
-        $this->extraSlackUsers($members);
-        $this->missingSlackUsers($members);
-        $this->googleGroupIssues($members);
-        $this->internalConsistencyCardIssues($members);
-        $this->internalConsistencySubscriptionIssues();
 
-        $this->printIssues();
+        /** @var IssueChecker $issueChecker */
+        $issueChecker = app(IssueChecker::class);
+
+        $issues = $issueChecker->getIssues();
+        $this->info("There are {$issues->count()} total issues.");
+        $this->info('');
+
+        foreach ($issues->keys() as $issueKey) {
+            $this->info($issueKey);
+            foreach ($issues->get($issueKey) as $issue) {
+                $this->info($issue);
+            }
+            $this->info('');
+        }
+//        $members = $this->getMembers();
+//        $this->unknownActiveCard($members);
+//        $this->extraSlackUsers($members);
+//        $this->missingSlackUsers($members);
+//        $this->googleGroupIssues($members);
+//        $this->internalConsistencyCardIssues($members);
+//        $this->internalConsistencySubscriptionIssues();
+//
+//        $this->printIssues();
     }
 
     private function printIssues()
@@ -111,150 +129,6 @@ class IdentifyIssues extends Command
                         $this->info(">>> $issue");
                     });
                 $this->info('');
-            });
-    }
-
-    private function getMetaValue($meta_data, $key) {
-        $meta_entry = $meta_data->where('key', $key)->first();
-        return is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
-    }
-
-    /**
-     * @throws ApiCallFailed
-     */
-    public function getMembers()
-    {
-        $customers = $this->wooCommerceApi->customers->list();
-
-        $subscriptions = $this->wooCommerceApi->subscriptions->list();
-
-        $members = $customers->map(function ($customer) use ($subscriptions) {
-            $isMember = $subscriptions
-                ->where('customer_id', $customer['id'])
-                ->whereIn('status', ['active', 'pending-cancel'])
-                ->isNotEmpty();
-
-            $meta_data = collect($customer['meta_data']);
-            $card_string = $this->getMetaValue($meta_data, 'access_card_number');
-            $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
-                ->map(function ($card) {
-                    return ltrim($card, '0');
-                });
-
-            $emails = collect();
-            if (!is_null($customer['email'])) {
-                $emails->push(GmailEmailHelper::handleGmail(Str::lower($customer['email'])));
-            }
-
-            $email_aliases_string = $this->getMetaValue($meta_data, 'email_aliases');
-            $email_aliases = is_null($email_aliases_string) ? collect() : collect(explode(',', $email_aliases_string));
-            $emails = $emails->merge($email_aliases);
-
-            $subscriptionMap = $subscriptions
-                ->where('customer_id', $customer['id'])
-                ->map(function ($subscription) {
-                    return $subscription['status'];
-                });
-
-            return [
-                'id' => $customer['id'],
-                'first_name' => $customer['first_name'],
-                'last_name' => $customer['last_name'],
-                'email' => $emails,
-                'is_member' => $isMember,
-                'subscriptions' => $subscriptionMap,
-                'cards' => $cards,
-                'slack_id' => $this->getMetaValue($meta_data, 'access_slack_id'),
-                'system' => self::SYSTEM_WOOCOMMERCE,
-            ];
-        });
-
-        $members = $members->concat(PaypalBasedMember::all()
-            ->map(function ($member) {
-                $emails = collect();
-                if (!is_null($member->email)) {
-                    $emails->push(GmailEmailHelper::handleGmail(Str::lower($member->email)));
-                }
-
-                return [
-                    'id' => $member->paypal_id,
-                    'first_name' => $member->first_name,
-                    'last_name' => $member->last_name,
-                    'email' => $emails,
-                    'is_member' => $member->active,
-                    'subscriptions' => collect(),
-                    'cards' => is_null($member->card) ? collect() : collect([$member->card]),
-                    'slack_id' => $member->slack_id,
-                    'system' => self::SYSTEM_PAYPAL,
-                ];
-            }));
-
-        return $members;
-    }
-
-    /**
-     * Identify any issues where there is an active card listed for someone, but we have no record of them being an
-     * active member.
-     * @param $members
-     */
-    private function unknownActiveCard(Collection $members)
-    {
-        /** @var ActiveCardHolderUpdate $activeCardHolderUpdate */
-        $activeCardHolderUpdate = ActiveCardHolderUpdate::latest()->first();
-        if (is_null($activeCardHolderUpdate)) {
-            return;
-        }
-
-        $card_holders = collect($activeCardHolderUpdate->card_holders);
-        $card_holders
-            ->each(function ($card_holder) use ($members) {
-                $membersWithCard = $members
-                    ->filter(function ($member) use ($card_holder) {
-                        return $member['cards']->contains(ltrim($card_holder['card_num'], '0'));
-                    });
-
-                if ($membersWithCard->count() == 0) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but I have no membership record of them with that card.";
-                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
-
-                    return;
-                }
-
-                if ($membersWithCard->count() > 1) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is connected to multiple accounts.";
-                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
-
-                    return;
-                }
-
-                $member = $membersWithCard->first();
-
-                if ($card_holder['first_name'] != $member['first_name'] ||
-                    $card_holder['last_name'] != $member['last_name']) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is listed as {$member['first_name']} {$member['last_name']} in our records.";
-                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
-                }
-
-                if (! $member['is_member']) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is not currently a member.";
-                    $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
-                }
-            });
-
-        $members
-            ->filter(function ($member) {
-                return ! is_null($member['first_name']) &&
-                    ! is_null($member['last_name']) &&
-                    $member['is_member'];
-            })
-            ->each(function ($member) use ($card_holders) {
-                $member['cards']->each(function ($card) use ($member, $card_holders) {
-                    $cardActive = $card_holders->contains('card_num', $card);
-                    if (! $cardActive) {
-                        $message = "{$member['first_name']} {$member['last_name']} has the card $card but it doesn't appear to be active";
-                        $this->issues->add(self::ISSUE_WITH_A_CARD, $message);
-                    }
-                });
             });
     }
 
@@ -456,11 +330,11 @@ class IdentifyIssues extends Command
 
             $memberHasEmailInMembersList = $memberEmails
                 ->filter(function ($memberEmail) use ($emailsToGroups, $memberGroupEmails) {
-                    if(! $emailsToGroups->has($memberEmail)) {
+                    if (! $emailsToGroups->has($memberEmail)) {
                         return false;
                     }
                     foreach ($memberGroupEmails as $groupEmail) {
-                        if($emailsToGroups->get($memberEmail)->contains($groupEmail)) {
+                        if ($emailsToGroups->get($memberEmail)->contains($groupEmail)) {
                             return false;
                         }
                     }
@@ -505,13 +379,13 @@ class IdentifyIssues extends Command
                 $card = $cardsForMember->where('number', $memberCard)->first();
 
                 if ($member['is_member'] && ! $card->active) {
-                    $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in ".
+                    $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account but we think it's NOT active";
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
                 }
 
                 if (! $member['is_member'] && $card->active) {
-                    $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in ".
+                    $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account but we think it's active";
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
                 }
@@ -520,13 +394,13 @@ class IdentifyIssues extends Command
             $cardsForMember->each(function ($cardForMember) use ($member) {
                 /** @var Card $cardForMember */
                 if (! $member['cards']->contains($cardForMember->number) && $cardForMember->active) {
-                    $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} ".
+                    $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} " .
                         "listed in their profile, but we think it's active";
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
                 }
 
                 if (! $member['cards']->contains($cardForMember->number) && $cardForMember->member_has_card) {
-                    $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} ".
+                    $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} " .
                         'listed in their profile, but we think they still have it';
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
                 }

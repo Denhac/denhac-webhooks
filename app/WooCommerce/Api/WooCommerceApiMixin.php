@@ -36,17 +36,21 @@ trait WooCommerceApiMixin
      */
     private function getWithPaging($url, $options = [])
     {
+        if (! Arr::has($options, RequestOptions::QUERY)) {
+            $options[RequestOptions::QUERY] = [];
+        }
+
+        if (! Arr::has($options[RequestOptions::QUERY], 'per_page')) {
+            $options[RequestOptions::QUERY]['per_page'] = 100;
+        }
+
         $initialResponse = $this->client->get($url, $options);
 
         $this->handleError($initialResponse);
 
         $responseData = $this->jsonOrError($initialResponse);
 
-        $totalPages = (int) $initialResponse->getHeader('X-WP-TotalPages')[0];
-
-        if (! Arr::has($options, RequestOptions::QUERY)) {
-            $options[RequestOptions::QUERY] = [];
-        }
+        $totalPages = (int)$initialResponse->getHeader('X-WP-TotalPages')[0];
 
         for ($i = 2; $i <= $totalPages; $i++) {
             $options[RequestOptions::QUERY]['page'] = $i;
