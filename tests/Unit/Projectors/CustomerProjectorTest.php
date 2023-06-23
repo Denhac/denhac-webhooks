@@ -187,22 +187,6 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function ff_member_field_set_kept_as_false_on_active_membership_import()
-    {
-        Features::turnOn(FeatureFlags::SUBSCRIPTION_STATUS_IGNORED);
-
-        $customer = $this->customer();
-        $subscription = $this->subscription()->customer($customer)->status("active");
-
-        event(new CustomerImported($customer->toArray()));
-        $this->assertFalse(Customer::find($customer->id)->member);
-
-        event(new SubscriptionImported($subscription));
-
-        $this->assertFalse(Customer::find($customer->id)->member);
-    }
-
-    /** @test */
     public function member_field_set_to_true_on_membership_activated()
     {
         $customer = $this->customer();

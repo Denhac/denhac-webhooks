@@ -3,7 +3,6 @@
 namespace App\Projectors;
 
 use App\Customer;
-use App\FeatureFlags;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
@@ -11,13 +10,11 @@ use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\IdWasChecked;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionImported;
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class CustomerProjector extends Projector
 {
