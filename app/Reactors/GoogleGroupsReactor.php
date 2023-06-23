@@ -5,20 +5,17 @@ namespace App\Reactors;
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
 use App\Customer;
-use App\FeatureFlags;
 use App\Google\GoogleApi;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\TrainableEquipment;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class GoogleGroupsReactor implements EventHandler
 {
@@ -52,10 +49,6 @@ final class GoogleGroupsReactor implements EventHandler
     {
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
-
-        if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
-            return;
-        }
 
         $this->googleApi->groupsForMember($customer->email)
             ->filter(function ($group) {

@@ -2,24 +2,18 @@
 
 namespace App\Console\Commands;
 
-use App\ActiveCardHolderUpdate;
 use App\Card;
-use App\FeatureFlags;
 use App\Google\GmailEmailHelper;
 use App\Google\GoogleApi;
-use App\Issues\Checkers\IssueCheck;
 use App\Issues\IssueChecker;
-use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\Subscription;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 class IdentifyIssues extends Command
 {
@@ -158,8 +152,7 @@ class IdentifyIssues extends Command
                     });
 
                 if ($membersForSlackId->count() == 0) {
-                    if ($this->isFullSlackUser($user) &&
-                        ! Features::accessible(FeatureFlags::IGNORE_UNIDENTIFIABLE_MEMBERSHIP)) {
+                    if ($this->isFullSlackUser($user)) {
                         $message = "{$user['name']} with slack id ({$user['id']}) is a full user in slack but I have no membership record of them.";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                     }
@@ -172,29 +165,20 @@ class IdentifyIssues extends Command
                 if ($member['is_member']) {
                     if (array_key_exists('is_invited_user', $user) && $user['is_invited_user']) {
                         return; // Do nothing, we've sent the invite and that's all we can do.
-                    }
-
-                    if (array_key_exists('deleted', $user) && $user['deleted']) {
+                    } else if (array_key_exists('deleted', $user) && $user['deleted']) {
                         $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is deleted, but they are a member";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
 
-                        return;
-                    }
-
-                    if (array_key_exists('is_restricted', $user) && $user['is_restricted']) {
+                    } else if (array_key_exists('is_restricted', $user) && $user['is_restricted']) {
                         $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is restricted, but they are a member";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
 
-                        return;
-                    }
-                    if (array_key_exists('is_ultra_restricted', $user) && $user['is_ultra_restricted']) {
+                    } else if (array_key_exists('is_ultra_restricted', $user) && $user['is_ultra_restricted']) {
                         $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is ultra restricted, but they are a member";
                         $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
 
-                        return;
                     }
-                } elseif ($this->isFullSlackUser($user) &&
-                    ! Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
+                } elseif ($this->isFullSlackUser($user)) {
                     $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is not an active member but they have a full slack account.";
                     $this->issues->add(self::ISSUE_SLACK_ACCOUNT, $message);
                 }
@@ -220,7 +204,7 @@ class IdentifyIssues extends Command
 
         $members
             ->each(function ($member) use ($slackUsers) {
-                if (! $member['is_member']) {
+                if (!$member['is_member']) {
                     return;
                 }
 
@@ -282,10 +266,6 @@ class IdentifyIssues extends Command
             }
 
             if ($membersForEmail->count() == 0) {
-                if (Features::accessible(FeatureFlags::IGNORE_UNIDENTIFIABLE_MEMBERSHIP)) {
-                    return;
-                }
-
                 $message = "No member found for email address $email in groups: {$groupsForEmail->implode(', ')}";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
 
@@ -294,8 +274,7 @@ class IdentifyIssues extends Command
 
             $member = $membersForEmail->first();
 
-            if (! $member['is_member'] &&
-                ! Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
+            if (!$member['is_member']) {
                 $message = "{$member['first_name']} {$member['last_name']} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(', ')}";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
             }
@@ -309,7 +288,7 @@ class IdentifyIssues extends Command
                 return;
             }
 
-            if (! $member['is_member']) {
+            if (!$member['is_member']) {
                 return;
             }
 
@@ -324,7 +303,7 @@ class IdentifyIssues extends Command
 
             $memberHasEmailInMembersList = $memberEmails
                 ->filter(function ($memberEmail) use ($emailsToGroups, $memberGroupEmails) {
-                    if (! $emailsToGroups->has($memberEmail)) {
+                    if (!$emailsToGroups->has($memberEmail)) {
                         return false;
                     }
                     foreach ($memberGroupEmails as $groupEmail) {
@@ -362,7 +341,7 @@ class IdentifyIssues extends Command
 
             // $member['cards'] is the list of cards in WooCommerce
             $member['cards']->each(function ($memberCard) use ($member, $cardsForMember) {
-                if (! $cardsForMember->contains('number', $memberCard)) {
+                if (!$cardsForMember->contains('number', $memberCard)) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} but it's not listed in our database";
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
 
@@ -372,13 +351,13 @@ class IdentifyIssues extends Command
                 /** @var Card $card */
                 $card = $cardsForMember->where('number', $memberCard)->first();
 
-                if ($member['is_member'] && ! $card->active) {
+                if ($member['is_member'] && !$card->active) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account but we think it's NOT active";
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
                 }
 
-                if (! $member['is_member'] && $card->active) {
+                if (!$member['is_member'] && $card->active) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account but we think it's active";
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
@@ -387,13 +366,13 @@ class IdentifyIssues extends Command
 
             $cardsForMember->each(function ($cardForMember) use ($member) {
                 /** @var Card $cardForMember */
-                if (! $member['cards']->contains($cardForMember->number) && $cardForMember->active) {
+                if (!$member['cards']->contains($cardForMember->number) && $cardForMember->active) {
                     $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} " .
                         "listed in their profile, but we think it's active";
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
                 }
 
-                if (! $member['cards']->contains($cardForMember->number) && $cardForMember->member_has_card) {
+                if (!$member['cards']->contains($cardForMember->number) && $cardForMember->member_has_card) {
                     $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} " .
                         'listed in their profile, but we think they still have it';
                     $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);

@@ -7,7 +7,6 @@ use App\Actions\Slack\AddToUserGroup;
 use App\Actions\Slack\RemoveFromChannel;
 use App\Actions\Slack\RemoveFromUserGroup;
 use App\Customer;
-use App\FeatureFlags;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
@@ -18,14 +17,11 @@ use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\TrainableEquipment;
-use App\UserMembership;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class SlackReactor implements EventHandler
 {
@@ -49,10 +45,6 @@ final class SlackReactor implements EventHandler
 
         if (!is_null($customer)) {
             SlackProfileFields::updateIfNeeded($customer->slack_id, []);
-        }
-
-        if (Features::accessible(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL)) {
-            return;
         }
 
         dispatch(new DemoteMemberToPublicOnlyMemberInSlack($event->customerId));
