@@ -84,16 +84,6 @@ class SlackReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_deactivation_with_keep_members_flag_on_they_are_not_demoted()
-    {
-        Features::turnOn(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL);
-
-        event(new MembershipDeactivated(1));
-
-        Bus::assertNotDispatched(DemoteMemberToPublicOnlyMemberInSlack::class);
-    }
-
-    /** @test */
     public function on_membership_activation_they_are_made_a_regular_member_in_slack()
     {
         $customerId = 1;
@@ -103,45 +93,6 @@ class SlackReactorTest extends TestCase
             function (MakeCustomerRegularMemberInSlack $job) use ($customerId) {
                 return $job->wooCustomerId == $customerId;
             });
-    }
-
-    /** @test */
-    public function need_id_check_subscription_invites_as_public_only_member()
-    {
-        $subscription = $this->subscription()->status('need-id-check');
-
-        event(new SubscriptionUpdated($subscription->toArray()));
-
-        Bus::assertDispatched(InviteCustomerNeedIdCheckOnlyMemberInSlack::class,
-            function (InviteCustomerNeedIdCheckOnlyMemberInSlack $job) use ($subscription) {
-                return $job->wooCustomerId == $subscription->customer_id;
-            });
-    }
-
-    /** @test */
-    public function need_id_check_subscription_invites_regular_member_if_flag_is_set()
-    {
-        Features::turnOn(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL);
-
-        $subscription = $this->subscription()->status('need-id-check');
-
-        event(new SubscriptionUpdated($subscription->toArray()));
-
-        Bus::assertDispatched(MakeCustomerRegularMemberInSlack::class,
-            function (MakeCustomerRegularMemberInSlack $job) use ($subscription) {
-                return $job->wooCustomerId == $subscription->customer_id;
-            });
-    }
-
-    /** @test */
-    public function active_subscription_update_does_nothing()
-    {
-        $subscription = $this->subscription()->status('active');
-
-        event(new SubscriptionUpdated($subscription->toArray()));
-
-        Bus::assertNotDispatched(InviteCustomerNeedIdCheckOnlyMemberInSlack::class);
-        Bus::assertNotDispatched(MakeCustomerRegularMemberInSlack::class);
     }
 
     /** @test */

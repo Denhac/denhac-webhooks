@@ -39,23 +39,6 @@ final class GoogleGroupsReactor implements EventHandler
         $this->googleApi = $googleApi;
     }
 
-    public function onSubscriptionUpdated(SubscriptionUpdated $event)
-    {
-        if ($event->subscription['status'] != 'need-id-check') {
-            return;
-        }
-
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->subscription['customer_id'])->first();
-
-        AddToGroup::queue()->execute($customer->email, self::GROUP_DENHAC);
-
-        if (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-            AddToGroup::queue()->execute($customer->email, self::GROUP_MEMBERS);
-            AddToGroup::queue()->execute($customer->email, self::GROUP_ANNOUNCE);
-        }
-    }
-
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */

@@ -220,14 +220,8 @@ class IdentifyIssues extends Command
 
         $members
             ->each(function ($member) use ($slackUsers) {
-                if (! Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-                    if (! $member['is_member']) {
-                        return;
-                    }
-                } else {
-                    if (! $member['subscriptions']->contains('need-id-check')) {
-                        return;
-                    }
+                if (! $member['is_member']) {
+                    return;
                 }
 
                 $slackForMember = $slackUsers

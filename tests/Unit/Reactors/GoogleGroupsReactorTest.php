@@ -54,67 +54,6 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_subscription_updated_with_need_id_check_adds_to_denhac_group()
-    {
-        Features::turnOff(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL);
-
-        $subscription = $this->subscription()->status('need-id-check')->customer($this->customer);
-
-        event(new SubscriptionUpdated($subscription));
-
-        $this->assertAction(AddToGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
-
-        $this->assertAction(AddToGroup::class)
-            ->never()
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
-
-        $this->assertAction(AddToGroup::class)
-            ->never()
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_ANNOUNCE);
-    }
-
-    /** @test */
-    public function on_subscription_updated_with_need_id_check_and_feature_flag_adds_to_members_group()
-    {
-        Features::turnOn(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL);
-
-        $subscription = $this->subscription()->status('need-id-check')->customer($this->customer);
-
-        event(new SubscriptionUpdated($subscription));
-
-        $this->assertAction(AddToGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
-
-        $this->assertAction(AddToGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_MEMBERS);
-
-        $this->assertAction(AddToGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_ANNOUNCE);
-    }
-
-    /**
-     * @test
-     * @dataProvider subscriptionStatuses
-     * @param string $status
-     */
-    public function on_subscription_updated_with_non_need_id_check_status_does_nothing(string $status)
-    {
-        if($status == 'need-id-check'){
-            $this->assertTrue(true);
-            return;
-        }
-
-        Features::turnOn(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL);
-
-        $subscription = $this->subscription()->status($status)->customer($this->customer);
-
-        event(new SubscriptionUpdated($subscription));
-
-        $this->assertAction(AddToGroup::class)->never();
-    }
-
-    /** @test */
     public function on_membership_activated_event_adds_to_members_group()
     {
         event(new MembershipActivated($this->customer->id));
@@ -129,8 +68,6 @@ class GoogleGroupsReactorTest extends TestCase
     /** @test */
     public function on_membership_deactivated_remove_from_all_lists_but_denhac()
     {
-        Features::turnOff(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL);
-
         $this->googleApi->allows('groupsForMember')
             ->withArgs([$this->customer->email])
             ->andReturn(collect([
@@ -146,24 +83,6 @@ class GoogleGroupsReactorTest extends TestCase
         $this->assertAction(RemoveFromGroup::class)
             ->never()
             ->with($this->customer->email, GoogleGroupsReactor::GROUP_DENHAC);
-    }
-
-    /** @test */
-    public function on_membership_deactivated_with_keep_members_feature_flag_does_no_removals()
-    {
-        Features::turnOn(FeatureFlags::KEEP_MEMBERS_IN_SLACK_AND_EMAIL);
-
-        $this->googleApi->allows('groupsForMember')
-            ->withArgs([$this->customer->email])
-            ->andReturn(collect([
-                GoogleGroupsReactor::GROUP_DENHAC,
-                GoogleGroupsReactor::GROUP_MEMBERS,
-                GoogleGroupsReactor::GROUP_ANNOUNCE,
-            ]));
-
-        event(new MembershipDeactivated($this->customer->id));
-
-        $this->assertAction(RemoveFromGroup::class)->never();
     }
 
     /** @test */

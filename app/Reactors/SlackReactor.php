@@ -31,19 +31,6 @@ final class SlackReactor implements EventHandler
 {
     use HandlesEvents;
 
-    public function onSubscriptionUpdated(SubscriptionUpdated $event)
-    {
-        if ($event->subscription['status'] != 'need-id-check') {
-            return;
-        }
-
-        if (Features::accessible(FeatureFlags::NEED_ID_CHECK_GETS_ADDED_TO_SLACK_AND_EMAIL)) {
-            dispatch(new MakeCustomerRegularMemberInSlack($event->subscription['customer_id']));
-        } else {
-            dispatch(new InviteCustomerNeedIdCheckOnlyMemberInSlack($event->subscription['customer_id']));
-        }
-    }
-
     public function onCustomerCreated(CustomerCreated $event)
     {
         // TODO Technically this should be specific to a new customer who is signing up, vs something like a manual user
