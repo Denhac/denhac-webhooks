@@ -6,7 +6,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class WaiverAccepted extends ShouldBeStored
 {
-    public string $waiverEvent;
+    public array $waiverEvent;
 
     public function __construct($waiverEvent)
     {
