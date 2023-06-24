@@ -3,8 +3,7 @@
 namespace App\WaiverForever;
 
 
-use App\Aggregates\OctoPrintAggregate;
-use Illuminate\Support\Facades\Log;
+use App\StorableEvents\WaiverAccepted;
 use Spatie\WebhookClient\Models\WebhookCall;
 
 class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
@@ -18,5 +17,7 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
     public function handle()
     {
         $payload = $this->webhookCall->payload;
+
+        event(new WaiverAccepted($payload));
     }
 }

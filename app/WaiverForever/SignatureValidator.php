@@ -13,10 +13,27 @@ class SignatureValidator implements SignatureValidatorBase
     public function isValid(Request $request, WebhookConfig $config): bool
     {
         $signatureHeader = $request->header($config->signatureHeaderName);
+        $payload = $request->getContent();
+        $secret = $config->signingSecret;
 
-        Log::info("Waiver Forever signature header: " . $signatureHeader);
-        Log::info("Waiver Forever payload: " . $request->getContent());
+        $parsedResult = [];
+        parse_str(str_replace(',', '&', $signatureHeader), $parsedResult);
 
-        return true;
+        if (!array_key_exists('t', $parsedResult)) {
+            Log::info("WaiverForever webhook doesn't have timestamp");
+            return false;
+        }
+
+        if (!array_key_exists('signature', $parsedResult)) {
+            Log::info("WaiverForever webhook doesn't have signature");
+            return false;
+        }
+
+        $timestamp = $parsedResult['t'];
+        $expectedSignature = $parsedResult['signature'];
+        $signed_payload = "$timestamp,$payload,$secret";
+        $actualSignature = hash('sha256', $signed_payload);
+
+        return $expectedSignature === $actualSignature;
     }
 }
