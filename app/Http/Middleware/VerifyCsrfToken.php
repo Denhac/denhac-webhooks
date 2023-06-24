@@ -20,6 +20,8 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'webhooks/denhac-org',
+        'webhooks/octoprint',
+        'webhooks/waiver',
         'horizon/*',
     ];
 }
