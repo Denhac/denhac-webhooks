@@ -88,8 +88,6 @@ abstract class TestCase extends BaseTestCase
             "Switched" => ["switched"],
             "Expired" => ["expired"],
             "Pending Cancellation" => ["pending-cancel"],
-            "Need ID Check" => ["need-id-check"],
-            "ID Checked" => ["id-was-checked"],
             "Suspended for Non Payment" => ["suspended-payment"],
             "Suspended Manually" => ["suspended-manual"],
         ];
