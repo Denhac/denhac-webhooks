@@ -10,7 +10,7 @@ class WaiverProjector extends Projector
 {
     public function onWaiverAccepted(WaiverAccepted $event)
     {
-        $content = $event['waiverEvent']['content'];
+        $content = $event->waiverEvent['waiverEvent']['content'];
 
         $waiverId = $content['id'];
         $templateId = $content['template_id'];
