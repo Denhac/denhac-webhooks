@@ -36,6 +36,7 @@ return [
         \App\Reactors\SlackReactor::class,
         \App\Reactors\CardUpdateRequestReactor::class,
         \App\Reactors\GithubMembershipReactor::class,
+        \App\Reactors\WaiverReactor::class,
     ],
 
     /*

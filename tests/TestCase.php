@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\Projectionist;
 use Tests\Helpers\OctoPrintUpdateBuilder;
+use Tests\Helpers\WaiverForever\WaiverBuilder;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 use Tests\Helpers\Wordpress\SubscriptionBuilder;
 use Tests\Helpers\Wordpress\UserMembershipBuilder;
@@ -76,6 +77,11 @@ abstract class TestCase extends BaseTestCase
     public function userMembership(): UserMembershipBuilder
     {
         return new UserMembershipBuilder();
+    }
+
+    public function waiver(): WaiverBuilder
+    {
+        return new WaiverBuilder();
     }
 
     public function subscriptionStatuses(): array

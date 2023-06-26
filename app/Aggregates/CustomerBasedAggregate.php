@@ -2,6 +2,7 @@
 
 namespace App\Aggregates;
 
+use App\Customer;
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Spatie\EventSourcing\AggregateRoots\FakeAggregateRoot;
@@ -33,7 +34,7 @@ trait CustomerBasedAggregate
 
     /**
      * This method shouldn't be called in production, only in testing when needed.
-     * @param string|CustomerBuilder $customer
+     * @param string|CustomerBuilder|Customer $customer
      *
      * @return $this
      */
@@ -41,9 +42,12 @@ trait CustomerBasedAggregate
     {
         if (is_a($customer, CustomerBuilder::class)) {
             $customer = $customer->id;
+        } else if(is_a($customer, Customer::class)) {
+            $customer = $customer->woo_id;
         }
 
-        $aggregateRoot = self::retrieve('');
+        $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customer);
+        $aggregateRoot = self::retrieve($uuid);
         $aggregateRoot->customerId = $customer;
 
         return new FakeAggregateRoot($aggregateRoot);

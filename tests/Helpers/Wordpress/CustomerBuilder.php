@@ -58,6 +58,27 @@ class CustomerBuilder extends BaseBuilder
         return $this;
     }
 
+    public function first_name($firstName): static
+    {
+        $this->data['first_name'] = $firstName;
+
+        return $this;
+    }
+
+    public function last_name($lastName): static
+    {
+        $this->data['last_name'] = $lastName;
+
+        return $this;
+    }
+
+    public function email($email): static
+    {
+        $this->data['email'] = $email;
+
+        return $this;
+    }
+
     public function id_was_checked(): static
     {
         return $this->meta_data('id_was_checked', true);

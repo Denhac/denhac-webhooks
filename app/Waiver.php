@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string waiver_id
  * @property string template_id
  * @property string template_version
+ * @property string first_name
+ * @property string last_name
+ * @property string email
  */
 class Waiver extends Model
 {
