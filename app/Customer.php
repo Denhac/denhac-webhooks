@@ -143,4 +143,16 @@ class Customer extends Model
 
         return $hashids->encode($this->woo_id);
     }
+
+    public function waivers()
+    {
+        return $this->hasMany(Waiver::class, 'customer_id', 'woo_id');
+    }
+
+    public function hasSignedMembershipWaiver()
+    {
+        $membershipWaiverTemplateId = config('denhac.waiver.membership_waiver_template_id');
+
+        return $this->waivers()->where('template_id', $membershipWaiverTemplateId)->exists();
+    }
 }

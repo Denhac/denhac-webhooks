@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string waiver_id
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string first_name
  * @property string last_name
  * @property string email
+ * @property int customer_id
+ * @property Customer customer
  */
 class Waiver extends Model
 {
@@ -23,5 +26,11 @@ class Waiver extends Model
         'email',
         'first_name',
         'last_name',
+        'customer_id',
     ];
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', 'woo_id');
+    }
 }
