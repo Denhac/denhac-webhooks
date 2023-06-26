@@ -7,6 +7,8 @@ use App\Aggregates\MembershipTraits\Github;
 use App\Aggregates\MembershipTraits\IdWasCheckedTrait;
 use App\Aggregates\MembershipTraits\Subscription;
 use App\Aggregates\MembershipTraits\UserMembership;
+use App\Aggregates\MembershipTraits\WaiverTrait;
+use App\FeatureFlags;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
@@ -21,7 +23,10 @@ use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipDeleted;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
+use App\StorableEvents\WaiverAssignedToCustomer;
+use App\Waiver;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class MembershipAggregate extends AggregateRoot
 {
@@ -31,6 +36,7 @@ final class MembershipAggregate extends AggregateRoot
     use Subscription;
     use UserMembership;
     use IdWasCheckedTrait;
+    use WaiverTrait;
 
     public bool $currentlyAMember = false;
 
@@ -233,9 +239,22 @@ final class MembershipAggregate extends AggregateRoot
         return $this;
     }
 
-    public function activateMembershipIfNeeded()
+    public function assignWaiver(Waiver $waiver): static
     {
-        if($this->currentlyAMember) {
+        if (!$this->respondToEvents) {
+            return $this;
+        }
+
+        $this->recordThat(new WaiverAssignedToCustomer($waiver->waiver_id, $this->customerId));
+
+        $this->activateCardsNeedingActivation();
+
+        return $this;
+    }
+
+    public function activateMembershipIfNeeded(): void
+    {
+        if ($this->currentlyAMember) {
             return;
         }
 
@@ -244,9 +263,9 @@ final class MembershipAggregate extends AggregateRoot
         $this->activateCardsNeedingActivation();
     }
 
-    public function deactivateMembershipIfNeeded()
+    public function deactivateMembershipIfNeeded(): void
     {
-        if(! $this->currentlyAMember) {
+        if (!$this->currentlyAMember) {
             return;
         }
 
@@ -273,5 +292,14 @@ final class MembershipAggregate extends AggregateRoot
     private function isActiveMember(): bool
     {
         return $this->currentlyAMember;
+    }
+
+    private function shouldHavePhysicalBuildingAccess(): bool
+    {
+        if (Features::accessible(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS)) {
+            return $this->isActiveMember() && $this->membershipWaiverSigned;
+        }
+
+        return $this->isActiveMember();
     }
 }

@@ -5,9 +5,17 @@ namespace App\Projectors;
 use App\StorableEvents\WaiverAccepted;
 use App\Waiver;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
+use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
 class WaiverProjector extends Projector
 {
+    use ProjectsEvents;
+
+    public function onStartingEventReplay()
+    {
+        Waiver::truncate();
+    }
+
     public function onWaiverAccepted(WaiverAccepted $event)
     {
         $content = $event->waiverEvent['content'];

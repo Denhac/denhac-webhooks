@@ -33,4 +33,8 @@ return [
         'slack' => [
         ],
     ],
+    'waiver' => [
+        'membership_waiver_template_id' => env('MEMBERSHIP_WAIVER_TEMPLATE_ID'),
+        'membership_waiver_template_version' => env('MEMBERSHIP_WAIVER_TEMPLATE_VERSION'),
+    ],
 ];

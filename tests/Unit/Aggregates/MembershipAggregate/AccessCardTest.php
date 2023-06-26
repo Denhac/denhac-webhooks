@@ -4,6 +4,7 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
 use App\CardUpdateRequest;
+use App\FeatureFlags;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;
@@ -18,17 +19,30 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipUpdated;
+use App\StorableEvents\WaiverAssignedToCustomer;
 use App\UserMembership;
+use App\Waiver;
 use Exception;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 class AccessCardTest extends TestCase
 {
+    private string $memberWaiverTemplateId;
+    private string $memberWaiverTemplateVersion;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->memberWaiverTemplateId = $this->faker->uuid;
+        $this->memberWaiverTemplateVersion = $this->faker->uuid;
+
+        Config::set('denhac.waiver.membership_waiver_template_id', $this->memberWaiverTemplateId);
+        Config::set('denhac.waiver.membership_waiver_template_version', $this->memberWaiverTemplateVersion);
 
         Event::fake();
         Projectionist::withoutEventHandlers();
@@ -37,6 +51,8 @@ class AccessCardTest extends TestCase
     /** @test */
     public function access_card_is_sent_for_activation_when_membership_is_activated()
     {
+        Features::turnOff(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
         $card = '42424';
         $customer = $this->customer();
         $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
@@ -62,6 +78,7 @@ class AccessCardTest extends TestCase
     /** @test */
     public function access_card_is_sent_for_deactivation_when_membership_is_deactivated()
     {
+        Features::turnOff(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
 
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -87,6 +104,273 @@ class AccessCardTest extends TestCase
                 new UserMembershipUpdated($cancelledUserMembership),
                 new MembershipDeactivated($customer->id),
                 new CardSentForDeactivation($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function ff_access_card_is_not_sent_for_activation_when_membership_is_activated_if_waiver_is_not_signed()
+    {
+        Features::turnOn(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $pausedUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new UserMembershipCreated($pausedUserMembership),
+                new IdWasChecked($customer->id),
+            ])
+            ->updateUserMembership($activeUserMembership)
+            ->assertRecorded([
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+            ])
+            ->assertNotRecorded(CardSentForActivation::class);
+    }
+
+    /** @test */
+    public function ff_access_card_is_sent_for_activation_when_membership_is_activated_if_waiver_is_signed()
+    {
+        Features::turnOn(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $pausedUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var Waiver $waiver */
+        $waiver = Waiver::create([
+            'waiver_id' => $this->faker->uuid,
+            'template_id' => $this->memberWaiverTemplateId,
+            'template_version' => $this->memberWaiverTemplateVersion,
+            'status' => 'accepted',
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new UserMembershipCreated($pausedUserMembership),
+                new IdWasChecked($customer->id),
+                new WaiverAssignedToCustomer($waiver->waiver_id, $customer->id),
+            ])
+            ->updateUserMembership($activeUserMembership)
+            ->assertRecorded([
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new CardSentForActivation($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function ff_access_card_is_sent_for_activation_when_waiver_is_signed_on_membership_activate()
+    {
+        Features::turnOn(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var Waiver $waiver */
+        $waiver = Waiver::create([
+            'waiver_id' => $this->faker->uuid,
+            'template_id' => $this->memberWaiverTemplateId,
+            'template_version' => $this->memberWaiverTemplateVersion,
+            'status' => 'accepted',
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new UserMembershipCreated($activeUserMembership),
+                new IdWasChecked($customer->id),
+                new MembershipActivated($customer->id),
+            ])
+            ->assignWaiver($waiver)
+            ->assertRecorded([
+                new WaiverAssignedToCustomer($waiver->waiver_id, $customer->id),
+                new CardSentForActivation($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function ff_waiver_must_be_correct_template_id()
+    {
+        Features::turnOn(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $pausedUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var Waiver $waiver */
+        $waiver = Waiver::create([
+            'waiver_id' => $this->faker->uuid,
+            'template_id' => $this->faker->uuid,  // Incorrect template ID
+            'template_version' => $this->faker->uuid,
+            'status' => 'accepted',
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new UserMembershipCreated($pausedUserMembership),
+                new IdWasChecked($customer->id),
+                new WaiverAssignedToCustomer($waiver->waiver_id, $customer->id),
+            ])
+            ->updateUserMembership($activeUserMembership)
+            ->assertRecorded([
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+            ])
+            ->assertNotRecorded(CardSentForActivation::class);
+    }
+
+    /** @test */
+    public function customer_created_after_user_membership_created_activates_cards()
+    {
+        Features::turnOff(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->id_was_checked()->access_card($card);
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new UserMembershipCreated($activeUserMembership),
+            ])
+            ->createCustomer($customer)
+            ->assertRecorded([
+                new CustomerCreated($customer),
+                new IdWasChecked($customer->id),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $card),
+                new CardSentForActivation($customer->id, $card),
+            ]);
+    }
+
+    /** @test */
+    public function customer_updated_after_user_membership_created_activates_cards()
+    {
+        Features::turnOff(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->id_was_checked();
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new IdWasChecked($customer->id),
+                new UserMembershipCreated($activeUserMembership),
+                new MembershipActivated($customer->id),
+            ])
+            ->updateCustomer($customer->access_card($card))
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+                new CardAdded($customer->id, $card),
+                new CardSentForActivation($customer->id, $card),
+            ]);
+    }
+
+    /**
+     * @test
+     * We only do updated here since it's impossible to assign a waiver to a customer until we get the customer created event.
+     */
+    public function ff_customer_updated_after_user_membership_created_does_not_activate_cards_without_waiver()
+    {
+        Features::turnOn(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->id_was_checked();
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var Waiver $waiver */
+        $waiver = Waiver::create([
+            'waiver_id' => $this->faker->uuid,
+            'template_id' => $this->memberWaiverTemplateId,
+            'template_version' => $this->memberWaiverTemplateVersion,
+            'status' => 'accepted',
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new IdWasChecked($customer->id),
+                new UserMembershipCreated($activeUserMembership),
+                new MembershipActivated($customer->id),
+            ])
+            ->updateCustomer($customer->access_card($card))
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+                new CardAdded($customer->id, $card),
+            ]);
+    }
+    /**
+     * @test
+     * We only do updated here since it's impossible to assign a waiver to a customer until we get the customer created event.
+     */
+    public function ff_customer_updated_after_user_membership_created_activates_cards_with_waiver()
+    {
+        Features::turnOn(FeatureFlags::WAIVER_REQUIRED_FOR_CARD_ACCESS);
+
+        $card = '42424';
+        $customer = $this->customer()->id_was_checked();
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var Waiver $waiver */
+        $waiver = Waiver::create([
+            'waiver_id' => $this->faker->uuid,
+            'template_id' => $this->memberWaiverTemplateId,
+            'template_version' => $this->memberWaiverTemplateVersion,
+            'status' => 'accepted',
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new IdWasChecked($customer->id),
+                new UserMembershipCreated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new WaiverAssignedToCustomer($waiver->waiver_id, $customer->id),
+            ])
+            ->updateCustomer($customer->access_card($card))
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+                new CardAdded($customer->id, $card),
+                new CardSentForActivation($customer->id, $card),
             ]);
     }
 

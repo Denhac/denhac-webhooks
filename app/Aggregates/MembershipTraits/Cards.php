@@ -11,13 +11,14 @@ use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
 use App\StorableEvents\CardStatusUpdated;
 use Exception;
+use Illuminate\Support\Collection;
 
 trait Cards
 {
-    public $cardsOnAccount;
-    public $cardsNeedingActivation; // They need activation only if this person is a confirmed member
-    public $cardsSentForActivation;
-    public $cardsSentForDeactivation;
+    public Collection $cardsOnAccount;
+    public Collection $cardsNeedingActivation; // They need activation only if this person is a confirmed member
+    public Collection $cardsSentForActivation;
+    public Collection $cardsSentForDeactivation;
 
     public function bootCards()
     {
@@ -78,7 +79,7 @@ trait Cards
             if (! $this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
-                if ($this->isActiveMember()) {
+                if ($this->shouldHavePhysicalBuildingAccess()) {
                     $this->recordThat(new CardSentForActivation($this->customerId, $card));
                 }
             }
@@ -92,8 +93,12 @@ trait Cards
         }
     }
 
-    public function activateCardsNeedingActivation()
+    public function activateCardsNeedingActivation(): void
     {
+        if(! $this->shouldHavePhysicalBuildingAccess()) {
+            return;  // We'll check again when they sign the waiver
+        }
+
         foreach ($this->allCards() as $card) {
             $this->recordThat(new CardSentForActivation($this->customerId, $card));
         }
