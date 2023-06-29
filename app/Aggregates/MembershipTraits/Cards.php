@@ -15,10 +15,10 @@ use Illuminate\Support\Collection;
 
 trait Cards
 {
-    public Collection $cardsOnAccount;
-    public Collection $cardsNeedingActivation; // They need activation only if this person is a confirmed member
-    public Collection $cardsSentForActivation;
-    public Collection $cardsSentForDeactivation;
+    public Collection $cardsOnAccount;  // Any and all cards on their account.
+    public Collection $cardsNeedingActivation;  // Any cards that haven't been sent for activation. Regardless of if they're a member yet.
+    public Collection $cardsSentForActivation;  // Cards that have been posted and need to be activated by the card access server.
+    public Collection $cardsSentForDeactivation;  // Cards that have been posted and need to be deactivated by the card access server.
 
     public function bootCards()
     {
@@ -99,7 +99,7 @@ trait Cards
             return;  // We'll check again when they sign the waiver
         }
 
-        foreach ($this->allCards() as $card) {
+        foreach ($this->cardsNeedingActivation as $card) {
             $this->recordThat(new CardSentForActivation($this->customerId, $card));
         }
     }

@@ -33,6 +33,7 @@ class AccessCardTest extends TestCase
 {
     private string $memberWaiverTemplateId;
     private string $memberWaiverTemplateVersion;
+    private Waiver $membershipWaiver;
 
     protected function setUp(): void
     {
@@ -43,6 +44,17 @@ class AccessCardTest extends TestCase
 
         Config::set('denhac.waiver.membership_waiver_template_id', $this->memberWaiverTemplateId);
         Config::set('denhac.waiver.membership_waiver_template_version', $this->memberWaiverTemplateVersion);
+
+        /** @var Waiver $waiver */
+        $this->membershipWaiver = Waiver::create([
+            'waiver_id' => $this->faker->uuid,
+            'template_id' => $this->memberWaiverTemplateId,
+            'template_version' => $this->memberWaiverTemplateVersion,
+            'status' => 'accepted',
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
 
         Event::fake();
         Projectionist::withoutEventHandlers();
@@ -146,24 +158,13 @@ class AccessCardTest extends TestCase
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
 
-        /** @var Waiver $waiver */
-        $waiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->memberWaiverTemplateId,
-            'template_version' => $this->memberWaiverTemplateVersion,
-            'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
-        ]);
-
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
                 new CardAdded($customer->id, $card),
                 new UserMembershipCreated($pausedUserMembership),
                 new IdWasChecked($customer->id),
-                new WaiverAssignedToCustomer($waiver->waiver_id, $customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
             ])
             ->updateUserMembership($activeUserMembership)
             ->assertRecorded([
@@ -183,17 +184,6 @@ class AccessCardTest extends TestCase
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
 
-        /** @var Waiver $waiver */
-        $waiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->memberWaiverTemplateId,
-            'template_version' => $this->memberWaiverTemplateVersion,
-            'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
-        ]);
-
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
@@ -202,9 +192,9 @@ class AccessCardTest extends TestCase
                 new IdWasChecked($customer->id),
                 new MembershipActivated($customer->id),
             ])
-            ->assignWaiver($waiver)
+            ->assignWaiver($this->membershipWaiver)
             ->assertRecorded([
-                new WaiverAssignedToCustomer($waiver->waiver_id, $customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
                 new CardSentForActivation($customer->id, $card),
             ]);
     }
@@ -310,17 +300,6 @@ class AccessCardTest extends TestCase
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
 
-        /** @var Waiver $waiver */
-        $waiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->memberWaiverTemplateId,
-            'template_version' => $this->memberWaiverTemplateVersion,
-            'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
-        ]);
-
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
@@ -334,6 +313,7 @@ class AccessCardTest extends TestCase
                 new CardAdded($customer->id, $card),
             ]);
     }
+
     /**
      * @test
      * We only do updated here since it's impossible to assign a waiver to a customer until we get the customer created event.
@@ -347,24 +327,13 @@ class AccessCardTest extends TestCase
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
 
-        /** @var Waiver $waiver */
-        $waiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->memberWaiverTemplateId,
-            'template_version' => $this->memberWaiverTemplateVersion,
-            'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
-        ]);
-
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
                 new IdWasChecked($customer->id),
                 new UserMembershipCreated($activeUserMembership),
                 new MembershipActivated($customer->id),
-                new WaiverAssignedToCustomer($waiver->waiver_id, $customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
             ])
             ->updateCustomer($customer->access_card($card))
             ->assertRecorded([
@@ -458,17 +427,15 @@ class AccessCardTest extends TestCase
         $customer = $this->customer()
             ->access_card($card);
 
-        MembershipAggregate::fakeCustomer($customer)
+        $agg = MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
                 new MembershipActivated($customer->id),
                 new CardAdded($customer->id, $card),
                 new CardSentForActivation($customer->id, $card),
-            ])
-            ->updateCustomer($customer)
-            ->assertRecorded([
-                new CustomerUpdated($customer),
             ]);
+        $agg->activateCardsNeedingActivation();
+        $agg->assertNotRecorded(CardSentForActivation::class);
     }
 
     /** @test */
@@ -599,5 +566,250 @@ class AccessCardTest extends TestCase
                 new CardSentForDeactivation($customer->id, $card),
             ])
             ->updateCardStatus($cardUpdateRequest, $fakeStatus);
+    }
+
+    /** @test */
+    public function card_added_adds_to_cards_on_account()
+    {
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+
+        $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
+        /** @var MembershipAggregate $agg */
+        $agg = $fakeAggregateRoot->aggregateRoot();
+
+        $this->assertTrue($agg->cardsOnAccount->isEmpty());
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+
+        $fakeAggregateRoot
+            ->createCustomer($customer)
+            ->assertRecorded([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+            ]);
+
+        $this->assertEquals(1, $agg->cardsOnAccount->count());
+        $this->assertTrue($agg->cardsOnAccount->contains($card));
+
+        $this->assertEquals(1, $agg->cardsNeedingActivation->count());
+        $this->assertTrue($agg->cardsNeedingActivation->contains($card));
+
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+    }
+
+    /** @test */
+    public function card_sent_for_activation_adds_to_cards_sent_for_activation()
+    {
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
+        /** @var MembershipAggregate $agg */
+        $agg = $fakeAggregateRoot->aggregateRoot();
+
+        $this->assertTrue($agg->cardsOnAccount->isEmpty());
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+
+        $fakeAggregateRoot
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new IdWasChecked($customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+            ])
+            ->updateUserMembership($activeUserMembership)
+            ->assertRecorded([
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new CardSentForActivation($customer->id, $card),
+            ]);
+
+        $this->assertEquals(1, $agg->cardsOnAccount->count());
+        $this->assertTrue($agg->cardsOnAccount->contains($card));
+
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+
+        $this->assertEquals(1, $agg->cardsSentForActivation->count());
+        $this->assertTrue($agg->cardsSentForActivation->contains($card));
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+    }
+
+    /** @test */
+    public function card_activated_removes_from_other_lists()
+    {
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var CardUpdateRequest $cardUpdateRequest */
+        $cardUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
+        /** @var MembershipAggregate $agg */
+        $agg = $fakeAggregateRoot->aggregateRoot();
+
+        $this->assertTrue($agg->cardsOnAccount->isEmpty());
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+
+        $fakeAggregateRoot
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new IdWasChecked($customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new CardSentForActivation($customer->id, $card),
+            ])
+            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new CardStatusUpdated(
+                    $cardUpdateRequest->type,
+                    $cardUpdateRequest->customer_id,
+                    $cardUpdateRequest->card,
+                ),
+                new CardActivated($customer->id, $card),
+            ]);
+
+        $this->assertEquals(1, $agg->cardsOnAccount->count());
+        $this->assertTrue($agg->cardsOnAccount->contains($card));
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+    }
+
+    /** @test */
+    public function card_sent_for_deactivation_adds_to_cards_sent_for_deactivation()
+    {
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $cancelledUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('cancelled');
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var CardUpdateRequest $activationUpdateRequest */
+        $activationUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
+        /** @var MembershipAggregate $agg */
+        $agg = $fakeAggregateRoot->aggregateRoot();
+
+        $this->assertTrue($agg->cardsOnAccount->isEmpty());
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+
+        $fakeAggregateRoot
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new IdWasChecked($customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new CardSentForActivation($customer->id, $card),
+                new CardStatusUpdated(
+                    $activationUpdateRequest->type,
+                    $activationUpdateRequest->customer_id,
+                    $activationUpdateRequest->card,
+                ),
+                new CardActivated($customer->id, $card),
+            ])
+            ->updateUserMembership($cancelledUserMembership)
+            ->assertRecorded([
+                new UserMembershipUpdated($cancelledUserMembership),
+                new MembershipDeactivated($customer->id),
+                new CardSentForDeactivation($customer->id, $card),
+            ]);
+
+        $this->assertEquals(1, $agg->cardsOnAccount->count());
+        $this->assertTrue($agg->cardsOnAccount->contains($card));
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertEquals(1, $agg->cardsSentForDeactivation->count());
+        $this->assertTrue($agg->cardsSentForDeactivation->contains($card));
+    }
+
+    /** @test */
+    public function card_deactivated_removes_from_other_lists()
+    {
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        /** @var CardUpdateRequest $activationUpdateRequest */
+        $activationUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        /** @var CardUpdateRequest $deactivationUpdateRequest */
+        $deactivationUpdateRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
+        /** @var MembershipAggregate $agg */
+        $agg = $fakeAggregateRoot->aggregateRoot();
+
+        $this->assertTrue($agg->cardsOnAccount->isEmpty());
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
+
+        $fakeAggregateRoot
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new IdWasChecked($customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new CardSentForActivation($customer->id, $card),
+                new CardStatusUpdated(
+                    $activationUpdateRequest->type,
+                    $activationUpdateRequest->customer_id,
+                    $activationUpdateRequest->card,
+                ),
+                new CardActivated($customer->id, $card),
+            ])
+            ->updateCardStatus($deactivationUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new CardStatusUpdated(
+                    $deactivationUpdateRequest->type,
+                    $deactivationUpdateRequest->customer_id,
+                    $deactivationUpdateRequest->card,
+                ),
+                new CardDeactivated($customer->id, $card),
+            ]);
+
+        $this->assertEquals(1, $agg->cardsOnAccount->count());
+        $this->assertTrue($agg->cardsOnAccount->contains($card));
+        $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForActivation->isEmpty());
+        $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
     }
 }
