@@ -155,4 +155,11 @@ class Customer extends Model
 
         return $this->waivers()->where('template_id', $membershipWaiverTemplateId)->exists();
     }
+
+    public function getWaiverUrl()
+    {
+        $membershipWaiverTemplateId = config('denhac.waiver.membership_waiver_template_id');
+
+        return "https://app.waiverforever.com/pending/{$membershipWaiverTemplateId}/?name-first_name-2={$this->first_name}&name-last_name-2={$this->last_name}&email-email-3={$this->email}&checkbox-checked-4=true";
+    }
 }

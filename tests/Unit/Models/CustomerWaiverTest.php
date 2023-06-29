@@ -83,4 +83,23 @@ class CustomerWaiverTest extends TestCase
 
         $this->assertFalse($customer->hasSignedMembershipWaiver());
     }
+
+    /** @test */
+    public function customer_get_waiver_url(): void
+    {
+        /** @var Customer $customer */
+        $customer = Customer::create([
+            'username' => $this->faker->userName,
+            'woo_id' => $this->faker->randomNumber(),
+            'member' => true,
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
+
+        $this->assertEquals(
+            "https://app.waiverforever.com/pending/{$this->validMembershipWaiver->template_id}/?name-first_name-2={$customer->first_name}&name-last_name-2={$customer->last_name}&email-email-3={$customer->email}&checkbox-checked-4=true",
+            $customer->getWaiverUrl()
+        );
+    }
 }
