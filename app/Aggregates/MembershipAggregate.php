@@ -277,6 +277,10 @@ final class MembershipAggregate extends AggregateRoot
     protected function applyMembershipActivated()
     {
         $this->currentlyAMember = true;
+
+        // We're going to force enable any cards here by saying they all need activation.
+        // This is mostly to handle the case of someone re-signing up rather than for new users.
+        $this->cardsNeedingActivation = $this->cardsOnAccount;
     }
 
     protected function applyMembershipDeactivated()
