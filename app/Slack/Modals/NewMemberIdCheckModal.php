@@ -6,7 +6,9 @@ use App\Actions\NewMemberCardSlackLiveView;
 use App\Customer;
 use App\Http\Requests\SlackRequest;
 use App\NewMemberCardActivation;
+use App\Slack\SlackOptions;
 use App\Subscription;
+use App\Waiver;
 use App\WooCommerce\Api\WooCommerceApi;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -21,6 +23,7 @@ class NewMemberIdCheckModal implements ModalInterface
     private const LAST_NAME = 'last-name';
     private const BIRTHDAY = 'birthday';
     private const CARD_NUM = 'card-num';
+    private const WAIVER_ID = 'waiver-id';
 
     private Modal $modalView;
 
@@ -36,6 +39,14 @@ class NewMemberIdCheckModal implements ModalInterface
             ->close('Cancel')
             ->submit('Submit')
             ->privateMetadata($customer->woo_id);
+
+        if ($customer->hasSignedMembershipWaiver()) {
+            $this->modalView->newSection()
+                ->mrkdwnText(":white_check_mark: Waiver found");
+        } else {
+            $this->modalView->newSection()
+                ->plainText(":x: No waiver found, see next page after ID check");
+        }
 
         $this->modalView->newInput()
             ->blockId(self::FIRST_NAME)
@@ -54,7 +65,7 @@ class NewMemberIdCheckModal implements ModalInterface
             ->label('Birthday')
             ->newDatePicker(self::BIRTHDAY);
 
-        if (! is_null($customer->birthday)) {
+        if (!is_null($customer->birthday)) {
             $birthdayInput->initialDate($customer->birthday->format('Y-m-d'));
         }
 
@@ -65,11 +76,11 @@ class NewMemberIdCheckModal implements ModalInterface
             ->placeholder('Enter Card Number');
 
         $this->modalView->newSection()
-            ->plainText("The numbers on the card will look like \"01234 3300687-1\" and you should enter \"01234\""
-                . " in this field.");
+            ->plainText("The numbers on the card will look like either \"12345 3300687-1\" or \"175-012345\" and " .
+                "you should enter \"12345\" in this field.");
 
         $cardString = $customer->cards->implode('number', ',');
-        if (! empty($cardString)) {
+        if (!empty($cardString)) {
             $cardsInput->initialValue($cardString);
         }
     }
@@ -98,7 +109,7 @@ class NewMemberIdCheckModal implements ModalInterface
             $errors[self::CARD_NUM] = 'Card should be a number';
         }
 
-        if (! empty($errors)) {
+        if (!empty($errors)) {
             return response()->json([
                 'response_action' => 'errors',
                 'errors' => $errors,
@@ -147,6 +158,8 @@ class NewMemberIdCheckModal implements ModalInterface
             ->onQueue()
             ->execute($viewId, $newMemberCardActivation);
 
+
+        // TODO return things to go over popup instead after modal for waiver if needed
         return (new NewMemberCardActivationLiveModal())->placeholder()->update();
 
         //return (new SuccessModal())->update();
@@ -154,6 +167,20 @@ class NewMemberIdCheckModal implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
+        $blockId = $request->payload()['block_id'];
+        if ($blockId == self::WAIVER_ID) {
+            $options = SlackOptions::new();
+
+            $unassignedWaivers = Waiver::where('customer_id', null)->all();
+
+            /** @var Waiver $waiver */
+            foreach ($unassignedWaivers as $waiver) {
+                $optionText = "$waiver->first_name $waiver->last_name $waiver->email";
+                $options->option($waiver->waiver_id, $optionText);
+            }
+
+            return $options;
+        }
         return [];
     }
 
