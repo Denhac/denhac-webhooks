@@ -160,6 +160,6 @@ class Customer extends Model
     {
         $membershipWaiverTemplateId = config('denhac.waiver.membership_waiver_template_id');
 
-        return "https://app.waiverforever.com/pending/{$membershipWaiverTemplateId}/?name-first_name-2={$this->first_name}&name-last_name-2={$this->last_name}&email-email-3={$this->email}&checkbox-checked-4=true";
+        return "https://app.waiverforever.com/pending/{$membershipWaiverTemplateId}?name-first_name-2={$this->first_name}&name-last_name-2={$this->last_name}&email-email-3={$this->email}&checkbox-checked-4=true";
     }
 }

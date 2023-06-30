@@ -98,7 +98,7 @@ class CustomerWaiverTest extends TestCase
         ]);
 
         $this->assertEquals(
-            "https://app.waiverforever.com/pending/{$this->validMembershipWaiver->template_id}/?name-first_name-2={$customer->first_name}&name-last_name-2={$customer->last_name}&email-email-3={$customer->email}&checkbox-checked-4=true",
+            "https://app.waiverforever.com/pending/{$this->validMembershipWaiver->template_id}?name-first_name-2={$customer->first_name}&name-last_name-2={$customer->last_name}&email-email-3={$customer->email}&checkbox-checked-4=true",
             $customer->getWaiverUrl()
         );
     }
