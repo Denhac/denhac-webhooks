@@ -9,11 +9,13 @@ use App\Aggregates\MembershipTraits\Subscription;
 use App\Aggregates\MembershipTraits\UserMembership;
 use App\Aggregates\MembershipTraits\WaiverTrait;
 use App\FeatureFlags;
+use App\StorableEvents\CardSentForDeactivation;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerIsNoEventTestUser;
 use App\StorableEvents\CustomerUpdated;
+use App\StorableEvents\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
@@ -248,6 +250,23 @@ final class MembershipAggregate extends AggregateRoot
         $this->recordThat(new WaiverAssignedToCustomer($waiver->waiver_id, $this->customerId));
 
         $this->activateCardsNeedingActivation();
+
+        return $this;
+    }
+
+    public function bootstrapWaiverRequirement(): static
+    {
+        if ($this->manualBootstrapTriggered) {
+            return $this;
+        } else if ($this->membershipWaiverSigned) {
+            return $this;
+        }
+
+        $this->recordThat(new ManualBootstrapWaiverNeeded($this->customerId));
+
+        foreach ($this->allCards() as $card) {
+            $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
+        }
 
         return $this;
     }
