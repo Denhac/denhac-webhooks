@@ -4,11 +4,14 @@ namespace App\Reactors;
 
 use App\Aggregates\MembershipAggregate;
 use App\Customer;
+use App\Notifications\NewRequirementsWaiverNeeded;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
+use App\StorableEvents\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\WaiverAccepted;
 use App\Waiver;
+use Illuminate\Support\Facades\Notification;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 class WaiverReactor extends Reactor
@@ -77,5 +80,14 @@ class WaiverReactor extends Reactor
         MembershipAggregate::make($woo_id)
             ->assignWaiver($waiver)
             ->persist();
+    }
+
+    public function onManualBootstrapWaiverNeeded(ManualBootstrapWaiverNeeded $event): void
+    {
+        /** @var Customer $customer */
+        $customer = Customer::whereWooId($event->customerId)->first();
+
+        $notification = new NewRequirementsWaiverNeeded($customer);
+        Notification::route('mail', $customer->email)->notify($notification);
     }
 }
