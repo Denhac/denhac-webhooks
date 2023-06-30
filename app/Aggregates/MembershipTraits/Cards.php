@@ -99,7 +99,7 @@ trait Cards
             return;  // We'll check again when they sign the waiver
         }
 
-        foreach ($this->cardsNeedingActivation as $card) {
+        foreach ($this->allCards() as $card) {
             $this->recordThat(new CardSentForActivation($this->customerId, $card));
         }
     }

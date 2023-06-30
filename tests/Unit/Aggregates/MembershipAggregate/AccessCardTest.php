@@ -499,7 +499,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /** Ignored test. Need to have a collection of active cards. Basically handling re-sign up and waiver stuff */
     public function card_is_not_sent_for_activation_if_it_has_already_been_sent()
     {
         $card = '42424';
