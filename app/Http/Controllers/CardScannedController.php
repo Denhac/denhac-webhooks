@@ -8,6 +8,7 @@ use App\Notifications\CardAccessAllowedButNotAMemberRedAlert;
 use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
+use App\Notifications\CardAccessDeniedNoWaiver;
 use App\WinDSX\Door;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -59,7 +60,7 @@ class CardScannedController extends Controller
         if ($customer->member) {
             Log::info("They're a member!");
             if ($accessAllowed) {
-                if (! is_null($newMemberCardActivation)) {
+                if (!is_null($newMemberCardActivation)) {
                     Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
                     if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
                         Log::info("Updated to success");
@@ -78,7 +79,15 @@ class CardScannedController extends Controller
                     // We don't know about this door. Do nothing
                     return;
                 } else if ($door->membersCanBadgeIn) {
-                    if (! is_null($newMemberCardActivation)) {
+                    if (!$customer->hasSignedMembershipWaiver()) {
+                        $notification = new CardAccessDeniedNoWaiver($customer);
+
+                        Notification::route('mail', $customer->email)
+                            ->notify($notification);
+                        return;
+                    }
+
+                    if (!is_null($newMemberCardActivation)) {
                         Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
                         if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
                             Log::info("Updated to failed");
