@@ -59,7 +59,7 @@ class InternalConsistencyCardIssues implements IssueCheck
 
                 if (! $shouldHaveActiveCard && $card->active) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
-                        "their account but we think it's active";
+                        "their account. We think it's active when it should not be.";
                     $issues->add($message);
                 }
             });

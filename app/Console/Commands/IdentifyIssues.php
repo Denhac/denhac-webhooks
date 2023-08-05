@@ -104,7 +104,6 @@ class IdentifyIssues extends Command
 //        $this->extraSlackUsers($members);
 //        $this->missingSlackUsers($members);
 //        $this->googleGroupIssues($members);
-//        $this->internalConsistencyCardIssues($members);
 //        $this->internalConsistencySubscriptionIssues();
 //
 //        $this->printIssues();
