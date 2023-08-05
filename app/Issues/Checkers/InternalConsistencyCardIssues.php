@@ -49,13 +49,15 @@ class InternalConsistencyCardIssues implements IssueCheck
                 /** @var Card $card */
                 $card = $cardsForMember->where('number', $memberCard)->first();
 
-                if ($member['is_member'] && !$card->active) {
+                $shouldHaveActiveCard = $member['is_member'] && $member['has_signed_waiver'];
+
+                if ($shouldHaveActiveCard && !$card->active) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account but we think it's NOT active";
                     $issues->add($message);
                 }
 
-                if (!$member['is_member'] && $card->active) {
+                if (! $shouldHaveActiveCard && $card->active) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account but we think it's active";
                     $issues->add($message);
