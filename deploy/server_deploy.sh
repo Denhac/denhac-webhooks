@@ -7,8 +7,8 @@ echo "Deploying application ..."
 php artisan down
 
 # Update codebase
-git fetch origin master
-git reset --hard origin/master
+git fetch origin main
+git reset --hard origin/main
 
 # Install dependencies based on lock file
 composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
