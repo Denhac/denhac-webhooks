@@ -16,7 +16,7 @@ class ActiveCardIssues implements IssueCheck
         $this->issueData = $issueData;
     }
 
-    public function issueTitle()
+    public function issueTitle(): string
     {
         return "Issue with a card";
     }
@@ -34,7 +34,7 @@ class ActiveCardIssues implements IssueCheck
 
         $card_holders = collect($activeCardHolderUpdate->card_holders);
         $card_holders
-            ->each(function ($card_holder) use ($members, $issues) {
+            ->each(function ($card_holder) use ($issues, $members) {
                 $membersWithCard = $members
                     ->filter(function ($member) use ($card_holder) {
                         return $member['cards']->contains(ltrim($card_holder['card_num'], '0'));
