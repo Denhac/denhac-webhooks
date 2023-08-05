@@ -6,6 +6,7 @@ namespace App\Issues;
 use App\External\HasApiProgressBar;
 use App\Google\GmailEmailHelper;
 use App\PaypalBasedMember;
+use App\Slack\SlackApi;
 use App\UserMembership;
 use App\Waiver;
 use App\WooCommerce\Api\ApiCallFailed;
@@ -26,20 +27,25 @@ class IssueData
     public const SYSTEM_PAYPAL = 'PayPal';
 
     private WooCommerceApi $wooCommerceApi;
+    private SlackApi $slackApi;
 
     private Collection|null $_wooCommerceCustomers = null;
     private Collection|null $_wooCommerceSubscriptions = null;
     private Collection|null $_wooCommerceUserMemberships = null;
+
+    private Collection|null $_slackUsers = null;
 
     private Collection|null $_members = null;
 
     private OutputInterface|null $output = null;
 
     public function __construct(
-        WooCommerceApi $wooCommerceApi
+        WooCommerceApi $wooCommerceApi,
+        SlackApi       $slackApi,
     )
     {
         $this->wooCommerceApi = $wooCommerceApi;
+        $this->slackApi = $slackApi;
     }
 
     public function setOutput(OutputInterface|null $output): void
@@ -183,5 +189,16 @@ class IssueData
     {
         $meta_entry = $meta_data->where('key', $key)->first();
         return is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
+    }
+
+    public function slackUsers()
+    {
+        if (is_null($this->_slackUsers)) {
+            Log::info("Fetching WooCommerce User Memberships");
+            $this->_slackUsers = $this->slackApi->users->list()($this->apiProgress("Fetching Slack users"));
+            Log::info("Fetched WooCommerce User Memberships");
+        }
+
+        return $this->_slackUsers;
     }
 }

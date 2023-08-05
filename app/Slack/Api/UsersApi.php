@@ -3,6 +3,7 @@
 namespace App\Slack\Api;
 
 
+use App\External\ApiProgress;
 use App\Slack\UnexpectedResponseException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
@@ -34,7 +35,7 @@ class UsersApi
         return null;
     }
 
-    public function list(): Collection
+    public function list(ApiProgress $progress = null): Collection
     {
         return $this->paginate('members', function ($cursor) {
             return $this->clients->managementApiClient
@@ -45,7 +46,7 @@ class UsersApi
                         'limit' => 200,
                     ],
                 ]);
-        });
+        }, $progress);
     }
 
     public function lookupByEmail($email)

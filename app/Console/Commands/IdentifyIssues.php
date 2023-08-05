@@ -99,12 +99,10 @@ class IdentifyIssues extends Command
             }
             $this->info('');
         }
-//        $members = $this->getMembers();
-//        $this->unknownActiveCard($members);
+//        $members = $this->getMembers();=
 //        $this->extraSlackUsers($members);
 //        $this->missingSlackUsers($members);
-//        $this->googleGroupIssues($members);
-//        $this->internalConsistencySubscriptionIssues();
+//        $this->googleGroupIssues($members);=
 //
 //        $this->printIssues();
     }
@@ -322,30 +320,6 @@ class IdentifyIssues extends Command
             if ($member['is_member']) {
                 $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
                 $this->issues->add(self::ISSUE_GOOGLE_GROUPS, $message);
-            }
-        });
-    }
-
-    private function internalConsistencySubscriptionIssues()
-    {
-        $subscriptions_api = $this->wooCommerceApi->subscriptions->list();
-
-        $subscriptions_api->each(function ($subscription_api) {
-            $sub_id = $subscription_api['id'];
-            $sub_status = $subscription_api['status'];
-
-            $model = Subscription::whereWooId($sub_id)->first();
-
-            if (is_null($model)) {
-                $message = "Subscription $sub_id doesn't exist in our local database";
-                $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
-
-                return;
-            }
-
-            if ($model->status != $sub_status) {
-                $message = "Subscription $sub_id has api status $sub_status but local status {$model->status}";
-                $this->issues->add(self::ISSUE_INTERNAL_CONSISTENCY, $message);
             }
         });
     }
