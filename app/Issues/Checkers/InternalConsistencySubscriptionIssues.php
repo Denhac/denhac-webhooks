@@ -25,12 +25,13 @@ class InternalConsistencySubscriptionIssues implements IssueCheck
     {
         $issues = collect();
         $subscriptions_api = $this->issueData->wooCommerceSubscriptions();
+        $subscriptions_models = Subscription::all();
 
-        $subscriptions_api->each(function ($issues, $subscription_api) {
+        $subscriptions_api->each(function ($subscription_api) use ($issues, $subscriptions_models) {
             $sub_id = $subscription_api['id'];
             $sub_status = $subscription_api['status'];
 
-            $model = Subscription::whereWooId($sub_id)->first();
+            $model = $subscriptions_models->where('woo_id', $sub_id)->first();
 
             if (is_null($model)) {
                 $message = "Subscription $sub_id doesn't exist in our local database";
@@ -41,6 +42,18 @@ class InternalConsistencySubscriptionIssues implements IssueCheck
 
             if ($model->status != $sub_status) {
                 $message = "Subscription $sub_id has api status $sub_status but local status {$model->status}";
+                $issues->add($message);
+            }
+        });
+
+        $subscriptions_models->each(function ($subscription_model) use ($issues, $subscriptions_api) {
+            /** @var Subscription $subscription_model */
+            $sub_id = $subscription_model->woo_id;
+
+            $api = $subscriptions_api->where('id', $sub_id)->first();
+
+            if (is_null($api)) {
+                $message = "Subscription $sub_id exists in our local database but not on the website. Deleted?";
                 $issues->add($message);
             }
         });
