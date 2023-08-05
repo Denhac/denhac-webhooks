@@ -30,7 +30,7 @@ trait SlackApiTrait
             $stepCount++;
 
             if(! is_null($progress)) {
-                $lastStep = $cursor = "";
+                $lastStep = $cursor == "";
                 $progress->setProgress($stepCount, $lastStep ? $stepCount : $stepCount + 1);
             }
         } while ($cursor != "");

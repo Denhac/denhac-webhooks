@@ -102,11 +102,17 @@ class IssueData
     {
         if (is_null($this->_members)) {
             Log::info("Fetching memberships");
+
             $subscriptions = $this->wooCommerceSubscriptions();
             $userMemberships = $this->wooCommerceUserMemberships();
             $waivers = Waiver::all();  // TODO Do we need to hit up waiver forever instead of trusting our local db?
 
-            $this->_members = $this->wooCommerceCustomers()->map(function ($customer) use ($subscriptions, $userMemberships, $waivers) {
+            $customers = $this->wooCommerceCustomers();
+
+            // This has to be created after anything else with a progress bar
+            $progress = $this->apiProgress("Compiling WooCommerce members list");
+            $progress->setProgress(0, $customers->count());
+            $this->_members = $customers->map(function ($customer) use ($progress, $subscriptions, $userMemberships, $waivers) {
                 $meta_data = collect($customer['meta_data']);
                 $card_string = $this->getMetaValue($meta_data, 'access_card_number');
                 $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
@@ -144,6 +150,8 @@ class IssueData
                     ->where('customer_id', $customer['id'])
                     ->where('template_id', Waiver::getValidMembershipWaiverId())
                     ->isNotEmpty();
+
+                $progress->step();
 
                 return [
                     'id' => $customer['id'],
@@ -195,7 +203,7 @@ class IssueData
     {
         if (is_null($this->_slackUsers)) {
             Log::info("Fetching WooCommerce User Memberships");
-            $this->_slackUsers = $this->slackApi->users->list()($this->apiProgress("Fetching Slack users"));
+            $this->_slackUsers = $this->slackApi->users->list($this->apiProgress("Fetching Slack users"));
             Log::info("Fetched WooCommerce User Memberships");
         }
 
