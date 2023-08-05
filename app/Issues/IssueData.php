@@ -128,7 +128,10 @@ class IssueData
                     });
 
 
-                $isMember = $userMembershipsMap->get(UserMembership::MEMBERSHIP_FULL_MEMBER) == "active";
+                $isMember = in_array(
+                    $userMembershipsMap->get(UserMembership::MEMBERSHIP_FULL_MEMBER),
+                    ["active", "pending", "complimentary"]
+                );
 
                 return [
                     'id' => $customer['id'],
