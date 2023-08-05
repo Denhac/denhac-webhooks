@@ -71,6 +71,7 @@ class WaiverReactor extends Reactor
         $waiver = Waiver::where('first_name', $first_name)
             ->where('last_name', $last_name)
             ->where('email', $email)
+            ->whereNull('customer_id')
             ->first();
 
         if (is_null($waiver)) {

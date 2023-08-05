@@ -17,6 +17,7 @@ use App\Reactors\WaiverReactor;
 use App\Slack\Channels;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerCreated;
+use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\CustomerUpdated;
@@ -245,6 +246,24 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
+    public function customer_created_with_all_fields_matching_is_not_reassigned_to_customer()
+    {
+        $this->matchingWaiver->customer_id = $this->matchingCustomer->woo_id;
+        $this->matchingWaiver->save();
+
+        event(new CustomerCreated(
+            $this->customer()
+                ->id($this->matchingCustomer->woo_id)
+                ->first_name($this->matchingCustomer->first_name)
+                ->last_name($this->matchingCustomer->last_name)
+                ->email($this->matchingCustomer->email)
+        ));
+
+        MembershipAggregate::fakeCustomer($this->matchingCustomer)
+            ->assertNothingApplied();
+    }
+
+    /** @test */
     public function customer_updated_with_all_fields_matching_is_assigned_to_customer()
     {
         event(new CustomerUpdated(
@@ -315,7 +334,23 @@ class WaiverReactorTest extends TestCase
             ->assertNothingApplied();
     }
 
+    /** @test */
+    public function customer_updated_with_all_fields_matching_is_not_reassigned_to_customer()
+    {
+        $this->matchingWaiver->customer_id = $this->matchingCustomer->woo_id;
+        $this->matchingWaiver->save();
 
+        event(new CustomerUpdated(
+            $this->customer()
+                ->id($this->matchingCustomer->woo_id)
+                ->first_name($this->matchingCustomer->first_name)
+                ->last_name($this->matchingCustomer->last_name)
+                ->email($this->matchingCustomer->email)
+        ));
+
+        MembershipAggregate::fakeCustomer($this->matchingCustomer)
+            ->assertNothingApplied();
+    }
 
     /** @test */
     public function customer_imported_with_all_fields_matching_is_assigned_to_customer()
@@ -383,6 +418,24 @@ class WaiverReactorTest extends TestCase
         ));
 
         $this->matchingCustomer->delete();
+
+        MembershipAggregate::fakeCustomer($this->matchingCustomer)
+            ->assertNothingApplied();
+    }
+
+    /** @test */
+    public function customer_deleted_with_all_fields_matching_is_not_reassigned_to_customer()
+    {
+        $this->matchingWaiver->customer_id = $this->matchingCustomer->woo_id;
+        $this->matchingWaiver->save();
+
+        event(new CustomerDeleted(
+            $this->customer()
+                ->id($this->matchingCustomer->woo_id)
+                ->first_name($this->matchingCustomer->first_name)
+                ->last_name($this->matchingCustomer->last_name)
+                ->email($this->matchingCustomer->email)
+        ));
 
         MembershipAggregate::fakeCustomer($this->matchingCustomer)
             ->assertNothingApplied();

@@ -18,7 +18,7 @@ class InternalConsistencyCardIssues implements IssueCheck
 
     public function issueTitle(): string
     {
-        return "Issue with our store's internal consistency for access cards";
+        return "Issue with our webhook server's internal consistency for access cards";
     }
 
     public function getIssues(): Collection
