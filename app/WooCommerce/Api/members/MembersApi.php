@@ -2,6 +2,7 @@
 
 namespace App\WooCommerce\Api\members;
 
+use App\External\ApiProgress;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
@@ -19,16 +20,17 @@ class MembersApi
     }
 
     /**
+     * @param ApiProgress|null $progress
      * @return Collection
      * @throws ApiCallFailed
      */
-    public function list()
+    public function list(ApiProgress $progress = null): Collection
     {
         return $this->getWithPaging('/wp-json/wc/v3/memberships/members', [
             RequestOptions::QUERY => [
                 'role' => 'all',
             ],
-        ]);
+        ], $progress);
     }
 
     /**
@@ -49,9 +51,9 @@ class MembersApi
 
         $data = json_decode($response->getBody(), true);
 
-        if($response->getStatusCode() == Response::HTTP_BAD_REQUEST) {
+        if ($response->getStatusCode() == Response::HTTP_BAD_REQUEST) {
             $code = $data['code'];
-            if($code == 'woocommerce_rest_wc_user_membership_exists') {
+            if ($code == 'woocommerce_rest_wc_user_membership_exists') {
                 return null; // Everything worked out fine.
             }
         }

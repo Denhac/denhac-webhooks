@@ -2,6 +2,7 @@
 
 namespace App\WooCommerce\Api\subscriptions;
 
+use App\External\ApiProgress;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
@@ -18,12 +19,13 @@ class SubscriptionsApi
     }
 
     /**
+     * @param ApiProgress|null $progress
      * @return Collection
      * @throws ApiCallFailed
      */
-    public function list()
+    public function list(ApiProgress $progress = null): Collection
     {
-        return $this->getWithPaging('/wp-json/wc/v1/subscriptions');
+        return $this->getWithPaging('/wp-json/wc/v1/subscriptions', [], $progress);
     }
 
     /**

@@ -2,7 +2,9 @@
 
 namespace App\WooCommerce\Api;
 
+use App\External\ApiProgress;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
@@ -31,20 +33,25 @@ trait WooCommerceApiMixin
     /**
      * @param $url
      * @param array $options
+     * @param ApiProgress|null $progress
      * @return Collection
      * @throws ApiCallFailed
      */
-    private function getWithPaging($url, $options = [])
+    private function getWithPaging($url, array $options = [], ApiProgress $progress = null): Collection
     {
-        if (! Arr::has($options, RequestOptions::QUERY)) {
+        if (!Arr::has($options, RequestOptions::QUERY)) {
             $options[RequestOptions::QUERY] = [];
         }
 
-        if (! Arr::has($options[RequestOptions::QUERY], 'per_page')) {
+        if (!Arr::has($options[RequestOptions::QUERY], 'per_page')) {
             $options[RequestOptions::QUERY]['per_page'] = 100;
         }
 
-        $initialResponse = $this->client->get($url, $options);
+        try {
+            $initialResponse = $this->client->get($url, $options);
+        } catch (GuzzleException $ex) {
+            throw new ApiCallFailed("API call failed", 0, $ex);
+        }
 
         $this->handleError($initialResponse);
 
@@ -52,10 +59,20 @@ trait WooCommerceApiMixin
 
         $totalPages = (int)$initialResponse->getHeader('X-WP-TotalPages')[0];
 
-        for ($i = 2; $i <= $totalPages; $i++) {
-            $options[RequestOptions::QUERY]['page'] = $i;
-            $response = $this->client->get($url, $options);
+        for ($currentPage = 2; $currentPage <= $totalPages; $currentPage++) {
+            $options[RequestOptions::QUERY]['page'] = $currentPage;
+
+            try {
+                $response = $this->client->get($url, $options);
+            } catch (GuzzleException $ex) {
+                throw new ApiCallFailed("API call failed", 0, $ex);
+            }
+
             $responseData = $responseData->merge($this->jsonOrError($response));
+
+            if (!is_null($progress)) {
+                $progress->setProgress($currentPage, $totalPages);
+            }
         }
 
         return $responseData;

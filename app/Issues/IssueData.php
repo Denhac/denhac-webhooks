@@ -3,18 +3,23 @@
 namespace App\Issues;
 
 
+use App\External\HasApiProgressBar;
 use App\Google\GmailEmailHelper;
 use App\PaypalBasedMember;
+use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * This is a re-usable set of issue data that can be used with all of the issue checkers
  */
 class IssueData
 {
+    use HasApiProgressBar;
+
     public const SYSTEM_WOOCOMMERCE = 'WooCommerce';
     public const SYSTEM_PAYPAL = 'PayPal';
 
@@ -26,6 +31,8 @@ class IssueData
 
     private Collection|null $_members = null;
 
+    private OutputInterface|null $output = null;
+
     public function __construct(
         WooCommerceApi $wooCommerceApi
     )
@@ -33,39 +40,56 @@ class IssueData
         $this->wooCommerceApi = $wooCommerceApi;
     }
 
+    public function setOutput(OutputInterface|null $output): void
+    {
+        $this->output = $output;
+    }
+
+    /**
+     * @throws ApiCallFailed
+     */
     public function wooCommerceCustomers(): Collection
     {
         if (is_null($this->_wooCommerceCustomers)) {
             Log::info("Fetching WooCommerce Customers");
-            $this->_wooCommerceCustomers = $this->wooCommerceApi->customers->list();
+            $this->_wooCommerceCustomers = $this->wooCommerceApi->customers->list($this->apiProgress("WooCommerce Customers"));
             Log::info("Fetched WooCommerce Customers");
         }
 
         return $this->_wooCommerceCustomers;
     }
 
+    /**
+     * @throws ApiCallFailed
+     */
     public function wooCommerceSubscriptions(): Collection
     {
         if (is_null($this->_wooCommerceSubscriptions)) {
             Log::info("Fetching WooCommerce Subscriptions");
-            $this->_wooCommerceSubscriptions = $this->wooCommerceApi->subscriptions->list();
+            $this->_wooCommerceSubscriptions = $this->wooCommerceApi->subscriptions->list($this->apiProgress("WooCommerce Subscriptions"));
             Log::info("Fetched WooCommerce Subscriptions");
         }
 
         return $this->_wooCommerceSubscriptions;
     }
 
+    /**
+     * @throws ApiCallFailed
+     */
     public function wooCommerceUserMemberships(): Collection
     {
         if (is_null($this->_wooCommerceUserMemberships)) {
             Log::info("Fetching WooCommerce User Memberships");
-            $this->_wooCommerceUserMemberships = $this->wooCommerceApi->members->list();
+            $this->_wooCommerceUserMemberships = $this->wooCommerceApi->members->list($this->apiProgress("WooCommerce User Memberships"));
             Log::info("Fetched WooCommerce User Memberships");
         }
 
         return $this->_wooCommerceUserMemberships;
     }
 
+    /**
+     * @throws ApiCallFailed
+     */
     public function members()
     {
         if (is_null($this->_members)) {
@@ -86,7 +110,7 @@ class IssueData
                     });
 
                 $emails = collect();
-                if (! is_null($customer['email'])) {
+                if (!is_null($customer['email'])) {
                     $emails->push(GmailEmailHelper::handleGmail(Str::lower($customer['email'])));
                 }
 
@@ -116,7 +140,7 @@ class IssueData
             $this->_members = $this->_members->concat(PaypalBasedMember::all()
                 ->map(function ($member) {
                     $emails = collect();
-                    if (! is_null($member->email)) {
+                    if (!is_null($member->email)) {
                         $emails->push(GmailEmailHelper::handleGmail(Str::lower($member->email)));
                     }
 

@@ -8,16 +8,19 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use ReflectionClass;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class IssueChecker
 {
     protected Collection $checkers;
     protected MessageBag|null $issues;
 
-    public function __construct()
+    public function __construct(OutputInterface|null $output = null)
     {
         $this->issues = null;
+        /** @var IssueData $issueData */
         $issueData = app(IssueData::class);
+        $issueData->setOutput($output);
         app()->instance(IssueData::class, $issueData);
 
         $this->checkers = collect(get_declared_classes())

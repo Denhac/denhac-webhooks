@@ -80,12 +80,12 @@ class IdentifyIssues extends Command
      *
      * @throws ApiCallFailed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Identifying issues');
 
         /** @var IssueChecker $issueChecker */
-        $issueChecker = app(IssueChecker::class);
+        $issueChecker = app(IssueChecker::class, [$this->output]);
 
         $issues = $issueChecker->getIssues();
         $this->info("There are {$issues->count()} total issues.");
