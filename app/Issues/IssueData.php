@@ -7,6 +7,7 @@ use App\External\HasApiProgressBar;
 use App\Google\GmailEmailHelper;
 use App\PaypalBasedMember;
 use App\UserMembership;
+use App\Waiver;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Collection;
@@ -97,8 +98,9 @@ class IssueData
             Log::info("Fetching memberships");
             $subscriptions = $this->wooCommerceSubscriptions();
             $userMemberships = $this->wooCommerceUserMemberships();
+            $waivers = Waiver::all();  // TODO Do we need to hit up waiver forever instead of trusting our local db?
 
-            $this->_members = $this->wooCommerceCustomers()->map(function ($customer) use ($subscriptions, $userMemberships) {
+            $this->_members = $this->wooCommerceCustomers()->map(function ($customer) use ($subscriptions, $userMemberships, $waivers) {
                 $meta_data = collect($customer['meta_data']);
                 $card_string = $this->getMetaValue($meta_data, 'access_card_number');
                 $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
@@ -127,11 +129,15 @@ class IssueData
                         return [$userMembership['plan_id'] => $userMembership['status']];
                     });
 
-
                 $isMember = in_array(
                     $userMembershipsMap->get(UserMembership::MEMBERSHIP_FULL_MEMBER),
                     ["active", "pending", "complimentary"]
                 );
+
+                $hasSignedWaiver = $waivers
+                    ->where('customer_id', $customer['id'])
+                    ->where('template_id', Waiver::getValidMembershipWaiverId())
+                    ->isNotEmpty();
 
                 return [
                     'id' => $customer['id'],
@@ -139,6 +145,7 @@ class IssueData
                     'last_name' => $customer['last_name'],
                     'email' => $emails,
                     'is_member' => $isMember,
+                    'has_signed_waiver' => $hasSignedWaiver,
                     'subscriptions' => $subscriptionMap,
                     'user_memberships' => $userMembershipsMap,
                     'cards' => $cards,

@@ -33,4 +33,9 @@ class Waiver extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'woo_id');
     }
+
+    public static function getValidMembershipWaiverId()  # TODO Just turn this into a property with a magic get method
+    {
+        return config('denhac.waiver.membership_waiver_template_id');
+    }
 }

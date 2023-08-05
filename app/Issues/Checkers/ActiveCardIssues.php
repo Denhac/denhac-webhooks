@@ -72,7 +72,8 @@ class ActiveCardIssues implements IssueCheck
             ->filter(function ($member) {
                 return ! is_null($member['first_name']) &&
                     ! is_null($member['last_name']) &&
-                    $member['is_member'];
+                    $member['is_member'] &&
+                    $member['has_signed_waiver'];
             })
             ->each(function ($member) use ($card_holders, $issues) {
                 $member['cards']->each(function ($card) use ($member, $card_holders, $issues) {
