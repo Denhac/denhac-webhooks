@@ -167,6 +167,7 @@ class IssueData
                         'last_name' => $member->last_name,
                         'email' => $emails,
                         'is_member' => $member->active,
+                        'has_signed_waiver' => false,  # No way for me to actually handle this.
                         'subscriptions' => collect(),
                         'cards' => is_null($member->card) ? collect() : collect([$member->card]),
                         'slack_id' => $member->slack_id,
