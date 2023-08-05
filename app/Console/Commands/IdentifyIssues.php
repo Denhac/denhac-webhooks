@@ -85,7 +85,8 @@ class IdentifyIssues extends Command
         $this->info('Identifying issues');
 
         /** @var IssueChecker $issueChecker */
-        $issueChecker = app(IssueChecker::class, [$this->output]);
+        $issueChecker = app(IssueChecker::class);
+        $issueChecker->setOutput($this->output);
 
         $issues = $issueChecker->getIssues();
         $this->info("There are {$issues->count()} total issues.");

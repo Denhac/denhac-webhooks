@@ -13,15 +13,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 class IssueChecker
 {
     protected Collection $checkers;
-    protected MessageBag|null $issues;
+    protected MessageBag|null $issues = null;
+    private IssueData $issueData;
 
-    public function __construct(OutputInterface|null $output = null)
+    public function __construct()
     {
-        $this->issues = null;
-        /** @var IssueData $issueData */
-        $issueData = app(IssueData::class);
-        $issueData->setOutput($output);
-        app()->instance(IssueData::class, $issueData);
+        $this->issueData = app(IssueData::class);
+        app()->instance(IssueData::class, $this->issueData);
 
         $this->checkers = collect(get_declared_classes())
             ->filter(fn($name) => str_starts_with($name, 'App\\Issues\\Checkers'))
@@ -29,6 +27,11 @@ class IssueChecker
             ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn($reflect) => $reflect->getName())
             ->map(fn($name) => app($name));
+    }
+
+    public function setOutput(OutputInterface $output): void
+    {
+        $this->issueData->setOutput($output);
     }
 
     public function getIssues(): MessageBag
