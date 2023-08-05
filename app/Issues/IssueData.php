@@ -6,6 +6,7 @@ namespace App\Issues;
 use App\External\HasApiProgressBar;
 use App\Google\GmailEmailHelper;
 use App\PaypalBasedMember;
+use App\UserMembership;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Collection;
@@ -52,7 +53,7 @@ class IssueData
     {
         if (is_null($this->_wooCommerceCustomers)) {
             Log::info("Fetching WooCommerce Customers");
-            $this->_wooCommerceCustomers = $this->wooCommerceApi->customers->list($this->apiProgress("WooCommerce Customers"));
+            $this->_wooCommerceCustomers = $this->wooCommerceApi->customers->list($this->apiProgress("Fetching WooCommerce Customers"));
             Log::info("Fetched WooCommerce Customers");
         }
 
@@ -66,7 +67,7 @@ class IssueData
     {
         if (is_null($this->_wooCommerceSubscriptions)) {
             Log::info("Fetching WooCommerce Subscriptions");
-            $this->_wooCommerceSubscriptions = $this->wooCommerceApi->subscriptions->list($this->apiProgress("WooCommerce Subscriptions"));
+            $this->_wooCommerceSubscriptions = $this->wooCommerceApi->subscriptions->list($this->apiProgress("Fetching WooCommerce Subscriptions"));
             Log::info("Fetched WooCommerce Subscriptions");
         }
 
@@ -80,7 +81,7 @@ class IssueData
     {
         if (is_null($this->_wooCommerceUserMemberships)) {
             Log::info("Fetching WooCommerce User Memberships");
-            $this->_wooCommerceUserMemberships = $this->wooCommerceApi->members->list($this->apiProgress("WooCommerce User Memberships"));
+            $this->_wooCommerceUserMemberships = $this->wooCommerceApi->members->list($this->apiProgress("Fetching WooCommerce User Memberships"));
             Log::info("Fetched WooCommerce User Memberships");
         }
 
@@ -95,13 +96,9 @@ class IssueData
         if (is_null($this->_members)) {
             Log::info("Fetching memberships");
             $subscriptions = $this->wooCommerceSubscriptions();
+            $userMemberships = $this->wooCommerceUserMemberships();
 
-            $this->_members = $this->wooCommerceCustomers()->map(function ($customer) use ($subscriptions) {
-                $isMember = $subscriptions
-                    ->where('customer_id', $customer['id'])
-                    ->whereIn('status', ['active', 'pending-cancel'])
-                    ->isNotEmpty();
-
+            $this->_members = $this->wooCommerceCustomers()->map(function ($customer) use ($subscriptions, $userMemberships) {
                 $meta_data = collect($customer['meta_data']);
                 $card_string = $this->getMetaValue($meta_data, 'access_card_number');
                 $cards = is_null($card_string) ? collect() : collect(explode(',', $card_string))
@@ -124,6 +121,15 @@ class IssueData
                         return $subscription['status'];
                     });
 
+                $userMembershipsMap = $userMemberships
+                    ->where('customer_id', $customer['id'])
+                    ->mapWithKeys(function ($userMembership) {
+                        return [$userMembership['plan_id'] => $userMembership['status']];
+                    });
+
+
+                $isMember = $userMembershipsMap->get(UserMembership::MEMBERSHIP_FULL_MEMBER) == "active";
+
                 return [
                     'id' => $customer['id'],
                     'first_name' => $customer['first_name'],
@@ -131,6 +137,7 @@ class IssueData
                     'email' => $emails,
                     'is_member' => $isMember,
                     'subscriptions' => $subscriptionMap,
+                    'user_memberships' => $userMembershipsMap,
                     'cards' => $cards,
                     'slack_id' => $this->getMetaValue($meta_data, 'access_slack_id'),
                     'system' => self::SYSTEM_WOOCOMMERCE,

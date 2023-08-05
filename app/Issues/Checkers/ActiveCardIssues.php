@@ -25,7 +25,6 @@ class ActiveCardIssues implements IssueCheck
     {
         $issues = collect();
         $members = $this->issueData->members();
-        error_log($members->count());
 
         /** @var ActiveCardHolderUpdate $activeCardHolderUpdate */
         $activeCardHolderUpdate = ActiveCardHolderUpdate::latest()->first();

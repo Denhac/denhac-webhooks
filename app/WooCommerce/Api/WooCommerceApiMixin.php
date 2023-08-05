@@ -59,6 +59,10 @@ trait WooCommerceApiMixin
 
         $totalPages = (int)$initialResponse->getHeader('X-WP-TotalPages')[0];
 
+        if (!is_null($progress)) {
+            $progress->setProgress(1, $totalPages);
+        }
+
         for ($currentPage = 2; $currentPage <= $totalPages; $currentPage++) {
             $options[RequestOptions::QUERY]['page'] = $currentPage;
 
