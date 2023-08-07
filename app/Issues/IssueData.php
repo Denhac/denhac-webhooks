@@ -5,6 +5,7 @@ namespace App\Issues;
 
 use App\External\HasApiProgressBar;
 use App\Google\GmailEmailHelper;
+use App\Google\GoogleApi;
 use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\UserMembership;
@@ -12,7 +13,6 @@ use App\Waiver;
 use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -28,6 +28,7 @@ class IssueData
 
     private WooCommerceApi $wooCommerceApi;
     private SlackApi $slackApi;
+    private GoogleApi $googleApi;
 
     private Collection|null $_wooCommerceCustomers = null;
     private Collection|null $_wooCommerceSubscriptions = null;
@@ -37,15 +38,20 @@ class IssueData
 
     private Collection|null $_members = null;
 
+    private Collection|null $_googleGroups = null;
+    private Collection|null $_googleGroupMembers = null;  // Key is group, value is member list
+
     private OutputInterface|null $output = null;
 
     public function __construct(
         WooCommerceApi $wooCommerceApi,
         SlackApi       $slackApi,
+        GoogleApi      $googleApi,
     )
     {
         $this->wooCommerceApi = $wooCommerceApi;
         $this->slackApi = $slackApi;
+        $this->googleApi = $googleApi;
     }
 
     public function setOutput(OutputInterface|null $output): void
@@ -59,9 +65,7 @@ class IssueData
     public function wooCommerceCustomers(): Collection
     {
         if (is_null($this->_wooCommerceCustomers)) {
-            Log::info("Fetching WooCommerce Customers");
             $this->_wooCommerceCustomers = $this->wooCommerceApi->customers->list($this->apiProgress("Fetching WooCommerce Customers"));
-            Log::info("Fetched WooCommerce Customers");
         }
 
         return $this->_wooCommerceCustomers;
@@ -73,9 +77,7 @@ class IssueData
     public function wooCommerceSubscriptions(): Collection
     {
         if (is_null($this->_wooCommerceSubscriptions)) {
-            Log::info("Fetching WooCommerce Subscriptions");
             $this->_wooCommerceSubscriptions = $this->wooCommerceApi->subscriptions->list($this->apiProgress("Fetching WooCommerce Subscriptions"));
-            Log::info("Fetched WooCommerce Subscriptions");
         }
 
         return $this->_wooCommerceSubscriptions;
@@ -87,9 +89,7 @@ class IssueData
     public function wooCommerceUserMemberships(): Collection
     {
         if (is_null($this->_wooCommerceUserMemberships)) {
-            Log::info("Fetching WooCommerce User Memberships");
             $this->_wooCommerceUserMemberships = $this->wooCommerceApi->members->list($this->apiProgress("Fetching WooCommerce User Memberships"));
-            Log::info("Fetched WooCommerce User Memberships");
         }
 
         return $this->_wooCommerceUserMemberships;
@@ -101,7 +101,6 @@ class IssueData
     public function members()
     {
         if (is_null($this->_members)) {
-            Log::info("Fetching memberships");
 
             $subscriptions = $this->wooCommerceSubscriptions();
             $userMemberships = $this->wooCommerceUserMemberships();
@@ -188,7 +187,6 @@ class IssueData
                         'system' => self::SYSTEM_PAYPAL,
                     ];
                 }));
-            Log::info("Fetched memberships");
         }
         return $this->_members;
     }
@@ -202,11 +200,32 @@ class IssueData
     public function slackUsers()
     {
         if (is_null($this->_slackUsers)) {
-            Log::info("Fetching WooCommerce User Memberships");
             $this->_slackUsers = $this->slackApi->users->list($this->apiProgress("Fetching Slack users"));
-            Log::info("Fetched WooCommerce User Memberships");
         }
 
         return $this->_slackUsers;
+    }
+
+    public function googleGroups()
+    {
+        if (is_null($this->_googleGroups)) {
+            $this->_googleGroups = $this->googleApi->groupsForDomain('denhac.org');
+        }
+
+        return $this->_googleGroups;
+    }
+
+    public function googleGroupMembers($group)
+    {
+        if (is_null($this->_googleGroupMembers)) {
+            $this->_googleGroupMembers = collect();
+        }
+
+        if (!$this->_googleGroupMembers->has($group)) {
+            $members = $this->googleApi->group($group)->list($this->apiProgress("Fetching Google Group Members $group"));
+            $this->_googleGroupMembers->put($group, $members);
+        }
+
+        return $this->_googleGroupMembers->get($group);
     }
 }

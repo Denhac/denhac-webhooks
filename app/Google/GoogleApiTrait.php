@@ -21,17 +21,20 @@ trait GoogleApiTrait
                 return collect($response);  // TODO Might need to raise exception here, don't know why we'd want this? Empty return instead?
             }
 
+            $stepCount++;
+
             if (!array_key_exists("nextPageToken", $response)) break;
 
             $nextPageToken = $response["nextPageToken"];
 
-            $stepCount++;
-
             if (!is_null($progress)) {
-                $lastStep = $nextPageToken == "";
-                $progress->setProgress($stepCount, $lastStep ? $stepCount : $stepCount + 1);
+                $progress->setProgress($stepCount, $stepCount + 1);
             }
         } while ($nextPageToken != "");
+
+        if (!is_null($progress)) {
+            $progress->setProgress($stepCount, $stepCount);
+        }
 
         return $collection;
     }

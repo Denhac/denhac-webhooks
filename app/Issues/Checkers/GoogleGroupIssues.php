@@ -12,12 +12,10 @@ use Illuminate\Support\Str;
 class GoogleGroupIssues implements IssueCheck
 {
     private IssueData $issueData;
-    private GoogleApi $googleApi;
 
-    public function __construct(IssueData $issueData, GoogleApi $googleApi)
+    public function __construct(IssueData $issueData)
     {
         $this->issueData = $issueData;
-        $this->googleApi = $googleApi;
     }
 
     public function issueTitle(): string
@@ -30,7 +28,7 @@ class GoogleGroupIssues implements IssueCheck
         $issues = collect();
         $members = $this->issueData->members();
 
-        $groups = $this->googleApi->groupsForDomain('denhac.org')
+        $groups = $this->issueData->googleGroups()
             ->filter(function ($group) {
                 // TODO handle excluded groups in a better way
                 return $group != 'denhac@denhac.org' &&
@@ -40,7 +38,7 @@ class GoogleGroupIssues implements IssueCheck
         $emailsToGroups = collect();
 
         $groups->each(function ($group) use ($issues, &$emailsToGroups) {
-            $membersInGroup = $this->googleApi->group($group)->list();
+            $membersInGroup = $this->issueData->googleGroupMembers($group);
 
             $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
                 $groupMember = GmailEmailHelper::handleGmail(Str::lower($groupMember));
@@ -108,20 +106,23 @@ class GoogleGroupIssues implements IssueCheck
             $notInGroups = $memberGroupEmails
                 ->filter(function ($groupEmail) use ($memberEmails, $emailsToGroups) {
                     foreach ($memberEmails as $memberEmail) {
-                        if ($emailsToGroups->get($memberEmail)->contains($groupEmail)) {
-                            return true;  // This group has this email
+                        $groupsForThisEmail = $emailsToGroups->get($memberEmail, collect());
+                        if ($groupsForThisEmail->contains($groupEmail)) {
+                            return false;  // This group has this email
                         }
                     }
-                    return false;  // This group has none of the members emails
+                    return true;  // This group has none of the members emails
             });
 
             if ($notInGroups->isEmpty()) {
                 return;
             }
 
-            $membersGroupsMissing = $notInGroups->implode(',');
+            $membersGroupsMissing = $notInGroups->implode(', ');
+            $groupString = Str::plural("group", $notInGroups->count());
             $membersEmailsString = $memberEmails->implode(', ');
-            $message = "{$member['first_name']} {$member['last_name']} with emails ({$membersEmailsString}) is an active member but is not part of $membersGroupsMissing";
+            $emailString = Str::plural("email", $memberEmails->count());
+            $message = "{$member['first_name']} {$member['last_name']} with $emailString ({$membersEmailsString}) is an active member but is not in $groupString $membersGroupsMissing";
             $issues->add($message);
         });
 

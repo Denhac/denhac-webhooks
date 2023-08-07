@@ -27,6 +27,7 @@ class IssueChecker
             ->map(fn($name) => new ReflectionClass($name))
             ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn($reflect) => $reflect->getName())
+            ->filter(fn($name) => $name == 'App\\Issues\\Checkers\\GoogleGroupIssues')
             ->map(fn($name) => app($name));
     }
 

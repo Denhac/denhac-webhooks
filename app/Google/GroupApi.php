@@ -2,6 +2,7 @@
 
 namespace App\Google;
 
+use App\External\ApiProgress;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Response;
@@ -76,7 +77,7 @@ class GroupApi
         // TODO Handle conflict/other errors
     }
 
-    public function list()
+    public function list(ApiProgress $apiProgress)
     {
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
 
@@ -89,7 +90,7 @@ class GroupApi
                     'pageToken' => $nextPageToken,
                 ],
             ]);
-        })
+        }, $apiProgress)
             ->map(function ($group) {
                 return GmailEmailHelper::handleGmail($group['email']);
             });
