@@ -27,4 +27,9 @@ class MakeIssueChecker extends GeneratorCommand
     {
         return app_path('Console/Stubs/make-issue-checker.stub');
     }
+
+    protected function getDefaultNamespace($rootNamespace)
+    {
+        return $rootNamespace . '\Issues\Checkers';
+    }
 }

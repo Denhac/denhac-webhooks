@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 
 class ExtraSlackUsers implements IssueCheck
 {
+    use SlackMembershipHelper;
+
     private IssueData $issueData;
 
     public function __construct(IssueData $issueData)
@@ -17,7 +19,7 @@ class ExtraSlackUsers implements IssueCheck
 
     public function issueTitle(): string
     {
-        return "Issue with a Slack account";
+        return "Issue with unknown/extra Slack accounts";
     }
 
     public function getIssues(): Collection
@@ -83,18 +85,5 @@ class ExtraSlackUsers implements IssueCheck
             });
 
         return $issues;
-    }
-
-    private function isFullSlackUser($slackUser)
-    {
-        if (
-            (array_key_exists('deleted', $slackUser) && $slackUser['deleted']) ||
-            (array_key_exists('is_restricted', $slackUser) && $slackUser['is_restricted']) ||
-            (array_key_exists('is_ultra_restricted', $slackUser) && $slackUser['is_ultra_restricted'])
-        ) {
-            return false;
-        }
-
-        return true;
     }
 }

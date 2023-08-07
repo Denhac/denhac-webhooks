@@ -15,6 +15,7 @@ class IssueChecker
     protected Collection $checkers;
     protected MessageBag|null $issues = null;
     private IssueData $issueData;
+    private OutputInterface|null $output = null;
 
     public function __construct()
     {
@@ -31,6 +32,7 @@ class IssueChecker
 
     public function setOutput(OutputInterface $output): void
     {
+        $this->output = $output;
         $this->issueData->setOutput($output);
     }
 

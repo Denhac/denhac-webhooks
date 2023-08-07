@@ -4,6 +4,7 @@ namespace App\Issues\Checkers;
 
 
 use App\Issues\IssueData;
+use Illuminate\Support\Collection;
 
 class DummyClass implements IssueCheck
 {
