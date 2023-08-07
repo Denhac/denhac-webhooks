@@ -82,7 +82,7 @@ class GoogleGroupIssues implements IssueCheck
 
             $member = $membersForEmail->first();
 
-            if (! $member['is_member']) {
+            if (!$member['is_member']) {
                 $message = "{$member['first_name']} {$member['last_name']} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(', ')}";
                 $issues->add($message);
             }
@@ -100,32 +100,28 @@ class GoogleGroupIssues implements IssueCheck
                 return;
             }
 
-            $notInGroups = collect();
+            $memberGroupEmails = collect([
+                'members@denhac.org',
+                'announce@denhac.org',
+            ]);
 
-            $memberEmails
-                ->each(function ($memberEmail) use ($emailsToGroups, &$notInGroups) {
-                    $memberGroupEmails = [
-                        'members@denhac.org',
-                        'announce@denhac.org',
-                    ];
-
-                    if (!$emailsToGroups->has($memberEmail)) {
-                        return true;  // Continue to next email
-                    }
-
-                    foreach ($memberGroupEmails as $groupEmail) {
-                        if (! $emailsToGroups->get($memberEmail)->contains($groupEmail)) {
-                            $notInGroups->add($groupEmail);
+            $notInGroups = $memberGroupEmails
+                ->filter(function ($groupEmail) use ($memberEmails, $emailsToGroups) {
+                    foreach ($memberEmails as $memberEmail) {
+                        if ($emailsToGroups->get($memberEmail)->contains($groupEmail)) {
+                            return true;  // This group has this email
                         }
                     }
-                });
+                    return false;  // This group has none of the members emails
+            });
 
             if ($notInGroups->isEmpty()) {
                 return;
             }
 
-            $membersGroupMailing = $notInGroups->implode(',');
-            $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
+            $membersGroupsMissing = $notInGroups->implode(',');
+            $membersEmailsString = $memberEmails->implode(', ');
+            $message = "{$member['first_name']} {$member['last_name']} with emails ({$membersEmailsString}) is an active member but is not part of $membersGroupsMissing";
             $issues->add($message);
         });
 
