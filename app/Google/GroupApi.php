@@ -10,6 +10,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class GroupApi
 {
+    use GoogleApiTrait;
+
     private const GROUP_SCOPE = 'https://www.googleapis.com/auth/admin.directory.group';
     private $group;
     /**
@@ -53,7 +55,7 @@ class GroupApi
         if ($response->getStatusCode() == Response::HTTP_CONFLICT && $this->errorsHasDuplicate($response)) {
             // Not an issue, they've already been added
         } elseif ($response->getStatusCode() != Response::HTTP_OK) {
-            throw new \Exception('Google api add failed: '.$response->getBody());
+            throw new \Exception('Google api add failed: ' . $response->getBody());
         }
 
         // TODO Handle conflict/other errors
@@ -78,22 +80,19 @@ class GroupApi
     {
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
 
-        $response = $this->client->get("{$this->membersUrl}", [
-            RequestOptions::HEADERS => [
-                'Authorization' => "Bearer $accessToken",
-            ],
-        ]);
-
-        $json = json_decode($response->getBody(), true);
-
-        if (Arr::has($json, 'members')) {
-            return collect($json['members'])
-                ->map(function ($group) {
-                    return GmailEmailHelper::handleGmail($group['email']);
-                });
-        }
-
-        return collect();
+        return $this->paginate('members', function ($nextPageToken) use ($accessToken) {
+            return $this->client->get("{$this->membersUrl}", [
+                RequestOptions::HEADERS => [
+                    'Authorization' => "Bearer $accessToken",
+                ],
+                RequestOptions::QUERY => [
+                    'pageToken' => $nextPageToken,
+                ],
+            ]);
+        })
+            ->map(function ($group) {
+                return GmailEmailHelper::handleGmail($group['email']);
+            });
     }
 
     /**
@@ -104,12 +103,12 @@ class GroupApi
     {
         $json = json_decode($response->getBody(), true);
 
-        if (! Arr::has($json, 'error')) {
+        if (!Arr::has($json, 'error')) {
             return false;
         }
         $error = $json['error'];
 
-        if (! Arr::has($error, 'code')) {
+        if (!Arr::has($error, 'code')) {
             return false;
         }
 
@@ -119,7 +118,7 @@ class GroupApi
             return false;
         }
 
-        if (! Arr::has($error, 'errors')) {
+        if (!Arr::has($error, 'errors')) {
             return false;
         }
 

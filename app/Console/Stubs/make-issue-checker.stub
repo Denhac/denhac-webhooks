@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 
 class DummyClass implements IssueCheck
 {
+    use IssueCheckTrait;
+
     private IssueData $issueData;
 
     public function __construct(IssueData $issueData)
@@ -17,13 +19,11 @@ class DummyClass implements IssueCheck
 
     public function issueTitle(): string
     {
-        return "";
+        return "Descriptive title of this category of issues";
     }
 
-    public function getIssues(): Collection
+    private function generateIssues()
     {
-        $issues = collect();
 
-        return $issues;
     }
 }

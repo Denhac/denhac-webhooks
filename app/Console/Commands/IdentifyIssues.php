@@ -37,7 +37,8 @@ class IdentifyIssues extends Command
         $this->info('');
 
         foreach ($issues->keys() as $issueKey) {
-            $this->info($issueKey);
+            $issueCount = count($issues->get($issueKey));
+            $this->info("$issueKey ({$issueCount})");
             foreach ($issues->get($issueKey) as $issue) {
                 $this->info($issue);
             }
