@@ -82,7 +82,7 @@ class GoogleGroupIssues implements IssueCheck
 
             $member = $membersForEmail->first();
 
-            if (!$member['is_member']) {
+            if (! $member['is_member']) {
                 $message = "{$member['first_name']} {$member['last_name']} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(', ')}";
                 $issues->add($message);
             }
@@ -100,33 +100,31 @@ class GoogleGroupIssues implements IssueCheck
                 return;
             }
 
-            $membersGroupMailing = 'members@denhac.org'; // TODO dedupe this
+            $notInGroups = collect();
 
-            // TODO At least one email is on some list
-
-            $memberHasEmailInMembersList = $memberEmails
-                ->filter(function ($memberEmail) use ($emailsToGroups,) {
+            $memberEmails
+                ->each(function ($memberEmail) use ($emailsToGroups, &$notInGroups) {
                     $memberGroupEmails = [
                         'members@denhac.org',
                         'announce@denhac.org',
                     ];
 
                     if (!$emailsToGroups->has($memberEmail)) {
-                        return false;
+                        return true;  // Continue to next email
                     }
+
                     foreach ($memberGroupEmails as $groupEmail) {
-                        if ($emailsToGroups->get($memberEmail)->contains($groupEmail)) {
-                            return false;
+                        if (! $emailsToGroups->get($memberEmail)->contains($groupEmail)) {
+                            $notInGroups->add($groupEmail);
                         }
                     }
-                    return True;
-                })
-                ->isNotEmpty();
+                });
 
-            if ($memberHasEmailInMembersList) {
+            if ($notInGroups->isEmpty()) {
                 return;
             }
 
+            $membersGroupMailing = $notInGroups->implode(',');
             $message = "{$member['first_name']} {$member['last_name']} with email ({$memberEmails->implode(', ')}) is an active member but is not part of $membersGroupMailing";
             $issues->add($message);
         });
