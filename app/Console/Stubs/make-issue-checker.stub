@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Issues\Checkers;
+
+
+use App\Issues\IssueData;
+
+class DummyClass implements IssueCheck
+{
+    private IssueData $issueData;
+
+    public function __construct(IssueData $issueData)
+    {
+        $this->issueData = $issueData;
+    }
+
+    public function issueTitle(): string
+    {
+        return "";
+    }
+
+    public function getIssues(): Collection
+    {
+        $issues = collect();
+
+        return $issues;
+    }
+}
