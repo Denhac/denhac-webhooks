@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Issues\IssueChecker;
+use App\Issues\Types\IssueBase;
 use Illuminate\Console\Command;
 
 class IdentifyIssues extends Command
@@ -32,15 +33,24 @@ class IdentifyIssues extends Command
         $issueChecker = app(IssueChecker::class);
         $issueChecker->setOutput($this->output);
 
-        $issues = $issueChecker->getIssues();
-        $this->info("There are {$issues->count()} total issues.");
+        $allIssues = $issueChecker->getIssues();
+        $this->info("There are {$allIssues->count()} total issues.");
         $this->info('');
 
-        foreach ($issues->keys() as $issueKey) {
-            $issueCount = count($issues->get($issueKey));
-            $this->info("$issueKey ({$issueCount})");
-            foreach ($issues->get($issueKey) as $issue) {
-                $this->info($issue);
+        $issuesByNumber = $allIssues->groupBy(fn($i) => $i->getIssueNumber());
+
+        foreach ($issuesByNumber->keys() as $issueNumber) {
+            $myIssues = $issuesByNumber->get($issueNumber);
+            $issueCount = count($myIssues);
+            /** @var IssueBase $firstIssue */
+            $firstIssue = $myIssues->first();
+            $issueTitle = $firstIssue->getIssueTitle();
+
+            $this->info(sprintf("%04d: %s (%d)", $issueNumber, $issueTitle, count($myIssues)));
+            $this->info("URL: {$firstIssue->getIssueURL()}");
+            foreach ($myIssues as $issue) {
+                /** @var IssueBase $issue */
+                $this->info("\t{$issue->getIssueText()}");
             }
             $this->info('');
         }

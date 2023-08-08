@@ -3,19 +3,18 @@
 namespace App\Issues;
 
 
+use App\Issues\Checkers\GoogleGroupIssues;
 use App\Issues\Checkers\IssueCheck;
+use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\MessageBag;
 use ReflectionClass;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class IssueChecker
 {
     protected Collection $checkers;
-    protected MessageBag|null $issues = null;
+    protected Collection|null $issues = null;
     private IssueData $issueData;
-    private OutputInterface|null $output = null;
 
     public function __construct()
     {
@@ -27,31 +26,34 @@ class IssueChecker
             ->map(fn($name) => new ReflectionClass($name))
             ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn($reflect) => $reflect->getName())
+            ->filter(fn($name) => $name == GoogleGroupIssues::class)
             ->map(fn($name) => app($name));
     }
 
     public function setOutput(OutputInterface $output): void
     {
-        $this->output = $output;
         $this->issueData->setOutput($output);
     }
 
-    public function getIssues(): MessageBag
+    /**
+     * @return Collection<IssueBase>
+     */
+    public function getIssues(): Collection
     {
         if (is_null($this->issues)) {
-            $this->issues = new MessageBag();
+            $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
-                /** @var IssueCheck $checker */
-                foreach ($checker->getIssues() as $issue) {
-                    $this->issues->add($checker->issueTitle(), $issue);
-                }
+                $this->issues = $this->issues->union($checker->getIssues());
             }
         }
 
         return $this->issues;
     }
 
+    /**
+     * @return Collection<IssueCheck>
+     */
     public function getIssueCheckers(): Collection
     {
         return $this->checkers;

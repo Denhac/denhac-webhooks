@@ -4,8 +4,11 @@ namespace App\Issues\Checkers;
 
 
 use App\Google\GmailEmailHelper;
-use App\Google\GoogleApi;
 use App\Issues\IssueData;
+use App\Issues\Types\GoogleGroups\ActiveMemberNotInGroups;
+use App\Issues\Types\GoogleGroups\NoMemberFoundForEmail;
+use App\Issues\Types\GoogleGroups\NotActiveMemberButInGroups;
+use App\Issues\Types\GoogleGroups\TwoMembersSameEmail;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -65,15 +68,13 @@ class GoogleGroupIssues implements IssueCheck
                 });
 
             if ($membersForEmail->count() > 1) {
-                $message = "More than 2 members exist for email address $email";
-                $issues->add($message);
+                $issues->add(new TwoMembersSameEmail($email, $membersForEmail));
 
                 return;
             }
 
             if ($membersForEmail->count() == 0) {
-                $message = "No member found for email address $email in groups: {$groupsForEmail->implode(', ')}";
-                $issues->add($message);
+                $issues->add(new NoMemberFoundForEmail($email, $groupsForEmail));
 
                 return;
             }
@@ -81,8 +82,7 @@ class GoogleGroupIssues implements IssueCheck
             $member = $membersForEmail->first();
 
             if (!$member['is_member']) {
-                $message = "{$member['first_name']} {$member['last_name']} with email ($email) is not an active member but is in groups: {$groupsForEmail->implode(', ')}";
-                $issues->add($message);
+                $issues->add(new NotActiveMemberButInGroups($member, $email, $groupsForEmail));
             }
         });
 
@@ -112,18 +112,13 @@ class GoogleGroupIssues implements IssueCheck
                         }
                     }
                     return true;  // This group has none of the members emails
-            });
+                });
 
             if ($notInGroups->isEmpty()) {
                 return;
             }
 
-            $membersGroupsMissing = $notInGroups->implode(', ');
-            $groupString = Str::plural("group", $notInGroups->count());
-            $membersEmailsString = $memberEmails->implode(', ');
-            $emailString = Str::plural("email", $memberEmails->count());
-            $message = "{$member['first_name']} {$member['last_name']} with $emailString ({$membersEmailsString}) is an active member but is not in $groupString $membersGroupsMissing";
-            $issues->add($message);
+            $issues->add(new ActiveMemberNotInGroups($member, $notInGroups));
         });
 
         return $issues;
