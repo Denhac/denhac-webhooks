@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 
 class GoogleGroupIssues implements IssueCheck
 {
+    use IssueCheckTrait;
+
     private IssueData $issueData;
 
     public function __construct(IssueData $issueData)
@@ -26,9 +28,8 @@ class GoogleGroupIssues implements IssueCheck
         return "Issue with google groups";
     }
 
-    public function getIssues(): Collection
+    public function generateIssues(): void
     {
-        $issues = collect();
         $members = $this->issueData->members();
 
         $groups = $this->issueData->googleGroups()
@@ -40,7 +41,7 @@ class GoogleGroupIssues implements IssueCheck
 
         $emailsToGroups = collect();
 
-        $groups->each(function ($group) use ($issues, &$emailsToGroups) {
+        $groups->each(function ($group) use (&$emailsToGroups) {
             $membersInGroup = $this->issueData->googleGroupMembers($group);
 
             $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
@@ -51,7 +52,7 @@ class GoogleGroupIssues implements IssueCheck
             });
         });
 
-        $emailsToGroups->each(function ($groupsForEmail, $email) use ($issues, $groups, $members) {
+        $emailsToGroups->each(function ($groupsForEmail, $email) use ($groups, $members) {
             /** @var Collection $groupsForEmail */
 
             // Ignore groups of ours that are part of another group
@@ -60,7 +61,7 @@ class GoogleGroupIssues implements IssueCheck
             }
 
             $membersForEmail = $members
-                ->filter(function ($member) use ($issues, $email) {
+                ->filter(function ($member) use ($email) {
                     /** @var Collection $memberEmails */
                     $memberEmails = $member['email'];
 
@@ -68,13 +69,13 @@ class GoogleGroupIssues implements IssueCheck
                 });
 
             if ($membersForEmail->count() > 1) {
-                $issues->add(new TwoMembersSameEmail($email, $membersForEmail));
+                $this->issues->add(new TwoMembersSameEmail($email, $membersForEmail));
 
                 return;
             }
 
             if ($membersForEmail->count() == 0) {
-                $issues->add(new NoMemberFoundForEmail($email, $groupsForEmail));
+                $this->issues->add(new NoMemberFoundForEmail($email, $groupsForEmail));
 
                 return;
             }
@@ -82,11 +83,11 @@ class GoogleGroupIssues implements IssueCheck
             $member = $membersForEmail->first();
 
             if (!$member['is_member']) {
-                $issues->add(new NotActiveMemberButInGroups($member, $email, $groupsForEmail));
+                $this->issues->add(new NotActiveMemberButInGroups($member, $email, $groupsForEmail));
             }
         });
 
-        $members->each(function ($member) use ($issues, $emailsToGroups) {
+        $members->each(function ($member) use ($emailsToGroups) {
             /** @var Collection $memberEmails */
             $memberEmails = $member['email'];
 
@@ -118,9 +119,7 @@ class GoogleGroupIssues implements IssueCheck
                 return;
             }
 
-            $issues->add(new ActiveMemberNotInGroups($member, $notInGroups));
+            $this->issues->add(new ActiveMemberNotInGroups($member, $notInGroups));
         });
-
-        return $issues;
     }
 }

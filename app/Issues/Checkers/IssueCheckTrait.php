@@ -9,7 +9,7 @@ trait IssueCheckTrait
 {
     private Collection|null $issues = null;
 
-    public function getIssues()
+    public function getIssues(): Collection
     {
         if (is_null($this->issues)) {
             $this->issues = collect();
@@ -19,4 +19,6 @@ trait IssueCheckTrait
 
         return $this->issues;
     }
+
+    public abstract function generateIssues(): void;
 }
