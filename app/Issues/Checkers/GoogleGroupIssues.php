@@ -23,11 +23,6 @@ class GoogleGroupIssues implements IssueCheck
         $this->issueData = $issueData;
     }
 
-    public function issueTitle(): string
-    {
-        return "Issue with google groups";
-    }
-
     protected function generateIssues(): void
     {
         $members = $this->issueData->members();

@@ -5,10 +5,10 @@ namespace App\Issues\Checkers;
 
 use App\Card;
 use App\Issues\IssueData;
-use Illuminate\Support\Collection;
 
 class InternalConsistencyCardIssues implements IssueCheck
 {
+    use IssueCheckTrait;
     private IssueData $issueData;
 
     public function __construct(IssueData $issueData)
@@ -16,19 +16,13 @@ class InternalConsistencyCardIssues implements IssueCheck
         $this->issueData = $issueData;
     }
 
-    public function issueTitle(): string
-    {
-        return "Issue with our webhook server's internal consistency for access cards";
-    }
-
-    public function getIssues(): Collection
+    public function generateIssues(): void
     {
         $cards = Card::all();
 
-        $issues = collect();
         $members = $this->issueData->members();
 
-        $members->each(function ($member) use ($issues, $cards) {
+        $members->each(function ($member) use ($cards) {
             if ($member['system'] == IssueData::SYSTEM_PAYPAL) {
                 // We don't update the cards database for paypal members
                 return;
@@ -38,10 +32,10 @@ class InternalConsistencyCardIssues implements IssueCheck
                 ->where('woo_customer_id', $member['id']);
 
             // $member['cards'] is the list of cards in WooCommerce
-            $member['cards']->each(function ($memberCard) use ($issues, $member, $cardsForMember) {
+            $member['cards']->each(function ($memberCard) use ($member, $cardsForMember) {
                 if (!$cardsForMember->contains('number', $memberCard)) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} but it's not listed in our database";
-                    $issues->add($message);
+                    $this->issues->add($message);
 
                     return;
                 }
@@ -54,28 +48,28 @@ class InternalConsistencyCardIssues implements IssueCheck
                 if ($shouldHaveActiveCard && !$card->active) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account but we think it's NOT active";
-                    $issues->add($message);
+                    $this->issues->add($message);
                 }
 
                 if (! $shouldHaveActiveCard && $card->active) {
                     $message = "{$member['first_name']} {$member['last_name']} has the card {$memberCard} listed in " .
                         "their account. We think it's active when it should not be.";
-                    $issues->add($message);
+                    $this->issues->add($message);
                 }
             });
 
-            $cardsForMember->each(function ($cardForMember) use ($issues, $member) {
+            $cardsForMember->each(function ($cardForMember) use ($member) {
                 /** @var Card $cardForMember */
                 if (!$member['cards']->contains($cardForMember->number) && $cardForMember->active) {
                     $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} " .
                         "listed in their profile, but we think it's active";
-                    $issues->add($message);
+                    $this->issues->add($message);
                 }
 
                 if (!$member['cards']->contains($cardForMember->number) && $cardForMember->member_has_card) {
                     $message = "{$member['first_name']} {$member['last_name']} doesn't have {$cardForMember->number} " .
                         'listed in their profile, but we think they still have it';
-                    $issues->add($message);
+                    $this->issues->add($message);
                 }
             });
         });
@@ -94,7 +88,5 @@ class InternalConsistencyCardIssues implements IssueCheck
                 $message = "Card $cardNum has $numEntries entries in the database for customer(s): $uniqueCustomers";
                 $issues->add($message);
             });
-
-        return $issues;
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 
 class MissingSlackUsers implements IssueCheck
 {
+    use IssueCheckTrait;
     use SlackMembershipHelper;
 
     private IssueData $issueData;
@@ -17,20 +18,13 @@ class MissingSlackUsers implements IssueCheck
         $this->issueData = $issueData;
     }
 
-    public function issueTitle(): string
+    public function generateIssues(): void
     {
-        return "Issue with missing slack accounts";
-    }
-
-    public function getIssues(): Collection
-    {
-        $issues = collect();
-
         $members = $this->issueData->members();
         $slackUsers = $this->issueData->slackUsers();
 
         $members
-            ->each(function ($member) use ($issues, $slackUsers) {
+            ->each(function ($member) use ($slackUsers) {
                 if (!$member['is_member']) {
                     return;
                 }
@@ -42,10 +36,8 @@ class MissingSlackUsers implements IssueCheck
 
                 if ($slackForMember->count() == 0) {
                     $message = "{$member['first_name']} {$member['last_name']} ({$member['id']}) doesn't appear to have a slack account";
-                    $issues->add($message);
+                    $this->issues->add($message);
                 }
             });
-
-        return $issues;
     }
 }

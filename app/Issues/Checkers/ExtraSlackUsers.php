@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 
 class ExtraSlackUsers implements IssueCheck
 {
+    use IssueCheckTrait;
     use SlackMembershipHelper;
 
     private IssueData $issueData;
@@ -17,15 +18,8 @@ class ExtraSlackUsers implements IssueCheck
         $this->issueData = $issueData;
     }
 
-    public function issueTitle(): string
+    public function generateIssues(): void
     {
-        return "Issue with unknown/extra Slack accounts";
-    }
-
-    public function getIssues(): Collection
-    {
-        $issues = collect();
-
         $slackUsers = $this->issueData->slackUsers()
             ->filter(function ($user) {
                 if (array_key_exists('is_bot', $user) && $user['is_bot']) {
@@ -45,7 +39,7 @@ class ExtraSlackUsers implements IssueCheck
         $members = $this->issueData->members();
 
         $slackUsers
-            ->each(function ($user) use ($issues, $members) {
+            ->each(function ($user) use ($members) {
                 $membersForSlackId = $members
                     ->filter(function ($member) use ($user) {
                         return $member['slack_id'] == $user['id'];
@@ -54,7 +48,7 @@ class ExtraSlackUsers implements IssueCheck
                 if ($membersForSlackId->count() == 0) {
                     if ($this->isFullSlackUser($user)) {
                         $message = "{$user['name']} with slack id ({$user['id']}) is a full user in slack but I have no membership record of them.";
-                        $issues->add($message);
+                        $this->issues->add($message);
                     }
 
                     return;
@@ -67,23 +61,21 @@ class ExtraSlackUsers implements IssueCheck
                         return; // Do nothing, we've sent the invite and that's all we can do.
                     } else if (array_key_exists('deleted', $user) && $user['deleted']) {
                         $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is deleted, but they are a member";
-                        $issues->add($message);
+                        $this->issues->add($message);
 
                     } else if (array_key_exists('is_restricted', $user) && $user['is_restricted']) {
                         $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is restricted, but they are a member";
-                        $issues->add($message);
+                        $this->issues->add($message);
 
                     } else if (array_key_exists('is_ultra_restricted', $user) && $user['is_ultra_restricted']) {
                         $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is ultra restricted, but they are a member";
-                        $issues->add($message);
+                        $this->issues->add($message);
 
                     }
                 } elseif ($this->isFullSlackUser($user)) {
                     $message = "{$member['first_name']} {$member['last_name']} with slack id ({$user['id']}) is not an active member but they have a full slack account.";
-                    $issues->add($message);
+                    $this->issues->add($message);
                 }
             });
-
-        return $issues;
     }
 }

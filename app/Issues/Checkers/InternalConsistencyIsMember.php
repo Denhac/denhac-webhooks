@@ -20,11 +20,6 @@ class InternalConsistencyIsMember implements IssueCheck
         $this->issueData = $issueData;
     }
 
-    public function issueTitle(): string
-    {
-        return "Descriptive title of this category of issues";
-    }
-
     protected function generateIssues(): void
     {
         $members = $this->issueData->members();
