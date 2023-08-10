@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Issues\Types\IssueBase;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Str;
 use ReflectionClass;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -74,15 +75,27 @@ class MakeIssue extends GeneratorCommand
             ->map(fn($n) => $n::getIssueNumber())
             ->values();
 
+        $nameSpaceType = $this->getNameSpaceType();
         if ($issuesNumbers->isEmpty()) {
-            $nextIssueNumber = self::NamespaceOffset[$this->getNameSpaceType()];
+            $nextIssueNumber = self::NamespaceOffset[$nameSpaceType];
         } else {
             $nextIssueNumber = $issuesNumbers->max() + 1;
         }
 
-        return str_replace(
+        $stub = str_replace(
             "DummyIssueNumber",
             $nextIssueNumber,
+            $stub
+        );
+
+        $class = str_replace($this->getNamespace($name) . '\\', '', $name);
+
+        $newIssueTitle = Str::ucfirst(Str::snake($class, ' '));
+        $nameSpaceTypeTitle = Str::headline($nameSpaceType);
+
+        return str_replace(
+            "DummyIssueTitle",
+            "$nameSpaceTypeTitle: $newIssueTitle",
             $stub
         );
     }

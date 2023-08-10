@@ -13,7 +13,7 @@ class DummyClass extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        // TODO: Implement getIssueTitle() method.
+        return "DummyIssueTitle";
     }
 
     public function getIssueText(): string

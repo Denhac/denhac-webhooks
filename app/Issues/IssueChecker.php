@@ -3,7 +3,6 @@
 namespace App\Issues;
 
 
-use App\Issues\Checkers\GoogleGroupIssues;
 use App\Issues\Checkers\InternalConsistencyIsMember;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Types\IssueBase;
