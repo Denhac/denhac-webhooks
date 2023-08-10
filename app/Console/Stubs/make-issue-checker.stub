@@ -22,7 +22,7 @@ class DummyClass implements IssueCheck
         return "Descriptive title of this category of issues";
     }
 
-    private function generateIssues()
+    protected function generateIssues(): void
     {
 
     }

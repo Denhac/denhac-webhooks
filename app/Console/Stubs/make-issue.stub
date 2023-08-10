@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Issues\Types;
+
+class DummyClass extends IssueBase
+{
+    public static function getIssueTitle(): string
+    {
+        // TODO: Implement getIssueTitle() method.
+    }
+
+    public function getIssueText(): string
+    {
+        // TODO: Implement getIssueText() method.
+    }
+}
