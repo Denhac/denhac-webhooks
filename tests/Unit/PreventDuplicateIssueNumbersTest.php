@@ -12,15 +12,23 @@ class PreventDuplicateIssueNumbersTest extends TestCase
     /** @test */
     public function preventDuplicateIssueNumbers()
     {
-        $reflection = new ReflectionClass(IssueBase::class);
+        $issues = collect(get_declared_classes())
+            ->filter(fn($name) => str_starts_with($name, 'App\\Issues\\Types'))
+            ->map(fn($name) => new ReflectionClass($name))
+            ->filter(fn($reflect) => $reflect->isSubclassOf(IssueBase::class))
+            ->map(fn($reflect) => $reflect->getName());
 
-        $flipped = collect();  // issue number is the key for this one.
-        foreach($reflection->getConstants() as $constant => $issueNumber) {
-            if($flipped->has($issueNumber)) {
-                $existingIssueConstant = $flipped->get($issueNumber);
-                self::fail("$existingIssueConstant and $constant both share issue number $issueNumber");
+        $issueNumbers = collect();
+
+        foreach($issues as $issue) {
+            /** @var IssueBase $issue */
+            $issueNumber = $issue::getIssueNumber();
+            if($issueNumbers->has($issueNumber)) {
+                $existingClass = $issueNumbers->get($issueNumber);
+                $newClass = $issue;
+                self::fail("$existingClass and $newClass both share issue number $issueNumber");
             }
-            $flipped->put($issueNumber, $constant);
+            $issueNumbers->put($issueNumber, $issue);
         }
 
         self::assertTrue(true);  // Avoid "test did not perform any assertions" issue.

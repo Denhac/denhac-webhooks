@@ -28,7 +28,7 @@ class GoogleGroupIssues implements IssueCheck
         return "Issue with google groups";
     }
 
-    public function generateIssues(): void
+    protected function generateIssues(): void
     {
         $members = $this->issueData->members();
 

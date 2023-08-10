@@ -1,14 +1,14 @@
 <?php
 
-namespace DummyNamespace;
+namespace App\Issues\Types\InternalConsistency;
 
 use App\Issues\Types\IssueBase;
 
-class DummyClass extends IssueBase
+class RemoteIsNotMemberLocalIs extends IssueBase
 {
     public static function getIssueNumber(): int
     {
-        return DummyIssueNumber;  // auto-generated based on namespace and existing issues
+        return 207;  // auto-generated based on namespace and existing issues
     }
 
     public static function getIssueTitle(): string

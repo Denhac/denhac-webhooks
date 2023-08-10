@@ -20,5 +20,5 @@ trait IssueCheckTrait
         return $this->issues;
     }
 
-    public abstract function generateIssues(): void;
+    protected abstract function generateIssues(): void;
 }

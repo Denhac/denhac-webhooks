@@ -13,10 +13,14 @@ class NotActiveMemberButInGroups extends IssueBase
 
     public function __construct($member, $email, $groupsForEmail)
     {
-        parent::__construct(IssueBase::ISSUE_GOOGLE_GROUP_NOT_ACTIVE_MEMBER_IN_GROUPS);
         $this->member = $member;
         $this->email = $email;
         $this->groupsForEmail = $groupsForEmail;
+    }
+
+    public static function getIssueNumber(): int
+    {
+        return 106;
     }
 
     public static function getIssueTitle(): string

@@ -13,9 +13,13 @@ class NoMemberFoundForEmail extends IssueBase
 
     public function __construct(string $email, Collection $groupsForEmail)
     {
-        parent::__construct(IssueBase::ISSUE_GOOGLE_GROUP_NO_MEMBER_FOUND_FOR_EMAIL);
         $this->email = $email;
         $this->groupsForEmail = $groupsForEmail;
+    }
+
+    public static function getIssueNumber(): int
+    {
+        return 105;
     }
 
     public static function getIssueTitle(): string

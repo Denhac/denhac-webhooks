@@ -13,10 +13,13 @@ class TwoMembersSameEmail extends IssueBase
 
     public function __construct(string $email, Collection $membersForEmail)
     {
-        parent::__construct(IssueBase::ISSUE_GOOGLE_GROUP_TWO_MEMBERS_HAVE_SAME_EMAIL);
-
         $this->email = $email;
         $this->membersForEmail = $membersForEmail;
+    }
+
+    public static function getIssueNumber(): int
+    {
+        return 104;
     }
 
     public static function getIssueTitle(): string

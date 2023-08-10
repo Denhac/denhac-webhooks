@@ -8,15 +8,18 @@ use Illuminate\Support\Str;
 
 class ActiveMemberNotInGroups extends IssueBase
 {
-
     private $member;
     private $memberGroupsMissing;
 
     public function __construct($member, $memberGroupsMissing)
     {
-        parent::__construct(IssueBase::ISSUE_GOOGLE_GROUP_ACTIVE_MEMBER_NOT_IN_GROUPS);
         $this->member = $member;
         $this->memberGroupsMissing = $memberGroupsMissing;
+    }
+
+    public static function getIssueNumber(): int
+    {
+        return 107;
     }
 
     public static function getIssueTitle(): string
