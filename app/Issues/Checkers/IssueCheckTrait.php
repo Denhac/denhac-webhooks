@@ -3,10 +3,12 @@
 namespace App\Issues\Checkers;
 
 
+use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
 
 trait IssueCheckTrait
 {
+    /** @var Collection<IssueBase>|null  */
     private Collection|null $issues = null;
 
     public function getIssues(): Collection

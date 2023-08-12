@@ -5,7 +5,11 @@ namespace App\Issues\Checkers;
 
 use App\ActiveCardHolderUpdate;
 use App\Issues\IssueData;
-use Illuminate\Support\Collection;
+use App\Issues\Types\AccessCards\ActiveCardMultipleAccounts;
+use App\Issues\Types\AccessCards\ActiveCardNoRecord;
+use App\Issues\Types\AccessCards\CardHolderIncorrectName;
+use App\Issues\Types\AccessCards\MemberCardIsNotActive;
+use App\Issues\Types\AccessCards\NonMemberHasActiveCard;
 
 class ActiveCardIssues implements IssueCheck
 {
@@ -37,15 +41,13 @@ class ActiveCardIssues implements IssueCheck
                     });
 
                 if ($membersWithCard->count() == 0) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but I have no membership record of them with that card.";
-                    $this->issues->add($message);
+                    $this->issues->add(new ActiveCardNoRecord($card_holder));
 
                     return;
                 }
 
                 if ($membersWithCard->count() > 1) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is connected to multiple accounts.";
-                    $this->issues->add($message);
+                    $this->issues->add(new ActiveCardMultipleAccounts($card_holder));
 
                     return;
                 }
@@ -54,29 +56,26 @@ class ActiveCardIssues implements IssueCheck
 
                 if ($card_holder['first_name'] != $member['first_name'] ||
                     $card_holder['last_name'] != $member['last_name']) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is listed as {$member['first_name']} {$member['last_name']} in our records.";
-                    $this->issues->add($message);
+                    $this->issues->add(new CardHolderIncorrectName($card_holder, $member));
                 }
 
-                if (! $member['is_member']) {
-                    $message = "{$card_holder['first_name']} {$card_holder['last_name']} has the active card ({$card_holder['card_num']}) but is not currently a member.";
-                    $this->issues->add($message);
+                if (!$member['is_member']) {
+                    $this->issues->add(new NonMemberHasActiveCard($card_holder));
                 }
             });
 
         $members
             ->filter(function ($member) {
-                return ! is_null($member['first_name']) &&
-                    ! is_null($member['last_name']) &&
+                return !is_null($member['first_name']) &&
+                    !is_null($member['last_name']) &&
                     $member['is_member'] &&
                     $member['has_signed_waiver'];
             })
             ->each(function ($member) use ($card_holders) {
                 $member['cards']->each(function ($card) use ($member, $card_holders) {
                     $cardActive = $card_holders->contains('card_num', $card);
-                    if (! $cardActive) {
-                        $message = "{$member['first_name']} {$member['last_name']} has the card $card but it doesn't appear to be active";
-                        $this->issues->add($message);
+                    if (!$cardActive) {
+                        $this->issues->add(new MemberCardIsNotActive($member, $card));
                     }
                 });
             });

@@ -7,7 +7,6 @@ use App\Issues\IssueData;
 use App\Issues\Types\Slack\FullUserNoRecord;
 use App\Issues\Types\Slack\MemberHasRestrictedAccount;
 use App\Issues\Types\Slack\NonMemberHasFullAccount;
-use Illuminate\Support\Collection;
 
 class ExtraSlackUsers implements IssueCheck
 {
