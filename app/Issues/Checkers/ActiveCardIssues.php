@@ -64,11 +64,11 @@ class ActiveCardIssues implements IssueCheck
                 if (!$member['is_member']) {
                     // We get card updates every 8 hours. We only want to report on this if a card hasn't been updated in the last day.
                     /** @var Card $card */
-                    $card = Card::where('number', $card_holder['card_num'])->where('woo_customer_id', $member('id'))->first();
+                    $card = Card::where('number', $card_holder['card_num'])->where('woo_customer_id', $member['id'])->first();
 
-//                    if(is_null($card) || $card->updated_at < Carbon::now()->subDay()) {
+                    if(is_null($card) || $card->updated_at < Carbon::now()->subDay()) {
                         $this->issues->add(new NonMemberHasActiveCard($card_holder));
-//                    }
+                    }
                 }
             });
 
