@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int woo_customer_id
  * @property Customer customer
  * @property Carbon created_at
+ * @property Carbon updated_at
  */
 class Card extends Model
 {

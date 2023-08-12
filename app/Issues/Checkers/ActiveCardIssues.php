@@ -4,12 +4,14 @@ namespace App\Issues\Checkers;
 
 
 use App\ActiveCardHolderUpdate;
+use App\Card;
 use App\Issues\IssueData;
 use App\Issues\Types\AccessCards\ActiveCardMultipleAccounts;
 use App\Issues\Types\AccessCards\ActiveCardNoRecord;
 use App\Issues\Types\AccessCards\CardHolderIncorrectName;
 use App\Issues\Types\AccessCards\MemberCardIsNotActive;
 use App\Issues\Types\AccessCards\NonMemberHasActiveCard;
+use Carbon\Carbon;
 
 class ActiveCardIssues implements IssueCheck
 {
@@ -60,7 +62,13 @@ class ActiveCardIssues implements IssueCheck
                 }
 
                 if (!$member['is_member']) {
-                    $this->issues->add(new NonMemberHasActiveCard($card_holder));
+                    // We get card updates every 8 hours. We only want to report on this if a card hasn't been updated in the last day.
+                    /** @var Card $card */
+                    $card = Card::where('number', $card_holder['card_num'])->where('woo_customer_id', $member('id'))->first();
+
+//                    if(is_null($card) || $card->updated_at < Carbon::now()->subDay()) {
+                        $this->issues->add(new NonMemberHasActiveCard($card_holder));
+//                    }
                 }
             });
 

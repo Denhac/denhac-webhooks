@@ -38,8 +38,9 @@ class IdentifyIssues extends Command
         $this->info('');
 
         $issuesByNumber = $allIssues->groupBy(fn($i) => $i->getIssueNumber());
+        $sortedIssueNumbers = $issuesByNumber->keys()->sort();
 
-        foreach ($issuesByNumber->keys() as $issueNumber) {
+        foreach ($sortedIssueNumbers as $issueNumber) {
             $myIssues = $issuesByNumber->get($issueNumber);
             /** @var IssueBase $firstIssue */
             $firstIssue = $myIssues->first();
