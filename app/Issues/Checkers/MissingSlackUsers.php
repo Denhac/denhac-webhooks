@@ -4,6 +4,7 @@ namespace App\Issues\Checkers;
 
 
 use App\Issues\IssueData;
+use App\Issues\Types\Slack\MemberDoesNotHaveASlackAccount;
 use Illuminate\Support\Collection;
 
 class MissingSlackUsers implements IssueCheck
@@ -25,7 +26,7 @@ class MissingSlackUsers implements IssueCheck
 
         $members
             ->each(function ($member) use ($slackUsers) {
-                if (!$member['is_member']) {
+                if (! $member['is_member']) {
                     return;
                 }
 
@@ -35,8 +36,7 @@ class MissingSlackUsers implements IssueCheck
                     });
 
                 if ($slackForMember->count() == 0) {
-                    $message = "{$member['first_name']} {$member['last_name']} ({$member['id']}) doesn't appear to have a slack account";
-                    $this->issues->add($message);
+                    $this->issues->add(new MemberDoesNotHaveASlackAccount($member));
                 }
             });
     }

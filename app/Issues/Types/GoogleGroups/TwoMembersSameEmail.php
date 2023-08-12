@@ -19,7 +19,7 @@ class TwoMembersSameEmail extends IssueBase
 
     public static function getIssueNumber(): int
     {
-        return 104;
+        return 101;
     }
 
     public static function getIssueTitle(): string

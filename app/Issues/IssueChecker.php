@@ -3,7 +3,6 @@
 namespace App\Issues;
 
 
-use App\Issues\Checkers\InternalConsistencyIsMember;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
@@ -26,7 +25,6 @@ class IssueChecker
             ->map(fn($name) => new ReflectionClass($name))
             ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn($reflect) => $reflect->getName())
-            ->filter(fn($name) => $name == InternalConsistencyIsMember::class)
             ->map(fn($name) => app($name));
     }
 

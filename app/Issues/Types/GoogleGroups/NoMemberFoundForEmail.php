@@ -19,7 +19,7 @@ class NoMemberFoundForEmail extends IssueBase
 
     public static function getIssueNumber(): int
     {
-        return 105;
+        return 102;
     }
 
     public static function getIssueTitle(): string

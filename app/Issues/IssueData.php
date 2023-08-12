@@ -59,9 +59,6 @@ class IssueData
         $this->output = $output;
     }
 
-    /**
-     * @throws ApiCallFailed
-     */
     public function wooCommerceCustomers(): Collection
     {
         if (is_null($this->_wooCommerceCustomers)) {
@@ -71,9 +68,6 @@ class IssueData
         return $this->_wooCommerceCustomers;
     }
 
-    /**
-     * @throws ApiCallFailed
-     */
     public function wooCommerceSubscriptions(): Collection
     {
         if (is_null($this->_wooCommerceSubscriptions)) {
@@ -83,9 +77,6 @@ class IssueData
         return $this->_wooCommerceSubscriptions;
     }
 
-    /**
-     * @throws ApiCallFailed
-     */
     public function wooCommerceUserMemberships(): Collection
     {
         if (is_null($this->_wooCommerceUserMemberships)) {
@@ -95,9 +86,6 @@ class IssueData
         return $this->_wooCommerceUserMemberships;
     }
 
-    /**
-     * @throws ApiCallFailed
-     */
     public function members()
     {
         if (is_null($this->_members)) {

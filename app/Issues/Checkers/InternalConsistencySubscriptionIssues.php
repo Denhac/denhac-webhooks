@@ -4,8 +4,10 @@ namespace App\Issues\Checkers;
 
 
 use App\Issues\IssueData;
+use App\Issues\Types\InternalConsistency\SubscriptionDoesNotExistInOurLocalDatabase;
+use App\Issues\Types\InternalConsistency\SubscriptionNotFoundOnRemote;
+use App\Issues\Types\InternalConsistency\SubscriptionStatusDiffers;
 use App\Subscription;
-use Illuminate\Support\Collection;
 
 class InternalConsistencySubscriptionIssues implements IssueCheck
 {
@@ -18,40 +20,37 @@ class InternalConsistencySubscriptionIssues implements IssueCheck
         $this->issueData = $issueData;
     }
 
-    public function generateissues(): void
+    public function generateIssues(): void
     {
         $subscriptions_api = $this->issueData->wooCommerceSubscriptions();
         $subscriptions_models = Subscription::all();
 
-        $subscriptions_api->each(function ($subscription_api) use ($subscriptions_models) {
+        foreach ($subscriptions_api as $subscription_api) {
             $sub_id = $subscription_api['id'];
             $sub_status = $subscription_api['status'];
 
             $model = $subscriptions_models->where('woo_id', $sub_id)->first();
 
             if (is_null($model)) {
-                $message = "Subscription $sub_id doesn't exist in our local database";
-                $this->issues->add($message);
+                $this->issues->add(new SubscriptionDoesNotExistInOurLocalDatabase($sub_id));
 
-                return;
+                continue;
             }
 
             if ($model->status != $sub_status) {
-                $message = "Subscription $sub_id has api status $sub_status but local status {$model->status}";
-                $this->issues->add($message);
+                $this->issues->add(new SubscriptionStatusDiffers($sub_id, $sub_status, $model->status));
             }
-        });
+        }
 
-        $subscriptions_models->each(function ($subscription_model) use ($subscriptions_api) {
+        foreach ($subscriptions_models as $subscription_model) {
             /** @var Subscription $subscription_model */
             $sub_id = $subscription_model->woo_id;
 
             $api = $subscriptions_api->where('id', $sub_id)->first();
 
             if (is_null($api)) {
-                $message = "Subscription $sub_id exists in our local database but not on the website. Deleted?";
-                $this->issues->add($message);
+                $this->issues->add(new SubscriptionNotFoundOnRemote($sub_id));
             }
-        });
+        }
     }
 }

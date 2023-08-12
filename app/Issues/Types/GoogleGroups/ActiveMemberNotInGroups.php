@@ -19,7 +19,7 @@ class ActiveMemberNotInGroups extends IssueBase
 
     public static function getIssueNumber(): int
     {
-        return 107;
+        return 104;
     }
 
     public static function getIssueTitle(): string
