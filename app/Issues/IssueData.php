@@ -4,6 +4,7 @@ namespace App\Issues;
 
 
 use App\External\HasApiProgressBar;
+use App\GitHub\GitHubApi;
 use App\Google\GmailEmailHelper;
 use App\Google\GoogleApi;
 use App\Issues\Data\MemberData;
@@ -32,6 +33,7 @@ class IssueData
     private WooCommerceApi $wooCommerceApi;
     private SlackApi $slackApi;
     private GoogleApi $googleApi;
+    private GitHubApi $gitHubApi;
 
     private Collection|null $_wooCommerceCustomers = null;
     private Collection|null $_wooCommerceSubscriptions = null;
@@ -44,17 +46,21 @@ class IssueData
     private Collection|null $_googleGroups = null;
     private Collection|null $_googleGroupMembers = null;  // Key is group, value is member list
 
+    private Collection|null $_gitHubTeamMembers = null;  // The GitHub team is called "members"
+
     private OutputInterface|null $output = null;
 
     public function __construct(
         WooCommerceApi $wooCommerceApi,
         SlackApi       $slackApi,
         GoogleApi      $googleApi,
+        GitHubApi      $gitHubApi,
     )
     {
         $this->wooCommerceApi = $wooCommerceApi;
         $this->slackApi = $slackApi;
         $this->googleApi = $googleApi;
+        $this->gitHubApi = $gitHubApi;
     }
 
     public function setOutput(OutputInterface|null $output): void
@@ -157,6 +163,7 @@ class IssueData
                     userMemberships: $userMembershipsMap,
                     cards: $cards,
                     slackId: $this->getMetaValue($meta_data, 'access_slack_id'),
+                    githubUsername: $this->getMetaValue($meta_data, 'github_username'),
                     system: self::SYSTEM_WOOCOMMERCE,
                 );
             });
@@ -179,6 +186,7 @@ class IssueData
                         userMemberships: collect(),
                         cards: is_null($member->card) ? collect() : collect([$member->card]),
                         slackId: $member->slack_id,
+                        githubUsername: null,
                         system: self::SYSTEM_PAYPAL,
                     );
                 }));
@@ -222,5 +230,16 @@ class IssueData
         }
 
         return $this->_googleGroupMembers->get($group);
+    }
+
+    public function gitHubTeamMembers(): Collection
+    {
+        if (is_null($this->_gitHubTeamMembers)) {
+            // TODO Deduplicate "members" here
+            $this->_gitHubTeamMembers = $this->gitHubApi->team("members")
+                ->list($this->apiProgress("Fetching members of GitHub team 'members'"));
+        }
+
+        return $this->_gitHubTeamMembers;
     }
 }

@@ -2,11 +2,14 @@
 
 namespace App\GitHub;
 
+use App\External\ApiProgress;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
 class TeamApi
 {
+    use GitHubApiTrait;
+
     private string $accessToken;
     private Client $client;
     private string $teamUrl;
@@ -24,20 +27,16 @@ class TeamApi
         $this->client = new Client();
     }
 
-    public function list()
+    public function list(ApiProgress $progress = null)
     {
-        $response = $this->client->get("{$this->teamUrl}/members", [
-            RequestOptions::HEADERS => [
-                'Authorization' => "Bearer {$this->accessToken}",
-            ],
-        ]);
-
-        $json = json_decode($response->getBody(), true);
-
-        return collect($json)
-            ->map(function ($member) {
-                return $member['login'];
-            });
+        return $this->paginate("{$this->teamUrl}/members", function ($url) {
+            return $this->client->get($url, [
+                RequestOptions::HEADERS => [
+                    'Authorization' => "Bearer {$this->accessToken}",
+                    'per_page' => 100,
+                ],
+            ]);
+        }, $progress);
     }
 
     public function add($username)

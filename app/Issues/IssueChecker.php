@@ -3,6 +3,7 @@
 namespace App\Issues;
 
 
+use App\Issues\Checkers\GitHubIssues;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
@@ -25,6 +26,7 @@ class IssueChecker
             ->map(fn($name) => new ReflectionClass($name))
             ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn($reflect) => $reflect->getName())
+//            ->filter(fn($name) => $name == GitHubIssues::class)  // Uncomment/change class name to test one checker
             ->map(fn($name) => app($name));
     }
 
