@@ -8,10 +8,12 @@ use App\Issues\Types\IssueBase;
 class InvalidUsername extends IssueBase
 {
     private MemberData $member;
+    private string $correctedUsername;
 
-    public function __construct(MemberData $member)
+    public function __construct(MemberData $member, string $correctedUsername)
     {
         $this->member = $member;
+        $this->correctedUsername = $correctedUsername;
     }
 
     public static function getIssueNumber(): int
@@ -26,6 +28,6 @@ class InvalidUsername extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member->first_name} {$this->member->last_name} has the invalid format GitHub username \"{$this->member->githubUsername}\"";
+        return "{$this->member->first_name} {$this->member->last_name} has the invalid format GitHub username \"{$this->member->githubUsername}\". It may be \"{$this->correctedUsername}\"";
     }
 }

@@ -43,7 +43,7 @@ class GitHubIssues implements IssueCheck
                 $this->issues->add(new UsernameDoesNotExist($member));
                 continue;
             } else if (Str::lower($validUsername) != Str::lower($member->githubUsername)) {
-                $this->issues->add(new InvalidUsername($member));
+                $this->issues->add(new InvalidUsername($member, $validUsername));
                 continue;
             }
 
