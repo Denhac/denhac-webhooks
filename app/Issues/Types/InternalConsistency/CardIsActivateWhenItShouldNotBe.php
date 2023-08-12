@@ -2,14 +2,15 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class CardIsActivateWhenItShouldNotBe extends IssueBase
 {
-    private $member;
+    private MemberData $member;
     private $memberCard;
 
-    public function __construct($member, $memberCard)
+    public function __construct(MemberData $member, $memberCard)
     {
         $this->member = $member;
         $this->memberCard = $memberCard;
@@ -27,6 +28,6 @@ class CardIsActivateWhenItShouldNotBe extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member['first_name']} {$this->member['last_name']} has the card {$this->memberCard} and we think it's active when it should not be.";
+        return "{$this->member->first_name} {$this->member->last_name} has the card {$this->memberCard} and we think it's active when it should not be.";
     }
 }

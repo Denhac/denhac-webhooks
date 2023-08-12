@@ -2,14 +2,15 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class MemberCardIsNotActive extends IssueBase
 {
-    private $member;
+    private MemberData $member;
     private $memberCard;
 
-    public function __construct($member, $memberCard)
+    public function __construct(MemberData $member, $memberCard)
     {
         $this->member = $member;
         $this->memberCard = $memberCard;
@@ -27,6 +28,6 @@ class MemberCardIsNotActive extends IssueBase
 
     public function getIssueText(): string
     {
-        return "Member {$this->member['first_name']} {$this->member['last_name']} has the card {$this->memberCard} but we think it's NOT active";
+        return "Member {$this->member->first_name} {$this->member->last_name} has the card {$this->memberCard} but we think it's NOT active";
     }
 }

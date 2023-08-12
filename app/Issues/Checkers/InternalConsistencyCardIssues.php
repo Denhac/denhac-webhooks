@@ -4,6 +4,7 @@ namespace App\Issues\Checkers;
 
 
 use App\Card;
+use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\ActiveCardNotInCustomerProfile;
 use App\Issues\Types\InternalConsistency\CardInPossessionOfMultipleCustomers;
@@ -11,6 +12,7 @@ use App\Issues\Types\InternalConsistency\CustomerHasUnknownCard;
 use App\Issues\Types\InternalConsistency\CustomerStillInPossessionOfCardNotInCustomerProfile;
 use App\Issues\Types\InternalConsistency\MemberCardIsNotActive;
 use App\Issues\Types\InternalConsistency\CardIsActivateWhenItShouldNotBe;
+use Illuminate\Support\Collection;
 
 class InternalConsistencyCardIssues implements IssueCheck
 {
@@ -27,19 +29,21 @@ class InternalConsistencyCardIssues implements IssueCheck
     {
         $cards = Card::all();
 
+        /** @var Collection<MemberData> $members */
         $members = $this->issueData->members();
 
         $members->each(function ($member) use ($cards) {
-            if ($member['system'] == IssueData::SYSTEM_PAYPAL) {
+            /** @var MemberData $member */
+            if ($member->system == IssueData::SYSTEM_PAYPAL) {
                 // We don't update the cards database for paypal members
                 return;
             }
 
             $cardsForMember = $cards
-                ->where('woo_customer_id', $member['id']);
+                ->where('woo_customer_id', $member->id);
 
             // $member['cards'] is the list of cards in WooCommerce
-            $member['cards']->each(function ($memberCard) use ($member, $cardsForMember) {
+            $member->cards->each(function ($memberCard) use ($member, $cardsForMember) {
                 if (!$cardsForMember->contains('number', $memberCard)) {
                     $this->issues->add(new CustomerHasUnknownCard($member, $memberCard));
 
@@ -49,7 +53,7 @@ class InternalConsistencyCardIssues implements IssueCheck
                 /** @var Card $card */
                 $card = $cardsForMember->where('number', $memberCard)->first();
 
-                $shouldHaveActiveCard = $member['is_member'] && $member['has_signed_waiver'];
+                $shouldHaveActiveCard = $member->isMember && $member->hasSignedWaiver;
 
                 if ($shouldHaveActiveCard && !$card->active) {
                     $this->issues->add(new MemberCardIsNotActive($member, $memberCard));
@@ -62,7 +66,7 @@ class InternalConsistencyCardIssues implements IssueCheck
 
             $cardsForMember->each(function ($cardForMember) use ($member) {
                 /** @var Card $cardForMember */
-                if ($member['cards']->contains($cardForMember->number)) { // WordPress user has this card
+                if ($member->cards->contains($cardForMember->number)) { // WordPress user has this card
                     return;
                 }
 

@@ -4,6 +4,7 @@ namespace App\Issues\Checkers;
 
 
 use App\Google\GmailEmailHelper;
+use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\GoogleGroups\ActiveMemberNotInGroups;
 use App\Issues\Types\GoogleGroups\NoMemberFoundForEmail;
@@ -25,6 +26,7 @@ class GoogleGroupIssues implements IssueCheck
 
     protected function generateIssues(): void
     {
+        /** @var Collection<MemberData> $members */
         $members = $this->issueData->members();
 
         $groups = $this->issueData->googleGroups()
@@ -57,8 +59,9 @@ class GoogleGroupIssues implements IssueCheck
 
             $membersForEmail = $members
                 ->filter(function ($member) use ($email) {
+                    /** @var MemberData $member */
                     /** @var Collection $memberEmails */
-                    $memberEmails = $member['email'];
+                    $memberEmails = $member->emails;
 
                     return $memberEmails->contains(Str::lower($email));
                 });
@@ -75,22 +78,24 @@ class GoogleGroupIssues implements IssueCheck
                 return;
             }
 
+            /** @var MemberData $member */
             $member = $membersForEmail->first();
 
-            if (!$member['is_member']) {
+            if (!$member->isMember) {
                 $this->issues->add(new NotActiveMemberButInGroups($member, $email, $groupsForEmail));
             }
         });
 
         $members->each(function ($member) use ($emailsToGroups) {
+            /** @var MemberData $member */
             /** @var Collection $memberEmails */
-            $memberEmails = $member['email'];
+            $memberEmails = $member->emails;
 
             if ($memberEmails->isEmpty()) {
                 return;
             }
 
-            if (!$member['is_member']) {
+            if (!$member->isMember) {
                 return;
             }
 

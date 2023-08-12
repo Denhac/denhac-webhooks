@@ -2,14 +2,15 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
 {
-    private $member;
+    private MemberData $member;
     private $cardNumber;
 
-    public function __construct($member, $cardNumber)
+    public function __construct(MemberData $member, $cardNumber)
     {
         $this->member = $member;
         $this->cardNumber = $cardNumber;
@@ -27,7 +28,7 @@ class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member['first_name']} {$this->member['last_name']} doesn't have {$this->cardNumber} " .
+        return "{$this->member->first_name} {$this->member->last_name} doesn't have {$this->cardNumber} " .
             'listed in their profile, but we think they still have it';
     }
 }

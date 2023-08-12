@@ -5,6 +5,7 @@ namespace App\Issues\Checkers;
 
 use App\ActiveCardHolderUpdate;
 use App\Card;
+use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\AccessCards\ActiveCardMultipleAccounts;
 use App\Issues\Types\AccessCards\ActiveCardNoRecord;
@@ -12,6 +13,7 @@ use App\Issues\Types\AccessCards\CardHolderIncorrectName;
 use App\Issues\Types\AccessCards\MemberCardIsNotActive;
 use App\Issues\Types\AccessCards\NonMemberHasActiveCard;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class ActiveCardIssues implements IssueCheck
 {
@@ -26,6 +28,7 @@ class ActiveCardIssues implements IssueCheck
 
     public function generateIssues(): void
     {
+        /** @var Collection<MemberData> $members */
         $members = $this->issueData->members();
 
         /** @var ActiveCardHolderUpdate $activeCardHolderUpdate */
@@ -39,7 +42,8 @@ class ActiveCardIssues implements IssueCheck
             ->each(function ($card_holder) use ($members) {
                 $membersWithCard = $members
                     ->filter(function ($member) use ($card_holder) {
-                        return $member['cards']->contains(ltrim($card_holder['card_num'], '0'));
+                        /** @var MemberData $member */
+                        return $member->cards->contains(ltrim($card_holder['card_num'], '0'));
                     });
 
                 if ($membersWithCard->count() == 0) {
@@ -54,17 +58,18 @@ class ActiveCardIssues implements IssueCheck
                     return;
                 }
 
+                /** @var MemberData $member */
                 $member = $membersWithCard->first();
 
-                if ($card_holder['first_name'] != $member['first_name'] ||
-                    $card_holder['last_name'] != $member['last_name']) {
-                    $this->issues->add(new CardHolderIncorrectName($card_holder, $member));
+                if ($card_holder['first_name'] != $member->first_name ||
+                    $card_holder['last_name'] != $member->last_name) {
+                    $this->issues->add(new CardHolderIncorrectName($member, $card_holder));
                 }
 
-                if (!$member['is_member']) {
+                if (!$member->isMember) {
                     // We get card updates every 8 hours. We only want to report on this if a card hasn't been updated in the last day.
                     /** @var Card $card */
-                    $card = Card::where('number', $card_holder['card_num'])->where('woo_customer_id', $member['id'])->first();
+                    $card = Card::where('number', $card_holder['card_num'])->where('woo_customer_id', $member->id)->first();
 
                     if(is_null($card) || $card->updated_at < Carbon::now()->subDay()) {
                         $this->issues->add(new NonMemberHasActiveCard($card_holder));
@@ -74,13 +79,15 @@ class ActiveCardIssues implements IssueCheck
 
         $members
             ->filter(function ($member) {
-                return !is_null($member['first_name']) &&
-                    !is_null($member['last_name']) &&
-                    $member['is_member'] &&
-                    $member['has_signed_waiver'];
+                /** @var MemberData $member */
+                return !is_null($member->first_name) &&
+                    !is_null($member->last_name) &&
+                    $member->isMember &&
+                    $member->hasSignedWaiver;
             })
             ->each(function ($member) use ($card_holders) {
-                $member['cards']->each(function ($card) use ($member, $card_holders) {
+                /** @var MemberData $member */
+                $member->cards->each(function ($card) use ($member, $card_holders) {
                     $cardActive = $card_holders->contains('card_num', $card);
                     if (!$cardActive) {
                         $this->issues->add(new MemberCardIsNotActive($member, $card));

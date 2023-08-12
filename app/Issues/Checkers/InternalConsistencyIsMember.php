@@ -4,6 +4,7 @@ namespace App\Issues\Checkers;
 
 
 use App\Customer;
+use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\CannotFindCustomer;
 use App\Issues\Types\InternalConsistency\RemoteIsMemberButLocalIsNot;
@@ -26,18 +27,19 @@ class InternalConsistencyIsMember implements IssueCheck
         $customers = Customer::all();
 
         foreach ($members as $member) {
-            if($member['system'] == IssueData::SYSTEM_PAYPAL) {
+            /** @var MemberData $member */
+            if ($member->system == IssueData::SYSTEM_PAYPAL) {
                 continue;
             }
 
             /** @var Customer $customer */
-            $customer = $customers->where('woo_id', $member['id'])->first();
+            $customer = $customers->where('woo_id', $member->id)->first();
 
-            if(is_null($customer)) {
+            if (is_null($customer)) {
                 $this->issues->add(new CannotFindCustomer($member));
-            } else if ($member['is_member'] && !$customer->member) {  // Remote says member, we don't.
+            } else if ($member->isMember && !$customer->member) {  // Remote says member, we don't.
                 $this->issues->add(new RemoteIsMemberButLocalIsNot($member));
-            } else if (!$member['is_member'] && $customer->member) {  // Remote says not a member, we do.
+            } else if (!$member->isMember && $customer->member) {  // Remote says not a member, we do.
                 $this->issues->add(new RemoteIsNotMemberButLocalIs($member));
             }
         }

@@ -2,15 +2,16 @@
 
 namespace App\Issues\Types\Slack;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class MemberHasRestrictedAccount extends IssueBase
 {
-    private $member;
+    private MemberData $member;
     private $slackUser;
     private $limitedType;
 
-    public function __construct($member, $slackUser, $limitedType)
+    public function __construct(MemberData $member, $slackUser, $limitedType)
     {
         $this->member = $member;
         $this->slackUser = $slackUser;
@@ -29,6 +30,6 @@ class MemberHasRestrictedAccount extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member['first_name']} {$this->member['last_name']} with slack id ({$this->slackUser['id']}) is $this->limitedType, but they are a member";
+        return "{$this->member->first_name} {$this->member->last_name} with slack id ({$this->slackUser['id']}) is $this->limitedType, but they are a member";
     }
 }

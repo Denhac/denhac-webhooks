@@ -6,6 +6,7 @@ namespace App\Issues;
 use App\External\HasApiProgressBar;
 use App\Google\GmailEmailHelper;
 use App\Google\GoogleApi;
+use App\Issues\Data\MemberData;
 use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\UserMembership;
@@ -17,7 +18,9 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * This is a re-usable set of issue data that can be used with all of the issue checkers
+ * This is a re-usable set of issue data that can be used with all of the issue checkers. Ideally all data returned
+ * from here is structured, meaning it uses a class in the App\Issues\Data namespace. This does add overhead to marshal
+ * into those data types, but it allows us to better type hint issue types and not use magic dictionary keys.
  */
 class IssueData
 {
@@ -86,7 +89,10 @@ class IssueData
         return $this->_wooCommerceUserMemberships;
     }
 
-    public function members()
+    /**
+     * @return Collection<MemberData>
+     */
+    public function members(): Collection
     {
         if (is_null($this->_members)) {
 
@@ -140,19 +146,19 @@ class IssueData
 
                 $progress->step();
 
-                return [
-                    'id' => $customer['id'],
-                    'first_name' => $customer['first_name'],
-                    'last_name' => $customer['last_name'],
-                    'email' => $emails,
-                    'is_member' => $isMember,
-                    'has_signed_waiver' => $hasSignedWaiver,
-                    'subscriptions' => $subscriptionMap,
-                    'user_memberships' => $userMembershipsMap,
-                    'cards' => $cards,
-                    'slack_id' => $this->getMetaValue($meta_data, 'access_slack_id'),
-                    'system' => self::SYSTEM_WOOCOMMERCE,
-                ];
+                return new MemberData(
+                    id: $customer['id'],
+                    first_name: $customer['first_name'],
+                    last_name: $customer['last_name'],
+                    emails: $emails,
+                    isMember: $isMember,
+                    hasSignedWaiver: $hasSignedWaiver,
+                    subscriptions: $subscriptionMap,
+                    userMemberships: $userMembershipsMap,
+                    cards: $cards,
+                    slackId: $this->getMetaValue($meta_data, 'access_slack_id'),
+                    system: self::SYSTEM_WOOCOMMERCE,
+                );
             });
 
             $this->_members = $this->_members->concat(PaypalBasedMember::all()
@@ -162,18 +168,19 @@ class IssueData
                         $emails->push(GmailEmailHelper::handleGmail(Str::lower($member->email)));
                     }
 
-                    return [
-                        'id' => $member->paypal_id,
-                        'first_name' => $member->first_name,
-                        'last_name' => $member->last_name,
-                        'email' => $emails,
-                        'is_member' => $member->active,
-                        'has_signed_waiver' => false,  # No way for me to actually handle this.
-                        'subscriptions' => collect(),
-                        'cards' => is_null($member->card) ? collect() : collect([$member->card]),
-                        'slack_id' => $member->slack_id,
-                        'system' => self::SYSTEM_PAYPAL,
-                    ];
+                    return new MemberData(
+                        id: $member->paypal_id,
+                        first_name: $member->first_name,
+                        last_name: $member->last_name,
+                        emails: $emails,
+                        isMember: $member->active,
+                        hasSignedWaiver: false,  # No way for me to actually handle this.
+                        subscriptions: collect(),
+                        userMemberships: collect(),
+                        cards: is_null($member->card) ? collect() : collect([$member->card]),
+                        slackId: $member->slack_id,
+                        system: self::SYSTEM_PAYPAL,
+                    );
                 }));
         }
         return $this->_members;

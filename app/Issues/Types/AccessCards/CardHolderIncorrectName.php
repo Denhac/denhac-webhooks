@@ -2,14 +2,15 @@
 
 namespace App\Issues\Types\AccessCards;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class CardHolderIncorrectName extends IssueBase
 {
+    private MemberData $member;
     private $cardHolder;
-    private $member;
 
-    public function __construct($cardHolder, $member)
+    public function __construct(MemberData $member, $cardHolder)
     {
         $this->cardHolder = $cardHolder;
         $this->member = $member;
@@ -27,6 +28,6 @@ class CardHolderIncorrectName extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->cardHolder['first_name']} {$this->cardHolder['last_name']} has the active card ({$this->cardHolder['card_num']}) but is listed as {$this->member['first_name']} {$this->member['last_name']} in WordPress.";
+        return "{$this->cardHolder['first_name']} {$this->cardHolder['last_name']} has the active card ({$this->cardHolder['card_num']}) but is listed as {$this->member->first_name} {$this->member->last_name} in WordPress.";
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Issues\Types\Slack;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class MemberDoesNotHaveASlackAccount extends IssueBase
 {
-    private $member;
+    private MemberData $member;
 
-    public function __construct($member)
+    public function __construct(MemberData $member)
     {
         $this->member = $member;
     }
@@ -25,6 +26,6 @@ class MemberDoesNotHaveASlackAccount extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member['first_name']} {$this->member['last_name']} ({$this->member['id']}) doesn't appear to have a slack account";
+        return "{$this->member->first_name} {$this->member->last_name} ({$this->member->id}) doesn't appear to have a slack account";
     }
 }

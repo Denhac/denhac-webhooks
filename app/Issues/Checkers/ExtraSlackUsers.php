@@ -3,6 +3,7 @@
 namespace App\Issues\Checkers;
 
 
+use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\Slack\FullUserNoRecord;
 use App\Issues\Types\Slack\MemberHasRestrictedAccount;
@@ -44,7 +45,8 @@ class ExtraSlackUsers implements IssueCheck
             ->each(function ($user) use ($members) {
                 $membersForSlackId = $members
                     ->filter(function ($member) use ($user) {
-                        return $member['slack_id'] == $user['id'];
+                        /** @var MemberData $member */
+                        return $member->slackId == $user['id'];
                     });
 
                 if ($membersForSlackId->count() == 0) {  // TODO Check for multi/single channel guests outside of public as well
@@ -55,9 +57,10 @@ class ExtraSlackUsers implements IssueCheck
                     return;
                 }
 
+                /** @var MemberData $member */
                 $member = $membersForSlackId->first();
 
-                if ($member['is_member']) {
+                if ($member->isMember) {
                     if (array_key_exists('is_invited_user', $user) && $user['is_invited_user']) {
                         return; // Do nothing, we've sent the invite and that's all we can do.
                     } else if (array_key_exists('deleted', $user) && $user['deleted']) {

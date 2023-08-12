@@ -2,13 +2,14 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class RemoteIsMemberButLocalIsNot extends IssueBase
 {
-    private $member;
+    private MemberData $member;
 
-    public function __construct($member)
+    public function __construct(MemberData $member)
     {
         $this->member = $member;
     }
@@ -25,6 +26,6 @@ class RemoteIsMemberButLocalIsNot extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member['first_name']} {$this->member['last_name']} appears to be active in WooCommerce but not in our local system";
+        return "{$this->member->first_name} {$this->member->last_name} appears to be active in WooCommerce but not in our local system";
     }
 }

@@ -33,6 +33,7 @@
         "spatie/laravel-failed-job-monitor": "^3.4",
         "spatie/laravel-queueable-action": "^2.10.3",
         "spatie/laravel-webhook-client": "^2.7.5",
+        "spatie/laravel-data": "2.2.3",
         "spatie/ssl-certificate": "^1.22",
         "stripe/stripe-php": "^7.94",
         "ylsideas/feature-flags": "^1.4.0"

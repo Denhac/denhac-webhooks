@@ -2,14 +2,15 @@
 
 namespace App\Issues\Types\AccessCards;
 
+use App\Issues\Data\MemberData;
 use App\Issues\Types\IssueBase;
 
 class MemberCardIsNotActive extends IssueBase
 {
-    private $member;
+    private MemberData $member;
     private $cardNumber;
 
-    public function __construct($member, $cardNumber)
+    public function __construct(MemberData $member, $cardNumber)
     {
         $this->member = $member;
         $this->cardNumber = $cardNumber;
@@ -27,6 +28,6 @@ class MemberCardIsNotActive extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member['first_name']} {$this->member['last_name']} has the card $this->cardNumber but it doesn't appear to be active";
+        return "{$this->member->first_name} {$this->member->last_name} has the card $this->cardNumber but it doesn't appear to be active";
     }
 }
