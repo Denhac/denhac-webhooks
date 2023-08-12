@@ -10,7 +10,7 @@ use App\Issues\Types\InternalConsistency\CardInPossessionOfMultipleCustomers;
 use App\Issues\Types\InternalConsistency\CustomerHasUnknownCard;
 use App\Issues\Types\InternalConsistency\CustomerStillInPossessionOfCardNotInCustomerProfile;
 use App\Issues\Types\InternalConsistency\MemberCardIsNotActive;
-use App\Issues\Types\InternalConsistency\NonMemberCardIsActivate;
+use App\Issues\Types\InternalConsistency\CardIsActivateWhenItShouldNotBe;
 
 class InternalConsistencyCardIssues implements IssueCheck
 {
@@ -56,7 +56,7 @@ class InternalConsistencyCardIssues implements IssueCheck
                 }
 
                 if (!$shouldHaveActiveCard && $card->active) {
-                    $this->issues->add(new NonMemberCardIsActivate($member, $memberCard));
+                    $this->issues->add(new CardIsActivateWhenItShouldNotBe($member, $memberCard));
                 }
             });
 

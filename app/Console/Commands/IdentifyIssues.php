@@ -41,7 +41,6 @@ class IdentifyIssues extends Command
 
         foreach ($issuesByNumber->keys() as $issueNumber) {
             $myIssues = $issuesByNumber->get($issueNumber);
-            $issueCount = count($myIssues);
             /** @var IssueBase $firstIssue */
             $firstIssue = $myIssues->first();
             $issueTitle = $firstIssue->getIssueTitle();

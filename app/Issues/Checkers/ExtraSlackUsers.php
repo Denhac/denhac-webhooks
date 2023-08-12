@@ -47,7 +47,7 @@ class ExtraSlackUsers implements IssueCheck
                         return $member['slack_id'] == $user['id'];
                     });
 
-                if ($membersForSlackId->count() == 0) {
+                if ($membersForSlackId->count() == 0) {  // TODO Check for multi/single channel guests outside of public as well
                     if ($this->isFullSlackUser($user)) {
                         $this->issues->add(new FullUserNoRecord($user));
                     }
@@ -68,7 +68,7 @@ class ExtraSlackUsers implements IssueCheck
                         $this->issues->add(new MemberHasRestrictedAccount($member, $user, "a single-channel guest"));
 
                     }
-                } elseif ($this->isFullSlackUser($user)) {
+                } elseif ($this->isFullSlackUser($user)) {  // TODO Check for multi/single channel guests outside of public as well
                     $this->issues->add(new NonMemberHasFullAccount($member, $user));
                 }
             });

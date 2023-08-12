@@ -42,7 +42,7 @@ class IssueChecker
             $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
-                $this->issues = $this->issues->union($checker->getIssues());
+                $this->issues = $this->issues->concat($checker->getIssues());
             }
         }
 

@@ -4,7 +4,7 @@ namespace App\Issues\Types\InternalConsistency;
 
 use App\Issues\Types\IssueBase;
 
-class NonMemberCardIsActivate extends IssueBase
+class CardIsActivateWhenItShouldNotBe extends IssueBase
 {
     private $member;
     private $memberCard;
@@ -27,6 +27,6 @@ class NonMemberCardIsActivate extends IssueBase
 
     public function getIssueText(): string
     {
-        return "Non-member {$this->member['first_name']} {$this->member['last_name']} has the card {$this->memberCard} but we think it's active when it should not be.";
+        return "{$this->member['first_name']} {$this->member['last_name']} has the card {$this->memberCard} and we think it's active when it should not be.";
     }
 }
