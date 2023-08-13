@@ -21,7 +21,7 @@ class UsernameDoesNotExist extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Git Hub: Username does not exist";
+        return "GitHub: Username does not exist";
     }
 
     public function getIssueText(): string

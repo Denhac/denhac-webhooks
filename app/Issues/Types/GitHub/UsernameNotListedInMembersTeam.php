@@ -21,7 +21,7 @@ class UsernameNotListedInMembersTeam extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Git Hub: Username not listed in team";
+        return "GitHub: Username not listed in team";
     }
 
     public function getIssueText(): string

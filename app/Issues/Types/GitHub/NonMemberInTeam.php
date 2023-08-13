@@ -21,7 +21,7 @@ class NonMemberInTeam extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Git Hub: Non member in team";
+        return "GitHub: Non member in team";
     }
 
     public function getIssueText(): string

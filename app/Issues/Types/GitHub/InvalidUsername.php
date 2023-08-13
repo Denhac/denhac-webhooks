@@ -23,7 +23,7 @@ class InvalidUsername extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Git Hub: Invalid git hub username";
+        return "GitHub: Invalid git hub username";
     }
 
     public function getIssueText(): string

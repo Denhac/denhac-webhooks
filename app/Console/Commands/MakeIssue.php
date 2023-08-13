@@ -92,6 +92,9 @@ class MakeIssue extends GeneratorCommand
 
         $newIssueTitle = Str::ucfirst(Str::snake($class, ' '));
         $nameSpaceTypeTitle = Str::headline($nameSpaceType);
+        if($nameSpaceType == 'GitHub') {
+            $nameSpaceTypeTitle = 'GitHub'; // Special handling to avoid "Git Hub"
+        }
 
         return str_replace(
             "DummyIssueTitle",
