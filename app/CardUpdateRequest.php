@@ -15,6 +15,7 @@ class CardUpdateRequest extends Model
 {
     public const ACTIVATION_TYPE = 'enable';
     public const DEACTIVATION_TYPE = 'disable';
+    public const UPDATE_NAME_TYPE = 'update_name';
 
     public const STATUS_NOT_DONE = 'not_done';
     public const STATUS_SUCCESS = 'success';

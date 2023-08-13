@@ -2,7 +2,7 @@
 
 namespace App\Reactors;
 
-use App\Jobs\IssueCardUpdateRequest;
+use App\CardUpdateRequest;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
@@ -14,11 +14,19 @@ final class CardUpdateRequestReactor implements EventHandler
 
     public function onCardSentForActivation(CardSentForActivation $event)
     {
-        dispatch(new IssueCardUpdateRequest($event));
+        CardUpdateRequest::create([
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'customer_id' => $event->wooCustomerId,
+            'card' => $event->cardNumber,
+        ]);
     }
 
     public function onCardSentForDeactivation(CardSentForDeactivation $event)
     {
-        dispatch(new IssueCardUpdateRequest($event));
+        CardUpdateRequest::create([
+            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
+            'customer_id' => $event->wooCustomerId,
+            'card' => $event->cardNumber,
+        ]);
     }
 }
