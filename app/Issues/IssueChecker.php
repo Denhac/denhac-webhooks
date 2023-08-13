@@ -4,7 +4,6 @@ namespace App\Issues;
 
 
 use App\Issues\Checkers\IssueCheck;
-use App\Issues\Checkers\Stripe\CardHolderIssues;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -28,7 +27,7 @@ class IssueChecker
             ->map(fn($name) => new ReflectionClass($name))
             ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn($reflect) => $reflect->getName())
-            ->filter(fn($name) => $name == CardHolderIssues::class)  // Uncomment/change class name to test one checker
+//            ->filter(fn($name) => $name == CardHolderIssues::class)  // Uncomment/change class name to test one checker
             ->map(fn($name) => app($name));
     }
 
