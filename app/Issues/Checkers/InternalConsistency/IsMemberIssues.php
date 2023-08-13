@@ -38,7 +38,7 @@ class IsMemberIssues implements IssueCheck
             $customer = $customers->where('woo_id', $member->id)->first();
 
             if (is_null($customer)) {
-                $this->issues->add(new CannotFindCustomer($member));
+                continue;  // CustomerIssues handles reporting this error
             } else if ($member->isMember && !$customer->member) {  // Remote says member, we don't.
                 $this->issues->add(new RemoteIsMemberButLocalIsNot($member));
             } else if (!$member->isMember && $customer->member) {  // Remote says not a member, we do.
