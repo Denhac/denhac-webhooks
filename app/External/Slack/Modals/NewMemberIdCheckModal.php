@@ -8,8 +8,10 @@ use App\External\Slack\SlackOptions;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\NewMemberCardActivation;
+use App\Notifications\IdCheckedWithNoWaiver;
 use App\Waiver;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -118,6 +120,7 @@ class NewMemberIdCheckModal implements ModalInterface
 
         $wooCommerceApi = app(WooCommerceApi::class);
 
+        $customer = $request->customer();
         $wooCommerceApi->customers
             ->update($customerId, [
                 'first_name' => $firstName,
@@ -133,7 +136,7 @@ class NewMemberIdCheckModal implements ModalInterface
                     ],
                     [
                         'key' => 'id_was_checked_by',
-                        'value' => $request->customer()->woo_id,
+                        'value' => $customer->woo_id,
                     ],
                     [
                         'key' => 'id_was_checked_when',
@@ -145,6 +148,11 @@ class NewMemberIdCheckModal implements ModalInterface
                     ]
                 ],
             ]);
+
+        if (!$customer->hasSignedMembershipWaiver()) {
+            Notification::route('mail', $customer->email)
+                ->notify(new IdCheckedWithNoWaiver($customer));
+        }
 
         $newMemberCardActivation = NewMemberCardActivation::create([
             'woo_customer_id' => $customerId,
