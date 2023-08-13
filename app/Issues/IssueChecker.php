@@ -15,6 +15,7 @@ class IssueChecker
     protected Collection $checkers;
     protected Collection|null $issues = null;
     private IssueData $issueData;
+    private OutputInterface|null $output = null;
 
     public function __construct()
     {
@@ -32,6 +33,7 @@ class IssueChecker
 
     public function setOutput(OutputInterface $output): void
     {
+        $this->output = $output;
         $this->issueData->setOutput($output);
     }
 
@@ -44,6 +46,13 @@ class IssueChecker
             $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
+                if(! is_null($this->output)) {
+                    try {
+                        $shortName = (new ReflectionClass($checker))->getShortName();
+                        $this->output->writeln("Getting issues for: $shortName");
+                    } catch (\ReflectionException $e) {
+                    }
+                }
                 $this->issues = $this->issues->concat($checker->getIssues());
             }
         }
