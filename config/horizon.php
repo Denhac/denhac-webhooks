@@ -158,15 +158,6 @@ return [
                 'tries' => 1,
                 'timeout' => 60,
             ],
-            'long-running-single-process' => [
-                'connection' => 'redis',
-                'queue' => ['backups'],
-                'balance' => 'simple',
-                'processes' => 1,
-                'memory' => 50,
-                'tries' => 1,
-                'timeout' => 900,
-            ],
             'no-timeout' => [
                 'connection' => 'redis',
                 'queue' => ['slack-live'],
