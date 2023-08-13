@@ -39,39 +39,40 @@ class NoMemberForCardHolder extends IssueBase
 
     public function fix(): bool
     {
-        $MATCH_MEMBER = "Match Member";
-        $DEACTIVATE_CARD_HOLDER = "Deactivate Card Holder";
-        $CANCEL = "Cancel";
-        $choice = $this->choice("How do you want to fix this issue?", [$MATCH_MEMBER, $DEACTIVATE_CARD_HOLDER, $CANCEL]);
+        return $this->issueFixChoice()
+            ->option("Match Member", fn() => $this->matchMember())
+            ->option("Deactivate Card Holder", fn() => $this->deactivateCardHolder())
+            ->run();
+    }
 
-        if ($choice == $MATCH_MEMBER) {
-            /** @var MemberData $member */
-            $member = $this->selectMember();
-            if(is_null($member)) {
-                $this->info("No member selected. Aborting issue fix.");
-                return false;
-            }
-
-            $wooCommerceApi = app(WooCommerceApi::class);
-
-            $wooCommerceApi->customers
-                ->update($member->id, [
-                    'meta_data' => [
-                        [
-                            'key' => 'stripe_card_holder_id',
-                            'value' => $this->cardHolder->id,
-                        ],
-                    ],
-                ]);
-
-            return true;
-        } else if ($choice == $DEACTIVATE_CARD_HOLDER) {
-            /** @var StripeClient $stripeClient */
-            $this->cardHolder->status = "inactive";
-            $this->cardHolder->save();
-            return true;
+    private function matchMember(): bool {
+        /** @var MemberData $member */
+        $member = $this->selectMember();
+        if(is_null($member)) {
+            $this->info("No member selected. Aborting issue fix.");
+            return false;
         }
 
-        return false;
+        $wooCommerceApi = app(WooCommerceApi::class);
+
+        $wooCommerceApi->customers
+            ->update($member->id, [
+                'meta_data' => [
+                    [
+                        'key' => 'stripe_card_holder_id',
+                        'value' => $this->cardHolder->id,
+                    ],
+                ],
+            ]);
+
+        return true;
+    }
+
+    private function deactivateCardHolder()
+    {
+        /** @var StripeClient $stripeClient */
+        $this->cardHolder->status = "inactive";
+        $this->cardHolder->save();
+        return true;
     }
 }

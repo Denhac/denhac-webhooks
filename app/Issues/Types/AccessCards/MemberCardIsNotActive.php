@@ -39,18 +39,13 @@ class MemberCardIsNotActive extends IssueBase
 
     public function fix(): bool
     {
-        $ACTIVATE_CARD = "Activate Card";
-        $CANCEL = "Cancel";
-
-        $choice = $this->choice("How do you want to fix this issue?", [$ACTIVATE_CARD, $CANCEL]);
-
-        if ($choice == $ACTIVATE_CARD) {
-            MembershipAggregate::make($this->member->id)
-                ->recordThat(new CardSentForActivation($this->member->id, $this->cardNumber))
-                ->persist();
-            return true;
-        }
-
-        return false;
+        return $this->issueFixChoice()
+            ->option("Activate Card", function () {
+                MembershipAggregate::make($this->member->id)
+                    ->recordThat(new CardSentForActivation($this->member->id, $this->cardNumber))
+                    ->persist();
+                return true;
+            })
+            ->run();
     }
 }

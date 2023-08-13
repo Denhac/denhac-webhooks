@@ -3,6 +3,7 @@
 namespace App\Issues\Types;
 
 
+use App\Issues\ChoiceHelper;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use Illuminate\Console\Concerns\InteractsWithIO;
@@ -28,7 +29,7 @@ trait ICanFixThem
 
         do {
             $choice = $this->anticipate("Select customer/member", function ($input) use ($memberNames) {
-                if (length($input) == 0) {
+                if (empty($input)) {
                     return [];
                 }
 
@@ -66,5 +67,10 @@ trait ICanFixThem
         }
 
         return $memberNames->get($choice);
+    }
+
+    protected function issueFixChoice($text = "How do you want to fix this issue?"): ChoiceHelper
+    {
+        return new ChoiceHelper($this->output, $text);
     }
 }
