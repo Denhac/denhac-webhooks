@@ -12,10 +12,10 @@ use App\PaypalBasedMember;
 use App\Slack\SlackApi;
 use App\UserMembership;
 use App\Waiver;
-use App\WooCommerce\Api\ApiCallFailed;
 use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Stripe\StripeClient;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -47,6 +47,8 @@ class IssueData
     private Collection|null $_googleGroupMembers = null;  // Key is group, value is member list
 
     private Collection|null $_gitHubTeamMembers = null;  // The GitHub team is called "members"
+
+    private Collection|null $_stripeCardHolders = null;
 
     private OutputInterface|null $output = null;
 
@@ -164,6 +166,7 @@ class IssueData
                     cards: $cards,
                     slackId: $this->getMetaValue($meta_data, 'access_slack_id'),
                     githubUsername: $this->getMetaValue($meta_data, 'github_username'),
+                    stripeCardHolderId: $this->getMetaValue($meta_data, 'stripe_card_holder_id'),
                     system: self::SYSTEM_WOOCOMMERCE,
                 );
             });
@@ -187,6 +190,7 @@ class IssueData
                         cards: is_null($member->card) ? collect() : collect([$member->card]),
                         slackId: $member->slack_id,
                         githubUsername: null,
+                        stripeCardHolderId: null,
                         system: self::SYSTEM_PAYPAL,
                     );
                 }));
@@ -241,5 +245,16 @@ class IssueData
         }
 
         return $this->_gitHubTeamMembers;
+    }
+
+    public function stripeCardHolders(): Collection
+    {
+        if (is_null($this->_stripeCardHolders)) {
+            /** @var StripeClient $stripeClient */
+            $stripeClient = app(StripeClient::class);
+            $this->_stripeCardHolders = collect($stripeClient->issuing->cardholders->all()['data']);
+        }
+
+        return $this->_stripeCardHolders;
     }
 }

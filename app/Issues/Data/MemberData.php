@@ -20,6 +20,7 @@ class MemberData extends Data
         public Collection $cards,
         public string|null $slackId,
         public string|null $githubUsername,
+        public string|null $stripeCardHolderId,
         public string $system,
     )
     {

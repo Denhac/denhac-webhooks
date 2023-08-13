@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Issues\Checkers;
+namespace DummyNamespace;
 
 
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\IssueData;
-use Illuminate\Support\Collection;
 
 class DummyClass implements IssueCheck
 {
