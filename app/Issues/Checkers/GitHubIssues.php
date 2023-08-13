@@ -61,6 +61,11 @@ class GitHubIssues implements IssueCheck
 
     private function confirmValidGitHubUsername(?string $githubUsername): string|null
     {
+        $matches = [];
+        if(1 === preg_match(";(http(s)?)?://github.com/(?P<username>[\w-]+);", $githubUsername, $matches)) {
+            $githubUsername = $matches['username'];
+        }
+
         $data = $this->gitHubApi->userLookup($githubUsername);
         if (array_key_exists("login", $data)) {
             return $data['login'];
