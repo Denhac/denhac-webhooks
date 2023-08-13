@@ -15,7 +15,7 @@ class ActiveCardNoRecord extends IssueBase
 
     public static function getIssueNumber(): int
     {
-        return 0;  // auto-generated based on namespace and existing issues
+        return 5;  // auto-generated based on namespace and existing issues
     }
 
     public static function getIssueTitle(): string

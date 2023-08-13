@@ -2,15 +2,23 @@
 
 namespace App\Issues\Types\AccessCards;
 
+use App\Aggregates\MembershipAggregate;
+use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\StorableEvents\CardSentForDeactivation;
 
 class NonMemberHasActiveCard extends IssueBase
 {
-    private $cardHolder;
+    use ICanFixThem;
 
-    public function __construct($cardHolder)
+    private MemberData $member;
+    private $cardNumber;
+
+    public function __construct(MemberData $member, $cardNumber)
     {
-        $this->cardHolder = $cardHolder;
+        $this->member = $member;
+        $this->cardNumber = $cardNumber;
     }
 
     public static function getIssueNumber(): int
@@ -25,6 +33,23 @@ class NonMemberHasActiveCard extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->cardHolder['first_name']} {$this->cardHolder['last_name']} has the active card ({$this->cardHolder['card_num']}) but is not currently a member.";
+        return "{$this->member->first_name} {$this->member->last_name} has the active access card ({$this->cardNumber}) but is not currently a member.";
+    }
+
+    public function fix(): bool
+    {
+        $DEACTIVATE_CARD = "Deactivate Card";
+        $CANCEL = "Cancel";
+
+        $choice = $this->choice("How do you want to fix this issue?", [$DEACTIVATE_CARD, $CANCEL]);
+
+        if ($choice == $DEACTIVATE_CARD) {
+            MembershipAggregate::make($this->member->id)
+                ->recordThat(new CardSentForDeactivation($this->member->id, $this->cardNumber))
+                ->persist();
+            return true;
+        }
+
+        return false;
     }
 }

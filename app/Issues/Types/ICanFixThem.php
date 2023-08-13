@@ -6,9 +6,7 @@ namespace App\Issues\Types;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use Illuminate\Console\Concerns\InteractsWithIO;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Spatie\SslCertificate\length;
 
 trait ICanFixThem
 {
@@ -16,12 +14,12 @@ trait ICanFixThem
 
     public abstract function fix(): bool;
 
-    public function setOutput(OutputInterface|null $output): void
+    public function setOutput(?OutputInterface $output): void
     {
         $this->output = $output;
     }
 
-    protected function selectMember(): MemberData|null
+    protected function selectMember(): ?MemberData
     {
         /** @var IssueData $issueData */
         $issueData = app(IssueData::class);

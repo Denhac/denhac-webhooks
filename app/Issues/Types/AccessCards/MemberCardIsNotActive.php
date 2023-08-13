@@ -2,11 +2,17 @@
 
 namespace App\Issues\Types\AccessCards;
 
+use App\Aggregates\MembershipAggregate;
 use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\StorableEvents\CardSentForActivation;
+use App\StorableEvents\CardSentForDeactivation;
 
 class MemberCardIsNotActive extends IssueBase
 {
+    use ICanFixThem;
+
     private MemberData $member;
     private $cardNumber;
 
@@ -28,6 +34,23 @@ class MemberCardIsNotActive extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member->first_name} {$this->member->last_name} has the card $this->cardNumber but it doesn't appear to be active";
+        return "{$this->member->first_name} {$this->member->last_name} has the access card $this->cardNumber but it doesn't appear to be active";
+    }
+
+    public function fix(): bool
+    {
+        $ACTIVATE_CARD = "Activate Card";
+        $CANCEL = "Cancel";
+
+        $choice = $this->choice("How do you want to fix this issue?", [$ACTIVATE_CARD, $CANCEL]);
+
+        if ($choice == $ACTIVATE_CARD) {
+            MembershipAggregate::make($this->member->id)
+                ->recordThat(new CardSentForActivation($this->member->id, $this->cardNumber))
+                ->persist();
+            return true;
+        }
+
+        return false;
     }
 }

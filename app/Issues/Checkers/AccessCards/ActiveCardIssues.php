@@ -74,7 +74,7 @@ class ActiveCardIssues implements IssueCheck
                     $card = Card::where('number', $card_holder['card_num'])->where('woo_customer_id', $member->id)->first();
 
                     if(is_null($card) || $card->updated_at < Carbon::now()->subDay()) {
-                        $this->issues->add(new NonMemberHasActiveCard($card_holder));
+                        $this->issues->add(new NonMemberHasActiveCard($member, $card_holder));
                     }
                 }
             });

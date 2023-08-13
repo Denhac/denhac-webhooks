@@ -28,6 +28,6 @@ class CardHolderIncorrectName extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->cardHolder['first_name']} {$this->cardHolder['last_name']} has the active card ({$this->cardHolder['card_num']}) but is listed as {$this->member->first_name} {$this->member->last_name} in WordPress.";
+        return "{$this->cardHolder['first_name']} {$this->cardHolder['last_name']} has the active access card ({$this->cardHolder['card_num']}) but is listed as {$this->member->first_name} {$this->member->last_name} in WordPress.";
     }
 }
