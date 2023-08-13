@@ -27,7 +27,6 @@ class IssueChecker
             ->map(fn($name) => new ReflectionClass($name))
             ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn($reflect) => $reflect->getName())
-//            ->filter(fn($name) => $name == CardHolderIssues::class)  // Uncomment/change class name to test one checker
             ->map(fn($name) => app($name));
     }
 
