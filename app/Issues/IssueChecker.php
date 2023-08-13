@@ -4,6 +4,7 @@ namespace App\Issues;
 
 
 use App\Issues\Checkers\IssueCheck;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -54,6 +55,26 @@ class IssueChecker
         }
 
         return $this->issues;
+    }
+
+    /**
+     * This is mostly a helper function. It can be run in tinker like this:
+     * IssueChecker::getUnfixableIssueTypes()
+     *
+     * The idea here is that we should have possible fixes for most if not all of these issues. But checking every file
+     * to see which ones we haven't yet updated can be tedious. Hence, this helper function.
+     *
+     * @return Collection
+     */
+    public static function getUnfixableIssueTypes(): Collection
+    {
+        return collect(get_declared_classes())
+            ->filter(fn($name) => str_starts_with($name, 'App\\Issues\\Types'))
+            ->map(fn($name) => new ReflectionClass($name))
+            ->filter(fn($reflect) => $reflect->isSubclassOf(IssueBase::class))
+            ->filter(fn($reflect) => !array_key_exists(ICanFixThem::class, $reflect->getTraits()))
+            ->map(fn($reflect) => $reflect->getName())
+            ->values();
     }
 
     /**
