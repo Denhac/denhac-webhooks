@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Issues\Checkers;
+namespace App\Issues\Checkers\InternalConsistency;
 
 
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\SubscriptionDoesNotExistInOurLocalDatabase;
 use App\Issues\Types\InternalConsistency\SubscriptionNotFoundOnRemote;
 use App\Issues\Types\InternalConsistency\SubscriptionStatusDiffers;
 use App\Subscription;
 
-class InternalConsistencySubscriptionIssues implements IssueCheck
+class SubscriptionIssues implements IssueCheck
 {
     use IssueCheckTrait;
 

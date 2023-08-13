@@ -1,20 +1,22 @@
 <?php
 
-namespace App\Issues\Checkers;
+namespace App\Issues\Checkers\InternalConsistency;
 
 
 use App\Card;
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\ActiveCardNotInCustomerProfile;
 use App\Issues\Types\InternalConsistency\CardInPossessionOfMultipleCustomers;
+use App\Issues\Types\InternalConsistency\CardIsActivateWhenItShouldNotBe;
 use App\Issues\Types\InternalConsistency\CustomerHasUnknownCard;
 use App\Issues\Types\InternalConsistency\CustomerStillInPossessionOfCardNotInCustomerProfile;
 use App\Issues\Types\InternalConsistency\MemberCardIsNotActive;
-use App\Issues\Types\InternalConsistency\CardIsActivateWhenItShouldNotBe;
 use Illuminate\Support\Collection;
 
-class InternalConsistencyCardIssues implements IssueCheck
+class CardIssues implements IssueCheck
 {
     use IssueCheckTrait;
 

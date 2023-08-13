@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Issues\Checkers;
+namespace App\Issues\Checkers\AccessCards;
 
 
 use App\ActiveCardHolderUpdate;
 use App\Card;
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\AccessCards\ActiveCardMultipleAccounts;

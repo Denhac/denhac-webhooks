@@ -3,10 +3,10 @@
 namespace App\Issues;
 
 
-use App\Issues\Checkers\GitHubIssues;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use ReflectionClass;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -46,12 +46,9 @@ class IssueChecker
             $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
-                if(! is_null($this->output)) {
-                    try {
-                        $shortName = (new ReflectionClass($checker))->getShortName();
-                        $this->output->writeln("Getting issues for: $shortName");
-                    } catch (\ReflectionException $e) {
-                    }
+                if (!is_null($this->output)) {
+                    $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
+                    $this->output->writeln("Getting issues for: $shortName");
                 }
                 $this->issues = $this->issues->concat($checker->getIssues());
             }

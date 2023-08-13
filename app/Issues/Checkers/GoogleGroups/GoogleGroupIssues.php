@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Issues\Checkers;
+namespace App\Issues\Checkers\GoogleGroups;
 
 
 use App\Google\GmailEmailHelper;
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\GoogleGroups\ActiveMemberNotInGroups;

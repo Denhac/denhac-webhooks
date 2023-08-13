@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Issues\Checkers;
+namespace App\Issues\Checkers\InternalConsistency;
 
 
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\IssueData;
-use App\Issues\Types\InternalConsistency\SubscriptionStatusDiffers;
 use App\Issues\Types\InternalConsistency\UserMembershipDoesNotExistInOurLocalDatabase;
 use App\Issues\Types\InternalConsistency\UserMembershipNotFoundOnRemote;
 use App\Issues\Types\InternalConsistency\UserMembershipStatusDiffers;
 use App\UserMembership;
-use Illuminate\Support\Collection;
 
-class InternalConsistencyUserMemberships implements IssueCheck
+class UserMemberships implements IssueCheck
 {
     use IssueCheckTrait;
 
