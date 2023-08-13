@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Actions\Slack\RemoveFromChannel;
-use App\Slack\Channels;
+use App\External\Slack\Channels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

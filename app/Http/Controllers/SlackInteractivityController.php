@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\External\Slack\BlockActions\BlockActionInterface;
+use App\External\Slack\BlockActions\BlockActionStatic;
+use App\External\Slack\ClassFinder;
 use App\Http\Requests\SlackRequest;
-use App\Slack\BlockActions\BlockActionInterface;
-use App\Slack\BlockActions\BlockActionStatic;
-use App\Slack\ClassFinder;
 use Illuminate\Support\Facades\Log;
 
 class SlackInteractivityController extends Controller

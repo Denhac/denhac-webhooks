@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Slack\SlackApi;
-use App\Slack\SlackProfileFields;
+use App\External\Slack\SlackApi;
+use App\External\Slack\SlackProfileFields;
 use Illuminate\Console\Command;
 
 class SlackProfileFieldsUpdate extends Command

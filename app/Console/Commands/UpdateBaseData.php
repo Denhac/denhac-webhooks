@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\Aggregates\MembershipAggregate;
 use App\Customer;
+use App\External\WooCommerce\Api\ApiCallFailed;
+use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Subscription;
 use App\UserMembership;
-use App\WooCommerce\Api\ApiCallFailed;
-use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
 
 class UpdateBaseData extends Command

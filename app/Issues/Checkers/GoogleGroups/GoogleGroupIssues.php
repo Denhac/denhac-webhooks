@@ -3,7 +3,7 @@
 namespace App\Issues\Checkers\GoogleGroups;
 
 
-use App\Google\GmailEmailHelper;
+use App\External\Google\GmailEmailHelper;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;

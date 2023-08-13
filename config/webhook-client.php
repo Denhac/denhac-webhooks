@@ -25,25 +25,25 @@ return [
              *
              * It should implement \Spatie\WebhookClient\SignatureValidator\SignatureValidator
              */
-            'signature_validator' => \App\WooCommerce\SignatureValidator::class,
+            'signature_validator' => \App\External\WooCommerce\SignatureValidator::class,
 
             /*
              * This class determines if the webhook call should be stored and processed.
              */
-            'webhook_profile' => \App\WooCommerce\WebhookProfile::class,
+            'webhook_profile' => \App\External\WooCommerce\WebhookProfile::class,
 
             /*
              * The classname of the model to be used to store call. The class should be equal
              * or extend Spatie\WebhookClient\Models\WebhookCall.
              */
-            'webhook_model' => \App\WooCommerce\WebhookCall::class,
+            'webhook_model' => \App\External\WooCommerce\WebhookCall::class,
 
             /*
              * The class name of the job that will process the webhook request.
              *
              * This should be set to a class that extends \Spatie\WebhookClient\ProcessWebhookJob.
              */
-            'process_webhook_job' => \App\WooCommerce\ProcessWebhookJob::class,
+            'process_webhook_job' => \App\External\WooCommerce\ProcessWebhookJob::class,
         ],
         [
             'name' => 'WaiverForever',
@@ -55,7 +55,7 @@ return [
              *
              * It should implement \Spatie\WebhookClient\SignatureValidator\SignatureValidator
              */
-            'signature_validator' => \App\WaiverForever\SignatureValidator::class,
+            'signature_validator' => \App\External\WaiverForever\SignatureValidator::class,
 
             /*
              * This class determines if the webhook call should be stored and processed.
@@ -73,7 +73,7 @@ return [
              *
              * This should be set to a class that extends \Spatie\WebhookClient\ProcessWebhookJob.
              */
-            'process_webhook_job' => \App\WaiverForever\ProcessWebhookJob::class,
+            'process_webhook_job' => \App\External\WaiverForever\ProcessWebhookJob::class,
         ],
     ],
 ];

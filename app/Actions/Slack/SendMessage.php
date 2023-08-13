@@ -2,7 +2,7 @@
 
 namespace App\Actions\Slack;
 
-use App\Slack\SlackApi;
+use App\External\Slack\SlackApi;
 use SlackPhp\BlockKit\Surfaces\Message;
 use Spatie\QueueableAction\QueueableAction;
 

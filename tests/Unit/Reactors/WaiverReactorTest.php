@@ -2,39 +2,19 @@
 
 namespace Tests\Unit\Reactors;
 
-use App\Actions\Slack\AddToChannel;
-use App\Actions\Slack\AddToUserGroup;
-use App\Actions\Slack\RemoveFromChannel;
-use App\Actions\Slack\RemoveFromUserGroup;
 use App\Aggregates\MembershipAggregate;
 use App\Customer;
-use App\FeatureFlags;
-use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
-use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
-use App\Jobs\MakeCustomerRegularMemberInSlack;
-use App\Reactors\SlackReactor;
 use App\Reactors\WaiverReactor;
-use App\Slack\Channels;
-use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
-use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\CustomerUpdated;
-use App\StorableEvents\MembershipActivated;
-use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionUpdated;
-use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\WaiverAccepted;
 use App\StorableEvents\WaiverAssignedToCustomer;
-use App\TrainableEquipment;
-use App\UserMembership;
 use App\Waiver;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Tests\AssertsActions;
 use Tests\TestCase;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 /**
  * Our waiver matching tests start with a base customer and waiver that match. Then they change attributes to verify

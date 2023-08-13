@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\External\Slack\CommonResponses;
+use App\External\Slack\Modals\MembershipOptionsModal;
 use App\Http\Requests\SlackRequest;
-use App\Slack\CommonResponses;
-use App\Slack\Modals\MembershipOptionsModal;
 use SlackPhp\BlockKit\Kit;
 
 class SlackMembershipCommandController extends Controller

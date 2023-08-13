@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\External\Slack\ClassFinder;
+use App\External\Slack\Events\EventInterface;
 use App\Http\Requests\SlackRequest;
-use App\Slack\ClassFinder;
-use App\Slack\Events\EventInterface;
 use Illuminate\Support\Facades\Log;
-use ReflectionClass;
 
 class SlackEventController extends Controller
 {

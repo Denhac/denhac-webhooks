@@ -2,11 +2,10 @@
 
 namespace App\Issues\Types\Stripe;
 
+use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
-use App\WooCommerce\Api\WooCommerceApi;
-use Carbon\Carbon;
 use Stripe\Issuing\Cardholder;
 use Stripe\StripeClient;
 

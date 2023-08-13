@@ -6,25 +6,21 @@ use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\AddToUserGroup;
 use App\Actions\Slack\RemoveFromChannel;
 use App\Actions\Slack\RemoveFromUserGroup;
-use App\FeatureFlags;
+use App\External\Slack\Channels;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Reactors\SlackReactor;
-use App\Slack\Channels;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\TrainableEquipment;
-use App\UserMembership;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Tests\AssertsActions;
 use Tests\TestCase;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 class SlackReactorTest extends TestCase
 {

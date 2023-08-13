@@ -3,7 +3,7 @@
 namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
-use App\Slack\SlackApi;
+use App\External\Slack\SlackApi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

@@ -5,7 +5,7 @@ namespace App\Reactors;
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
 use App\Customer;
-use App\Google\GoogleApi;
+use App\External\Google\GoogleApi;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerRemovedFromBoard;

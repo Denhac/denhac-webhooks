@@ -4,9 +4,9 @@ namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
 use App\Customer;
+use App\External\Slack\CommonResponses;
+use App\External\Slack\SlackApi;
 use App\Printer3D;
-use App\Slack\CommonResponses;
-use App\Slack\SlackApi;
 use App\UserMembership;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\AppHome;

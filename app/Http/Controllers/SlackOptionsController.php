@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\External\Slack\ClassFinder;
+use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
-use App\Slack\ClassFinder;
-use App\Slack\Modals\ModalTrait;
-use App\Slack\SlackOptions;
 
 class SlackOptionsController extends Controller
 {

@@ -6,15 +6,13 @@ namespace Tests\Unit\Reactors;
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
 use App\Customer;
-use App\FeatureFlags;
-use App\Google\GoogleApi;
+use App\External\Google\GoogleApi;
 use App\Reactors\GoogleGroupsReactor;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\TrainableEquipment;
 use App\UserMembership;
@@ -22,7 +20,6 @@ use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 use Tests\AssertsActions;
 use Tests\TestCase;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 class GoogleGroupsReactorTest extends TestCase
 {

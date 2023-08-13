@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\WinDSX\Door;
+use App\External\WinDSX\Door;
 use Carbon\Carbon;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

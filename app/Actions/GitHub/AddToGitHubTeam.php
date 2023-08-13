@@ -3,7 +3,7 @@
 namespace App\Actions\GitHub;
 
 use App\Actions\StaticAction;
-use App\GitHub\GitHubApi;
+use App\External\GitHub\GitHubApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddToGitHubTeam

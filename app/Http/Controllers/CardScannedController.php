@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Card;
+use App\External\WinDSX\Door;
 use App\NewMemberCardActivation;
 use App\Notifications\CardAccessAllowedButNotAMemberRedAlert;
 use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
 use App\Notifications\CardAccessDeniedNoWaiver;
-use App\WinDSX\Door;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;

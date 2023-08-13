@@ -2,9 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Slack\SlackApi;
-use App\WooCommerce\Api\ApiCallFailed;
-use App\WooCommerce\Api\WooCommerceApi;
+use App\External\Slack\SlackApi;
+use App\External\WooCommerce\Api\WooCommerceApi;
 
 trait MakeCustomerMemberInSlackMixin
 {

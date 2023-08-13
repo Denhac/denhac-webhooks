@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Slack\SlackApi;
-use App\WooCommerce\Api\ApiCallFailed;
-use App\WooCommerce\Api\WooCommerceApi;
+use App\External\Slack\SlackApi;
+use App\External\WooCommerce\Api\ApiCallFailed;
+use App\External\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 

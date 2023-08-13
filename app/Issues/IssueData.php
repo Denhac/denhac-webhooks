@@ -3,16 +3,16 @@
 namespace App\Issues;
 
 
+use App\External\GitHub\GitHubApi;
+use App\External\Google\GmailEmailHelper;
+use App\External\Google\GoogleApi;
 use App\External\HasApiProgressBar;
-use App\GitHub\GitHubApi;
-use App\Google\GmailEmailHelper;
-use App\Google\GoogleApi;
+use App\External\Slack\SlackApi;
+use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Data\MemberData;
 use App\PaypalBasedMember;
-use App\Slack\SlackApi;
 use App\UserMembership;
 use App\Waiver;
-use App\WooCommerce\Api\WooCommerceApi;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Stripe\StripeClient;

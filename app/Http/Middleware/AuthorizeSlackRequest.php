@@ -2,11 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\FeatureFlags;
-use App\Slack\ValidatesSlack;
+use App\External\Slack\ValidatesSlack;
 use Closure;
 use Illuminate\Http\Request;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 class AuthorizeSlackRequest
 {

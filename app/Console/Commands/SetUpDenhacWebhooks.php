@@ -2,14 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\WooCommerce\Api\WooCommerceApi;
+use App\External\WooCommerce\Api\WooCommerceApi;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Console\Command;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
-use Psy\Util\Json;
 
 class SetUpDenhacWebhooks extends Command
 {

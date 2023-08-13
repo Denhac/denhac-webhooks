@@ -3,7 +3,7 @@
 namespace App\Issues\Checkers\GitHub;
 
 
-use App\GitHub\GitHubApi;
+use App\External\GitHub\GitHubApi;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;

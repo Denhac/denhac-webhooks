@@ -3,8 +3,8 @@
 namespace App\Actions\OctoPrint;
 
 use App\Customer;
+use App\External\OctoPrint\OctoPrintApi;
 use App\Notifications\OctoPrintNewUser;
-use App\OctoPrint\OctoPrintApi;
 use Illuminate\Support\Str;
 use Spatie\QueueableAction\QueueableAction;
 

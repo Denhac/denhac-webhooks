@@ -3,7 +3,7 @@
 namespace App\Actions\Google;
 
 use App\Actions\StaticAction;
-use App\Google\GoogleApi;
+use App\External\Google\GoogleApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class RemoveFromGroup

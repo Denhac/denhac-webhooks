@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\External\Slack\CommonResponses;
 use App\Http\Requests\SlackRequest;
-use App\Slack\CommonResponses;
 use SlackPhp\BlockKit\Kit;
 
 class SlackDoorCodeCommandController extends Controller

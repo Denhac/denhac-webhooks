@@ -3,7 +3,7 @@
 namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
-use App\Slack\SlackApi;
+use App\External\Slack\SlackApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddToUserGroup

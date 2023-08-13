@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\Slack\Modals\CountdownTestModal;
-use App\Slack\SlackApi;
+use App\External\Slack\Modals\CountdownTestModal;
+use App\External\Slack\SlackApi;
 use Spatie\QueueableAction\QueueableAction;
 
 class CountdownModalLoop
