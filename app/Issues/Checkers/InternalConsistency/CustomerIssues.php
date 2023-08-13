@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Issues\Checkers;
+namespace App\Issues\Checkers\InternalConsistency;
 
 
 use App\Customer;
+use App\Issues\Checkers\IssueCheck;
+use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\CannotFindCustomer;
 use App\Issues\Types\InternalConsistency\CustomerDataDiffers;
-use Illuminate\Support\Collection;
 
 class CustomerIssues implements IssueCheck
 {
