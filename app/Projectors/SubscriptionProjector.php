@@ -4,6 +4,7 @@ namespace App\Projectors;
 
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\SubscriptionCreated;
+use App\StorableEvents\SubscriptionDeleted;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
 use App\Subscription;
@@ -36,6 +37,11 @@ final class SubscriptionProjector extends Projector
         $subscription->status = $event->subscription['status'];
 
         $subscription->save();
+    }
+
+    public function onSubscriptionDeleted(SubscriptionDeleted $event)
+    {
+        Subscription::whereWooId($event->subscription['id'])->delete();
     }
 
     public function onCustomerDeleted(CustomerDeleted $event)

@@ -19,6 +19,7 @@ use App\StorableEvents\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionCreated;
+use App\StorableEvents\SubscriptionDeleted;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
@@ -187,6 +188,17 @@ final class MembershipAggregate extends AggregateRoot
         $this->recordThat(new SubscriptionImported($subscription));
 
         $this->handleSubscriptionStatus($subscription['id'], $subscription['status']);
+
+        return $this;
+    }
+
+    public function deleteSubscription($subscription): static
+    {
+        if (!$this->respondToEvents) {
+            return $this;
+        }
+
+        $this->recordThat(new SubscriptionDeleted($subscription));
 
         return $this;
     }

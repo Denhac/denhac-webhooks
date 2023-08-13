@@ -3,6 +3,7 @@
 namespace App\External\WooCommerce;
 
 use App\Aggregates\MembershipAggregate;
+use App\Subscription;
 use App\UserMembership;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Models\WebhookCall;
@@ -80,15 +81,36 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->updateSubscription($payload)
                     ->persist();
                 break;
+            case 'subscription.deleted':
+                $customerId = $this->customerIdFromSubscriptionId($payload['id']);
+
+                if (! is_null($customerId)) {
+                    MembershipAggregate::make($customerId)
+                        ->deleteSubscription($payload)
+                        ->persist();
+                }
+                break;
         }
     }
 
-    protected function customerIdFromUserMembershipId($id)
+    protected function customerIdFromUserMembershipId($id): ?int
     {
+        /** @var UserMembership $user_membership */
         $user_membership = UserMembership::find($id);
 
         if (! is_null($user_membership)) {
             return $user_membership->customer_id;
+        }
+        return null;
+    }
+
+    protected function customerIdFromSubscriptionId($id): ?int
+    {
+        /** @var Subscription $subscription */
+        $subscription = Subscription::whereWooId($id)->first();
+
+        if (! is_null($subscription)) {
+            return $subscription->woo_id;
         }
         return null;
     }
