@@ -73,18 +73,13 @@ class SelectAMemberModal implements ModalInterface
     {
         $options = SlackOptions::new();
 
-        $customers = Customer::with('memberships')->get();
+        $customers = Customer::all();
 
         foreach ($customers as $customer) {
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
 
-            /** @var UserMembership $userMembership */
-            $userMembership = $customer->memberships->where('plan_id', UserMembership::MEMBERSHIP_FULL_MEMBER)->first();
-
-            if (is_null($userMembership)) {
-                continue;
-            } elseif($userMembership->status = "active") {
+            if($customer->member) {
                 $text = "$name (Member)";
             } else {
                 $text = "$name (Not a Member)";
