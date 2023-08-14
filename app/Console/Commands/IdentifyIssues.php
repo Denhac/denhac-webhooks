@@ -53,6 +53,9 @@ class IdentifyIssues extends Command
 
             $this->info(sprintf("%d: %s (%d)", $issueNumber, $issueTitle, count($myIssues)));
             $this->info("URL: {$firstIssue->getIssueURL()}");
+            if($canFixThisIssueType) {
+                $this->info("These issues can be fixed by this tool.");
+            }
             foreach ($myIssues as $issue) {
                 /** @var IssueBase $issue */
                 $this->info("\t{$issue->getIssueText()}");

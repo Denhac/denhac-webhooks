@@ -34,13 +34,13 @@ class CustomerIssues implements IssueCheck
         // TODO Handle primary email since that's what's in Customer object
         // TODO Handle birthday
         // TODO Handle id checked field
-        // TODO Handle stripe customer id field (it doesn't exist yet)
         $propertyMapping = [
             'id' => 'woo_id',
             'first_name' => 'first_name',
             'last_name' => 'last_name',
             'slackId' => 'slack_id',
             'githubUsername' => 'github_username',
+            'stripeCardHolderId' => 'slack_card_holder_id',
         ];
 
         foreach ($members as $member) {

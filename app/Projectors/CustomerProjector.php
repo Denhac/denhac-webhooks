@@ -46,6 +46,7 @@ final class CustomerProjector extends Projector
         $customer->github_username = $this->getMetadataField($event->customer, 'github_username');
         $customer->slack_id = $this->getMetadataField($event->customer, 'access_slack_id');
         $customer->birthday = $this->getMetadataFieldDate($event->customer, 'account_birthday');
+        $customer->stripe_card_holder_id = $this->getMetadataFieldDate($event->customer, 'stripe_card_holder_id');
         $customer->save();
     }
 
@@ -123,6 +124,7 @@ final class CustomerProjector extends Projector
                 'github_username' => $this->getMetadataField($customer_json, 'github_username'),
                 'slack_id' => $this->getMetadataField($customer_json, 'access_slack_id'),
                 'birthday' => $this->getMetadataFieldDate($customer_json, 'account_birthday'),
+                'stripe_card_holder_id' => $this->getMetadataFieldDate($customer_json, 'stripe_card_holder_id'),
             ]);
         } else {
             return $customerModel;

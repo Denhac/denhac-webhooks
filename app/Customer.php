@@ -31,6 +31,7 @@ use Laravel\Passport\HasApiTokens;
  * @property Collection equipmentTrainer
  * @property string member_code
  * @property bool id_checked
+ * @property ?string stripe_card_holder_id
  * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)
  */
@@ -49,6 +50,7 @@ class Customer extends Model
         'github_username',
         'birthday',
         'slack_id',
+        'stripe_card_holder_id',
     ];
 
     protected $appends = [
