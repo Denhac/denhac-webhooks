@@ -60,7 +60,8 @@ final class CustomerProjector extends Projector
         $customer = Customer::whereWooId($event->customerId)->first();
 
         if (is_null($customer)) {
-            throw new Exception("Failed to find customer {$event->customerId}");
+            report(new Exception("Failed to find customer {$event->customerId}"));
+            return;
         }
         $customer->delete();
     }
@@ -71,7 +72,8 @@ final class CustomerProjector extends Projector
         $customer = Customer::whereWooId($event->customerId)->first();
 
         if (is_null($customer)) {
-            throw new Exception("Failed to find customer {$event->customerId}");
+            report(new Exception("Failed to find customer {$event->customerId}"));
+            return;
         }
 
         $customer->member = true;
@@ -84,7 +86,8 @@ final class CustomerProjector extends Projector
         $customer = Customer::whereWooId($event->customerId)->first();
 
         if (is_null($customer)) {
-            throw new Exception("Failed to find customer {$event->customerId}");
+            report(new Exception("Failed to find customer {$event->customerId}"));
+            return;
         }
 
         $customer->member = false;
@@ -97,7 +100,8 @@ final class CustomerProjector extends Projector
         $customer = Customer::whereWooId($event->customerId)->first();
 
         if (is_null($customer)) {
-            throw new Exception("Failed to find customer {$event->customerId}");
+            report(new Exception("Failed to find customer {$event->customerId}"));
+            return;
         }
 
         $customer->id_checked = true;
