@@ -10,6 +10,7 @@ use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
 use App\Notifications\CardAccessDeniedNoWaiver;
+use App\Waiver;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -44,8 +45,8 @@ class CardScannedController extends Controller
             return;
         }
 
-        $createdAt = $card->created_at;
-        $createdAt->tz('America/Denver');
+        $updatedAt = $card->updated_at;
+        $updatedAt->tz('America/Denver');
         $scanTime = Carbon::parse($request->json('scan_time'), 'America/Denver');
         $customer = $card->customer;
 
@@ -87,6 +88,13 @@ class CardScannedController extends Controller
                         return;
                     }
 
+                    /** @var Waiver $waiver */
+                    $waiver = $customer->getMembershipWaiver();
+
+                    if($scanTime->subMinutes(10) < $waiver->updated_at) {
+                        return;  // They just signed the waiver, give it a bit to activate their card before emailing everyone
+                    }
+
                     if (!is_null($newMemberCardActivation)) {
                         Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
                         if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
@@ -96,7 +104,7 @@ class CardScannedController extends Controller
                         }
                     }
 
-                    if ($scanTime->subMinutes(10) < $createdAt) {
+                    if ($scanTime->subMinutes(10) < $updatedAt) {
                         // We created this card less than 10 minutes ago. It might not even be active yet.
                         return;
                     }

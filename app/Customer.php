@@ -158,6 +158,13 @@ class Customer extends Model
         return $this->waivers()->where('template_id', $membershipWaiverTemplateId)->exists();
     }
 
+    public function getMembershipWaiver()
+    {
+        $membershipWaiverTemplateId = Waiver::getValidMembershipWaiverId();
+
+        return $this->waivers()->where('template_id', $membershipWaiverTemplateId)->first();
+    }
+
     public function getWaiverUrl()
     {
         $membershipWaiverTemplateId = Waiver::getValidMembershipWaiverId();
