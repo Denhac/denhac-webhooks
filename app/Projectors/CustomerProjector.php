@@ -15,6 +15,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\Facades\Projectionist;
 
 final class CustomerProjector extends Projector
 {
