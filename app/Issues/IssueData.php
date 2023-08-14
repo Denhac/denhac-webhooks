@@ -148,6 +148,8 @@ class IssueData
                     ["active", "pending", "complimentary"]
                 );
 
+                // TODO They are also a member if their user membership is paused but they've had their ID checked.
+
                 $hasSignedWaiver = $waivers
                     ->where('customer_id', $customer['id'])
                     ->where('template_id', Waiver::getValidMembershipWaiverId())
