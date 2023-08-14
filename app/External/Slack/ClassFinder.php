@@ -22,7 +22,7 @@ class ClassFinder
 
     public static function getModal($callbackId)
     {
-        return self::getReflectionClasses('App\\Slack\\Modals')
+        return self::getReflectionClasses('App\\External\\Slack\\Modals')
             ->filter(fn($reflect) => $reflect->implementsInterface(ModalInterface::class))
             ->filter(fn($reflect) => array_key_exists(ModalTrait::class, $reflect->getTraits()))
             ->filter(fn($reflect) => $reflect->getMethod('callbackId')->invoke(null) == $callbackId)
@@ -32,7 +32,7 @@ class ClassFinder
 
     public static function getEvent($eventType)
     {
-        return self::getReflectionClasses('App\\Slack\\Events')
+        return self::getReflectionClasses('App\\External\\Slack\\Events')
             ->filter(fn($reflect) => $reflect->implementsInterface(EventInterface::class))
             ->filter(fn($reflect) => $reflect->getMethod('eventType')->invoke(null) == $eventType)
             ->map(fn($reflect) => $reflect->getName())
@@ -41,7 +41,7 @@ class ClassFinder
 
     public static function getShortcut($callbackId)
     {
-        return self::getReflectionClasses('App\\Slack\\Shortcuts')
+        return self::getReflectionClasses('App\\External\\Slack\\Shortcuts')
             ->filter(fn($reflect) => $reflect->implementsInterface(ShortcutInterface::class))
             ->filter(fn($reflect) => $reflect->getMethod('callbackId')->invoke(null) == $callbackId)
             ->map(fn($reflect) => $reflect->getName())
@@ -50,7 +50,7 @@ class ClassFinder
 
     public static function getBlockAction($blockId, $actionId)
     {
-        return self::getReflectionClasses('App\\Slack\\BlockActions')
+        return self::getReflectionClasses('App\\External\\Slack\\BlockActions')
             ->filter(fn($reflect) => $reflect->implementsInterface(BlockActionStatic::class))
             ->filter(fn($reflect) => $reflect->getMethod('blockId')->invoke(null) == $blockId)
             ->filter(fn($reflect) => $reflect->getMethod('actionId')->invoke(null) == $actionId)

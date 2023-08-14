@@ -21,7 +21,7 @@ class SelectAMemberModal implements ModalInterface
     public function __construct($callbackOrModalClass)
     {
         $callbackId = $callbackOrModalClass;
-        if (str_starts_with($callbackId, 'App\\Slack\\Modals')) {
+        if (str_starts_with($callbackId, 'App\\External\\Slack\\Modals')) {
             $callbackId = $callbackOrModalClass::callbackId();
         }
 
