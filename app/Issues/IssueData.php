@@ -143,12 +143,18 @@ class IssueData
                         return [$userMembership['plan_id'] => $userMembership['status']];
                     });
 
+                $fullMemberUserMembershipStatus = $userMembershipsMap->get(UserMembership::MEMBERSHIP_FULL_MEMBER);
                 $isMember = in_array(
-                    $userMembershipsMap->get(UserMembership::MEMBERSHIP_FULL_MEMBER),
+                    $fullMemberUserMembershipStatus,
                     ["active", "pending", "complimentary"]
                 );
 
-                // TODO They are also a member if their user membership is paused but they've had their ID checked.
+                $idWasChecked = !is_null($this->getMetaValue($meta_data, 'id_was_checked'));
+                if($idWasChecked && $fullMemberUserMembershipStatus == "paused") {
+                    // Their ID was checked and it's paused. Could just be a transition or they're failing next months
+                    // payment. Either way as of right this second, they're a member.
+                    $isMember = true;
+                }
 
                 $hasSignedWaiver = $waivers
                     ->where('customer_id', $customer['id'])
