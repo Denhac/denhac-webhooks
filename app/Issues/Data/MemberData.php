@@ -12,6 +12,7 @@ class MemberData extends Data
         public int|string $id,  // TODO string only because PayPal
         public string $first_name,
         public string $last_name,
+        public string $primaryEmail,
         public Collection $emails,
         public bool $isMember,
         public bool $hasSignedWaiver,

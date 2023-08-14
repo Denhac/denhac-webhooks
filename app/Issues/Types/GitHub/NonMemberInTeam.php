@@ -2,11 +2,15 @@
 
 namespace App\Issues\Types\GitHub;
 
+use App\External\GitHub\GitHubApi;
 use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
 class NonMemberInTeam extends IssueBase
 {
+    use ICanFixThem;
+
     private MemberData $member;
 
     public function __construct(MemberData $member)
@@ -27,5 +31,16 @@ class NonMemberInTeam extends IssueBase
     public function getIssueText(): string
     {
         return "{$this->member->first_name} {$this->member->last_name} is not an active member but their GitHub username ({$this->member->githubUsername}) is in the \"members\" team";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Remove from GitHub team", function() {
+                /** @var GitHubApi $gitHubApi */
+                $gitHubApi = app(GitHubApi::class);
+                $gitHubApi->team("members")->remove($this->member->githubUsername);
+            })
+            ->run();
     }
 }

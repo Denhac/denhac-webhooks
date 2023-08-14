@@ -3,12 +3,16 @@
 namespace App\Issues\Types\GoogleGroups;
 
 
+use App\External\Google\GoogleApi;
 use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Str;
 
 class ActiveMemberNotInGroups extends IssueBase
 {
+    use ICanFixThem;
+
     private MemberData $member;
     private $memberGroupsMissing;
 
@@ -38,5 +42,18 @@ class ActiveMemberNotInGroups extends IssueBase
         $membersEmailsString = $memberEmails->implode(', ');
         $emailString = Str::plural("email", $memberEmails->count());
         return "$first_name $last_name with $emailString ({$membersEmailsString}) is an active member but is not in $groupString $membersGroupsMissing";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Add member to groups", function () {
+                /** @var GoogleApi $googleApi */
+                $googleApi = app(GoogleApi::class);
+                foreach ($this->memberGroupsMissing as $group) {
+                    $googleApi->group($group)->add($this->member->primaryEmail);
+                }
+            })
+            ->run();
     }
 }

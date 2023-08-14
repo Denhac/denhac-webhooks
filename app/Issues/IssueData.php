@@ -122,8 +122,9 @@ class IssueData
                     });
 
                 $emails = collect();
+                $primaryEmail = GmailEmailHelper::handleGmail(Str::lower($customer['email']));
                 if (!is_null($customer['email'])) {
-                    $emails->push(GmailEmailHelper::handleGmail(Str::lower($customer['email'])));
+                    $emails->push($primaryEmail);
                 }
 
                 $email_aliases_string = $this->getMetaValue($meta_data, 'email_aliases');
@@ -158,6 +159,7 @@ class IssueData
                     id: $customer['id'],
                     first_name: $customer['first_name'],
                     last_name: $customer['last_name'],
+                    primaryEmail: $primaryEmail,
                     emails: $emails,
                     isMember: $isMember,
                     hasSignedWaiver: $hasSignedWaiver,
@@ -182,6 +184,7 @@ class IssueData
                         id: $member->paypal_id,
                         first_name: $member->first_name,
                         last_name: $member->last_name,
+                        primaryEmail: $member->email,
                         emails: $emails,
                         isMember: $member->active,
                         hasSignedWaiver: false,  # No way for me to actually handle this.
