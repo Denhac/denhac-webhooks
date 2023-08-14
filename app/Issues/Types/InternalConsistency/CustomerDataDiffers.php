@@ -13,7 +13,7 @@ class CustomerDataDiffers extends IssueBase
 
     public function __construct(MemberData $member, Collection $differentProperties)
     {
-        $this->$member = $member;
+        $this->member = $member;
         $this->differentProperties = $differentProperties;
     }
 
