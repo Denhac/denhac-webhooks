@@ -98,6 +98,6 @@ class ActiveCardIssues implements IssueCheck
         /** @var Card $card */
         $card = Card::where('number', $cardNum)->where('woo_customer_id', $memberId)->first();
 
-        return !is_null($card) && $card->updated_at < Carbon::now()->subDay();
+        return !is_null($card) && $card->updated_at >= Carbon::now()->subDay();
     }
 }
