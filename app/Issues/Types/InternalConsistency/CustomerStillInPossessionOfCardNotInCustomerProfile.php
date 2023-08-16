@@ -2,11 +2,16 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Aggregates\MembershipAggregate;
 use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\StorableEvents\CardRemoved;
 
 class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
 {
+    use ICanFixThem;
+
     private MemberData $member;
     private $cardNumber;
 
@@ -30,5 +35,17 @@ class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
     {
         return "{$this->member->first_name} {$this->member->last_name} doesn't have {$this->cardNumber} " .
             'listed in their profile, but we think they still have it';
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Send CardRemoved event", function() {
+                // Record that is fine since we just want the projector to update
+                MembershipAggregate::make($this->member->id)
+                    ->recordThat(new CardRemoved($this->member->id, $this->cardNumber))
+                    ->persist();
+            })
+            ->run();
     }
 }

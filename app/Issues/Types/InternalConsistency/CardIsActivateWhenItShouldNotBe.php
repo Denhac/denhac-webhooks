@@ -2,11 +2,16 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Aggregates\MembershipAggregate;
 use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\StorableEvents\CardSentForDeactivation;
 
 class CardIsActivateWhenItShouldNotBe extends IssueBase
 {
+    use ICanFixThem;
+
     private MemberData $member;
     private $memberCard;
 
@@ -29,5 +34,17 @@ class CardIsActivateWhenItShouldNotBe extends IssueBase
     public function getIssueText(): string
     {
         return "{$this->member->first_name} {$this->member->last_name} has the card {$this->memberCard} and we think it's active when it should not be.";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Deactivate non-member card", function () {
+                // Record that is fine since we just want the reactor to update
+                MembershipAggregate::make($this->member->id)
+                    ->recordThat(new CardSentForDeactivation($this->member->id, $this->memberCard))
+                    ->persist();
+            })
+            ->run();
     }
 }

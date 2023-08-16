@@ -2,10 +2,15 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Aggregates\MembershipAggregate;
+use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
 class SubscriptionStatusDiffers extends IssueBase
 {
+    use ICanFixThem;
+
     private int $subscription_id;
     private string $remote_status;
     private string $local_status;
@@ -30,5 +35,20 @@ class SubscriptionStatusDiffers extends IssueBase
     public function getIssueText(): string
     {
         return "Subscription $this->subscription_id has api status $this->remote_status but local status $this->local_status";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Update subscription from WordPress", function() {
+                /** @var WooCommerceApi $wooCommerceApi */
+                $wooCommerceApi = app(WooCommerceApi::class);
+                $subscription = $wooCommerceApi->subscriptions->get($this->subscription_id);
+
+                MembershipAggregate::make($subscription['customer_id'])
+                    ->updateSubscription($subscription)
+                    ->persist();
+            })
+            ->run();
     }
 }

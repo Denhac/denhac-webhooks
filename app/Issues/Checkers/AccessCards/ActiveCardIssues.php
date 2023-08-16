@@ -68,14 +68,8 @@ class ActiveCardIssues implements IssueCheck
                     $this->issues->add(new CardHolderIncorrectName($member, $card_holder));
                 }
 
-                if (!$member->isMember) {
-                    // We get card updates every 8 hours. We only want to report on this if a card hasn't been updated in the last day.
-                    /** @var Card $card */
-                    $card = Card::where('number', $card_holder['card_num'])->where('woo_customer_id', $member->id)->first();
-
-                    if(is_null($card) || $card->updated_at < Carbon::now()->subDay()) {
-                        $this->issues->add(new NonMemberHasActiveCard($member, $card_holder['card_num']));
-                    }
+                if (!$member->isMember && !$this->isCardNumUpdatedInLastDay($member->id, $card_holder['card_num'])) {
+                    $this->issues->add(new NonMemberHasActiveCard($member, $card_holder['card_num']));
                 }
             });
 
@@ -91,10 +85,19 @@ class ActiveCardIssues implements IssueCheck
                 /** @var MemberData $member */
                 $member->cards->each(function ($card) use ($member, $card_holders) {
                     $cardActive = $card_holders->contains('card_num', $card);
-                    if (!$cardActive) {
+                    if (!$cardActive && !$this->isCardNumUpdatedInLastDay($member->id, $card)) {
                         $this->issues->add(new MemberCardIsNotActive($member, $card));
                     }
                 });
             });
+    }
+
+    protected function isCardNumUpdatedInLastDay($memberId, $cardNum): bool
+    {
+        // We get card updates every 8 hours. We only want to report on this if a card hasn't been updated in the last day.
+        /** @var Card $card */
+        $card = Card::where('number', $cardNum)->where('woo_customer_id', $memberId)->first();
+
+        return !is_null($card) && $card->updated_at < Carbon::now()->subDay();
     }
 }

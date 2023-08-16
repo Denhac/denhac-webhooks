@@ -104,7 +104,7 @@ class IssueData
     {
         if (is_null($this->_members)) {
 
-            $subscriptions = collect(); // $this->wooCommerceSubscriptions();  TODO Revert this
+            $subscriptions = $this->wooCommerceSubscriptions();
             $userMemberships = $this->wooCommerceUserMemberships();
             $waivers = Waiver::all();  // TODO Do we need to hit up waiver forever instead of trusting our local db?
 
