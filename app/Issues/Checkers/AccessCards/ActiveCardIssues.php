@@ -52,12 +52,12 @@ class ActiveCardIssues implements IssueCheck
                 if ($membersWithCard->count() == 0) {
                     // Okay so we don't have this card in anyone's profile. Let's see if we can't find it via uuid.
 
-                    if(array_key_exists("udf_id", $card_holder)) {
+                    if (array_key_exists("udf_id", $card_holder)) {
                         /** @var MemberData $member */
-                        $member = $members->where('uuid', $card_holder['udf_id'])->first();
+                        $member = $members->filter(fn($m) => $m->uuid == $card_holder['udf_id'])->first();
 
-                        if(!is_null($member)) {
-                            if($member->isMember) {
+                        if (!is_null($member)) {
+                            if ($member->isMember) {
                                 $this->issues->add(new UnknownActiveCardForMember($member, $card_holder['card_num']));
                             } else {
                                 $this->issues->add(new NonMemberHasActiveCard($member, $card_holder['card_num']));
