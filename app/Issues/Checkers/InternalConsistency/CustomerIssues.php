@@ -40,7 +40,7 @@ class CustomerIssues implements IssueCheck
             'last_name' => 'last_name',
             'slackId' => 'slack_id',
             'githubUsername' => 'github_username',
-            'stripeCardHolderId' => 'slack_card_holder_id',
+            'stripeCardHolderId' => 'stripe_card_holder_id',
         ];
 
         foreach ($members as $member) {
