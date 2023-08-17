@@ -11,7 +11,6 @@
 |
 */
 
-use App\Http\Controllers\QuickBooksOAuthController;
 use App\Http\Controllers\SlackDoorCodeCommandController;
 use App\Http\Controllers\SlackEventController;
 use App\Http\Controllers\SlackInteractivityController;
@@ -33,5 +32,6 @@ Route::middleware(['slack'])->prefix("slack")->group(function () {
 });
 
 Route::prefix("quickbooks")->group(function () {
-    Route::get('redirect', [QuickBooksOAuthController::class, 'redirect'])->name('quickbooks.redirect');
+    Route::get('launch', App\Http\Controllers\Quickbooks\LaunchController::class);
+    Route::get('redirect', App\Http\Controllers\Quickbooks\RedirectController::class)->name('quickbooks.redirect');
 });
