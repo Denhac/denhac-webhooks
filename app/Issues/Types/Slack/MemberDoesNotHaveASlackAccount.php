@@ -3,10 +3,14 @@
 namespace App\Issues\Types\Slack;
 
 use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\Jobs\MakeCustomerRegularMemberInSlack;
 
 class MemberDoesNotHaveASlackAccount extends IssueBase
 {
+    use ICanFixThem;
+
     private MemberData $member;
 
     public function __construct(MemberData $member)
@@ -27,5 +31,16 @@ class MemberDoesNotHaveASlackAccount extends IssueBase
     public function getIssueText(): string
     {
         return "{$this->member->first_name} {$this->member->last_name} ({$this->member->id}) doesn't appear to have a slack account";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Activate Slack account", function () {
+                dispatch(new MakeCustomerRegularMemberInSlack($this->member->id));
+
+                return true;
+            })
+            ->run();
     }
 }

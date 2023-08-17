@@ -3,10 +3,14 @@
 namespace App\Issues\Types\Slack;
 
 use App\Issues\Data\MemberData;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 
 class NonMemberHasFullAccount extends IssueBase
 {
+    use ICanFixThem;
+
     private MemberData $member;
     private $slackUser;
 
@@ -29,5 +33,16 @@ class NonMemberHasFullAccount extends IssueBase
     public function getIssueText(): string
     {
         return "{$this->member->first_name} {$this->member->last_name} with slack id ({$this->slackUser['id']}) is not an active member but they have a full slack account.";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Deactivate Slack account", function () {
+                dispatch(new DemoteMemberToPublicOnlyMemberInSlack($this->member->id));
+
+                return true;
+            })
+            ->run();
     }
 }
