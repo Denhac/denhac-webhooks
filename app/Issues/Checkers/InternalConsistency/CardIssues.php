@@ -89,8 +89,7 @@ class CardIssues implements IssueCheck
             ->each(function ($cards, $cardNum) {
                 $uniqueCustomers = $cards
                     ->map(fn($card) => $card->woo_customer_id)
-                    ->unique()
-                    ->implode(', ');
+                    ->unique();
                 $numEntries = $cards->count();
 
                 $this->issues->add(new CardInPossessionOfMultipleCustomers($cardNum, $numEntries, $uniqueCustomers));

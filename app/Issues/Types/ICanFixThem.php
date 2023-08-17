@@ -73,4 +73,11 @@ trait ICanFixThem
     {
         return new ChoiceHelper($this->output, $text);
     }
+
+    protected function memberDataById($memberId): ?MemberData
+    {
+        /** @var IssueData $issueData */
+        $issueData = app(IssueData::class);
+        return $issueData->members()->filter(fn($m) => $m->id == $memberId)->first();
+    }
 }
