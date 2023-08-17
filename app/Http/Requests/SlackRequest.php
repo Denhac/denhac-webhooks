@@ -80,4 +80,20 @@ class SlackRequest extends Request
 
         return $data['user']['id'];
     }
+
+    public function action()
+    {
+        $payload = $this->payload();
+        if(! array_key_exists('actions', $payload)) {
+            return null;
+        }
+
+        $actions = $payload['actions'];
+
+        if(empty($actions)) {
+            return null;
+        }
+
+        return current($actions);
+    }
 }
