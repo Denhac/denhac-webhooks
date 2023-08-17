@@ -26,7 +26,7 @@ class UnknownGitHubUsernameInTeam extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "GitHub: Unknown git hub username in team";
+        return "GitHub: Unknown GitHub username in team";
     }
 
     public function getIssueText(): string
