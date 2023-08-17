@@ -40,4 +40,8 @@ return [
     'stripe' => [
         'stripe_api_key' => env('STRIPE_API_KEY'),
     ],
+    'quickbooks' => [
+        'client_id' => env('QUICKBOOKS_CLIENT_ID'),
+        'client_secret' => env('QUICKBOOKS_CLIENT_SECRET'),
+    ],
 ];

@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\QuickBooksOAuthController;
 use App\Http\Controllers\SlackDoorCodeCommandController;
 use App\Http\Controllers\SlackEventController;
 use App\Http\Controllers\SlackInteractivityController;
@@ -22,11 +23,15 @@ Route::webhooks('webhooks/denhac-org', 'denhac.org');
 Route::webhooks('webhooks/octoprint', 'OctoPrint');
 Route::webhooks('webhooks/waiver', 'WaiverForever');
 
-Route::middleware(['slack'])->group(function () {
-    Route::post('slack/door_code', SlackDoorCodeCommandController::class);
-    Route::post('slack/membership', SlackMembershipCommandController::class);
+Route::middleware(['slack'])->prefix("slack")->group(function () {
+    Route::post('door_code', SlackDoorCodeCommandController::class);
+    Route::post('membership', SlackMembershipCommandController::class);
 
-    Route::post('slack/event', SlackEventController:: class);
-    Route::post('slack/interactive', SlackInteractivityController:: class);
-    Route::post('slack/options', SlackOptionsController:: class);
+    Route::post('event', SlackEventController:: class);
+    Route::post('interactive', SlackInteractivityController:: class);
+    Route::post('options', SlackOptionsController:: class);
+});
+
+Route::prefix("quickbooks")->group(function () {
+    Route::get('redirect', [QuickBooksOAuthController::class, 'redirect'])->name('quickbooks.redirect');
 });
