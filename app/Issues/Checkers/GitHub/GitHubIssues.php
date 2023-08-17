@@ -10,6 +10,7 @@ use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\GitHub\InvalidUsername;
 use App\Issues\Types\GitHub\NonMemberInTeam;
+use App\Issues\Types\GitHub\UnknownGitHubUsernameInTeam;
 use App\Issues\Types\GitHub\UsernameDoesNotExist;
 use App\Issues\Types\GitHub\UsernameNotListedInMembersTeam;
 use Illuminate\Support\Collection;
@@ -58,6 +59,19 @@ class GitHubIssues implements IssueCheck
             } else if ($partOfTheTeam && !$member->isMember) {
                 $this->issues->add(new NonMemberInTeam($member));
             }
+        }
+
+        foreach($gitHubMembers as $gitHubMember) {
+            $member = $members
+                ->filter(fn($m) => !is_null($m->githubUsername))
+                ->filter(fn($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
+                ->first();
+
+            if(!is_null($member)) {
+                continue;  // We only care here if we COULDN'T find a matching member
+            }
+
+            $this->issues->add(new UnknownGitHubUsernameInTeam($gitHubMember));
         }
     }
 
