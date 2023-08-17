@@ -14,6 +14,7 @@ use App\Issues\Types\AccessCards\ActiveCardNoRecord;
 use App\Issues\Types\AccessCards\CardHolderIncorrectName;
 use App\Issues\Types\AccessCards\MemberCardIsNotActive;
 use App\Issues\Types\AccessCards\NonMemberHasActiveCard;
+use App\Issues\Types\AccessCards\UnknownActiveCardForMember;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -49,6 +50,22 @@ class ActiveCardIssues implements IssueCheck
                     });
 
                 if ($membersWithCard->count() == 0) {
+                    // Okay so we don't have this card in anyone's profile. Let's see if we can't find it via uuid.
+
+                    if(array_key_exists("udf_id", $card_holder)) {
+                        /** @var MemberData $member */
+                        $member = $members->where('uuid', $card_holder['udf_id'])->first();
+
+                        if(!is_null($member)) {
+                            if($member->isMember) {
+                                $this->issues->add(new UnknownActiveCardForMember($member, $card_holder['card_num']));
+                            } else {
+                                $this->issues->add(new NonMemberHasActiveCard($member, $card_holder['card_num']));
+                            }
+                            return;
+                        }
+                    }
+                    // If we couldn't find the member, we have no record of who this person is. Needs to be handled manually.
                     $this->issues->add(new ActiveCardNoRecord($card_holder));
 
                     return;
