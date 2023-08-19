@@ -40,6 +40,8 @@ class NonMemberInTeam extends IssueBase
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
                 $gitHubApi->team("members")->remove($this->member->githubUsername);
+
+                return true;
             })
             ->run();
     }
