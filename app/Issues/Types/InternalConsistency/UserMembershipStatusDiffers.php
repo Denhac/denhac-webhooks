@@ -2,10 +2,15 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Aggregates\MembershipAggregate;
+use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
 class UserMembershipStatusDiffers extends IssueBase
 {
+    use ICanFixThem;
+
     private int $userMembershipId;
     private string $remote_status;
     private string $local_status;
@@ -30,5 +35,22 @@ class UserMembershipStatusDiffers extends IssueBase
     public function getIssueText(): string
     {
         return "User Membership $this->userMembershipId has api status $this->remote_status but local status $this->local_status";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option("Update User Membership from WordPress", function() {
+                /** @var WooCommerceApi $wooCommerceApi */
+                $wooCommerceApi = app(WooCommerceApi::class);
+                $userMembership = $wooCommerceApi->members->get($this->userMembershipId);
+
+                MembershipAggregate::make($userMembership['customer_id'])
+                    ->updateUserMembership($userMembership)
+                    ->persist();
+
+                return true;
+            })
+            ->run();
     }
 }
