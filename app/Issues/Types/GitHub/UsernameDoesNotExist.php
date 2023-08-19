@@ -49,6 +49,8 @@ class UsernameDoesNotExist extends IssueBase
                             ],
                         ],
                     ]);
+
+                return true;
             })
             ->run();
     }
