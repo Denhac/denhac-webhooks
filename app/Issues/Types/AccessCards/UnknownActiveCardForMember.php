@@ -28,6 +28,6 @@ class UnknownActiveCardForMember extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member->first_name} {$this->member->last_name} has the active access card ({$this->cardNumber}) but it's not in their profile";
+        return "{$this->member->first_name} {$this->member->last_name} might have the active access card ({$this->cardNumber}) but it's not in their profile";
     }
 }

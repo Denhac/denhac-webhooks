@@ -7,7 +7,9 @@ use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardRemoved;
+use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\SubscriptionImported;
+use App\StorableEvents\UserMembershipImported;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
@@ -23,12 +25,24 @@ class CardProjector extends Projector
 
     public function onCardAdded(CardAdded $event)
     {
-        Card::create([
-            'number' => ltrim($event->cardNumber, '0'),
-            'woo_customer_id' => $event->wooCustomerId,
-            'active' => false,
-            'member_has_card' => true,
-        ]);
+        $cardNumber = ltrim($event->cardNumber, '0');
+
+        /** @var Card $card */
+        $card = Card::where('number', $cardNumber)
+            ->where('woo_customer_id', $event->wooCustomerId)
+            ->first();
+
+        if(is_null($card)) {
+            Card::create([
+                'number' => $cardNumber,
+                'woo_customer_id' => $event->wooCustomerId,
+                'active' => false,
+                'member_has_card' => true,
+            ]);
+        } else {
+            $card->member_has_card = true;
+            $card->save();
+        }
     }
 
     public function onCardActivated(CardActivated $event)
@@ -79,14 +93,14 @@ class CardProjector extends Projector
         $card->save();
     }
 
-    public function onSubscriptionImported(SubscriptionImported $event)
+    public function onUserMembershipImported(UserMembershipImported $event)
     {
-        if ($event->subscription['status'] != 'active') {
+        if ($event->membership['status'] != 'active') {
             return;
         }
 
         /** @var Collection $cards */
-        $cards = Card::where('woo_customer_id', $event->subscription['customer_id'])->get();
+        $cards = Card::where('woo_customer_id', $event->membership['customer_id'])->get();
 
         $cards->each(function ($card) {
             /* @var Card $card */
@@ -94,5 +108,15 @@ class CardProjector extends Projector
 
             $card->save();
         });
+    }
+
+    public function onCustomerDeleted(CustomerDeleted $event)
+    {
+        $cards = Card::where('woo_customer_id', $event->customerId)->all();
+        foreach($cards as $card) {
+            /* @var Card $card */
+            $card->member_has_card = false;
+            $card->save();
+        }
     }
 }
