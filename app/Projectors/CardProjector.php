@@ -111,7 +111,7 @@ class CardProjector extends Projector
 
     public function onCustomerDeleted(CustomerDeleted $event)
     {
-        $cards = Card::where('woo_customer_id', $event->customerId)->all();
+        $cards = Card::where('woo_customer_id', $event->customerId)->get();
         foreach($cards as $card) {
             /* @var Card $card */
             $card->delete();
