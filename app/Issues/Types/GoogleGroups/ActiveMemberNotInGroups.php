@@ -53,6 +53,8 @@ class ActiveMemberNotInGroups extends IssueBase
                 foreach ($this->memberGroupsMissing as $group) {
                     $googleApi->group($group)->add($this->member->primaryEmail);
                 }
+
+                return true;
             })
             ->run();
     }

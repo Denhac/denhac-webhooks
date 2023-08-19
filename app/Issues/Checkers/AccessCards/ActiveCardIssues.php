@@ -57,7 +57,9 @@ class ActiveCardIssues implements IssueCheck
                         $member = $members->filter(fn($m) => $m->uuid == $card_holder['udf_id'])->first();
 
                         if (!is_null($member)) {
-                            if ($member->isMember) {
+                            if($this->isCardNumUpdatedInLastDay($member->id, $card_holder['card_num'])) {
+                                return;  // Update has already gone through probably
+                            } else if ($member->isMember) {
                                 $this->issues->add(new UnknownActiveCardForMember($member, $card_holder['card_num']));
                             } else {
                                 $this->issues->add(new NonMemberHasActiveCard($member, $card_holder['card_num']));
