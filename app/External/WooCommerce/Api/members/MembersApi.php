@@ -68,11 +68,7 @@ class MembersApi
      */
     public function get($woo_id)
     {
-        $response = $this->client->get('/wp-json/wc/v3/memberships/members', [
-            RequestOptions::QUERY => [
-                'customer' => $woo_id,
-            ],
-        ]);
+        $response = $this->client->get("/wp-json/wc/v3/memberships/members/$woo_id");
 
         return $this->jsonOrError($response);
     }
