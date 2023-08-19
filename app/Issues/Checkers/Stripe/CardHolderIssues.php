@@ -10,6 +10,7 @@ use App\Issues\IssueData;
 use App\Issues\Types\Stripe\MultipleMembersForCardHolder;
 use App\Issues\Types\Stripe\NoCardHolderFoundForId;
 use App\Issues\Types\Stripe\NoMemberForCardHolder;
+use Stripe\Issuing\Cardholder;
 
 class CardHolderIssues implements IssueCheck
 {
@@ -28,10 +29,13 @@ class CardHolderIssues implements IssueCheck
         $cardHolders = $this->issueData->stripeCardHolders();
 
         foreach($cardHolders as $cardHolder) {
+            /** @var Cardholder $cardHolder */
             $membersWithThatStripeId = $members->filter(fn($m) => $m->stripeCardHolderId == $cardHolder['id']);
 
             if($membersWithThatStripeId->isEmpty()) {
-                $this->issues->add(new NoMemberForCardHolder($cardHolder));
+                if($cardHolder->status == "active") {
+                    $this->issues->add(new NoMemberForCardHolder($cardHolder));
+                }
             } else if($membersWithThatStripeId->count() > 1) {
                 // More than one member has that id
                 $this->issues->add(new MultipleMembersForCardHolder($membersWithThatStripeId, $cardHolder));

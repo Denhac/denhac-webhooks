@@ -34,6 +34,7 @@ class IssueData
     private SlackApi $slackApi;
     private GoogleApi $googleApi;
     private GitHubApi $gitHubApi;
+    private StripeClient $stripeClient;
 
     private Collection|null $_wooCommerceCustomers = null;
     private Collection|null $_wooCommerceSubscriptions = null;
@@ -58,12 +59,14 @@ class IssueData
         SlackApi       $slackApi,
         GoogleApi      $googleApi,
         GitHubApi      $gitHubApi,
+        StripeClient   $stripeClient,
     )
     {
         $this->wooCommerceApi = $wooCommerceApi;
         $this->slackApi = $slackApi;
         $this->googleApi = $googleApi;
         $this->gitHubApi = $gitHubApi;
+        $this->stripeClient = $stripeClient;
     }
 
     public function setOutput(OutputInterface|null $output): void
@@ -151,7 +154,7 @@ class IssueData
                 );
 
                 $idWasChecked = !is_null($this->getMetaValue($meta_data, 'id_was_checked'));
-                if($idWasChecked && $fullMemberUserMembershipStatus == "paused") {
+                if ($idWasChecked && $fullMemberUserMembershipStatus == "paused") {
                     // Their ID was checked and it's paused. Could just be a transition or they're failing next months
                     // payment. Either way as of right this second, they're a member.
                     $isMember = true;
@@ -273,9 +276,7 @@ class IssueData
     public function stripeCardHolders(): Collection
     {
         if (is_null($this->_stripeCardHolders)) {
-            /** @var StripeClient $stripeClient */
-            $stripeClient = app(StripeClient::class);
-            $this->_stripeCardHolders = collect($stripeClient->issuing->cardholders->all()['data']);
+            $this->_stripeCardHolders = collect($this->stripeClient->issuing->cardholders->all()['data']);
         }
 
         return $this->_stripeCardHolders;
