@@ -8,7 +8,6 @@ use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;
 use App\StorableEvents\CardRemoved;
 use App\StorableEvents\CustomerDeleted;
-use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\UserMembershipImported;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
@@ -115,8 +114,7 @@ class CardProjector extends Projector
         $cards = Card::where('woo_customer_id', $event->customerId)->all();
         foreach($cards as $card) {
             /* @var Card $card */
-            $card->member_has_card = false;
-            $card->save();
+            $card->delete();
         }
     }
 }
