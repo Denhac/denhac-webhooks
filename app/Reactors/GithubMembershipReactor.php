@@ -5,6 +5,7 @@ namespace App\Reactors;
 use App\Actions\GitHub\AddToGitHubTeam;
 use App\Actions\GitHub\RemoveFromGitHubTeam;
 use App\Customer;
+use App\External\GitHub\GitHubApi;
 use App\StorableEvents\GithubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
@@ -19,14 +20,20 @@ final class GithubMembershipReactor implements EventHandler
 
     public function onGithubUsernameUpdated(GithubUsernameUpdated $event)
     {
-        if (! is_null($event->oldUsername)) {
+        if (!is_null($event->oldUsername)) {
             RemoveFromGitHubTeam::queue()->execute($event->oldUsername, self::MEMBERS_TEAM);
         }
 
         // The customer can update their github without having an active subscription.
         // If they update the username, then become a member again, membership activated will take care of it
-        if (! is_null($event->newUsername) && $event->isMember) {
-            AddToGitHubTeam::queue()->execute($event->newUsername, self::MEMBERS_TEAM);
+        if (!is_null($event->newUsername) && $event->isMember) {
+            /** @var GitHubApi $gitHubApi */
+            $gitHubApi = app(GitHubApi::class);
+            $gitHubUsers = $gitHubApi->team("members")->list()->map(fn($ghm) => $ghm['login']);
+
+            if ($gitHubUsers->contains($event->newUsername)) {
+                AddToGitHubTeam::queue()->execute($event->newUsername, self::MEMBERS_TEAM);
+            }
         }
     }
 
@@ -35,7 +42,7 @@ final class GithubMembershipReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if (! is_null($customer->github_username)) {
+        if (!is_null($customer->github_username)) {
             AddToGitHubTeam::queue()->execute($customer->github_username, self::MEMBERS_TEAM);
         }
     }
@@ -45,7 +52,7 @@ final class GithubMembershipReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if (! is_null($customer->github_username)) {
+        if (!is_null($customer->github_username)) {
             RemoveFromGitHubTeam::queue()->execute($customer->github_username, self::MEMBERS_TEAM);
         }
     }

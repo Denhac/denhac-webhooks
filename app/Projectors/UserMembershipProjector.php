@@ -2,10 +2,12 @@
 
 namespace App\Projectors;
 
+use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipDeleted;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
+use App\Subscription;
 use App\UserMembership;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
@@ -42,6 +44,12 @@ class UserMembershipProjector extends Projector
         if (! is_null($membership)) {
             $membership->delete();
         }
+    }
+
+    public function onCustomerDeleted(CustomerDeleted $event)
+    {
+        UserMembership::whereCustomerId($event->customerId)
+            ->delete();
     }
 
     private function addOrGetUserMembership(array $membership_json)
