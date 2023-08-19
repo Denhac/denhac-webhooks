@@ -35,6 +35,8 @@ class GitHubIssues implements IssueCheck
         /** @var Collection<MemberData> $members */
         $members = $this->issueData->members();
 
+        $progress = $this->issueData->apiProgress("Checking GitHub users");
+        $progress->setProgress(0, $members->count());
         foreach ($members as $member) {
             /** @var MemberData $member */
             if (is_null($member->githubUsername)) {
@@ -59,6 +61,8 @@ class GitHubIssues implements IssueCheck
             } else if ($partOfTheTeam && !$member->isMember) {
                 $this->issues->add(new NonMemberInTeam($member));
             }
+
+            $progress->step();
         }
 
         foreach($gitHubMembers as $gitHubMember) {

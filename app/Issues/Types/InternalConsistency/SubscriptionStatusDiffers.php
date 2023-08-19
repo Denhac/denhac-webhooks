@@ -48,6 +48,8 @@ class SubscriptionStatusDiffers extends IssueBase
                 MembershipAggregate::make($subscription['customer_id'])
                     ->updateSubscription($subscription)
                     ->persist();
+
+                return true;
             })
             ->run();
     }
