@@ -47,6 +47,7 @@ class NotActiveMemberButInGroups extends IssueBase
                 foreach ($this->groupsForEmail as $group) {
                     $googleApi->group($group)->remove($this->email);
                 }
+                return true;
             })
             ->run();
     }
