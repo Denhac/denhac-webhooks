@@ -43,6 +43,8 @@ class UserMembershipNotFoundOnRemote extends IssueBase
                 MembershipAggregate::make($userMembership->customer_id)
                     ->deleteUserMembership(['id' => $userMembership->id])
                     ->persist();
+
+                return true;
             })
             ->run();
     }

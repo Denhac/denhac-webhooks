@@ -41,46 +41,46 @@ class CardInPossessionOfMultipleCustomers extends IssueBase
 
     public function fix(): bool
     {
-        $this->info("Usually, this will happen if a customer is deleted or if a card got re-used. If");
-        $this->info("one of the customers is deleted, the other customer almost definitely has the");
-        $this->info("card. The same thing is true if one of the cards is active and the other isn't.");
-        $this->info("If they both appear active and both members have the card in their profile, then");
-        $this->info("you unfortunately need to go track down who has the card.");
+        $this->line("Usually, this will happen if a customer is deleted or if a card got re-used. If");
+        $this->line("one of the customers is deleted, the other customer almost definitely has the");
+        $this->line("card. The same thing is true if one of the customers is active and the other");
+        $this->line("isn't. If they both appear active and both members have the card in their");
+        $this->line("profile, then you unfortunately need to go track down who has the card.");
         $this->newLine();
-        $this->info("By selecting one here, we will remove the card from the profiles of any non-deleted customer");
+        $this->line("By selecting one here, we will remove the card from the profiles of any non-deleted customer");
 
         $options = $this->issueFixChoice();
 
         foreach($this->uniqueCustomers as $customerId) {
             $this->newLine();
 
-            $this->info("Customer ID: $customerId");
+            $this->line("Customer ID: $customerId");
             $member = $this->memberDataById($customerId);
 
             if(is_null($member)) {
-                $this->info("Customer Deleted");
+                $this->line("Customer Deleted");
                 continue;
             }
 
             if($member->cards->contains($this->cardNum)) {
-                $this->info("Card is in customer's profile");
+                $this->line("Card is in customer's profile");
             } else {
-                $this->info("Card is NOT  in customer's profile");
+                $this->line("Card is NOT  in customer's profile");
             }
 
             if($member->isMember) {
-                $this->info("They are an active member");
+                $this->line("They are an active member");
             } else {
-                $this->info("They are NOT an active member");
+                $this->line("They are NOT an active member");
             }
 
 
             /** @var Card $card */
             $card = Card::where('number', $this->cardNum)->where('woo_customer_id', $customerId)->first();
             if($card->active) {
-                $this->info("We think the card is currently active");
+                $this->line("We think the card is currently active");
             } else {
-                $this->info("We do NOT think the card is currently active");
+                $this->line("We do NOT think the card is currently active");
             }
 
             $options->option("Give the card {$this->cardNum} to customer id $customerId", fn() => $this->assignCardTo($customerId));
