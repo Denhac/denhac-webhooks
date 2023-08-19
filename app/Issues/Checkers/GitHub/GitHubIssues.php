@@ -32,6 +32,7 @@ class GitHubIssues implements IssueCheck
     protected function generateIssues(): void
     {
         $gitHubMembers = $this->issueData->gitHubTeamMembers()->map(fn($ghm) => $ghm['login']);
+        $gitHubPendingMembers = $this->issueData->gitHubPendingTeamMembers()->map(fn($ghm) => $ghm['login']);
         /** @var Collection<MemberData> $members */
         $members = $this->issueData->members();
 
@@ -58,10 +59,14 @@ class GitHubIssues implements IssueCheck
             $partOfTheTeam = $gitHubMembers
                 ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
+            $pendingOnTheTeam = $gitHubPendingMembers
+                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->isNotEmpty();
+            $invited = $partOfTheTeam || $pendingOnTheTeam;
 
-            if (!$partOfTheTeam && $member->isMember) {
+            if (!$invited && $member->isMember) {
                 $this->issues->add(new UsernameNotListedInMembersTeam($member));
-            } else if ($partOfTheTeam && !$member->isMember) {
+            } else if ($invited && !$member->isMember) {
                 $this->issues->add(new NonMemberInTeam($member));
             }
         }

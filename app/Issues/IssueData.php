@@ -47,6 +47,7 @@ class IssueData
     private Collection|null $_googleGroupMembers = null;  // Key is group, value is member list
 
     private Collection|null $_gitHubTeamMembers = null;  // The GitHub team is called "members"
+    private Collection|null $_gitHubPendingTeamMembers = null;  // The invites to said team
 
     private Collection|null $_stripeCardHolders = null;
 
@@ -256,6 +257,17 @@ class IssueData
         }
 
         return $this->_gitHubTeamMembers;
+    }
+
+    public function gitHubPendingTeamMembers(): Collection
+    {
+        if (is_null($this->_gitHubPendingTeamMembers)) {
+            // TODO Deduplicate "members" here
+            $this->_gitHubPendingTeamMembers = $this->gitHubApi->team("members")
+                ->list($this->apiProgress("Fetching invites of GitHub team 'members'"));
+        }
+
+        return $this->_gitHubPendingTeamMembers;
     }
 
     public function stripeCardHolders(): Collection
