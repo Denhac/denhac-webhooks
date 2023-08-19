@@ -40,6 +40,8 @@ class UsernameNotListedInMembersTeam extends IssueBase
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
                 $gitHubApi->team("members")->add($this->member->githubUsername);
+
+                return true;
             })
             ->run();
     }

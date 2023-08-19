@@ -37,9 +37,9 @@ class FullUserNoRecord extends IssueBase
 
     public function fix(): bool
     {
-        $this->info("Please note that assigning this account to a member will almost definitely");
-        $this->info("leave their old account in this same state the next time someone checks for");
-        $this->info("issues to fix.");
+        $this->line("Please note that assigning this account to a member will almost definitely");
+        $this->line("leave their old account in this same state the next time someone checks for");
+        $this->line("issues to fix.");
         $this->newLine();
 
         return $this->issueFixChoice()
