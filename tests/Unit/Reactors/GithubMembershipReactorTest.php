@@ -5,11 +5,12 @@ namespace Tests\Unit\Reactors;
 use App\Actions\GitHub\AddToGitHubTeam;
 use App\Actions\GitHub\RemoveFromGitHubTeam;
 use App\Customer;
+use App\External\GitHub\GitHubApi;
+use App\External\GitHub\TeamApi;
 use App\Reactors\GithubMembershipReactor;
 use App\StorableEvents\GithubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Tests\AssertsActions;
 use Tests\TestCase;
@@ -23,6 +24,14 @@ class GithubMembershipReactorTest extends TestCase
         parent::setUp();
 
         $this->withOnlyEventHandlerType(GithubMembershipReactor::class);
+
+        $memberTeamApi = $this->spy(TeamApi::class);
+        $gitHubApi = $this->spy(GitHubApi::class);
+        $gitHubApi->allows('team')
+            ->withArgs(['members'])
+            ->andReturn($memberTeamApi);
+        $memberTeamApi->allows("list")
+            ->andReturn(collect([['login' => 'test']]));
 
         Queue::fake();
     }
@@ -69,6 +78,16 @@ class GithubMembershipReactorTest extends TestCase
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)
             ->with($username, 'members');
+    }
+
+    /** @test */
+    public function test_github_username_updated_from_bad_username_does_not_emit_remove_action()
+    {
+        $badUsername = 'https://github.com/example';
+        event(new GithubUsernameUpdated($badUsername, null, false));
+
+        $this->assertAction(AddToGitHubTeam::class)->never();
+        $this->assertAction(RemoveFromGitHubTeam::class)->never();
     }
 
     /** @test */
