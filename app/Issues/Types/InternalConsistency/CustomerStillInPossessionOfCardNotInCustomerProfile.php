@@ -34,7 +34,7 @@ class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
     public function getIssueText(): string
     {
         return "{$this->member->first_name} {$this->member->last_name} doesn't have {$this->cardNumber} " .
-            'listed in their profile, but we think they still have it';
+            'listed in their profile, but local database thinks they still have it';
     }
 
     public function fix(): bool
@@ -45,6 +45,7 @@ class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
                 MembershipAggregate::make($this->member->id)
                     ->recordThat(new CardRemoved($this->member->id, $this->cardNumber))
                     ->persist();
+                return true;
             })
             ->run();
     }
