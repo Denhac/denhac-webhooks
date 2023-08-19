@@ -264,7 +264,7 @@ class IssueData
         if (is_null($this->_gitHubPendingTeamMembers)) {
             // TODO Deduplicate "members" here
             $this->_gitHubPendingTeamMembers = $this->gitHubApi->team("members")
-                ->list($this->apiProgress("Fetching invites of GitHub team 'members'"));
+                ->pending($this->apiProgress("Fetching invites of GitHub team 'members'"));
         }
 
         return $this->_gitHubPendingTeamMembers;
