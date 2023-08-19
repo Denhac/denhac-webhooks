@@ -2,9 +2,12 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Aggregates\MembershipAggregate;
+use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\StorableEvents\CardSentForDeactivation;
 
 class ActiveCardNotInCustomerProfile extends IssueBase
 {
@@ -65,12 +68,31 @@ class ActiveCardNotInCustomerProfile extends IssueBase
             ->run();
     }
 
-    private function addCardToMemberProfile()
+    private function addCardToMemberProfile(): bool
     {
+        $wooCommerceApi = app(WooCommerceApi::class);
+
+        $this->member->cards->add($this->cardNumber);
+
+        $wooCommerceApi->customers
+            ->update($this->member->id, [
+                'meta_data' => [
+                    [
+                        'key' => 'access_card_number',
+                        'value' => $this->member->cards->implode(','),
+                    ],
+                ],
+            ]);
+
+        return true;
     }
 
-    private function deactivateCard()
+    private function deactivateCard(): bool
     {
+        MembershipAggregate::make($this->member->id)
+            ->recordThat(new CardSentForDeactivation($this->member->id, $this->cardNumber))
+            ->persist();
 
+        return true;
     }
 }
