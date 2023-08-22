@@ -11,7 +11,6 @@
 |
 */
 
-use App\Http\Controllers\SlackDoorCodeCommandController;
 use App\Http\Controllers\SlackEventController;
 use App\Http\Controllers\SlackInteractivityController;
 use App\Http\Controllers\SlackMembershipCommandController;
@@ -23,7 +22,6 @@ Route::webhooks('webhooks/octoprint', 'OctoPrint');
 Route::webhooks('webhooks/waiver', 'WaiverForever');
 
 Route::middleware(['slack'])->prefix("slack")->group(function () {
-    Route::post('door_code', SlackDoorCodeCommandController::class);
     Route::post('membership', SlackMembershipCommandController::class);
 
     Route::post('event', SlackEventController:: class);
