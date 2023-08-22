@@ -13,6 +13,8 @@ use GuzzleHttp\Client;
  * @property CustomerApi customers
  * @property DenhacApi denhac
  * @property MembersApi members
+ * @property OrdersApi orders
+ * @property ProductsApi products
  * @property SubscriptionsApi subscriptions
  * @property WebhookApi webhooks
  */
@@ -43,6 +45,10 @@ class WooCommerceApi
                 return new DenhacApi($this->guzzleClient);
             case 'members':
                 return new MembersApi($this->guzzleClient);
+            case 'orders':
+                return new OrdersApi($this->guzzleClient);
+            case 'products':
+                return new ProductsApi($this->guzzleClient);
             case 'subscriptions':
                 return new SubscriptionsApi($this->guzzleClient);
             case 'webhooks':
