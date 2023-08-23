@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
+use QuickBooksOnline\API\DataService\DataService;
 
 class LinkQuickbooks extends Command
 {
@@ -25,6 +26,7 @@ class LinkQuickbooks extends Command
             }
         }
 
+        /** @var OAuth2LoginHelper $OAuth2LoginHelper */
         $OAuth2LoginHelper = app(OAuth2LoginHelper::class);
 
         $authUrl = $OAuth2LoginHelper->getAuthorizationCodeURL();

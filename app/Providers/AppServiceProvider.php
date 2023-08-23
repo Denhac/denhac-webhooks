@@ -6,6 +6,7 @@ use App\Http\Requests\SlackRequest;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
+use QuickBooksOnline\API\Exception\SdkException;
 use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
@@ -61,6 +62,14 @@ class AppServiceProvider extends ServiceProvider
             /** @var DataService $dataService */
             $dataService = app(DataService::class);
             $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
+
+            try {
+                // If this throws, we don't have a token to refresh.
+                // I have not found a better way to do it.
+                $OAuth2LoginHelper->getAccessToken();
+            } catch(SdkException) {
+                return $OAuth2LoginHelper;
+            }
 
             $accessToken = $OAuth2LoginHelper->refreshToken();
             // TODO check $OAuth2LoginHelper->getLastError()
