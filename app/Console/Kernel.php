@@ -11,6 +11,7 @@ use App\Console\Commands\MatchSlackUsers;
 use App\Console\Commands\SetUpDenhacWebhooks;
 use App\Console\Commands\SlackProfileFieldsUpdate;
 use App\Console\Commands\UpdateBaseData;
+use App\External\QuickBooks\QuickBooksAuthSettings;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
@@ -57,7 +58,7 @@ class Kernel extends ConsoleKernel
 
     protected function refreshQuickBooksAccessToken(): void
     {
-        if (is_null(setting('quickbooks.accessToken'))) {
+        if (!QuickBooksAuthSettings::hasKnownAuth()) {
             return;
         }
         app(OAuth2LoginHelper::class);  // This should refresh the token automatically on resolving

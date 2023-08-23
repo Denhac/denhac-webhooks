@@ -41,7 +41,7 @@ class QuickBooksAuthSettings
 
         $realmId = setting(self::REALM_ID_KEY);
         if (!is_null($realmId)) {
-            $dataServiceParameters['realmId'] = $realmId;
+            $dataServiceParameters['QBORealmID'] = $realmId;
         }
 
         return $dataServiceParameters;
