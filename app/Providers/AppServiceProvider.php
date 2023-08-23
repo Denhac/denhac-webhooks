@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
                 'ClientSecret' => config('denhac.quickbooks.client_secret'),
                 'RedirectURI' => config('denhac.quickbooks.redirect'),
                 'scope' => "com.intuit.quickbooks.accounting",
-                'baseUrl' => "production"
+                'BaseUrl' => config('denhac.quickbooks.base_url'),
             ];
 
             $accessToken = setting('quickbooks.accessToken');

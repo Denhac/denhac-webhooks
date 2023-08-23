@@ -44,5 +44,6 @@ return [
         'client_id' => env('QUICKBOOKS_CLIENT_ID'),
         'client_secret' => env('QUICKBOOKS_CLIENT_SECRET'),
         'redirect' => env('QUICKBOOKS_REDIRECT_URL'),
+        'base_url' => env('QUICKBOOKS_BASE_URL'),
     ],
 ];

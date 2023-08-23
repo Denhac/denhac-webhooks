@@ -28,5 +28,7 @@ class RedirectController extends Controller
                 'refreshToken' => $accessToken->getRefreshToken(),
             ],
         ])->save();
+
+        return view('quickbooks.redirect');
     }
 }

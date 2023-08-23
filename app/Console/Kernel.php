@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('passport:purge')->hourly();
 
-        $schedule->call(fn() => $this->refreshQuickBooksAccessToken())->daily();
+        $schedule->call(fn() => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
     }
 
     protected function refreshQuickBooksAccessToken(): void
