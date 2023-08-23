@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
                 'auth_mode' => 'oauth2',
                 'ClientID' => config('denhac.quickbooks.client_id'),
                 'ClientSecret' => config('denhac.quickbooks.client_secret'),
-                'RedirectURI' => route('denhac.quickbooks.redirect'),
+                'RedirectURI' => config('denhac.quickbooks.redirect'),
                 'scope' => "com.intuit.quickbooks.accounting",
                 'baseUrl' => "production"
             ];
