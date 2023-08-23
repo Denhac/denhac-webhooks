@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\External\QuickBooks\QuickBooksAuthSettings;
 use Illuminate\Console\Command;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
-use QuickBooksOnline\API\DataService\DataService;
 
 class LinkQuickbooks extends Command
 {
@@ -19,11 +19,13 @@ class LinkQuickbooks extends Command
 
     public function handle()
     {
-        if (!is_null(setting('quickbooks.accessToken'))) {
+        if (QuickBooksAuthSettings::hasKnownAuth()) {
             $shouldContinue = $this->confirm("We have an existing access token, are you sure you want to generate a new one?");
             if (!$shouldContinue) {
                 return 0;
             }
+
+            QuickBooksAuthSettings::forgetDataServiceInfo();
         }
 
         /** @var OAuth2LoginHelper $OAuth2LoginHelper */

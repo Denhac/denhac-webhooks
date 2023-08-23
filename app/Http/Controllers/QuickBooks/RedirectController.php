@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\QuickBooks;
 
+use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
@@ -21,13 +22,7 @@ class RedirectController extends Controller
         $accessToken = $authLoginHelper->exchangeAuthorizationCodeForToken($code, $realmId);
         $dataService->updateOAuth2Token($accessToken);
 
-        // TODO Add middleware that just updates this
-        setting([
-            'quickbooks' => [
-                'accessToken' => $accessToken->getAccessToken(),
-                'refreshToken' => $accessToken->getRefreshToken(),
-            ],
-        ])->save();
+        QuickBooksAuthSettings::saveDataServiceInfo();
 
         return view('quickbooks.redirect');
     }

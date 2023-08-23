@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
@@ -36,26 +37,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(DataService::class, function () {
-            $dataServiceParameters = [
-                'auth_mode' => 'oauth2',
-                'ClientID' => config('denhac.quickbooks.client_id'),
-                'ClientSecret' => config('denhac.quickbooks.client_secret'),
-                'RedirectURI' => config('denhac.quickbooks.redirect'),
-                'scope' => "com.intuit.quickbooks.accounting",
-                'BaseUrl' => config('denhac.quickbooks.base_url'),
-            ];
-
-            $accessToken = setting('quickbooks.accessToken');
-            $refreshToken = setting('quickbooks.refreshToken');
-            if (!is_null($accessToken)) {
-                $dataServiceParameters['accessTokenKey'] = $accessToken;
-            }
-
-            if (!is_null($refreshToken)) {
-                $dataServiceParameters['refreshTokenKey'] = $refreshToken;
-            }
-
-            return DataService::Configure($dataServiceParameters);
+            return DataService::Configure(QuickBooksAuthSettings::getDataServiceParameters());
         });
 
         $this->app->singleton(OAuth2LoginHelper::class, function () {
@@ -67,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
                 // If this throws, we don't have a token to refresh.
                 // I have not found a better way to do it.
                 $OAuth2LoginHelper->getAccessToken();
-            } catch(SdkException) {
+            } catch (SdkException) {
                 return $OAuth2LoginHelper;
             }
 
@@ -76,12 +58,7 @@ class AppServiceProvider extends ServiceProvider
 
             $dataService->updateOAuth2Token($accessToken);
 
-            setting([
-                'quickbooks' => [
-                    'accessToken' => $accessToken->getAccessToken(),
-                    'refreshToken' => $accessToken->getRefreshToken(),
-                ],
-            ])->save();
+            QuickBooksAuthSettings::saveDataServiceInfo();
 
             return $OAuth2LoginHelper;
         });
