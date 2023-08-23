@@ -4,7 +4,9 @@ namespace App\External\QuickBooks;
 
 
 use anlutro\LaravelSettings\Facades\Setting;
+use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
+use QuickBooksOnline\API\DataService\DataService;
 
 class QuickBooksAuthSettings
 {
@@ -49,9 +51,10 @@ class QuickBooksAuthSettings
 
     public static function saveDataServiceInfo(): void
     {
-        /** @var OAuth2LoginHelper $OAuth2LoginHelper */
-        $OAuth2LoginHelper = app(OAuth2LoginHelper::class);
-        $accessToken = $OAuth2LoginHelper->getAccessToken();
+        /** @var DataService $dataService */
+        $dataService = app(DataService::class);
+        // Grab the access token without going through the Laravel container to prevent loops
+        $accessToken = $dataService->getOAuth2LoginHelper()->getAccessToken();
 
         setting([
             self::ACCESS_TOKEN_KEY => $accessToken->getAccessToken(),
