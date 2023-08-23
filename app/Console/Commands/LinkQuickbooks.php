@@ -15,13 +15,6 @@ class LinkQuickbooks extends Command
      * @var string
      */
     protected $description = 'Generate link to auth denhac QuickBooks instance';
-    private OAuth2LoginHelper $OAuth2LoginHelper;
-
-    public function __construct(OAuth2LoginHelper $OAuth2LoginHelper)
-    {
-        parent::__construct();
-        $this->OAuth2LoginHelper = $OAuth2LoginHelper;
-    }
 
     public function handle()
     {
@@ -32,7 +25,9 @@ class LinkQuickbooks extends Command
             }
         }
 
-        $authUrl = $this->OAuth2LoginHelper->getAuthorizationCodeURL();
+        $OAuth2LoginHelper = app(OAuth2LoginHelper::class);
+
+        $authUrl = $OAuth2LoginHelper->getAuthorizationCodeURL();
 
         $this->info($authUrl);
 
