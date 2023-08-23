@@ -1,1 +1,3 @@
-This is the launch page for QuickBooks. <a href="{{ $auth_url }}">Click Here</a> to start the launch process.
+This is the launch page for our QuickBooks integration. You must use the command line:<br>
+<br>
+php artisan denhac:link-quickbooks

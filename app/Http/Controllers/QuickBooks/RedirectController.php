@@ -21,6 +21,12 @@ class RedirectController extends Controller
         $accessToken = $authLoginHelper->exchangeAuthorizationCodeForToken($code, $realmId);
         $dataService->updateOAuth2Token($accessToken);
 
-        dd($accessToken);
+        // TODO Add middleware that just updates this
+        setting([
+            'quickbooks' => [
+                'accessToken' => $accessToken->getAccessToken(),
+                'refreshToken' => $accessToken->getRefreshToken(),
+            ],
+        ])->save();
     }
 }

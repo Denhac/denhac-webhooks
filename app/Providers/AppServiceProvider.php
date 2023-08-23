@@ -34,21 +34,47 @@ class AppServiceProvider extends ServiceProvider
             return new StripeClient(['api_key' => config('denhac.stripe.stripe_api_key')]);
         });
 
-        $this->app->singleton(DataService::class, function() {
-            return DataService::Configure(array(
+        $this->app->singleton(DataService::class, function () {
+            $dataServiceParameters = [
                 'auth_mode' => 'oauth2',
                 'ClientID' => config('denhac.quickbooks.client_id'),
-                'ClientSecret' =>  config('denhac.quickbooks.client_secret'),
-                'RedirectURI' => route('quickbooks.redirect'),
+                'ClientSecret' => config('denhac.quickbooks.client_secret'),
+                'RedirectURI' => route('denhac.quickbooks.redirect'),
                 'scope' => "com.intuit.quickbooks.accounting",
                 'baseUrl' => "production"
-            ));
+            ];
+
+            $accessToken = setting('quickbooks.accessToken');
+            $refreshToken = setting('quickbooks.refreshToken');
+            if (!is_null($accessToken)) {
+                $dataServiceParameters['accessTokenKey'] = $accessToken;
+            }
+
+            if (!is_null($refreshToken)) {
+                $dataServiceParameters['refreshTokenKey'] = $refreshToken;
+            }
+
+            return DataService::Configure($dataServiceParameters);
         });
 
-        $this->app->singleton(OAuth2LoginHelper::class, function() {
+        $this->app->singleton(OAuth2LoginHelper::class, function () {
             /** @var DataService $dataService */
             $dataService = app(DataService::class);
-            return $dataService->getOAuth2LoginHelper();
+            $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
+
+            $accessToken = $OAuth2LoginHelper->refreshToken();
+            // TODO check $OAuth2LoginHelper->getLastError()
+
+            $dataService->updateOAuth2Token($accessToken);
+
+            setting([
+                'quickbooks' => [
+                    'accessToken' => $accessToken->getAccessToken(),
+                    'refreshToken' => $accessToken->getRefreshToken(),
+                ],
+            ])->save();
+
+            return $OAuth2LoginHelper;
         });
     }
 }

@@ -10,10 +10,6 @@ class LaunchController extends Controller
 {
     public function __invoke()
     {
-        /** @var OAuth2LoginHelper $authLoginHelper */
-        $authLoginHelper = app(OAuth2LoginHelper::class);
-        return view('quickbooks.launch', [
-            'auth_url' => $authLoginHelper->getAuthorizationCodeURL(),
-        ]);
+        return view('quickbooks.launch');
     }
 }
