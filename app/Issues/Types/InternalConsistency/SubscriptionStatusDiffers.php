@@ -43,7 +43,7 @@ class SubscriptionStatusDiffers extends IssueBase
             ->option("Update subscription from WordPress", function() {
                 /** @var WooCommerceApi $wooCommerceApi */
                 $wooCommerceApi = app(WooCommerceApi::class);
-                $subscription = $wooCommerceApi->subscriptions->get($this->subscription_id);
+                $subscription = $wooCommerceApi->subscriptions->get($this->subscription_id)->toArray();
 
                 MembershipAggregate::make($subscription['customer_id'])
                     ->updateSubscription($subscription)

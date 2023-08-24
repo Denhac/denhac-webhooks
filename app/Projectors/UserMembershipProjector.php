@@ -7,7 +7,6 @@ use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipDeleted;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
-use App\Subscription;
 use App\UserMembership;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
