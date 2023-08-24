@@ -37,7 +37,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(DataService::class, function () {
-            return DataService::Configure(QuickBooksAuthSettings::getDataServiceParameters());
+            $dataService = DataService::Configure(QuickBooksAuthSettings::getDataServiceParameters());
+            $dataService->setMinorVersion(53);  // So we can auto assign DocNumber's for journal entries
+            return $dataService;
         });
 
         $this->app->singleton(OAuth2LoginHelper::class, function () {

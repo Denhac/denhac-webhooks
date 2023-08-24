@@ -2,9 +2,15 @@
 
 namespace App\Actions\QuickBooks;
 
+use App\External\QuickBooks\QuickBookReferences;
+use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use QuickBooksOnline\API\Data\IPPJournalEntry;
+use QuickBooksOnline\API\Data\IPPJournalEntryLineDetail;
+use QuickBooksOnline\API\Data\IPPLine;
+use QuickBooksOnline\API\DataService\DataService;
 use Spatie\QueueableAction\QueueableAction;
 use Stripe\StripeClient;
 
@@ -16,28 +22,40 @@ class GenerateVendingNetJournalEntry
     private StripeClient $stripeClient;
 
     private Collection $products;  // Product id -> VendingProductData. Used to do lazy lookups.
+    private QuickBookReferences $quickBookReferences;
 
     public function __construct(
         StripeClient   $stripeClient,
-        WooCommerceApi $wooCommerceApi
+        WooCommerceApi $wooCommerceApi,
+        QuickBookReferences $quickBookReferences,
     )
     {
         $this->wooCommerceApi = $wooCommerceApi;
         $this->stripeClient = $stripeClient;
         $this->products = collect();
+        $this->quickBookReferences = $quickBookReferences;
     }
 
-    public function execute(Carbon $begin, Carbon $end): void
+    public function execute(Carbon $date): void
     {
+        if(! QuickBooksAuthSettings::hasKnownAuth()) {
+            return;  // We have no QuickBooks auth, we can't do anything
+            // TODO This is a silent fail. Which is fine if we don't have credentials but less fine if we accidentally
+            // don't have credentials. Also we can't test this locally as easily. Need to add a --dry-run flag or
+            // something.
+        }
+
+        $begin = Carbon::create(year: $date->year, month: $date->month, day: $date->day, tz: $date->timezone);
+        $end = Carbon::make($begin)->addDay()->subSecond();
+
         $wooCommerceOrders = $this->wooCommerceApi->orders->list([
             'after' => $begin->toIso8601String(),
             'before' => $end->toIso8601String(),
         ]);
 
-        $totalOrderSpent = 0;  // Unit is in pennies
         $totalVendingNet = 0;  // Unit is in pennies
         $totalVendingSpent = 0;  // Unit is in pennies
-        $orderStrings = collect();
+        $orderLines = collect();
 
         foreach ($wooCommerceOrders as $wooCommerceOrder) {
             $vendingOrder = new VendingOrderData($wooCommerceOrder);
@@ -54,37 +72,63 @@ class GenerateVendingNetJournalEntry
                 continue;  // Not a vending machine order, ignore it
             }
 
-            $totalOrderSpent += $orderSpent;
             $totalVendingNet += $vendingNet;
             $totalVendingSpent += $vendingSpent;
 
-            $orderString = sprintf("#%d", $vendingOrder->id);
-            $orderSpentString = sprintf("\$%4.2f", $orderSpent / 100);
-            $vendingSpentString = sprintf("\$%4.2f", $vendingSpent / 100);
-            $vendingNetString = sprintf("\$%4.2f", $vendingNet / 100);
-
-            $orderString = sprintf(
-                "Order %7s | %8s | %8s | %8s | Vending",
-                $orderString,
-                $orderSpentString,
-                $vendingSpentString,
-                $vendingNetString
+            $description = sprintf(
+                "Order #%d\nSpent: \$%4.2f\nVending spent: \$%4.2f\nVending net: \$%4.2f",
+                $vendingOrder->id,
+                $orderSpent / 100,
+                $vendingSpent / 100,
+                $vendingNet / 100,
             );
-            $orderStrings->add($orderString);
+
+            $lineDetail = new IPPJournalEntryLineDetail([
+                'PostingType' => 'Credit',
+                'ClassRef' => $this->quickBookReferences->vendingPoolClass,
+                'AccountRef' => $this->quickBookReferences->vendingAdjustmentAccountTo,
+            ]);
+            $orderLines->add(new IPPLine([
+                'Description' => $description,
+                'Amount' => $vendingNet / 100,
+                'JournalEntryLineDetail' => $lineDetail,
+                'DetailType' => 'JournalEntryLineDetail',
+            ]));
         }
 
-        $finalStrings = collect();
-        $finalStrings->add("Start: {$begin->toDayDateTimeString()}");
-        $finalStrings->add("End: {$end->toDayDateTimeString()}");
-        $finalStrings->add("Total vending machine orders where Stripe was used: {$orderStrings->count()}");
-        $finalStrings->add(sprintf("Total Stripe spent: \$%4.2f", $totalOrderSpent / 100));
-        $finalStrings->add(sprintf("Total spent on the vending machine: \$%4.2f", $totalVendingSpent / 100));
-        $finalStrings->add(sprintf("Total vending net: \$%4.2f", $totalVendingNet / 100));
-        $finalStrings->add("");
-        $finalStrings->add(" Order Number |    Total |     Vend |      Net |    Type");
-        $finalStrings->add("--------------------------------------------------------");
-        $finalStrings = $finalStrings->concat($orderStrings);
-        error_log($finalStrings->implode("\n"));
+        if ($totalVendingSpent == 0) {
+            return;
+        }
+
+        $totalNetLineDetail = new IPPJournalEntryLineDetail([
+            'PostingType' => 'Debit',
+            'AccountRef' => $this->quickBookReferences->vendingAdjustmentAccountFrom,
+        ]);
+        $totalNetLine = new IPPLine([
+            'Amount' => $totalVendingNet / 100,
+            'JournalEntryLineDetail' => $totalNetLineDetail,
+            'DetailType' => 'JournalEntryLineDetail',
+        ]);
+        $journalEntry = new IPPJournalEntry([
+            'Line' => [
+                $totalNetLine,
+                ...$orderLines->toArray()
+            ],
+            'TxnDate' => $date->toDateString(),
+//            'DocNumber' => "AUTO_GENERATE",
+            'PrivateNote' => 'Moving accounts due to mixed transaction types included in a single deposit. Transaction details have been included in the line level description. This entry has been created automatically.',
+        ]);
+
+        /** @var DataService $dataService */
+        $dataService = app(DataService::class);
+        $response = $dataService->Add($journalEntry);
+        if (!is_null($response)) {
+            return;
+        }
+        $error = $dataService->getLastError();
+        if ($error) {
+            throw new \Exception("Error creating journal entry: {$error->getHttpStatusCode()} {$error->getOAuthHelperError()} {$error->getResponseBody()}");
+        }
     }
 
     protected function updateProducts(VendingOrderData $vendingOrderData): void
