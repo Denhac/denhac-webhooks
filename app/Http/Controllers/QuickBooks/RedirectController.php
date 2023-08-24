@@ -11,6 +11,10 @@ use QuickBooksOnline\API\DataService\DataService;
 class RedirectController extends Controller
 {
     public function __invoke(Request $request) {
+        if(QuickBooksAuthSettings::hasKnownAuth()) {
+            return view('quickbooks.redirect_fail');
+        }
+
         $code = $request->query('code');
         $realmId = $request->query('realmId');
 
