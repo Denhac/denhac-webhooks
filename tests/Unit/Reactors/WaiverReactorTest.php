@@ -59,8 +59,6 @@ class WaiverReactorTest extends TestCase
             'last_name' => $this->lastName,
             'email' => $this->email,
         ]);
-
-        Queue::fake();
     }
 
     /** @test */
