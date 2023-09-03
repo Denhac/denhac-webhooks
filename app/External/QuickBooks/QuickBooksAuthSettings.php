@@ -4,6 +4,7 @@ namespace App\External\QuickBooks;
 
 
 use anlutro\LaravelSettings\Facades\Setting;
+use Illuminate\Support\Facades\Crypt;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
@@ -38,7 +39,7 @@ class QuickBooksAuthSettings
 
         $refreshToken = setting(self::REFRESH_TOKEN_KEY);
         if (!is_null($refreshToken)) {
-            $dataServiceParameters['refreshTokenKey'] = $refreshToken;
+            $dataServiceParameters['refreshTokenKey'] = Crypt::decryptString($refreshToken);
         }
 
         $realmId = setting(self::REALM_ID_KEY);
@@ -58,7 +59,7 @@ class QuickBooksAuthSettings
 
         setting([
             self::ACCESS_TOKEN_KEY => $accessToken->getAccessToken(),
-            self::REFRESH_TOKEN_KEY => $accessToken->getRefreshToken(),
+            self::REFRESH_TOKEN_KEY => Crypt::encryptString($accessToken->getRefreshToken()),
             self::REALM_ID_KEY => $accessToken->getRealmID(),
         ])->save();
     }

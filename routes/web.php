@@ -31,5 +31,7 @@ Route::middleware(['slack'])->prefix("slack")->group(function () {
 
 Route::prefix("quickbooks")->group(function () {
     Route::get('launch', App\Http\Controllers\Quickbooks\LaunchController::class);
-    Route::get('redirect', App\Http\Controllers\Quickbooks\RedirectController::class)->name('quickbooks.redirect');
+    Route::get('redirect', [App\Http\Controllers\Quickbooks\RedirectController::class, 'redirect']);
+    Route::get('success', [App\Http\Controllers\Quickbooks\RedirectController::class, 'success']);
+    Route::get('fail', [App\Http\Controllers\Quickbooks\RedirectController::class, 'fail']);
 });
