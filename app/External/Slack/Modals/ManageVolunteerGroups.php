@@ -4,7 +4,7 @@ namespace App\External\Slack\Modals;
 
 use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
-use App\VolunteerGroup;
+use App\Models\VolunteerGroup;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 

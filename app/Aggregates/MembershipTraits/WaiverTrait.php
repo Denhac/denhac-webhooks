@@ -4,7 +4,7 @@ namespace App\Aggregates\MembershipTraits;
 
 use App\StorableEvents\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\WaiverAssignedToCustomer;
-use App\Waiver;
+use App\Models\Waiver;
 use Illuminate\Support\Collection;
 
 trait WaiverTrait

@@ -2,7 +2,7 @@
 
 namespace App\Reactors;
 
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;
 use Spatie\EventSourcing\EventHandlers\EventHandler;

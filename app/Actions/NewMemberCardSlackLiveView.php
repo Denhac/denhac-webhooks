@@ -4,7 +4,7 @@ namespace App\Actions;
 
 use App\External\Slack\Modals\NewMemberCardActivationLiveModal;
 use App\External\Slack\SlackApi;
-use App\NewMemberCardActivation;
+use App\Models\NewMemberCardActivation;
 use Illuminate\Support\Facades\Log;
 use Spatie\QueueableAction\QueueableAction;
 

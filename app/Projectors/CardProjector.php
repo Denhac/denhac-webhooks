@@ -2,7 +2,7 @@
 
 namespace App\Projectors;
 
-use App\Card;
+use App\Models\Card;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;

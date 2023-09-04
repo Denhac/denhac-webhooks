@@ -2,7 +2,7 @@
 
 namespace App\Projectors;
 
-use App\Customer;
+use App\Models\Customer;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;

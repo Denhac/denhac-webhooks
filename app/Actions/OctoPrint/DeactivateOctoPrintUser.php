@@ -3,7 +3,7 @@
 namespace App\Actions\OctoPrint;
 
 use App\Actions\StaticAction;
-use App\Customer;
+use App\Models\Customer;
 use App\External\OctoPrint\OctoPrintApi;
 use Spatie\QueueableAction\QueueableAction;
 

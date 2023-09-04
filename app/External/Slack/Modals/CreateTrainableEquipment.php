@@ -2,10 +2,10 @@
 
 namespace App\External\Slack\Modals;
 
-use App\Customer;
+use App\Models\Customer;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
-use App\TrainableEquipment;
+use App\Models\TrainableEquipment;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;

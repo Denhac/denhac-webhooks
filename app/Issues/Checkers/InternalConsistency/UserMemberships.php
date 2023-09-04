@@ -8,7 +8,7 @@ use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\UserMembershipDoesNotExistInOurLocalDatabase;
 use App\Issues\Types\InternalConsistency\UserMembershipNotFoundOnRemote;
 use App\Issues\Types\InternalConsistency\UserMembershipStatusDiffers;
-use App\UserMembership;
+use App\Models\UserMembership;
 
 class UserMemberships implements IssueCheck
 {

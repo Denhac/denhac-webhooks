@@ -7,7 +7,7 @@ use App\StorableEvents\SubscriptionCreated;
 use App\StorableEvents\SubscriptionDeleted;
 use App\StorableEvents\SubscriptionImported;
 use App\StorableEvents\SubscriptionUpdated;
-use App\Subscription;
+use App\Models\Subscription;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 

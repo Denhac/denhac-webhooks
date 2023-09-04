@@ -2,7 +2,7 @@
 
 namespace App\Aggregates;
 
-use App\Customer;
+use App\Models\Customer;
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Spatie\EventSourcing\AggregateRoots\FakeAggregateRoot;

@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use App\ADUpdateRequest;
-use App\Customer;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

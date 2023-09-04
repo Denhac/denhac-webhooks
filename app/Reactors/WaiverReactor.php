@@ -3,14 +3,14 @@
 namespace App\Reactors;
 
 use App\Aggregates\MembershipAggregate;
-use App\Customer;
+use App\Models\Customer;
 use App\Notifications\NewRequirementsWaiverNeeded;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\WaiverAccepted;
-use App\Waiver;
+use App\Models\Waiver;
 use Illuminate\Support\Facades\Notification;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 

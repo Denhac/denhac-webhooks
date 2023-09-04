@@ -2,7 +2,7 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-use App\Customer;
+use App\Models\Customer;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Projectors;
 
-use App\Customer;
+use App\Models\Customer;
 use App\Projectors\CustomerProjector;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;

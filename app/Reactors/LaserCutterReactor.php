@@ -2,10 +2,10 @@
 
 namespace App\Reactors;
 
-use App\Customer;
+use App\Models\Customer;
 use App\Notifications\LaserCutterAccessAllowed;
 use App\StorableEvents\UserMembershipCreated;
-use App\UserMembership;
+use App\Models\UserMembership;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 

@@ -5,7 +5,7 @@ namespace App\External\Slack\Modals;
 use App\External\Slack\SlackOptions;
 use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
-use App\UserMembership;
+use App\Models\UserMembership;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 

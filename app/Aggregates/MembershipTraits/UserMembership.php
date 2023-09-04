@@ -12,7 +12,7 @@ trait UserMembership
 
     public function handleUserMembership($userMembership): void
     {
-        if ($userMembership['plan_id'] == \App\UserMembership::MEMBERSHIP_FULL_MEMBER) {
+        if ($userMembership['plan_id'] == \App\Models\UserMembership::MEMBERSHIP_FULL_MEMBER) {
             $this->handleFullMemberPlan($userMembership);
         }
     }
@@ -47,7 +47,7 @@ trait UserMembership
 
     protected function updateUserMembershipStatus($userMembership): void
     {
-        if ($userMembership['plan_id'] == \App\UserMembership::MEMBERSHIP_FULL_MEMBER) {
+        if ($userMembership['plan_id'] == \App\Models\UserMembership::MEMBERSHIP_FULL_MEMBER) {
             if ($userMembership['status'] == 'active') {
                 $this->activeFullMemberPlan = true;
             } else {

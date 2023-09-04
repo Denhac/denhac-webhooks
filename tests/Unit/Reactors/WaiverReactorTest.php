@@ -3,7 +3,7 @@
 namespace Tests\Unit\Reactors;
 
 use App\Aggregates\MembershipAggregate;
-use App\Customer;
+use App\Models\Customer;
 use App\Reactors\WaiverReactor;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
@@ -11,7 +11,7 @@ use App\StorableEvents\CustomerImported;
 use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\WaiverAccepted;
 use App\StorableEvents\WaiverAssignedToCustomer;
-use App\Waiver;
+use App\Models\Waiver;
 use Tests\AssertsActions;
 use Tests\TestCase;
 

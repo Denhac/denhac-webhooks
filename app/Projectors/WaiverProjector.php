@@ -4,7 +4,7 @@ namespace App\Projectors;
 
 use App\StorableEvents\WaiverAccepted;
 use App\StorableEvents\WaiverAssignedToCustomer;
-use App\Waiver;
+use App\Models\Waiver;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 

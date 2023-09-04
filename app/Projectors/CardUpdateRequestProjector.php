@@ -2,7 +2,7 @@
 
 namespace App\Projectors;
 
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardDeactivated;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;

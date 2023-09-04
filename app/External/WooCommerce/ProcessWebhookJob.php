@@ -3,8 +3,8 @@
 namespace App\External\WooCommerce;
 
 use App\Aggregates\MembershipAggregate;
-use App\Subscription;
-use App\UserMembership;
+use App\Models\Subscription;
+use App\Models\UserMembership;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Models\WebhookCall;
 

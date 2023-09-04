@@ -10,7 +10,7 @@ use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipUpdated;
-use App\UserMembership;
+use App\Models\UserMembership;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;

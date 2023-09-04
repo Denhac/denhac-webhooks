@@ -4,7 +4,7 @@ namespace App\Reactors;
 
 use App\Actions\Slack\UpdateSpaceBotAppHome;
 use App\StorableEvents\OctoPrintStatusUpdated;
-use App\UserMembership;
+use App\Models\UserMembership;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
