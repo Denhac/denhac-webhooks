@@ -12,7 +12,9 @@ class SignatureValidator implements SignatureValidatorBase
 {
     public function isValid(Request $request, WebhookConfig $config): bool
     {
-        $expectedSignature = $request->header($config->signatureHeaderName);
+        $signatureHeader = $request->header($config->signatureHeaderName);
+        $expectedSignature = bin2hex(base64_decode($signatureHeader));
+
         $payload = $request->getContent();
         $secret = $config->signingSecret;
 
