@@ -15,11 +15,13 @@ use Spatie\QueueableAction\QueueableAction;
  *
  * The second is that fetching the users list does not include custom profile fields and that's exactly what we're
  * wanting to update. So we have to fetch them first (limit is 100 calls / minute) and then we can determine if they
- * even need to be udpated.
+ * even need to be updated.
  */
 class VerifySlackUserProfile
 {
     use QueueableAction;
+
+    public string $queue = 'slack-rate-limited';
 
     private SlackApi $slackApi;
 
