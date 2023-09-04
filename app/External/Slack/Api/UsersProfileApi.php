@@ -29,11 +29,13 @@ class UsersProfileApi
 
     public function get($user_id)
     {
-        return $this->clients->adminClient
+        $response = $this->clients->adminClient
             ->get('https://denhac.slack.com/api/users.profile.get', [
-                RequestOptions::JSON => [
+                RequestOptions::QUERY => [
                     'user' => $user_id,
                 ],
             ]);
+
+        return json_decode($response->getBody(), true);
     }
 }

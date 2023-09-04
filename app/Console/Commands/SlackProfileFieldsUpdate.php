@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Slack\VerifySlackUserProfile;
 use App\External\Slack\SlackApi;
-use App\External\Slack\SlackProfileFields;
 use Illuminate\Console\Command;
 
 class SlackProfileFieldsUpdate extends Command
@@ -40,7 +40,7 @@ class SlackProfileFieldsUpdate extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $this->withProgressBar($this->api->users->list(), function ($user) {
             if (array_key_exists("deleted", $user) && $user["deleted"]) return;
@@ -50,14 +50,9 @@ class SlackProfileFieldsUpdate extends Command
             if (array_key_exists("is_bot", $user) && $user["is_bot"]) return;
             if (array_key_exists("is_app_user", $user) && $user["is_app_user"]) return;
 
-            $fields = [];
-            if (array_key_exists('profile', $user) &&
-                array_key_exists('fields', $user['profile']) &&
-                !is_null($user['profile']['fields'])) {
-                $fields = $user['profile']['fields'];
-            }
-
-            SlackProfileFields::updateIfNeeded($user['id'], $fields);
+            app(VerifySlackUserProfile::class)
+                ->onQueue()
+                ->execute($user['id']);
         });
 
         return 0;

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\Http\Requests\SlackRequest;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
@@ -63,6 +65,13 @@ class AppServiceProvider extends ServiceProvider
             QuickBooksAuthSettings::saveDataServiceInfo();
 
             return $OAuth2LoginHelper;
+        });
+
+        RateLimiter::for('slack-profile-update', function () {
+            // users.profile.set is tier 3, 50+ per minute.
+            // users.profile.get is tier 4, 100+ per minute.
+            // We probably won't update every user, but just to be on the safe side, we assume here that we do.
+            return Limit::perMinute(50);
         });
     }
 }
