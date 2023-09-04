@@ -26,4 +26,14 @@ class UsersProfileApi
                 ],
             ]);
     }
+
+    public function get($user_id)
+    {
+        return $this->clients->adminClient
+            ->get('https://denhac.slack.com/api/users.profile.get', [
+                RequestOptions::JSON => [
+                    'user' => $user_id,
+                ],
+            ]);
+    }
 }

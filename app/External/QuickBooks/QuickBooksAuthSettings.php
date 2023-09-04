@@ -15,10 +15,19 @@ class QuickBooksAuthSettings
     protected const REFRESH_TOKEN_KEY = "quickbooks.auth.refreshToken";
     protected const REALM_ID_KEY = "quickbooks.auth.realmId";
 
-    public static function hasKnownAuth(): bool {
+    public static function hasKnownAuth(): bool
+    {
         return !is_null(setting(self::ACCESS_TOKEN_KEY)) ||
             !is_null(setting(self::REFRESH_TOKEN_KEY)) ||
             !is_null(setting(self::REALM_ID_KEY));
+    }
+
+    public static function getRealmId(): ?string
+    {
+        if(!self::hasKnownAuth()) {
+            return null;
+        }
+        return setting(self::REALM_ID_KEY);
     }
 
     public static function getDataServiceParameters(): array
