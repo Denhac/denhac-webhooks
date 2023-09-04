@@ -15,7 +15,6 @@ trait CustomerBasedAggregate
     public $respondToEvents = true;
 
     /**
-     * @param string $customerId
      * @return MembershipAggregate
      */
     public static function make(string $customerId): AggregateRoot
@@ -34,15 +33,15 @@ trait CustomerBasedAggregate
 
     /**
      * This method shouldn't be called in production, only in testing when needed.
-     * @param string|CustomerBuilder|Customer $customer
      *
+     * @param  string|CustomerBuilder|Customer  $customer
      * @return $this
      */
     public static function fakeCustomer($customer): FakeAggregateRoot
     {
         if (is_a($customer, CustomerBuilder::class)) {
             $customer = $customer->id;
-        } else if(is_a($customer, Customer::class)) {
+        } elseif (is_a($customer, Customer::class)) {
             $customer = $customer->woo_id;
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\External\Slack;
 
-
 use App\Actions\Slack\UpdateSlackUserProfile;
 use App\Customer;
 use Illuminate\Support\Facades\Log;
@@ -10,11 +9,12 @@ use Illuminate\Support\Facades\Log;
 class SlackProfileFields
 {
     private const IS_MEMBER_FIELD = 'Xf017FTYKWA3';
+
     private const MEMBER_CODE_FIELD = 'Xf030ZFYLUDP';
 
     public static function updateIfNeeded(string $slack_id, array $profileFields)
     {
-        if ($slack_id === "USLACKBOT") {
+        if ($slack_id === 'USLACKBOT') {
             return;
         }
 
@@ -25,8 +25,8 @@ class SlackProfileFields
 
         if (count($updated) != 0) {
             Log::info("User {$slack_id}'s profile fields need updating.");
-            Log::info("Profile Fields: ". print_r($profileFields, true));
-            Log::info("Updated Fields: ". print_r($updated, true));
+            Log::info('Profile Fields: '.print_r($profileFields, true));
+            Log::info('Updated Fields: '.print_r($updated, true));
             /** @var UpdateSlackUserProfile $action */
             $action = app(UpdateSlackUserProfile::class);
             $action
@@ -35,11 +35,6 @@ class SlackProfileFields
         }
     }
 
-    /**
-     * @param Customer|null $customer
-     * @param array $profileFields
-     * @return array
-     */
     public static function compareExpectedFieldValues(?Customer $customer, array $profileFields): array
     {
         $updated = [];
@@ -51,9 +46,9 @@ class SlackProfileFields
 
     private static function compareIsMemberField(?Customer $customer, array $profileFields, array &$updated)
     {
-        $expectedValue = "Yes";
+        $expectedValue = 'Yes';
         if (is_null($customer) || ! $customer->member) {
-            $expectedValue = "No";
+            $expectedValue = 'No';
         }
 
         if (! array_key_exists(self::IS_MEMBER_FIELD, $profileFields) ||
@@ -73,6 +68,7 @@ class SlackProfileFields
                     'alt' => '',
                 ];
             }
+
             return;
         }
 

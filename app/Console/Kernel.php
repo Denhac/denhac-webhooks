@@ -39,7 +39,6 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -56,17 +55,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('passport:purge')->hourly();
 
         // QuickBooks tokens expire every hour. Every half should prevent any issues with a job running right as a token expires.
-        $schedule->call(fn() => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
+        $schedule->call(fn () => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
 
         // daily at noon because te cron is in UTC but I grab Denver timezone minus one day. This makes the date string
         // for searching orders as well as the date used for the QuickBooks entry correct regardless of if it's daylight
         //savings time or not.
-        $schedule->call(fn() => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
+        $schedule->call(fn () => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
     }
 
     protected function refreshQuickBooksAccessToken(): void
     {
-        if (!QuickBooksAuthSettings::hasKnownAuth()) {
+        if (! QuickBooksAuthSettings::hasKnownAuth()) {
             return;
         }
         app(OAuth2LoginHelper::class);  // This should refresh the token automatically on resolving
@@ -74,7 +73,7 @@ class Kernel extends ConsoleKernel
 
     protected function generateVendingNetJournalEntry(): void
     {
-        if (!QuickBooksAuthSettings::hasKnownAuth()) {
+        if (! QuickBooksAuthSettings::hasKnownAuth()) {
             return;
         }
         $yesterday = Carbon::now('America/Denver')->subDay();
@@ -90,7 +89,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }

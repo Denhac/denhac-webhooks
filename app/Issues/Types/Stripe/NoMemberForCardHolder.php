@@ -27,29 +27,32 @@ class NoMemberForCardHolder extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Stripe: No member for card holder";
+        return 'Stripe: No member for card holder';
     }
 
     public function getIssueText(): string
     {
         $id = $this->cardHolder->id;
         $name = $this->cardHolder->name;
+
         return "CardHolder for \"$name\" ($id) is not assigned to any member";
     }
 
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Match Member", fn() => $this->matchMember())
-            ->option("Deactivate Card Holder", fn() => $this->deactivateCardHolder())
+            ->option('Match Member', fn () => $this->matchMember())
+            ->option('Deactivate Card Holder', fn () => $this->deactivateCardHolder())
             ->run();
     }
 
-    private function matchMember(): bool {
+    private function matchMember(): bool
+    {
         /** @var MemberData $member */
         $member = $this->selectMember();
-        if(is_null($member)) {
-            $this->info("No member selected. Aborting issue fix.");
+        if (is_null($member)) {
+            $this->info('No member selected. Aborting issue fix.');
+
             return false;
         }
 
@@ -71,8 +74,9 @@ class NoMemberForCardHolder extends IssueBase
     private function deactivateCardHolder()
     {
         /** @var StripeClient $stripeClient */
-        $this->cardHolder->status = "inactive";
+        $this->cardHolder->status = 'inactive';
         $this->cardHolder->save();
+
         return true;
     }
 }

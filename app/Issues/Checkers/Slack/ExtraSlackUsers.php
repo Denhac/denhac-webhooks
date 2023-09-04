@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\Slack;
 
-
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Checkers\SlackMembershipHelper;
@@ -66,12 +65,12 @@ class ExtraSlackUsers implements IssueCheck
                 if ($member->isMember) {
                     if (array_key_exists('is_invited_user', $user) && $user['is_invited_user']) {
                         return; // Do nothing, we've sent the invite and that's all we can do.
-                    } else if (array_key_exists('deleted', $user) && $user['deleted']) {
-                        $this->issues->add(new MemberHasRestrictedAccount($member, $user, "deleted"));
-                    } else if (array_key_exists('is_restricted', $user) && $user['is_restricted']) {
-                        $this->issues->add(new MemberHasRestrictedAccount($member, $user, "a multi-channel guest"));
-                    } else if (array_key_exists('is_ultra_restricted', $user) && $user['is_ultra_restricted']) {
-                        $this->issues->add(new MemberHasRestrictedAccount($member, $user, "a single-channel guest"));
+                    } elseif (array_key_exists('deleted', $user) && $user['deleted']) {
+                        $this->issues->add(new MemberHasRestrictedAccount($member, $user, 'deleted'));
+                    } elseif (array_key_exists('is_restricted', $user) && $user['is_restricted']) {
+                        $this->issues->add(new MemberHasRestrictedAccount($member, $user, 'a multi-channel guest'));
+                    } elseif (array_key_exists('is_ultra_restricted', $user) && $user['is_ultra_restricted']) {
+                        $this->issues->add(new MemberHasRestrictedAccount($member, $user, 'a single-channel guest'));
 
                     }
                 } elseif ($this->isFullSlackUser($user)) {  // TODO Check for multi/single channel guests outside of public as well

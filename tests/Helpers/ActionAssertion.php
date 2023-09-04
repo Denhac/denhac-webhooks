@@ -2,7 +2,6 @@
 
 namespace Tests\Helpers;
 
-
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Assert;
@@ -14,15 +13,23 @@ use function Spatie\SslCertificate\starts_with;
 class ActionAssertion
 {
     private const CONSTRAINT_TIMES_TYPE = 'times_type';
+
     private const TIMES_AT_LEAST = 'times_at_least';
+
     private const TIMES_AT_MOST = 'times_at_most';
+
     private const TIMES_EXACTLY = 'times_exactly';
+
     private const CONSTRAINT_TIMES_VALUE = 'times_value';
+
     private const CONSTRAINT_ARGS = 'args';
 
     private string $cls;
+
     private Collection $jobs;
+
     private array $constraints = [];
+
     private array $backtrace;
 
     public function __construct($cls, Collection|ActionJob $jobs, array $backtrace)
@@ -45,8 +52,8 @@ class ActionAssertion
         }
 
         $matchingJobs = $this->jobs
-            ->map(fn($actionJob) => $actionJob['job'])
-            ->filter(fn($actionJob) => $actionJob->displayName() == $this->cls)
+            ->map(fn ($actionJob) => $actionJob['job'])
+            ->filter(fn ($actionJob) => $actionJob->displayName() == $this->cls)
             ->filter(function ($job) use ($args) {
                 /** @var ActionJob $job */
                 if (is_null($args)) { // Anything goes
@@ -66,20 +73,20 @@ class ActionAssertion
         $timeType = $this->constraints[self::CONSTRAINT_TIMES_TYPE];
         $timeValue = $this->constraints[self::CONSTRAINT_TIMES_VALUE];
 
-        $timePluralValue = Str::plural("time", $timeValue);
-        $timePluralQueueCount = Str::plural("time", $queueCount);
+        $timePluralValue = Str::plural('time', $timeValue);
+        $timePluralQueueCount = Str::plural('time', $queueCount);
         try {
             if ($timeType == self::TIMES_EXACTLY) {
                 $failureMessage = "Expected action to be queued exactly $timeValue $timePluralValue, "
-                    . "but it was queued $queueCount $timePluralQueueCount.";
+                    ."but it was queued $queueCount $timePluralQueueCount.";
                 Assert::assertEquals($timeValue, $queueCount, $failureMessage);
             } elseif ($timeType == self::TIMES_AT_LEAST) {
                 $failureMessage = "Expected action to be queued at least $timeValue $timePluralValue, "
-                    . "but it was queued $queueCount $timePluralQueueCount.";
+                    ."but it was queued $queueCount $timePluralQueueCount.";
                 Assert::assertGreaterThanOrEqual($timeValue, $queueCount, $failureMessage);
             } elseif ($timeType == self::TIMES_AT_MOST) {
                 $failureMessage = "Expected action to be queued at most $timeValue $timePluralValue, "
-                    . "but it was queued $queueCount $timePluralQueueCount.";
+                    ."but it was queued $queueCount $timePluralQueueCount.";
                 Assert::assertLessThanOrEqual($timeValue, $queueCount, $failureMessage);
             }
         } catch (AssertionFailedError $exception) {
@@ -90,16 +97,16 @@ class ActionAssertion
 
     private function printBacktrace()
     {
-        print("Assertion stacktrace:".PHP_EOL);
+        echo 'Assertion stacktrace:'.PHP_EOL;
         $rootDir = dirname(app_path());
         foreach ($this->backtrace as $trace) {
             $filePath = $trace['file'];
             $relativeDir = substr($filePath, strlen($rootDir));
-            if (starts_with($relativeDir, "/vendor")) {
+            if (starts_with($relativeDir, '/vendor')) {
                 break;
             }
 
-            print(' file://' . $filePath . ':' . $trace['line'] . PHP_EOL);
+            echo ' file://'.$filePath.':'.$trace['line'].PHP_EOL;
         }
     }
 

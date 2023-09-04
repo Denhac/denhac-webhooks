@@ -2,11 +2,11 @@
 
 namespace Tests\Helpers\Wordpress;
 
-use Carbon\Carbon;
 use Tests\Helpers\BaseBuilder;
 
 /**
  * Class CustomerBuilder.
+ *
  * @property int id
  * @property string email
  * @property string username
@@ -107,13 +107,13 @@ class CustomerBuilder extends BaseBuilder
     public function __set(string $name, $value): void
     {
         switch ($name) {
-            case "github_username":
+            case 'github_username':
                 $this->github_username($value);
                 break;
-            case "slack_id":
+            case 'slack_id':
                 $this->slack_id($value);
                 break;
-            case "birthday":
+            case 'birthday':
                 $this->birthday($value);
                 break;
             default:
@@ -124,9 +124,9 @@ class CustomerBuilder extends BaseBuilder
     public function __get($name)
     {
         return match ($name) {
-            "github_username" => $this->get_meta_data($name),
-            "slack_id" => $this->get_meta_data("access_slack_id"),
-            "birthday" => $this->get_meta_data("account_birthday"),
+            'github_username' => $this->get_meta_data($name),
+            'slack_id' => $this->get_meta_data('access_slack_id'),
+            'birthday' => $this->get_meta_data('account_birthday'),
             default => parent::__get($name),
         };
     }

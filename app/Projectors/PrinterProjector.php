@@ -17,7 +17,7 @@ class PrinterProjector extends Projector
 
     public function onOctoPrintStatusUpdated(OctoPrintStatusUpdated $event)
     {
-        $deviceIdentifier = $event->payload["deviceIdentifier"];
+        $deviceIdentifier = $event->payload['deviceIdentifier'];
 
         /** @var Printer3D $printer */
         $printer = Printer3D::whereName($deviceIdentifier)->first();
@@ -26,11 +26,11 @@ class PrinterProjector extends Projector
             Printer3D::create([
                 'name' => $deviceIdentifier,
                 'status' => Printer3D::getStatus($event->payload['topic']),
-                'status_updated_at' => Carbon::createFromTimestamp($event->payload["currentTime"]),
+                'status_updated_at' => Carbon::createFromTimestamp($event->payload['currentTime']),
             ]);
         } else {
             $printer->status = Printer3D::getStatus($event->payload['topic']);
-            $printer->status_updated_at = Carbon::createFromTimestamp($event->payload["currentTime"]);
+            $printer->status_updated_at = Carbon::createFromTimestamp($event->payload['currentTime']);
             $printer->save();
         }
     }

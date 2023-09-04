@@ -7,6 +7,7 @@ use Spatie\WebhookClient\WebhookConfig;
 
 /**
  * Class WebhookCall.
+ *
  * @property string name
  * @property array payload
  * @property array exception

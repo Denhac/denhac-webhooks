@@ -22,15 +22,15 @@ Route::webhooks('webhooks/octoprint', 'OctoPrint');
 Route::webhooks('webhooks/waiver', 'WaiverForever');
 Route::webhooks('webhooks/quickbooks', 'QuickBooks');
 
-Route::middleware(['slack'])->prefix("slack")->group(function () {
+Route::middleware(['slack'])->prefix('slack')->group(function () {
     Route::post('membership', SlackMembershipCommandController::class);
 
-    Route::post('event', SlackEventController:: class);
-    Route::post('interactive', SlackInteractivityController:: class);
-    Route::post('options', SlackOptionsController:: class);
+    Route::post('event', SlackEventController::class);
+    Route::post('interactive', SlackInteractivityController::class);
+    Route::post('options', SlackOptionsController::class);
 });
 
-Route::prefix("quickbooks")->group(function () {
+Route::prefix('quickbooks')->group(function () {
     Route::get('launch', App\Http\Controllers\Quickbooks\LaunchController::class);
     Route::get('redirect', [App\Http\Controllers\Quickbooks\RedirectController::class, 'redirect']);
     Route::get('success', [App\Http\Controllers\Quickbooks\RedirectController::class, 'success']);

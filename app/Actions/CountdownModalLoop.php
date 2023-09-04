@@ -20,7 +20,7 @@ class CountdownModalLoop
     public function execute($viewId)
     {
         $timeLeft = 30;
-        while($timeLeft >= 0) {
+        while ($timeLeft >= 0) {
             $view = new CountdownTestModal($timeLeft);
             $this->slackApi->views->update($viewId, $view);
             sleep(1);

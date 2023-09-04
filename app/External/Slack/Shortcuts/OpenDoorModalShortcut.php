@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Shortcuts;
 
-
 use App\External\Slack\CommonResponses;
 use App\External\Slack\Modals\OpenDoorModal;
 use App\Http\Requests\SlackRequest;
@@ -12,7 +11,7 @@ class OpenDoorModalShortcut implements ShortcutInterface
 {
     public static function callbackId(): string
     {
-        return "door.open.modal";
+        return 'door.open.modal';
     }
 
     public static function handle(SlackRequest $request)

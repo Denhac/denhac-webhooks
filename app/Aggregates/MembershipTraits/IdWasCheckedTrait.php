@@ -2,10 +2,7 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\FeatureFlags;
 use App\StorableEvents\IdWasChecked;
-use App\StorableEvents\MembershipActivated;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 trait IdWasCheckedTrait
 {

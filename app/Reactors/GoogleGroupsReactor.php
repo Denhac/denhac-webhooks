@@ -20,8 +20,11 @@ use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 final class GoogleGroupsReactor implements EventHandler
 {
     public const GROUP_MEMBERS = 'members@denhac.org';
+
     public const GROUP_ANNOUNCE = 'announce@denhac.org';
+
     public const GROUP_DENHAC = 'denhac@denhac.org';
+
     public const GROUP_BOARD = 'board@denhac.org';
 
     use HandlesEvents;
@@ -105,18 +108,20 @@ final class GoogleGroupsReactor implements EventHandler
         $userEmailGroups = TrainableEquipment::select('user_email')
             ->where('user_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['user_email']);
+            ->map(fn ($row) => $row['user_email']);
 
         /** @var Collection $trainerSlackIds */
         $trainerEmailGroups = TrainableEquipment::select('trainer_email')
             ->where('trainer_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['trainer_email']);
+            ->map(fn ($row) => $row['trainer_email']);
 
         $emailGroups = collect($userEmailGroups->union($trainerEmailGroups))->unique();
 
         foreach ($emailGroups as $emailGroup) {
-            if (is_null($emailGroup)) continue;
+            if (is_null($emailGroup)) {
+                continue;
+            }
 
             AddToGroup::queue()->execute($customer->email, $emailGroup);
         }

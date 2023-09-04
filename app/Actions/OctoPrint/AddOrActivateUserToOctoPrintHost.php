@@ -16,14 +16,14 @@ class AddOrActivateUserToOctoPrintHost
 
     public function execute(Customer $customer, $host, $password = null)
     {
-        if(is_null($password)) {
+        if (is_null($password)) {
             $password = Str::random(8);
         }
 
         $username = $customer->username;
         $api = app()->make(OctoPrintApi::class, ['host' => $host]);
 
-        if(is_null($api->get_user($username))) {
+        if (is_null($api->get_user($username))) {
             $api->add_user($username, $password);
 
             $customer->notify(new OctoPrintNewUser($host, $username, $password));

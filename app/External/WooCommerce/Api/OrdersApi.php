@@ -2,7 +2,6 @@
 
 namespace App\External\WooCommerce\Api;
 
-
 use App\External\ApiProgress;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -18,9 +17,6 @@ class OrdersApi
     }
 
     /**
-     * @param array $query
-     * @param ApiProgress|null $progress
-     * @return Collection
      * @throws ApiCallFailed
      */
     public function list(array $query = [], ApiProgress $progress = null): Collection

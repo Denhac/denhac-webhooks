@@ -2,7 +2,6 @@
 
 namespace App\Issues\Data;
 
-
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 use Spatie\LaravelData\Data;
@@ -13,22 +12,21 @@ use Spatie\LaravelData\Data;
 class MemberData extends Data
 {
     public function __construct(
-        public int|string  $id,  // TODO string only because PayPal
-        public string      $first_name,
-        public string      $last_name,
-        public string      $primaryEmail,
-        public Collection  $emails,
-        public bool        $isMember,
-        public bool        $hasSignedWaiver,
-        public Collection  $subscriptions,
-        public Collection  $userMemberships,
-        public Collection  $cards,
-        public string|null $slackId,
-        public string|null $githubUsername,
-        public string|null $stripeCardHolderId,
-        public string      $system,
-    )
-    {
+        public int|string $id,  // TODO string only because PayPal
+        public string $first_name,
+        public string $last_name,
+        public string $primaryEmail,
+        public Collection $emails,
+        public bool $isMember,
+        public bool $hasSignedWaiver,
+        public Collection $subscriptions,
+        public Collection $userMemberships,
+        public Collection $cards,
+        public ?string $slackId,
+        public ?string $githubUsername,
+        public ?string $stripeCardHolderId,
+        public string $system,
+    ) {
     }
 
     public function __get(string $name)
@@ -36,6 +34,7 @@ class MemberData extends Data
         if ($name == 'uuid') {
             return Uuid::uuid5(UUID::NAMESPACE_OID, $this->id);
         }
+
         return null;
     }
 }

@@ -51,7 +51,6 @@ final class SubscriptionProjector extends Projector
     }
 
     /**
-     * @param $subscription
      * @return Subscription
      */
     private function addOrGetSubscription($subscription)

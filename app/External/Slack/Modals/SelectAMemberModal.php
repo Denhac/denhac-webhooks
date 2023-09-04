@@ -6,7 +6,6 @@ use App\Customer;
 use App\External\Slack\ClassFinder;
 use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
-use App\UserMembership;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -79,7 +78,7 @@ class SelectAMemberModal implements ModalInterface
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
 
-            if($customer->member) {
+            if ($customer->member) {
                 $text = "$name (Member)";
             } else {
                 $text = "$name (Not a Member)";

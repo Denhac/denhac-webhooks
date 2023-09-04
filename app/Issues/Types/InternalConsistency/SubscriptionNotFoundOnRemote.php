@@ -25,7 +25,7 @@ class SubscriptionNotFoundOnRemote extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Subscription not found on remote";
+        return 'Internal Consistency: Subscription not found on remote';
     }
 
     public function getIssueText(): string
@@ -36,13 +36,14 @@ class SubscriptionNotFoundOnRemote extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Delete local subscription", function () {
+            ->option('Delete local subscription', function () {
                 /** @var Subscription $subscription */
                 $subscription = Subscription::whereWooId($this->subscription_id)->first();
 
                 MembershipAggregate::make($subscription->customer_id)
                     ->deleteSubscription(['id' => $subscription->woo_id])
                     ->persist();
+
                 return true;
             })
             ->run();

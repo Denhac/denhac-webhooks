@@ -10,14 +10,18 @@ class TokenManager
     private const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
     private bool $propertiesBound = false;
+
     private string $apiKey;
+
     private string $authAs;
+
     private string $serviceAccount;
+
     private Client $client;
 
     private function lateBindProperties()
     {
-        if($this->propertiesBound) {
+        if ($this->propertiesBound) {
             return;
         }
 

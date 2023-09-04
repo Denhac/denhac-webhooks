@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 use App\External\ApiProgress;
 use App\External\Slack\UnexpectedResponseException;
 use GuzzleHttp\RequestOptions;
@@ -24,11 +23,12 @@ class UsersApi
         $this->clients = $clients;
     }
 
-    #[Pure] public function __get(string $name)
+    #[Pure]
+    public function __get(string $name)
     {
         if ($name == 'admin') {
             return new UsersAdminApi($this->clients);
-        } else if ($name == 'profile') {
+        } elseif ($name == 'profile') {
             return new UsersProfileApi($this->clients);
         }
 
@@ -41,11 +41,11 @@ class UsersApi
             return $this->clients->managementApiClient
                 ->get(
                     'https://denhac.slack.com/api/users.list', [
-                    RequestOptions::QUERY => [
-                        'cursor' => $cursor,
-                        'limit' => 200,
-                    ],
-                ]);
+                        RequestOptions::QUERY => [
+                            'cursor' => $cursor,
+                            'limit' => 200,
+                        ],
+                    ]);
         }, $progress);
     }
 
@@ -70,7 +70,7 @@ class UsersApi
             return null;
         }
 
-        if (!array_key_exists('user', $data)) {
+        if (! array_key_exists('user', $data)) {
             report(new UnexpectedResponseException("No User key exists: {$response->getBody()}"));
 
             return null;

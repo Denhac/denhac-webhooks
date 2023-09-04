@@ -14,7 +14,9 @@ class NewMemberCardReactor extends Reactor implements ShouldQueue
     {
         $newMemberCardActivation = NewMemberCardActivation::search($event->wooCustomerId, $event->cardNumber);
 
-        if(is_null($newMemberCardActivation)) return;
+        if (is_null($newMemberCardActivation)) {
+            return;
+        }
 
         $newMemberCardActivation->state = NewMemberCardActivation::CARD_SENT_FOR_ACTIVATION;
         $newMemberCardActivation->save();
@@ -24,7 +26,9 @@ class NewMemberCardReactor extends Reactor implements ShouldQueue
     {
         $newMemberCardActivation = NewMemberCardActivation::search($event->wooCustomerId, $event->cardNumber);
 
-        if(is_null($newMemberCardActivation)) return;
+        if (is_null($newMemberCardActivation)) {
+            return;
+        }
 
         $newMemberCardActivation->state = NewMemberCardActivation::CARD_ACTIVATED;
         $newMemberCardActivation->save();

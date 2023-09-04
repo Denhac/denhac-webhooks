@@ -25,7 +25,7 @@ class NoCardHolderFoundForId extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Stripe: No card holder found for id";
+        return 'Stripe: No card holder found for id';
     }
 
     public function getIssueText(): string
@@ -36,7 +36,7 @@ class NoCardHolderFoundForId extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Clear card holder id", fn() => $this->clearCardHolderId())
+            ->option('Clear card holder id', fn () => $this->clearCardHolderId())
             ->run();
     }
 
@@ -53,6 +53,7 @@ class NoCardHolderFoundForId extends IssueBase
                     ],
                 ],
             ]);
+
         return true;
     }
 }

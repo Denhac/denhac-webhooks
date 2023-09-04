@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Events;
 
-
 use App\Http\Requests\SlackRequest;
 
 interface EventInterface

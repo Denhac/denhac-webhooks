@@ -9,7 +9,6 @@ use Illuminate\Http\Response;
 
 trait ModalTrait
 {
-
     public function push()
     {
         return response()->json([
@@ -40,7 +39,6 @@ trait ModalTrait
      *
      * If you need to call update on an existing view id, just use the SlackApi class directly.
      *
-     * @param SlackRequest $request
      * @return Response
      */
     public function updateViaApi(SlackRequest $request)
@@ -74,8 +72,6 @@ trait ModalTrait
 
     /**
      * Get state values from the slack request if there are any.
-     *
-     * @param SlackRequest $request
      */
     protected static function getStateValues(SlackRequest $request): array
     {
@@ -85,17 +81,17 @@ trait ModalTrait
             return [];
         }
 
-        if (!array_key_exists('view', $payload)) {
+        if (! array_key_exists('view', $payload)) {
             return [];
         }
         $view = $payload['view'];
 
-        if (!array_key_exists('state', $view)) {
+        if (! array_key_exists('state', $view)) {
             return [];
         }
         $state = $view['state'];
 
-        if (!array_key_exists('values', $state)) {
+        if (! array_key_exists('values', $state)) {
             return [];
         }
         $values = $state['values'];
@@ -110,7 +106,7 @@ trait ModalTrait
                     // their values are either there or not. So we return a dictionary of values.
                     $selectedOptions = $actionValues['selected_options'] ?? [];
 
-                    if(empty($selectedOptions)) {
+                    if (empty($selectedOptions)) {
                         continue; // No selected options
                     }
 
@@ -118,7 +114,7 @@ trait ModalTrait
                     foreach ($selectedOptions as $option) {
                         $result[$blockId][$actionId][] = $option['value'];
                     }
-                } else if (array_key_exists('selected_option', $actionValues)) {
+                } elseif (array_key_exists('selected_option', $actionValues)) {
                     $selected = $actionValues['selected_option'];
                     if (empty($selected)) {
                         $result[$blockId][$actionId] = null;

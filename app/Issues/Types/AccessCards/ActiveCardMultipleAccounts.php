@@ -24,7 +24,7 @@ class ActiveCardMultipleAccounts extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: Active card multiple accounts";
+        return 'Access Cards: Active card multiple accounts';
     }
 
     public function getIssueText(): string

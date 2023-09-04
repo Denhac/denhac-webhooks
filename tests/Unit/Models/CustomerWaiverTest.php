@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Models;
 
-
 use App\Customer;
 use App\Waiver;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -14,6 +13,7 @@ class CustomerWaiverTest extends TestCase
     use WithFaker;
 
     private Waiver $validMembershipWaiver;
+
     private Waiver $someOtherWaiver;
 
     protected function setUp(): void

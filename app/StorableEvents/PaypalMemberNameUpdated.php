@@ -7,7 +7,9 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 final class PaypalMemberNameUpdated extends ShouldBeStored
 {
     public $paypal_id;
+
     public $first_name;
+
     public $last_name;
 
     public function __construct($paypal_id, $first_name, $last_name)

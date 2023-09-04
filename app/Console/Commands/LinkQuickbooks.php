@@ -20,8 +20,8 @@ class LinkQuickbooks extends Command
     public function handle()
     {
         if (QuickBooksAuthSettings::hasKnownAuth()) {
-            $shouldContinue = $this->confirm("We have an existing access token, are you sure you want to generate a new one?");
-            if (!$shouldContinue) {
+            $shouldContinue = $this->confirm('We have an existing access token, are you sure you want to generate a new one?');
+            if (! $shouldContinue) {
                 return 0;
             }
 

@@ -2,7 +2,6 @@
 
 namespace App\External\QuickBooks\Webhooks;
 
-
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Models\WebhookCall;
@@ -19,7 +18,7 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
     {
         $payload = $this->webhookCall->payload;
 
-        if (!array_key_exists("eventNotifications", $payload)) {
+        if (! array_key_exists('eventNotifications', $payload)) {
             return;
         }
 
@@ -31,20 +30,20 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
         }
 
         foreach ($eventNotifications as $notification) {
-            if (!array_key_exists("realmId", $notification) ||
+            if (! array_key_exists('realmId', $notification) ||
                 $notification['realmId'] != $ourRealmId) {
                 continue;
             }
 
-            if (!array_key_exists("dataChangeEvent", $notification) ||
-                !array_key_exists("entities", $notification['dataChangeEvent'])) {
+            if (! array_key_exists('dataChangeEvent', $notification) ||
+                ! array_key_exists('entities', $notification['dataChangeEvent'])) {
                 continue;
             }
 
             $entities = $notification['dataChangeEvent']['entities'];
 
             foreach ($entities as $entity) {
-                Log::info("QuickBooks entity update");
+                Log::info('QuickBooks entity update');
                 Log::info(print_r($entity, true));
             }
         }

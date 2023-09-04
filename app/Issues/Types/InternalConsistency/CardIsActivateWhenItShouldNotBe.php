@@ -13,6 +13,7 @@ class CardIsActivateWhenItShouldNotBe extends IssueBase
     use ICanFixThem;
 
     private MemberData $member;
+
     private $memberCard;
 
     public function __construct(MemberData $member, $memberCard)
@@ -28,7 +29,7 @@ class CardIsActivateWhenItShouldNotBe extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Non member card is activate";
+        return 'Internal Consistency: Non member card is activate';
     }
 
     public function getIssueText(): string
@@ -39,7 +40,7 @@ class CardIsActivateWhenItShouldNotBe extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Deactivate non-member card", function () {
+            ->option('Deactivate non-member card', function () {
                 // Record that is fine since we just want the reactor to update
                 MembershipAggregate::make($this->member->id)
                     ->recordThat(new CardSentForDeactivation($this->member->id, $this->memberCard))

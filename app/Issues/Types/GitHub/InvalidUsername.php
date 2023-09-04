@@ -12,6 +12,7 @@ class InvalidUsername extends IssueBase
     use ICanFixThem;
 
     private MemberData $member;
+
     private string $correctedUsername;
 
     public function __construct(MemberData $member, string $correctedUsername)
@@ -27,7 +28,7 @@ class InvalidUsername extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "GitHub: Invalid GitHub username";
+        return 'GitHub: Invalid GitHub username';
     }
 
     public function getIssueText(): string
@@ -38,8 +39,8 @@ class InvalidUsername extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Use suggested username: $this->correctedUsername", fn() => $this->useSuggestedUsername())
-            ->option("Clear GitHub username field for member", fn() => $this->clearGitHubUsernameField())
+            ->option("Use suggested username: $this->correctedUsername", fn () => $this->useSuggestedUsername())
+            ->option('Clear GitHub username field for member', fn () => $this->clearGitHubUsernameField())
             ->run();
     }
 
@@ -56,6 +57,7 @@ class InvalidUsername extends IssueBase
                     ],
                 ],
             ]);
+
         return true;
     }
 
@@ -72,6 +74,7 @@ class InvalidUsername extends IssueBase
                     ],
                 ],
             ]);
+
         return true;
     }
 }

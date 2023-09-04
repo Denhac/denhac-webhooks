@@ -10,10 +10,12 @@ final class CardStatusUpdated extends ShouldBeStored
      * @var string
      */
     public $type;
+
     /**
      * @var int
      */
     public $customer_id;
+
     /**
      * @var string
      */

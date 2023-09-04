@@ -8,6 +8,7 @@ use App\Issues\Types\IssueBase;
 class UnknownActiveCardForMember extends IssueBase
 {
     private MemberData $member;
+
     private $cardNumber;
 
     public function __construct(MemberData $member, $cardNumber)
@@ -23,7 +24,7 @@ class UnknownActiveCardForMember extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: Unknown active card for member";
+        return 'Access Cards: Unknown active card for member';
     }
 
     public function getIssueText(): string

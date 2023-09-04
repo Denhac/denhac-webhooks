@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(["auth:api", 'scopes:card:manage'])
+Route::middleware(['auth:api', 'scopes:card:manage'])
     ->group(function () {
-        Route::get("/card_updates", [CardUpdateRequestsController::class, "index"]);
-        Route::post("/card_updates/{card_update_request}/status", [CardUpdateRequestsController::class, "updateStatus"]);
-        Route::post("/active_card_holders", [CardUpdateRequestsController::class, "updateActiveCardHolders"]);
+        Route::get('/card_updates', [CardUpdateRequestsController::class, 'index']);
+        Route::post('/card_updates/{card_update_request}/status', [CardUpdateRequestsController::class, 'updateStatus']);
+        Route::post('/active_card_holders', [CardUpdateRequestsController::class, 'updateActiveCardHolders']);
 
-        Route::post("/events/card_scanned", CardScannedController::class);
+        Route::post('/events/card_scanned', CardScannedController::class);
     });

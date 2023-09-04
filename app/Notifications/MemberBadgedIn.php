@@ -16,15 +16,13 @@ class MemberBadgedIn extends Notification implements ShouldQueue
     use Queueable;
 
     private $firstName;
+
     private $lastName;
+
     private $scanTime;
 
     /**
      * Create a new notification instance.
-     *
-     * @param $firstName
-     * @param $lastName
-     * @param $scanTime
      */
     public function __construct($firstName, $lastName, $scanTime)
     {
@@ -47,8 +45,9 @@ class MemberBadgedIn extends Notification implements ShouldQueue
     /**
      * Get the Slack representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return SlackMessage
+     *
      * @throws \Exception
      */
     public function toSlack($notifiable)

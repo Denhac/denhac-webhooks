@@ -12,13 +12,13 @@ class TeamApi
     use GitHubApiTrait;
 
     private string $accessToken;
+
     private Client $client;
+
     private string $teamUrl;
 
     /**
      * TeamApi constructor.
-     * @param $name
-     * @param string $accessToken
      */
     public function __construct($name, string $accessToken)
     {

@@ -21,7 +21,7 @@ class CannotFindCustomer extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Cannot find customer";
+        return 'Internal Consistency: Cannot find customer';
     }
 
     public function getIssueText(): string

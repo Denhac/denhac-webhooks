@@ -17,7 +17,7 @@ use Tests\Helpers\Wordpress\UserMembershipBuilder;
 
 /**
  * Class TestCase
- * @package Tests
+ *
  * @property User apiUser
  */
 abstract class TestCase extends BaseTestCase
@@ -42,25 +42,27 @@ abstract class TestCase extends BaseTestCase
 
     public function __get($key)
     {
-        if ($key == "apiUser") {
+        if ($key == 'apiUser') {
             if (is_null($this->_apiUser)) {
                 $this->_apiUser = User::create([
-                    'name' => 'Test User'
+                    'name' => 'Test User',
                 ]);
             }
 
             return $this->_apiUser;
         }
+
         return null;
     }
 
-    public function customerModel(): Customer {
+    public function customerModel(): Customer
+    {
         return Customer::create([
             'username' => $this->faker->userName,
             'email' => $this->faker->email,
             'woo_id' => $this->faker->randomNumber(),
             'member' => $this->faker->boolean,
-            'slack_id' => "U".$this->faker->numberBetween(1e5, 1e7)
+            'slack_id' => 'U'.$this->faker->numberBetween(1e5, 1e7),
         ]);
     }
 
@@ -87,29 +89,29 @@ abstract class TestCase extends BaseTestCase
     public function subscriptionStatuses(): array
     {
         return [
-            "Pending" => ["pending"],
-            "Active" => ["active"],
-            "On hold" => ["on-hold"],
-            "Cancelled" => ["cancelled"],
-            "Switched" => ["switched"],
-            "Expired" => ["expired"],
-            "Pending Cancellation" => ["pending-cancel"],
-            "Suspended for Non Payment" => ["suspended-payment"],
-            "Suspended Manually" => ["suspended-manual"],
+            'Pending' => ['pending'],
+            'Active' => ['active'],
+            'On hold' => ['on-hold'],
+            'Cancelled' => ['cancelled'],
+            'Switched' => ['switched'],
+            'Expired' => ['expired'],
+            'Pending Cancellation' => ['pending-cancel'],
+            'Suspended for Non Payment' => ['suspended-payment'],
+            'Suspended Manually' => ['suspended-manual'],
         ];
     }
 
     public function userMembershipStatuses(): array
     {
         return [
-            "Active" => ["active"],
-            "Free Trial" => ["free_trial"],
-            "Delayed" => ["delayed"],
-            "Complimentary" => ["complimentary"],
-            "Pending Cancellation" => ["pending"],
-            "Paused" => ["paused"],
-            "Expired" => ["expired"],
-            "Cancelled" => ["cancelled"],
+            'Active' => ['active'],
+            'Free Trial' => ['free_trial'],
+            'Delayed' => ['delayed'],
+            'Complimentary' => ['complimentary'],
+            'Pending Cancellation' => ['pending'],
+            'Paused' => ['paused'],
+            'Expired' => ['expired'],
+            'Cancelled' => ['cancelled'],
         ];
     }
 
@@ -158,6 +160,7 @@ abstract class TestCase extends BaseTestCase
                 if (array_key_exists($cls, $wanted_classes)) {
                     return $wanted_classes[$cls];
                 }
+
                 return null;
             })
             ->reject(null)

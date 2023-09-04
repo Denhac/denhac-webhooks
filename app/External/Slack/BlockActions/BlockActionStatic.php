@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\BlockActions;
 
-
 use App\Http\Requests\SlackRequest;
 
 interface BlockActionStatic

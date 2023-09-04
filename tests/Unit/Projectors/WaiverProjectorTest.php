@@ -2,20 +2,16 @@
 
 namespace Tests\Unit\Projectors;
 
-
 use App\Customer;
-use App\Printer3D;
-use App\Projectors\PrinterProjector;
 use App\Projectors\WaiverProjector;
-use App\StorableEvents\OctoPrintStatusUpdated;
 use App\StorableEvents\WaiverAssignedToCustomer;
 use App\Waiver;
-use Carbon\Carbon;
 use Tests\TestCase;
 
 class WaiverProjectorTest extends TestCase
 {
     private Waiver $waiver;
+
     private Customer $customer;
 
     public function setUp(): void

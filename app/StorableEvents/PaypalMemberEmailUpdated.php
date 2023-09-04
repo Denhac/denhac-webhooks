@@ -7,6 +7,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 final class PaypalMemberEmailUpdated extends ShouldBeStored
 {
     public $paypal_id;
+
     public $email;
 
     public function __construct($paypal_id, $email)

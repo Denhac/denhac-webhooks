@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
@@ -21,7 +20,8 @@ class UsergroupsApi
         $this->clients = $clients;
     }
 
-    #[Pure] public function __get(string $name)
+    #[Pure]
+    public function __get(string $name)
     {
         if ($name == 'users') {
             return new UsergroupsUsers($this->clients);
@@ -32,10 +32,11 @@ class UsergroupsApi
 
     /**
      * Note: Helper method, not official slack API
-     * @param $handle
+     *
      * @return array
      */
-    public function byName($handle) {
+    public function byName($handle)
+    {
         return $this->list()
             ->firstWhere('handle', $handle);
     }

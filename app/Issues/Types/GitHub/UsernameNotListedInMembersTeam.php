@@ -25,7 +25,7 @@ class UsernameNotListedInMembersTeam extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "GitHub: Username not listed in team";
+        return 'GitHub: Username not listed in team';
     }
 
     public function getIssueText(): string
@@ -36,10 +36,10 @@ class UsernameNotListedInMembersTeam extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Add to GitHub team", function() {
+            ->option('Add to GitHub team', function () {
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
-                $gitHubApi->team("members")->add($this->member->githubUsername);
+                $gitHubApi->team('members')->add($this->member->githubUsername);
 
                 return true;
             })

@@ -37,18 +37,28 @@ class SlackProfileFieldsUpdate extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {
         $this->withProgressBar($this->api->users->list(), function ($user) {
-            if (array_key_exists("deleted", $user) && $user["deleted"]) return;
-            if (array_key_exists("is_admin", $user) && $user["is_admin"]) return;         // Spacebot can't update these
-            if (array_key_exists("is_owner", $user) && $user["is_owner"]) return;         // Spacebot can't update these
-            if (array_key_exists("is_primary_owner", $user) && $user["is_primary_owner"]) return; // Spacebot can't update these
-            if (array_key_exists("is_bot", $user) && $user["is_bot"]) return;
-            if (array_key_exists("is_app_user", $user) && $user["is_app_user"]) return;
+            if (array_key_exists('deleted', $user) && $user['deleted']) {
+                return;
+            }
+            if (array_key_exists('is_admin', $user) && $user['is_admin']) {
+                return;
+            }         // Spacebot can't update these
+            if (array_key_exists('is_owner', $user) && $user['is_owner']) {
+                return;
+            }         // Spacebot can't update these
+            if (array_key_exists('is_primary_owner', $user) && $user['is_primary_owner']) {
+                return;
+            } // Spacebot can't update these
+            if (array_key_exists('is_bot', $user) && $user['is_bot']) {
+                return;
+            }
+            if (array_key_exists('is_app_user', $user) && $user['is_app_user']) {
+                return;
+            }
 
             app(VerifySlackUserProfile::class)
                 ->onQueue()

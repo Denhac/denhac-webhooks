@@ -11,8 +11,7 @@ class VendingProductData extends Data
 
     public function __construct(
         public Collection $productData,
-    )
-    {
+    ) {
         foreach ($this->productData['categories'] as $category) {
             if ($category['id'] == 66) {
                 $this->isVendingOrder = true;

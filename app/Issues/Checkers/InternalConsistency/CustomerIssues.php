@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-
 use App\Customer;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
@@ -54,17 +53,18 @@ class CustomerIssues implements IssueCheck
 
             if (is_null($customer)) {
                 $this->issues->add(new CannotFindCustomer($member));
+
                 continue;
             }
 
             $differingProperties = collect();
-            foreach($propertyMapping as $memberDataKey => $customerKey) {
-                if($member->$memberDataKey != $customer->$customerKey) {
+            foreach ($propertyMapping as $memberDataKey => $customerKey) {
+                if ($member->$memberDataKey != $customer->$customerKey) {
                     $differingProperties->add($memberDataKey);
                 }
             }
 
-            if($differingProperties->isNotEmpty()) {
+            if ($differingProperties->isNotEmpty()) {
                 $this->issues->add(new CustomerDataDiffers($member, $differingProperties));
             }
         }

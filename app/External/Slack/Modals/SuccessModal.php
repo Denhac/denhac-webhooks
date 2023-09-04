@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Modals;
 
-
 use App\Http\Requests\SlackRequest;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
@@ -17,11 +16,11 @@ class SuccessModal implements ModalInterface
     {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
-            ->title("Success!")
+            ->title('Success!')
             ->clearOnClose(true)
-            ->close("Close");
+            ->close('Close');
 
-        $this->modalView->text(" ");
+        $this->modalView->text(' ');
     }
 
     public static function callbackId(): string

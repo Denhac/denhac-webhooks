@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Log;
 
@@ -46,7 +45,7 @@ class ViewsApi
             'view' => json_encode($view),
         ];
 
-        if (!is_null($hash)) {
+        if (! is_null($hash)) {
             $data['hash'] = $hash;
         }
 
@@ -55,7 +54,7 @@ class ViewsApi
                 RequestOptions::JSON => $data,
             ]);
 
-        Log::info("Slack Views Publish");
+        Log::info('Slack Views Publish');
         Log::info(json_decode($response->getBody(), true));
     }
 }

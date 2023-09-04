@@ -31,6 +31,6 @@ return [
     ],
 
     'horizon' => [
-        'secret' => env('HORIZON_SECRET')
+        'secret' => env('HORIZON_SECRET'),
     ],
 ];

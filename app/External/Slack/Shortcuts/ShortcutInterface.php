@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Shortcuts;
 
-
 use App\Http\Requests\SlackRequest;
 
 interface ShortcutInterface

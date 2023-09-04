@@ -10,11 +10,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Laravel\Passport\HasApiTokens;
 
 /**
  * Class Customer.
+ *
  * @property int id
  * @property string first_name
  * @property string last_name
@@ -32,6 +31,7 @@ use Laravel\Passport\HasApiTokens;
  * @property string member_code
  * @property bool id_checked
  * @property ?string stripe_card_holder_id
+ *
  * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)
  */
@@ -54,7 +54,7 @@ class Customer extends Model
     ];
 
     protected $appends = [
-        'member_code'
+        'member_code',
     ];
 
     protected $casts = [
@@ -122,12 +122,12 @@ class Customer extends Model
     public function isATrainer()
     {
         return $this->equipmentTrainer()
-                ->where('status', 'active')
-                ->count() > 0;
+            ->where('status', 'active')
+            ->count() > 0;
     }
 
     /**
-     * @param Notification $notification
+     * @param  Notification  $notification
      * @return string
      */
     public function routeNotificationForMail($notification)

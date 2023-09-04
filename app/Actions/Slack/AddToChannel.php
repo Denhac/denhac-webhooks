@@ -13,15 +13,10 @@ class AddToChannel
     use StaticAction;
     use SlackActionTrait;
 
-    /**
-     * @var SlackApi
-     */
     private SlackApi $slackApi;
 
     /**
      * Create a new action instance.
-     *
-     * @param SlackApi $slackApi
      */
     public function __construct(SlackApi $slackApi)
     {
@@ -31,8 +26,8 @@ class AddToChannel
     /**
      * Execute the action.
      *
-     * @param string $userId The woo customer id or the slack id
-     * @param $channel
+     * @param  string  $userId The woo customer id or the slack id
+     *
      * @throws Throwable
      */
     public function execute(string $userId, $channel)

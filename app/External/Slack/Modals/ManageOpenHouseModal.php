@@ -19,7 +19,9 @@ class ManageOpenHouseModal implements ModalInterface
     use RespondsToBlockActions;
 
     protected const EXPIRES_TIME = 'expires-time';
+
     private const DOORS = 'doors';
+
     private const CLOSE_ALL_DOORS = 'close-all-doors';
 
     private Modal $modalView;
@@ -30,30 +32,30 @@ class ManageOpenHouseModal implements ModalInterface
             ->callbackId(self::callbackId())
             ->title('Manage Open House Doors')
             ->clearOnClose(true)
-            ->submit("Update")
+            ->submit('Update')
             ->close('Cancel');
 
         $timePicker = (new TimePicker())
-            ->initialTime("23:00")
+            ->initialTime('23:00')
             ->actionId(self::EXPIRES_TIME);
 
         $this->modalView->newSection()
-            ->mrkdwnText("When should these doors close?")
+            ->mrkdwnText('When should these doors close?')
             ->blockId(self::EXPIRES_TIME)
             ->setAccessory($timePicker);
 
         $checkboxes = $this->modalView->newInput()
-            ->label("Doors")
+            ->label('Doors')
             ->blockId(self::DOORS)
             ->newCheckboxes(self::DOORS);
 
         /** @var Door $door */
         foreach (Door::all() as $door) {
-            $option = Option::new($door->humanReadableName, "device-".$door->dsxDeviceId);
+            $option = Option::new($door->humanReadableName, 'device-'.$door->dsxDeviceId);
             $checkboxes->addOption($option, $door->openDuringOpenHouseByDefault);
         }
 
-        $checkboxes->option("Close all doors", self::CLOSE_ALL_DOORS);
+        $checkboxes->option('Close all doors', self::CLOSE_ALL_DOORS);
     }
 
     public static function callbackId(): string
@@ -64,24 +66,24 @@ class ManageOpenHouseModal implements ModalInterface
     public static function handle(SlackRequest $request)
     {
         $values = $request->payload()['view']['state']['values'];
-        Log::info("Manage open house modal: " . print_r($values, true));
+        Log::info('Manage open house modal: '.print_r($values, true));
 
         $selectedTime = $values[self::EXPIRES_TIME][self::EXPIRES_TIME]['selected_time'];
         $selectedOptions = collect($values[self::DOORS][self::DOORS]['selected_options'])
-            ->map(function($option) {
+            ->map(function ($option) {
                 return $option['value'];
             });
 
-        $selectedTimeCarbon = now()->tz("America/Denver");
-        $selectedTime = explode(":", $selectedTime);
+        $selectedTimeCarbon = now()->tz('America/Denver');
+        $selectedTime = explode(':', $selectedTime);
         $selectedTimeCarbon->hour = $selectedTime[0];
         $selectedTimeCarbon->minute = $selectedTime[1];
 
         $doors = Door::all();
         /** @var Door $door */
         foreach ($doors as $door) {
-            $shouldOpen = $selectedOptions->contains("device-".$door->dsxDeviceId);
-            if($selectedOptions->contains(self::CLOSE_ALL_DOORS)) {
+            $shouldOpen = $selectedOptions->contains('device-'.$door->dsxDeviceId);
+            if ($selectedOptions->contains(self::CLOSE_ALL_DOORS)) {
                 $door->shouldOpen(false);
             } else {
                 $door->shouldOpen($shouldOpen);
@@ -113,7 +115,7 @@ class ManageOpenHouseModal implements ModalInterface
         return $this->modalView->jsonSerialize();
     }
 
-    static function onBlockAction(SlackRequest $request)
+    public static function onBlockAction(SlackRequest $request)
     {
         // TODO Maybe handle if time is before now so it rolls over?
         return response('');

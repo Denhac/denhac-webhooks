@@ -8,6 +8,7 @@ use App\Issues\Types\IssueBase;
 class MemberCardIsNotActive extends IssueBase
 {
     private MemberData $member;
+
     private $memberCard;
 
     public function __construct(MemberData $member, $memberCard)
@@ -23,7 +24,7 @@ class MemberCardIsNotActive extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Member card is not active";
+        return 'Internal Consistency: Member card is not active';
     }
 
     public function getIssueText(): string

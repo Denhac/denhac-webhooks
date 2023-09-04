@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\IssueData;
@@ -33,7 +32,7 @@ class UserMemberships implements IssueCheck
 
             $model = $userMembershipsModels->where('id', $um_id)->first();
 
-            if(is_null($model)) {
+            if (is_null($model)) {
                 $this->issues->add(new UserMembershipDoesNotExistInOurLocalDatabase($um_id));
 
                 continue;

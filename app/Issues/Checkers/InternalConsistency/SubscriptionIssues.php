@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\IssueData;

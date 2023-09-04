@@ -20,7 +20,7 @@ class SubscriptionDoesNotExistInOurLocalDatabase extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Subscription does not exist in our local database";
+        return 'Internal Consistency: Subscription does not exist in our local database';
     }
 
     public function getIssueText(): string

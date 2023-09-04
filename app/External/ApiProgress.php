@@ -2,12 +2,9 @@
 
 namespace App\External;
 
-
-use Illuminate\Console\Concerns\InteractsWithIO;
-
 interface ApiProgress
 {
-    function setProgress($current, $max): void;
+    public function setProgress($current, $max): void;
 
-    function step(): void;
+    public function step(): void;
 }

@@ -16,8 +16,11 @@ use Illuminate\Support\Collection;
 trait Cards
 {
     public Collection $cardsOnAccount;  // Any and all cards on their account.
+
     public Collection $cardsNeedingActivation;  // Any cards that haven't been sent for activation. Regardless of if they're a member yet.
+
     public Collection $cardsSentForActivation;  // Cards that have been posted and need to be activated by the card access server.
+
     public Collection $cardsSentForDeactivation;  // Cards that have been posted and need to be deactivated by the card access server.
 
     public function bootCards()
@@ -43,7 +46,7 @@ trait Cards
         if ($status == CardUpdateRequest::STATUS_SUCCESS) {
             if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
-            } else if ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
+            } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
                 $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
             } else {
                 $message = "Card update request type wasn't one of the expected values: {$cardUpdateRequest->type}";
@@ -95,7 +98,7 @@ trait Cards
 
     public function activateCardsNeedingActivation(): void
     {
-        if(! $this->shouldHavePhysicalBuildingAccess()) {
+        if (! $this->shouldHavePhysicalBuildingAccess()) {
             return;  // We'll check again when they sign the waiver
         }
 

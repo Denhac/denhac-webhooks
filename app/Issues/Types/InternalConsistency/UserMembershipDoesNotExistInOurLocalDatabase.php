@@ -13,6 +13,7 @@ class UserMembershipDoesNotExistInOurLocalDatabase extends IssueBase
 
         $this->userMembershipId = $userMembershipId;
     }
+
     public static function getIssueNumber(): int
     {
         return 212;  // auto-generated based on namespace and existing issues
@@ -20,7 +21,7 @@ class UserMembershipDoesNotExistInOurLocalDatabase extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: User membership does not exist in our local database";
+        return 'Internal Consistency: User membership does not exist in our local database';
     }
 
     public function getIssueText(): string

@@ -21,7 +21,7 @@ class RemoteIsNotMemberButLocalIs extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Remote is not member but local is";
+        return 'Internal Consistency: Remote is not member but local is';
     }
 
     public function getIssueText(): string

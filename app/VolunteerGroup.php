@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
 /**
- * @property integer id
+ * @property int id
  * @property string name
- * @property integer plan_id
- * @property integer max_people
+ * @property int plan_id
+ * @property int max_people
  * @property Collection channels
+ *
  * @method static Builder wherePlanId($planId)
  */
 class VolunteerGroup extends Model
@@ -23,7 +24,7 @@ class VolunteerGroup extends Model
     protected $fillable = [
         'name',
         'plan_id',
-        'max_people'
+        'max_people',
     ];
 
     public function channels(): HasMany

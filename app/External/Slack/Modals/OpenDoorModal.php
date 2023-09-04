@@ -17,11 +17,9 @@ class OpenDoorModal implements ModalInterface
     use ModalTrait;
 
     private const DOORS_BLOCK_ID = 'doors-block-id';
+
     private const DOORS_ACTION_ID = 'doors-action-id';
 
-    /**
-     * @var Modal
-     */
     private Modal $modalView;
 
     public function __construct()
@@ -30,17 +28,17 @@ class OpenDoorModal implements ModalInterface
             ->callbackId(self::callbackId())
             ->title('Open door')
             ->clearOnClose(true)
-            ->submit("Open")
+            ->submit('Open')
             ->close('Cancel');
 
         $buttons = $this->modalView->newInput()
-            ->label("Doors")
+            ->label('Doors')
             ->blockId(self::DOORS_BLOCK_ID)
             ->newRadioButtons(self::DOORS_ACTION_ID);
 
         /** @var Door $door */
         foreach (Door::all() as $door) {
-            $option = Option::new($door->humanReadableName, "device-".$door->dsxDeviceId);
+            $option = Option::new($door->humanReadableName, 'device-'.$door->dsxDeviceId);
             $buttons->addOption($option);
         }
     }
@@ -54,16 +52,16 @@ class OpenDoorModal implements ModalInterface
     {
         $customer = $request->customer();
         $values = $request->payload()['view']['state']['values'];
-        Log::info("Open Door Modal: " . print_r($values, true));
+        Log::info('Open Door Modal: '.print_r($values, true));
 
         $selectedOption = collect($values[self::DOORS_BLOCK_ID][self::DOORS_ACTION_ID]['selected_option']);
 
         /** @var Door $door */
         $door = Door::all()
-            ->filter(fn($door) => $selectedOption['value'] == "device-".$door->dsxDeviceId)
+            ->filter(fn ($door) => $selectedOption['value'] == 'device-'.$door->dsxDeviceId)
             ->first();
 
-        if(is_null($door)) {
+        if (is_null($door)) {
             throw new \Exception("The door for ${selectedOption['value']} was null");
         }
 
@@ -75,7 +73,7 @@ class OpenDoorModal implements ModalInterface
         $atTheSpace = $accessLogs
             ->where('user_id', $customer->slack_id)
             ->where('ip', setting('ip.space'))
-            ->filter(fn($data) => $data['date_last'] >= $earliestAllowedTimestamp)
+            ->filter(fn ($data) => $data['date_last'] >= $earliestAllowedTimestamp)
             ->count() > 0;
 
         if ($atTheSpace) {
@@ -84,9 +82,9 @@ class OpenDoorModal implements ModalInterface
             return response()->json([
                 'response_action' => 'push',
                 'view' => Kit::newModal()
-                    ->title("Failed")
+                    ->title('Failed')
                     ->clearOnClose(true)
-                    ->close("Close")
+                    ->close('Close')
                     ->text("I'm sorry, I can't verify that you're at the space"),
             ]);
         }

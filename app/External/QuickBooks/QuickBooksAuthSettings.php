@@ -2,31 +2,31 @@
 
 namespace App\External\QuickBooks;
 
-
 use anlutro\LaravelSettings\Facades\Setting;
 use Illuminate\Support\Facades\Crypt;
-use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
-use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
 
 class QuickBooksAuthSettings
 {
-    protected const ACCESS_TOKEN_KEY = "quickbooks.auth.accessToken";
-    protected const REFRESH_TOKEN_KEY = "quickbooks.auth.refreshToken";
-    protected const REALM_ID_KEY = "quickbooks.auth.realmId";
+    protected const ACCESS_TOKEN_KEY = 'quickbooks.auth.accessToken';
+
+    protected const REFRESH_TOKEN_KEY = 'quickbooks.auth.refreshToken';
+
+    protected const REALM_ID_KEY = 'quickbooks.auth.realmId';
 
     public static function hasKnownAuth(): bool
     {
-        return !is_null(setting(self::ACCESS_TOKEN_KEY)) ||
-            !is_null(setting(self::REFRESH_TOKEN_KEY)) ||
-            !is_null(setting(self::REALM_ID_KEY));
+        return ! is_null(setting(self::ACCESS_TOKEN_KEY)) ||
+            ! is_null(setting(self::REFRESH_TOKEN_KEY)) ||
+            ! is_null(setting(self::REALM_ID_KEY));
     }
 
     public static function getRealmId(): ?string
     {
-        if(!self::hasKnownAuth()) {
+        if (! self::hasKnownAuth()) {
             return null;
         }
+
         return setting(self::REALM_ID_KEY);
     }
 
@@ -37,22 +37,22 @@ class QuickBooksAuthSettings
             'ClientID' => config('denhac.quickbooks.client_id'),
             'ClientSecret' => config('denhac.quickbooks.client_secret'),
             'RedirectURI' => config('denhac.quickbooks.redirect'),
-            'scope' => "com.intuit.quickbooks.accounting",
+            'scope' => 'com.intuit.quickbooks.accounting',
             'baseUrl' => config('denhac.quickbooks.base_url'),
         ];
 
         $accessToken = setting(self::ACCESS_TOKEN_KEY);
-        if (!is_null($accessToken)) {
+        if (! is_null($accessToken)) {
             $dataServiceParameters['accessTokenKey'] = $accessToken;
         }
 
         $refreshToken = setting(self::REFRESH_TOKEN_KEY);
-        if (!is_null($refreshToken)) {
+        if (! is_null($refreshToken)) {
             $dataServiceParameters['refreshTokenKey'] = Crypt::decryptString($refreshToken);
         }
 
         $realmId = setting(self::REALM_ID_KEY);
-        if (!is_null($realmId)) {
+        if (! is_null($realmId)) {
             $dataServiceParameters['QBORealmID'] = $realmId;
         }
 

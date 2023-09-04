@@ -12,7 +12,9 @@ class SubscriptionStatusDiffers extends IssueBase
     use ICanFixThem;
 
     private int $subscription_id;
+
     private string $remote_status;
+
     private string $local_status;
 
     public function __construct($subscription_id, $remote_status, $local_status)
@@ -29,7 +31,7 @@ class SubscriptionStatusDiffers extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Subscription status differs";
+        return 'Internal Consistency: Subscription status differs';
     }
 
     public function getIssueText(): string
@@ -40,7 +42,7 @@ class SubscriptionStatusDiffers extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Update subscription from WordPress", function() {
+            ->option('Update subscription from WordPress', function () {
                 /** @var WooCommerceApi $wooCommerceApi */
                 $wooCommerceApi = app(WooCommerceApi::class);
                 $subscription = $wooCommerceApi->subscriptions->get($this->subscription_id)->toArray();

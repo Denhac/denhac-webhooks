@@ -50,9 +50,9 @@ final class MembershipAggregate extends AggregateRoot
         $booted = [];
 
         foreach (class_uses_recursive($class) as $trait) {
-            $method = 'boot' . class_basename($trait);
+            $method = 'boot'.class_basename($trait);
 
-            if (method_exists($class, $method) && !in_array($method, $booted)) {
+            if (method_exists($class, $method) && ! in_array($method, $booted)) {
                 $this->$method();
 
                 $booted[] = $method;
@@ -69,7 +69,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function checkDenhacTestUser($customer): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -82,7 +82,7 @@ final class MembershipAggregate extends AggregateRoot
 
         $value = $isDenhacTestUser['value'];
 
-        if ($value === "1") {
+        if ($value === '1') {
             $this->customerIsNoEventTestUser();
         }
 
@@ -93,7 +93,7 @@ final class MembershipAggregate extends AggregateRoot
     {
         $this->checkDenhacTestUser($customer);
 
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -112,7 +112,7 @@ final class MembershipAggregate extends AggregateRoot
     {
         $this->checkDenhacTestUser($customer);
 
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -129,7 +129,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteCustomer($customer): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -140,7 +140,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importCustomer($customer): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -155,7 +155,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function createSubscription($subscription): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -168,7 +168,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateSubscription($subscription): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -181,7 +181,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importSubscription($subscription): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -194,7 +194,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteSubscription($subscription): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -205,7 +205,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function createUserMembership($membership): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -218,7 +218,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function updateUserMembership($membership): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -231,7 +231,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deleteUserMembership($membership): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -242,7 +242,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function importUserMembership($membership): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -255,7 +255,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function assignWaiver(Waiver $waiver): static
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -270,7 +270,7 @@ final class MembershipAggregate extends AggregateRoot
     {
         if ($this->manualBootstrapTriggered) {
             return $this;
-        } else if ($this->membershipWaiverSigned) {
+        } elseif ($this->membershipWaiverSigned) {
             return $this;
         }
 
@@ -296,7 +296,7 @@ final class MembershipAggregate extends AggregateRoot
 
     public function deactivateMembershipIfNeeded(): void
     {
-        if (!$this->currentlyAMember) {
+        if (! $this->currentlyAMember) {
             return;
         }
 

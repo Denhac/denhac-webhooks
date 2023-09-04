@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,11 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 class NewMemberCardActivation extends Model
 {
     public const SUBMITTED = 'submitted';
-    public const CARD_SENT_FOR_ACTIVATION = 'card-sent-for-activation';
-    public const CARD_ACTIVATED = 'card-activated';
-    public const SCAN_FAILED = 'scan-failed';
-    public const SUCCESS = 'success';
 
+    public const CARD_SENT_FOR_ACTIVATION = 'card-sent-for-activation';
+
+    public const CARD_ACTIVATED = 'card-activated';
+
+    public const SCAN_FAILED = 'scan-failed';
+
+    public const SUCCESS = 'success';
 
     protected $fillable = [
         'woo_customer_id',
@@ -27,10 +29,10 @@ class NewMemberCardActivation extends Model
 
     public static function search($customer, $card): ?NewMemberCardActivation
     {
-        if($customer instanceof Customer) {
+        if ($customer instanceof Customer) {
             $customer = $customer->id;
         }
-        if($card instanceof Card) {
+        if ($card instanceof Card) {
             $card = $card->number;
         }
 

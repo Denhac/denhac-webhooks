@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Shortcuts;
 
-
 use App\Events\DoorControlUpdated;
 use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
@@ -11,7 +10,7 @@ class OpenWorkshopGlassDoor implements ShortcutInterface
 {
     public static function callbackId(): string
     {
-        return "door.open.door_dsx_3";
+        return 'door.open.door_dsx_3';
     }
 
     public static function handle(SlackRequest $request)

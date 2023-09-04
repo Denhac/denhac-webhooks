@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Reactors;
 
-
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
 use App\Customer;
@@ -26,6 +25,7 @@ class GoogleGroupsReactorTest extends TestCase
     use AssertsActions;
 
     private MockInterface|GoogleApi $googleApi;
+
     private Customer $customer;
 
     public function setUp(): void
@@ -119,13 +119,14 @@ class GoogleGroupsReactorTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider userMembershipStatuses
-     * @param string $status
      */
     public function on_user_membership_created_with_non_active_status_does_nothing(string $status)
     {
-        if($status == 'active') {
+        if ($status == 'active') {
             $this->assertTrue(true);
+
             return;
         }
 
@@ -143,13 +144,13 @@ class GoogleGroupsReactorTest extends TestCase
     public function being_added_to_trainable_equipment_as_user_adds_to_google_group()
     {
         $planId = 1234;
-        $groupEmail = "test@denhac.org";
+        $groupEmail = 'test@denhac.org';
 
         TrainableEquipment::create([
-            "name" => "Test",
-            "user_plan_id" => $planId,
-            "user_email" => $groupEmail,
-            "trainer_plan_id" => 5678,
+            'name' => 'Test',
+            'user_plan_id' => $planId,
+            'user_email' => $groupEmail,
+            'trainer_plan_id' => 5678,
         ]);
 
         $userMembership = $this->userMembership()
@@ -167,13 +168,13 @@ class GoogleGroupsReactorTest extends TestCase
     public function being_added_to_trainable_equipment_as_trainer_adds_to_google_group()
     {
         $planId = 1234;
-        $groupEmail = "test@denhac.org";
+        $groupEmail = 'test@denhac.org';
 
         TrainableEquipment::create([
-            "name" => "Test",
-            "user_plan_id" => 5678,
-            "trainer_plan_id" => $planId,
-            "trainer_email" => $groupEmail,
+            'name' => 'Test',
+            'user_plan_id' => 5678,
+            'trainer_plan_id' => $planId,
+            'trainer_email' => $groupEmail,
         ]);
 
         $userMembership = $this->userMembership()
@@ -193,9 +194,9 @@ class GoogleGroupsReactorTest extends TestCase
         $planId = 1234;
 
         TrainableEquipment::create([
-            "name" => "Test",
-            "user_plan_id" => $planId,
-            "trainer_plan_id" => 5678,
+            'name' => 'Test',
+            'user_plan_id' => $planId,
+            'trainer_plan_id' => 5678,
         ]);
 
         $userMembership = $this->userMembership()
@@ -214,9 +215,9 @@ class GoogleGroupsReactorTest extends TestCase
         $planId = 1234;
 
         TrainableEquipment::create([
-            "name" => "Test",
-            "user_plan_id" => 5678,
-            "trainer_plan_id" => $planId,
+            'name' => 'Test',
+            'user_plan_id' => 5678,
+            'trainer_plan_id' => $planId,
         ]);
 
         $userMembership = $this->userMembership()

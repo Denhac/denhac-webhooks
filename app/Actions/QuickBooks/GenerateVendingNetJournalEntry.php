@@ -19,17 +19,18 @@ class GenerateVendingNetJournalEntry
     use QueueableAction;
 
     private WooCommerceApi $wooCommerceApi;
+
     private StripeClient $stripeClient;
 
     private Collection $products;  // Product id -> VendingProductData. Used to do lazy lookups.
+
     private QuickBookReferences $quickBookReferences;
 
     public function __construct(
-        StripeClient   $stripeClient,
+        StripeClient $stripeClient,
         WooCommerceApi $wooCommerceApi,
         QuickBookReferences $quickBookReferences,
-    )
-    {
+    ) {
         $this->wooCommerceApi = $wooCommerceApi;
         $this->stripeClient = $stripeClient;
         $this->products = collect();
@@ -38,7 +39,7 @@ class GenerateVendingNetJournalEntry
 
     public function execute(Carbon $date): void
     {
-        if(! QuickBooksAuthSettings::hasKnownAuth()) {
+        if (! QuickBooksAuthSettings::hasKnownAuth()) {
             return;  // We have no QuickBooks auth, we can't do anything
             // TODO This is a silent fail. Which is fine if we don't have credentials but less fine if we accidentally
             // don't have credentials. Also we can't test this locally as easily. Need to add a --dry-run flag or
@@ -59,14 +60,14 @@ class GenerateVendingNetJournalEntry
 
         foreach ($wooCommerceOrders as $wooCommerceOrder) {
             $vendingOrder = new VendingOrderData($wooCommerceOrder);
-            if (!$vendingOrder->isValidStripeOrder()) {
+            if (! $vendingOrder->isValidStripeOrder()) {
                 continue;
             }
 
             // Update our products mapping based on this order's products
             $this->updateProducts($vendingOrder);
 
-            list($orderSpent, $vendingNet, $vendingSpent) = $vendingOrder->getVendingNetAndSpent($this->stripeClient, $this->products);
+            [$orderSpent, $vendingNet, $vendingSpent] = $vendingOrder->getVendingNetAndSpent($this->stripeClient, $this->products);
 
             if ($vendingSpent == 0) {
                 continue;  // Not a vending machine order, ignore it
@@ -112,17 +113,17 @@ class GenerateVendingNetJournalEntry
         $journalEntry = new IPPJournalEntry([
             'Line' => [
                 $totalNetLine,
-                ...$orderLines->toArray()
+                ...$orderLines->toArray(),
             ],
             'TxnDate' => $date->toDateString(),
-//            'DocNumber' => "AUTO_GENERATE",
+            //            'DocNumber' => "AUTO_GENERATE",
             'PrivateNote' => 'Moving accounts due to mixed transaction types included in a single deposit. Transaction details have been included in the line level description. This entry has been created automatically.',
         ]);
 
         /** @var DataService $dataService */
         $dataService = app(DataService::class);
         $response = $dataService->Add($journalEntry);
-        if (!is_null($response)) {
+        if (! is_null($response)) {
             return;
         }
         $error = $dataService->getLastError();
@@ -140,7 +141,7 @@ class GenerateVendingNetJournalEntry
 
     protected function getProduct($productId): VendingProductData
     {
-        if (!$this->products->has($productId)) {
+        if (! $this->products->has($productId)) {
             $this->products->put($productId, new VendingProductData($this->wooCommerceApi->products->get($productId)));  // We'll actually get it in a second.
         }
 

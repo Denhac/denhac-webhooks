@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\Slack;
 
-
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Checkers\SlackMembershipHelper;
@@ -30,7 +29,7 @@ class MissingSlackUsers implements IssueCheck
         $members
             ->each(function ($member) use ($slackUsers) {
                 /** @var MemberData $member */
-                if (!$member->isMember) {
+                if (! $member->isMember) {
                     return;
                 }
 

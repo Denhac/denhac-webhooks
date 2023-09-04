@@ -4,7 +4,6 @@ namespace App\Http\Controllers\QuickBooks;
 
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -18,7 +17,7 @@ class RedirectController extends Controller
 {
     public function redirect(Request $request): Redirector|Application|RedirectResponse
     {
-        if(QuickBooksAuthSettings::hasKnownAuth()) {
+        if (QuickBooksAuthSettings::hasKnownAuth()) {
             return redirect('/quickbooks/fail');
         }
 

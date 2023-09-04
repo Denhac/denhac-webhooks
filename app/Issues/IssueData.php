@@ -2,7 +2,6 @@
 
 namespace App\Issues;
 
-
 use App\External\GitHub\GitHubApi;
 use App\External\Google\GmailEmailHelper;
 use App\External\Google\GoogleApi;
@@ -28,40 +27,48 @@ class IssueData
     use HasApiProgressBar;
 
     public const SYSTEM_WOOCOMMERCE = 'WooCommerce';
+
     public const SYSTEM_PAYPAL = 'PayPal';
 
     private WooCommerceApi $wooCommerceApi;
+
     private SlackApi $slackApi;
+
     private GoogleApi $googleApi;
+
     private GitHubApi $gitHubApi;
+
     private StripeClient $stripeClient;
 
-    private Collection|null $_wooCommerceCustomers = null;
-    private Collection|null $_wooCommerceSubscriptions = null;
-    private Collection|null $_wooCommerceUserMemberships = null;
+    private ?Collection $_wooCommerceCustomers = null;
 
-    private Collection|null $_slackUsers = null;
+    private ?Collection $_wooCommerceSubscriptions = null;
 
-    private Collection|null $_members = null;
+    private ?Collection $_wooCommerceUserMemberships = null;
 
-    private Collection|null $_googleGroups = null;
-    private Collection|null $_googleGroupMembers = null;  // Key is group, value is member list
+    private ?Collection $_slackUsers = null;
 
-    private Collection|null $_gitHubTeamMembers = null;  // The GitHub team is called "members"
-    private Collection|null $_gitHubPendingTeamMembers = null;  // The invites to said team
+    private ?Collection $_members = null;
 
-    private Collection|null $_stripeCardHolders = null;
+    private ?Collection $_googleGroups = null;
 
-    private OutputInterface|null $output = null;
+    private ?Collection $_googleGroupMembers = null;  // Key is group, value is member list
+
+    private ?Collection $_gitHubTeamMembers = null;  // The GitHub team is called "members"
+
+    private ?Collection $_gitHubPendingTeamMembers = null;  // The invites to said team
+
+    private ?Collection $_stripeCardHolders = null;
+
+    private ?OutputInterface $output = null;
 
     public function __construct(
         WooCommerceApi $wooCommerceApi,
-        SlackApi       $slackApi,
-        GoogleApi      $googleApi,
-        GitHubApi      $gitHubApi,
-        StripeClient   $stripeClient,
-    )
-    {
+        SlackApi $slackApi,
+        GoogleApi $googleApi,
+        GitHubApi $gitHubApi,
+        StripeClient $stripeClient,
+    ) {
         $this->wooCommerceApi = $wooCommerceApi;
         $this->slackApi = $slackApi;
         $this->googleApi = $googleApi;
@@ -69,7 +76,7 @@ class IssueData
         $this->stripeClient = $stripeClient;
     }
 
-    public function setOutput(OutputInterface|null $output): void
+    public function setOutput(?OutputInterface $output): void
     {
         $this->output = $output;
     }
@@ -77,7 +84,7 @@ class IssueData
     public function wooCommerceCustomers(): Collection
     {
         if (is_null($this->_wooCommerceCustomers)) {
-            $this->_wooCommerceCustomers = $this->wooCommerceApi->customers->list($this->apiProgress("Fetching WooCommerce Customers"));
+            $this->_wooCommerceCustomers = $this->wooCommerceApi->customers->list($this->apiProgress('Fetching WooCommerce Customers'));
         }
 
         return $this->_wooCommerceCustomers;
@@ -86,7 +93,7 @@ class IssueData
     public function wooCommerceSubscriptions(): Collection
     {
         if (is_null($this->_wooCommerceSubscriptions)) {
-            $this->_wooCommerceSubscriptions = $this->wooCommerceApi->subscriptions->list($this->apiProgress("Fetching WooCommerce Subscriptions"));
+            $this->_wooCommerceSubscriptions = $this->wooCommerceApi->subscriptions->list($this->apiProgress('Fetching WooCommerce Subscriptions'));
         }
 
         return $this->_wooCommerceSubscriptions;
@@ -95,7 +102,7 @@ class IssueData
     public function wooCommerceUserMemberships(): Collection
     {
         if (is_null($this->_wooCommerceUserMemberships)) {
-            $this->_wooCommerceUserMemberships = $this->wooCommerceApi->members->list($this->apiProgress("Fetching WooCommerce User Memberships"));
+            $this->_wooCommerceUserMemberships = $this->wooCommerceApi->members->list($this->apiProgress('Fetching WooCommerce User Memberships'));
         }
 
         return $this->_wooCommerceUserMemberships;
@@ -115,7 +122,7 @@ class IssueData
             $customers = $this->wooCommerceCustomers();
 
             // This has to be created after anything else with a progress bar
-            $progress = $this->apiProgress("Compiling WooCommerce members list");
+            $progress = $this->apiProgress('Compiling WooCommerce members list');
             $progress->setProgress(0, $customers->count());
             $this->_members = $customers->map(function ($customer) use ($progress, $subscriptions, $userMemberships, $waivers) {
                 $meta_data = collect($customer['meta_data']);
@@ -127,7 +134,7 @@ class IssueData
 
                 $emails = collect();
                 $primaryEmail = GmailEmailHelper::handleGmail(Str::lower($customer['email']));
-                if (!is_null($customer['email'])) {
+                if (! is_null($customer['email'])) {
                     $emails->push($primaryEmail);
                 }
 
@@ -150,11 +157,11 @@ class IssueData
                 $fullMemberUserMembershipStatus = $userMembershipsMap->get(UserMembership::MEMBERSHIP_FULL_MEMBER);
                 $isMember = in_array(
                     $fullMemberUserMembershipStatus,
-                    ["active", "pending", "complimentary"]
+                    ['active', 'pending', 'complimentary']
                 );
 
-                $idWasChecked = !is_null($this->getMetaValue($meta_data, 'id_was_checked'));
-                if ($idWasChecked && $fullMemberUserMembershipStatus == "paused") {
+                $idWasChecked = ! is_null($this->getMetaValue($meta_data, 'id_was_checked'));
+                if ($idWasChecked && $fullMemberUserMembershipStatus == 'paused') {
                     // Their ID was checked and it's paused. Could just be a transition or they're failing next months
                     // payment. Either way as of right this second, they're a member.
                     $isMember = true;
@@ -188,7 +195,7 @@ class IssueData
             $this->_members = $this->_members->concat(PaypalBasedMember::all()
                 ->map(function ($member) {
                     $emails = collect();
-                    if (!is_null($member->email)) {
+                    if (! is_null($member->email)) {
                         $emails->push(GmailEmailHelper::handleGmail(Str::lower($member->email)));
                     }
 
@@ -199,7 +206,7 @@ class IssueData
                         primaryEmail: $member->email,
                         emails: $emails,
                         isMember: $member->active,
-                        hasSignedWaiver: false,  # No way for me to actually handle this.
+                        hasSignedWaiver: false,  // No way for me to actually handle this.
                         subscriptions: collect(),
                         userMemberships: collect(),
                         cards: is_null($member->card) ? collect() : collect([$member->card]),
@@ -210,19 +217,21 @@ class IssueData
                     );
                 }));
         }
+
         return $this->_members;
     }
 
     private function getMetaValue($meta_data, $key)
     {
         $meta_entry = $meta_data->where('key', $key)->first();
+
         return is_null($meta_entry) ? null : ($meta_entry['value'] ?: null);
     }
 
     public function slackUsers()
     {
         if (is_null($this->_slackUsers)) {
-            $this->_slackUsers = $this->slackApi->users->list($this->apiProgress("Fetching Slack users"));
+            $this->_slackUsers = $this->slackApi->users->list($this->apiProgress('Fetching Slack users'));
         }
 
         return $this->_slackUsers;
@@ -243,7 +252,7 @@ class IssueData
             $this->_googleGroupMembers = collect();
         }
 
-        if (!$this->_googleGroupMembers->has($group)) {
+        if (! $this->_googleGroupMembers->has($group)) {
             $members = $this->googleApi->group($group)->list($this->apiProgress("Fetching Google Group Members $group"));
             $this->_googleGroupMembers->put($group, $members);
         }
@@ -255,7 +264,7 @@ class IssueData
     {
         if (is_null($this->_gitHubTeamMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubTeamMembers = $this->gitHubApi->team("members")
+            $this->_gitHubTeamMembers = $this->gitHubApi->team('members')
                 ->list($this->apiProgress("Fetching members of GitHub team 'members'"));
         }
 
@@ -266,7 +275,7 @@ class IssueData
     {
         if (is_null($this->_gitHubPendingTeamMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubPendingTeamMembers = $this->gitHubApi->team("members")
+            $this->_gitHubPendingTeamMembers = $this->gitHubApi->team('members')
                 ->pending($this->apiProgress("Fetching invites of GitHub team 'members'"));
         }
 

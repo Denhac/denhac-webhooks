@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\GoogleGroups;
 
-
 use App\External\Google\GmailEmailHelper;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
@@ -83,7 +82,7 @@ class GoogleGroupIssues implements IssueCheck
             /** @var MemberData $member */
             $member = $membersForEmail->first();
 
-            if (!$member->isMember) {
+            if (! $member->isMember) {
                 $this->issues->add(new NotActiveMemberButInGroups($member, $email, $groupsForEmail));
             }
         });
@@ -97,7 +96,7 @@ class GoogleGroupIssues implements IssueCheck
                 return;
             }
 
-            if (!$member->isMember) {
+            if (! $member->isMember) {
                 return;
             }
 
@@ -114,6 +113,7 @@ class GoogleGroupIssues implements IssueCheck
                             return false;  // This group has this email
                         }
                     }
+
                     return true;  // This group has none of the members emails
                 });
 

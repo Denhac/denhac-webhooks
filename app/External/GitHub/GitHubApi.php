@@ -6,11 +6,9 @@ use Illuminate\Support\Facades\Http;
 
 class GitHubApi
 {
-    /**
-     * @var TokenManager
-     */
     private TokenManager $tokenManager;
-    private string|null $accessToken = null;
+
+    private ?string $accessToken = null;
 
     public function __construct(TokenManager $tokenManager)
     {
@@ -37,8 +35,9 @@ class GitHubApi
         // TODO switch this to be under a users module
         $accessToken = $this->getAccessToken();
         $response = Http::withHeaders([
-            'Authorization' => "Bearer $accessToken"
+            'Authorization' => "Bearer $accessToken",
         ])->get("https://api.github.com/users/$username");
+
         return $response->json();
     }
 
@@ -47,8 +46,9 @@ class GitHubApi
         // TODO switch this to be under search module
         $accessToken = $this->getAccessToken();
         $response = Http::withHeaders([
-            'Authorization' => "Bearer $accessToken"
+            'Authorization' => "Bearer $accessToken",
         ])->get("https://api.github.com/search/users?q=$email");
+
         return $response->json();
     }
 }

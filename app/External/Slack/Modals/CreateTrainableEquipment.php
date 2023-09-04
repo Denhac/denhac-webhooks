@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Modals;
 
-
 use App\Customer;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
@@ -18,10 +17,15 @@ class CreateTrainableEquipment implements ModalInterface
     private Modal $modalView;
 
     private const EQUIPMENT_NAME = 'equipment-name';
+
     private const INITIAL_TRAINER = 'initial-trainer-block';
+
     private const USER_SLACK_CHANNEL = 'user-slack-channel';
+
     private const USER_EMAIL = 'user-email';
+
     private const TRAINER_SLACK_CHANNEL = 'trainer-slack-channel';
+
     private const TRAINER_EMAIL = 'trainer-email';
 
     public function __construct(?Customer $user)
@@ -34,11 +38,11 @@ class CreateTrainableEquipment implements ModalInterface
             ->submit('Submit');
 
         $this->modalView->newInput()
-            ->label("Equipment Name")
+            ->label('Equipment Name')
             ->blockId(self::EQUIPMENT_NAME)
             ->newTextInput()
             ->actionId(self::EQUIPMENT_NAME)
-            ->placeholder("Name");
+            ->placeholder('Name');
 
         $trainerInput = $this->modalView->newInput()
             ->label('Initial Trainer')
@@ -46,23 +50,23 @@ class CreateTrainableEquipment implements ModalInterface
             ->newSelectMenu()
             ->forExternalOptions()
             ->actionId(self::INITIAL_TRAINER)
-            ->placeholder("Select a customer")
+            ->placeholder('Select a customer')
             ->minQueryLength(0);
 
-        if (!is_null($user)) {
+        if (! is_null($user)) {
             $name = "{$user->first_name} {$user->last_name}";
             $trainerInput->initialOption($name, "customer-{$user->woo_id}");
         }
 
         $this->modalView->divider();
 
-        $this->modalView->header("Slack Channels & Email Groups");
+        $this->modalView->header('Slack Channels & Email Groups');
 
         $this->modalView->newContext()
             ->mrkdwnText(
-                "Users/trainers will be automatically added to these channels/emails. All are optional. " .
-                "Email must be an existing group, for now. Please ask in #general and we'll help make one " .
-                "if needed."
+                'Users/trainers will be automatically added to these channels/emails. All are optional. '.
+                "Email must be an existing group, for now. Please ask in #general and we'll help make one ".
+                'if needed.'
             );
 
         $this->modalView->newInput()
@@ -71,7 +75,7 @@ class CreateTrainableEquipment implements ModalInterface
             ->optional(true)
             ->newSelectMenu()
             ->forChannels()
-            ->placeholder("Select a channel")
+            ->placeholder('Select a channel')
             ->actionId(self::USER_SLACK_CHANNEL);
 
         $this->modalView->newInput()
@@ -87,7 +91,7 @@ class CreateTrainableEquipment implements ModalInterface
             ->optional(true)
             ->newSelectMenu()
             ->forChannels()
-            ->placeholder("Select a channel")
+            ->placeholder('Select a channel')
             ->actionId(self::TRAINER_SLACK_CHANNEL);
 
         $this->modalView->newInput()
@@ -105,7 +109,7 @@ class CreateTrainableEquipment implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info("Create Trainable Equipment");
+        Log::info('Create Trainable Equipment');
         Log::info(print_r($request->payload(), true));
         $values = $request->payload()['view']['state']['values'];
 
@@ -140,13 +144,21 @@ class CreateTrainableEquipment implements ModalInterface
         $trainableEquipmentData = [
             'name' => $equipmentName,
             'user_plan_id' => $userPlanId,
-            'trainer_plan_id' => $trainerPlanId
+            'trainer_plan_id' => $trainerPlanId,
         ];
 
-        if(!empty($userSlackChannel)) $trainableEquipmentData['user_slack_id'] = $userSlackChannel;
-        if(!empty($userEmail)) $trainableEquipmentData['user_email'] = $userEmail;
-        if(!empty($trainerSlackChannel)) $trainableEquipmentData['trainer_slack_id'] = $trainerSlackChannel;
-        if(!empty($trainerEmail)) $trainableEquipmentData['trainer_email'] = $trainerEmail;
+        if (! empty($userSlackChannel)) {
+            $trainableEquipmentData['user_slack_id'] = $userSlackChannel;
+        }
+        if (! empty($userEmail)) {
+            $trainableEquipmentData['user_email'] = $userEmail;
+        }
+        if (! empty($trainerSlackChannel)) {
+            $trainableEquipmentData['trainer_slack_id'] = $trainerSlackChannel;
+        }
+        if (! empty($trainerEmail)) {
+            $trainableEquipmentData['trainer_email'] = $trainerEmail;
+        }
 
         TrainableEquipment::create($trainableEquipmentData);
 

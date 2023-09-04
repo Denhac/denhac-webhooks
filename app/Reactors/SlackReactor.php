@@ -43,7 +43,7 @@ final class SlackReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if (!is_null($customer)) {
+        if (! is_null($customer)) {
             SlackProfileFields::updateIfNeeded($customer->slack_id, []);
         }
 
@@ -75,18 +75,20 @@ final class SlackReactor implements EventHandler
         $userSlackIds = TrainableEquipment::select('user_slack_id')
             ->where('user_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['user_slack_id']);
+            ->map(fn ($row) => $row['user_slack_id']);
 
         /** @var Collection $trainerSlackIds */
         $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
             ->where('trainer_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['trainer_slack_id']);
+            ->map(fn ($row) => $row['trainer_slack_id']);
 
         $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
 
         foreach ($slackIds as $slackId) {
-            if (is_null($slackId)) continue;
+            if (is_null($slackId)) {
+                continue;
+            }
 
             AddToChannel::queue()->execute($customerId, $slackId);
         }

@@ -19,8 +19,9 @@ trait WooCommerceApiMixin
     private $client;
 
     /**
-     * @param ResponseInterface $response
+     * @param  ResponseInterface  $response
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     private function jsonOrError($response)
@@ -31,35 +32,31 @@ trait WooCommerceApiMixin
     }
 
     /**
-     * @param $url
-     * @param array $options
-     * @param ApiProgress|null $progress
-     * @return Collection
      * @throws ApiCallFailed
      */
     private function getWithPaging($url, array $options = [], ApiProgress $progress = null): Collection
     {
-        if (!Arr::has($options, RequestOptions::QUERY)) {
+        if (! Arr::has($options, RequestOptions::QUERY)) {
             $options[RequestOptions::QUERY] = [];
         }
 
-        if (!Arr::has($options[RequestOptions::QUERY], 'per_page')) {
+        if (! Arr::has($options[RequestOptions::QUERY], 'per_page')) {
             $options[RequestOptions::QUERY]['per_page'] = 100;
         }
 
         try {
             $initialResponse = $this->client->get($url, $options);
         } catch (GuzzleException $ex) {
-            throw new ApiCallFailed("API call failed", 0, $ex);
+            throw new ApiCallFailed('API call failed', 0, $ex);
         }
 
         $this->handleError($initialResponse);
 
         $responseData = $this->jsonOrError($initialResponse);
 
-        $totalPages = (int)$initialResponse->getHeader('X-WP-TotalPages')[0];
+        $totalPages = (int) $initialResponse->getHeader('X-WP-TotalPages')[0];
 
-        if (!is_null($progress)) {
+        if (! is_null($progress)) {
             $progress->setProgress(1, $totalPages);
         }
 
@@ -69,12 +66,12 @@ trait WooCommerceApiMixin
             try {
                 $response = $this->client->get($url, $options);
             } catch (GuzzleException $ex) {
-                throw new ApiCallFailed("API call failed", 0, $ex);
+                throw new ApiCallFailed('API call failed', 0, $ex);
             }
 
             $responseData = $responseData->merge($this->jsonOrError($response));
 
-            if (!is_null($progress)) {
+            if (! is_null($progress)) {
                 $progress->setProgress($currentPage, $totalPages);
             }
         }
@@ -83,7 +80,8 @@ trait WooCommerceApiMixin
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param  ResponseInterface  $response
+     *
      * @throws ApiCallFailed
      */
     private function handleError($response): void

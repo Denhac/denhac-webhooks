@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers;
 
-
 use Illuminate\Support\Collection;
 
 interface IssueCheck

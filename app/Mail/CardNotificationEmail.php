@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 class CardNotificationEmail extends Mailable
 {
     use Queueable, SerializesModels;
+
     /**
      * @var Collection
      */
@@ -19,8 +20,6 @@ class CardNotificationEmail extends Mailable
 
     /**
      * Create a new message instance.
-     *
-     * @param $cardNotificationsNeeded
      */
     public function __construct($cardNotificationsNeeded)
     {
@@ -85,7 +84,8 @@ class CardNotificationEmail extends Mailable
             ]);
     }
 
-    private function getEmails($emailString) {
+    private function getEmails($emailString)
+    {
         if (empty($emailString)) {
             return null;
         }

@@ -31,15 +31,15 @@ class NewMemberCardSlackLiveView
 
             if ($currentState == NewMemberCardActivation::SUBMITTED) {
                 $updatedModal->showSubmitted($timeout);
-            } else if ($currentState == NewMemberCardActivation::CARD_SENT_FOR_ACTIVATION) {
+            } elseif ($currentState == NewMemberCardActivation::CARD_SENT_FOR_ACTIVATION) {
                 $updatedModal->showCardSentForActivation($timeout);
-            } else if ($currentState == NewMemberCardActivation::CARD_ACTIVATED) {
+            } elseif ($currentState == NewMemberCardActivation::CARD_ACTIVATED) {
                 $updatedModal->showCardActivated($timeout);
-            } else if ($currentState == NewMemberCardActivation::SCAN_FAILED) {
+            } elseif ($currentState == NewMemberCardActivation::SCAN_FAILED) {
                 $updatedModal->showScanFailed();
                 Log::info("NMA Failed for {$newMemberCardActivation->wooCustomerId}");
                 $timeout = 0;
-            } else if ($currentState == NewMemberCardActivation::SUCCESS) {
+            } elseif ($currentState == NewMemberCardActivation::SUCCESS) {
                 $updatedModal->showScanSuccess();
                 Log::info("NMA Success for {$newMemberCardActivation->wooCustomerId}");
                 $timeout = 0;

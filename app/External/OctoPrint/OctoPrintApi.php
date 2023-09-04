@@ -9,10 +9,12 @@ use GuzzleHttp\RequestOptions;
 class OctoPrintApi
 {
     private $host;
+
     /**
      * @var string|null
      */
     private $api_key;
+
     /**
      * @var Client
      */
@@ -62,13 +64,13 @@ class OctoPrintApi
     public function add_user($username, $password, $active = true, $admin = false)
     {
         $response = $this->client->post('/api/access/users', [
-                RequestOptions::JSON => [
-                    'name' => $username,
-                    'password' => $password,
-                    'active' => $active,
-                    'admin' => $admin,
-                ],
-            ]);
+            RequestOptions::JSON => [
+                'name' => $username,
+                'password' => $password,
+                'active' => $active,
+                'admin' => $admin,
+            ],
+        ]);
 
         return json_decode($response->getBody(), true);
     }

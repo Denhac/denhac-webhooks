@@ -2,7 +2,6 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-
 use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
@@ -18,10 +17,6 @@ trait UserMembership
         }
     }
 
-    /**
-     * @param $userMembership
-     * @return void
-     */
     protected function handleFullMemberPlan($userMembership): void
     {
         $currentStatus = $userMembership['status'];

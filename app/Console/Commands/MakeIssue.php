@@ -6,7 +6,6 @@ use App\Issues\Types\IssueBase;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use Symfony\Component\Console\Input\InputArgument;
 
 class MakeIssue extends GeneratorCommand
 {
@@ -33,7 +32,7 @@ class MakeIssue extends GeneratorCommand
      */
     protected $description = 'Generate a new issue class';
 
-    protected $type = "Issue";
+    protected $type = 'Issue';
 
     protected function getStub()
     {
@@ -42,7 +41,7 @@ class MakeIssue extends GeneratorCommand
 
     protected function getDefaultNamespace($rootNamespace): string
     {
-        return $rootNamespace . '/Issues/Types';
+        return $rootNamespace.'/Issues/Types';
     }
 
     protected function makeDirectory($path): string
@@ -54,7 +53,7 @@ class MakeIssue extends GeneratorCommand
             throw new \Exception("No namespace given, please use one of: $namespaceOptionString");
         }
 
-        if (!array_key_exists($nameSpaceType, self::NamespaceOffset)) {
+        if (! array_key_exists($nameSpaceType, self::NamespaceOffset)) {
             throw new \Exception("Unknown namespace type \"$nameSpaceType\". Please add new offsets into NamespaceOffset in App\Console\Commands\MakeIssue");
         }
 
@@ -68,11 +67,11 @@ class MakeIssue extends GeneratorCommand
         $stub = parent::buildClass($name);
 
         $issuesNumbers = collect(get_declared_classes())
-            ->filter(fn($n) => str_starts_with($n, $this->getNamespace($name)))
-            ->map(fn($n) => new ReflectionClass($n))
-            ->filter(fn($reflect) => $reflect->isSubclassOf(IssueBase::class))
-            ->map(fn($reflect) => $reflect->getName())
-            ->map(fn($n) => $n::getIssueNumber())
+            ->filter(fn ($n) => str_starts_with($n, $this->getNamespace($name)))
+            ->map(fn ($n) => new ReflectionClass($n))
+            ->filter(fn ($reflect) => $reflect->isSubclassOf(IssueBase::class))
+            ->map(fn ($reflect) => $reflect->getName())
+            ->map(fn ($n) => $n::getIssueNumber())
             ->values();
 
         $nameSpaceType = $this->getNameSpaceType();
@@ -83,35 +82,33 @@ class MakeIssue extends GeneratorCommand
         }
 
         $stub = str_replace(
-            "DummyIssueNumber",
+            'DummyIssueNumber',
             $nextIssueNumber,
             $stub
         );
 
-        $class = str_replace($this->getNamespace($name) . '\\', '', $name);
+        $class = str_replace($this->getNamespace($name).'\\', '', $name);
 
         $newIssueTitle = Str::ucfirst(Str::snake($class, ' '));
         $nameSpaceTypeTitle = Str::headline($nameSpaceType);
 
         $issueTitle = "$nameSpaceTypeTitle: $newIssueTitle";
-        $issueTitle = str_replace(["git hub", "Git Hub", "Git hub"], "GitHub", $issueTitle); // Special handling to avoid "Git Hub"
+        $issueTitle = str_replace(['git hub', 'Git Hub', 'Git hub'], 'GitHub', $issueTitle); // Special handling to avoid "Git Hub"
 
         return str_replace(
-            "DummyIssueTitle",
+            'DummyIssueTitle',
             $issueTitle,
             $stub
         );
     }
 
-    /**
-     * @return string
-     */
     protected function getNameSpaceType(): string
     {
         $rootNamespace = $this->rootNamespace();
         $defaultNamespace = $this->getDefaultNamespace(trim($rootNamespace, '\\'));
         $defaultNamespace = str_replace('/', '\\', $defaultNamespace);
         $namespace = $this->getNamespace($this->qualifyClass($this->getNameInput()));
+
         return ltrim(str_replace($defaultNamespace, '', $namespace), '\\');
     }
 }

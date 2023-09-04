@@ -12,8 +12,8 @@ trait Github
     {
         $metadata = collect($customer['meta_data']);
         $githubUsername = $metadata
-                ->where('key', 'github_username')
-                ->first()['value'] ?? null;
+            ->where('key', 'github_username')
+            ->first()['value'] ?? null;
 
         if ($this->githubUsername != $githubUsername) {
             $this->recordThat(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));

@@ -12,7 +12,9 @@ class MemberHasRestrictedAccount extends IssueBase
     use ICanFixThem;
 
     private MemberData $member;
+
     private $slackUser;
+
     private $limitedType;
 
     public function __construct(MemberData $member, $slackUser, $limitedType)
@@ -29,7 +31,7 @@ class MemberHasRestrictedAccount extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Slack: Member has restricted account";
+        return 'Slack: Member has restricted account';
     }
 
     public function getIssueText(): string
@@ -40,7 +42,7 @@ class MemberHasRestrictedAccount extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Activate Slack account", function () {
+            ->option('Activate Slack account', function () {
                 dispatch(new MakeCustomerRegularMemberInSlack($this->member->id));
 
                 return true;

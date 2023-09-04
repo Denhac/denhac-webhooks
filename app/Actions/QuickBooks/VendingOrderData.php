@@ -2,7 +2,6 @@
 
 namespace App\Actions\QuickBooks;
 
-
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Stripe\Charge;
@@ -11,13 +10,14 @@ use Stripe\StripeClient;
 class VendingOrderData extends Data
 {
     public int $id;
+
     public ?string $stripeIntentId = null;
+
     public Collection $productPricing;
 
     public function __construct(
         public array $orderData,
-    )
-    {
+    ) {
         $this->id = $this->orderData['id'];
 
         $this->stripeIntentId = collect($orderData['meta_data'])
@@ -57,7 +57,7 @@ class VendingOrderData extends Data
     {
         /** @var VendingProductData $vendingProductData */
         foreach ($products as $productId => $vendingProductData) {
-            if (!$this->productPricing->has($productId)) {
+            if (! $this->productPricing->has($productId)) {
                 continue;  // This order doesn't have that product, ignore it
             }
 
@@ -65,12 +65,13 @@ class VendingOrderData extends Data
                 return true;
             }
         }
+
         return false;
     }
 
     public function getVendingNetAndSpent(StripeClient $stripeClient, Collection $products): array
     {
-        if (!$this->hasVendingMachineOrders($products)) {
+        if (! $this->hasVendingMachineOrders($products)) {
             return [0, 0, 0];
         }
 
@@ -81,7 +82,7 @@ class VendingOrderData extends Data
 
         /** @var Charge $charge */
         $charge = $paymentIntent->charges->data[0];
-        if (!$charge->paid) {
+        if (! $charge->paid) {
             throw new \Exception("Charge for $this->stripeIntentId is not paid");
         }
         $balanceTxId = $charge->balance_transaction;
@@ -93,8 +94,8 @@ class VendingOrderData extends Data
         }
 
         $vendingSpent = $this->productPricing
-                ->filter(fn($v, $k) => $products->keys()->contains($k))
-                ->values()->sum() * 100;
+            ->filter(fn ($v, $k) => $products->keys()->contains($k))
+            ->values()->sum() * 100;
 
         $vendingNet = ($vendingSpent * $balanceTx->net) / $actualSpent;
 

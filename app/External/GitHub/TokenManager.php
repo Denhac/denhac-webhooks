@@ -8,14 +8,18 @@ use GuzzleHttp\RequestOptions;
 class TokenManager
 {
     private bool $propertiesBound = false;
+
     private string $signingKey;
+
     private string $appId;
+
     private string $installationId;
+
     private Client $client;
 
     private function lateBindProperties()
     {
-        if($this->propertiesBound) {
+        if ($this->propertiesBound) {
             return;
         }
 

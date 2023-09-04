@@ -17,7 +17,7 @@ class ManageMembersCardsModal implements ModalInterface
     private Modal $modalView;
 
     /**
-     * @param int $customerId The customer's Woo Commerce ID
+     * @param  int  $customerId The customer's Woo Commerce ID
      */
     public function __construct(int $customerId)
     {

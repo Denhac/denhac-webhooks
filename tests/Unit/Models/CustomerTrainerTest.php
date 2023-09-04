@@ -10,6 +10,7 @@ use Tests\TestCase;
 class CustomerTrainerTest extends TestCase
 {
     private const TRAINER_PLAN_ID = 1234;
+
     private const USER_PLAN_ID = 5678;
 
     private Customer $customer;
@@ -29,9 +30,9 @@ class CustomerTrainerTest extends TestCase
         ]);
 
         TrainableEquipment::create([
-            "name" => "Test Equipment",
-            "user_plan_id" => self::USER_PLAN_ID,
-            "trainer_plan_id" => self::TRAINER_PLAN_ID,
+            'name' => 'Test Equipment',
+            'user_plan_id' => self::USER_PLAN_ID,
+            'trainer_plan_id' => self::TRAINER_PLAN_ID,
         ]);
     }
 
@@ -45,10 +46,10 @@ class CustomerTrainerTest extends TestCase
     public function is_a_trainer_returns_false_if_only_user()
     {
         UserMembership::create([
-            "id" => $this->faker->randomNumber(),
-            "plan_id" => self::USER_PLAN_ID,
-            "status" => "active",
-            "customer_id" => $this->customer->id,
+            'id' => $this->faker->randomNumber(),
+            'plan_id' => self::USER_PLAN_ID,
+            'status' => 'active',
+            'customer_id' => $this->customer->id,
         ]);
 
         $this->assertFalse($this->customer->isATrainer());
@@ -58,10 +59,10 @@ class CustomerTrainerTest extends TestCase
     public function is_a_trainer_returns_false_if_no_active_membership()
     {
         UserMembership::create([
-            "id" => $this->faker->randomNumber(),
-            "plan_id" => self::TRAINER_PLAN_ID,
-            "status" => "cancelled",
-            "customer_id" => $this->customer->id,
+            'id' => $this->faker->randomNumber(),
+            'plan_id' => self::TRAINER_PLAN_ID,
+            'status' => 'cancelled',
+            'customer_id' => $this->customer->id,
         ]);
 
         $this->assertFalse($this->customer->isATrainer());
@@ -71,10 +72,10 @@ class CustomerTrainerTest extends TestCase
     public function is_a_trainer_returns_false_if_a_trainer()
     {
         UserMembership::create([
-            "id" => $this->faker->randomNumber(),
-            "plan_id" => self::TRAINER_PLAN_ID,
-            "status" => "active",
-            "customer_id" => $this->customer->id,
+            'id' => $this->faker->randomNumber(),
+            'plan_id' => self::TRAINER_PLAN_ID,
+            'status' => 'active',
+            'customer_id' => $this->customer->id,
         ]);
 
         $this->assertTrue($this->customer->isATrainer());

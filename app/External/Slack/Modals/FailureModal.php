@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Modals;
 
-
 use App\Http\Requests\SlackRequest;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
@@ -17,9 +16,9 @@ class FailureModal implements ModalInterface
     {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
-            ->title("Failure! :(")
+            ->title('Failure! :(')
             ->clearOnClose(true)
-            ->close("Close");
+            ->close('Close');
 
         $this->modalView->text($message);
     }

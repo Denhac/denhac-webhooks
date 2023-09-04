@@ -47,10 +47,12 @@ class SetUpDenhacWebhooks extends Command
      * @var Client
      */
     private $guzzleClient;
+
     /**
      * @var string
      */
     private $deliveryUrl;
+
     /**
      * @var WooCommerceApi
      */
@@ -58,8 +60,6 @@ class SetUpDenhacWebhooks extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param WooCommerceApi $api
      */
     public function __construct(WooCommerceApi $api)
     {
@@ -81,6 +81,7 @@ class SetUpDenhacWebhooks extends Command
      * Execute the console command.
      *
      * @return mixed
+     *
      * @throws Exception
      */
     public function handle()

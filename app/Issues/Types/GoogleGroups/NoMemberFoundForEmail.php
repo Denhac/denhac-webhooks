@@ -2,7 +2,6 @@
 
 namespace App\Issues\Types\GoogleGroups;
 
-
 use App\External\Google\GoogleApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Data\MemberData;
@@ -15,6 +14,7 @@ class NoMemberFoundForEmail extends IssueBase
     use ICanFixThem;
 
     private string $email;
+
     private Collection $groupsForEmail;
 
     public function __construct(string $email, Collection $groupsForEmail)
@@ -30,7 +30,7 @@ class NoMemberFoundForEmail extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Google Groups: No member found for email";
+        return 'Google Groups: No member found for email';
     }
 
     public function getIssueText(): string
@@ -41,8 +41,8 @@ class NoMemberFoundForEmail extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Remove email from groups", fn() => $this->removeMemberEmailFromGroups())
-            ->option("Assign email to member", fn() => $this->assignEmailToMember())
+            ->option('Remove email from groups', fn () => $this->removeMemberEmailFromGroups())
+            ->option('Assign email to member', fn () => $this->assignEmailToMember())
             ->run();
     }
 

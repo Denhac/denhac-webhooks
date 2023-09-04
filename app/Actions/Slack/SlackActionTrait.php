@@ -2,14 +2,13 @@
 
 namespace App\Actions\Slack;
 
-
 use App\Customer;
 
 trait SlackActionTrait
 {
     public function slackIdFromGeneralId($id)
     {
-        if(is_numeric($id)) {
+        if (is_numeric($id)) {
             /** @var Customer $customer */
             $customer = Customer::whereWooId($id)->first();
 

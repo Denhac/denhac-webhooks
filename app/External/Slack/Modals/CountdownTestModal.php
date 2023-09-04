@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Modals;
 
-
 use App\Actions\CountdownModalLoop;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\Http\Requests\SlackRequest;
@@ -19,34 +18,34 @@ class CountdownTestModal implements ModalInterface
 
     private Modal $modalView;
 
-    public function __construct(int|null $timeLeft)
+    public function __construct(?int $timeLeft)
     {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
-            ->title("Countdown Test")
+            ->title('Countdown Test')
             ->clearOnClose(true)
             ->clearOnClose('Close');
 
         $this->modalView->newSection()
-            ->mrkdwnText("This is a test to see how responsive something like a countdown is.");
+            ->mrkdwnText('This is a test to see how responsive something like a countdown is.');
 
         if (is_null($timeLeft)) {
             $this->modalView->newSection()
-                ->mrkdwnText("The countdown has not yet started. Press the button to start.");
+                ->mrkdwnText('The countdown has not yet started. Press the button to start.');
 
             $this->modalView->newActions(self::START_COUNTDOWN)
                 ->newButton(self::START_COUNTDOWN)
                 ->asPrimary()
-                ->text("Start Countdown");
-        } else if ($timeLeft == -1) {
+                ->text('Start Countdown');
+        } elseif ($timeLeft == -1) {
             $this->modalView->newSection()
-                ->mrkdwnText("Countdown hopefully started!");
-        } else if ($timeLeft > 0) {
+                ->mrkdwnText('Countdown hopefully started!');
+        } elseif ($timeLeft > 0) {
             $this->modalView->newSection()
                 ->mrkdwnText("The countdown has {$timeLeft} seconds left.");
         } else {
             $this->modalView->newSection()
-                ->mrkdwnText("The countdown is over! Thanks for testing!");
+                ->mrkdwnText('The countdown is over! Thanks for testing!');
         }
     }
 
@@ -76,13 +75,14 @@ class CountdownTestModal implements ModalInterface
         ];
     }
 
-    static function onBlockAction(SlackRequest $request)
+    public static function onBlockAction(SlackRequest $request)
     {
         Log::info(print_r($request->payload(), true));
         $viewId = $request->payload()['view']['id'];
         app(CountdownModalLoop::class)
             ->onQueue()
             ->execute($viewId);
+
         return new CountdownTestModal(-1);
     }
 }

@@ -12,6 +12,7 @@ class NonMemberHasFullAccount extends IssueBase
     use ICanFixThem;
 
     private MemberData $member;
+
     private $slackUser;
 
     public function __construct(MemberData $member, $slackUser)
@@ -27,7 +28,7 @@ class NonMemberHasFullAccount extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Slack: Non member has full account";
+        return 'Slack: Non member has full account';
     }
 
     public function getIssueText(): string
@@ -38,7 +39,7 @@ class NonMemberHasFullAccount extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Deactivate Slack account", function () {
+            ->option('Deactivate Slack account', function () {
                 dispatch(new DemoteMemberToPublicOnlyMemberInSlack($this->member->id));
 
                 return true;

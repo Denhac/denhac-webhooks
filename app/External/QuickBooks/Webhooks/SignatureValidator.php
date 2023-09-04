@@ -2,9 +2,7 @@
 
 namespace App\External\QuickBooks\Webhooks;
 
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\SignatureValidator\SignatureValidator as SignatureValidatorBase;
 use Spatie\WebhookClient\WebhookConfig;
 
