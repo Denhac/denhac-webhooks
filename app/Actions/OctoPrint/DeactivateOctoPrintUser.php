@@ -14,9 +14,6 @@ class DeactivateOctoPrintUser
 
     public string $queue = 'event-sourcing';
 
-    /**
-     * @param Customer $customer
-     */
     public function execute(Customer $customer)
     {
         $octoprint_hosts = collect(setting('hosts'))

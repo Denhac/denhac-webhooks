@@ -12,7 +12,9 @@ class UserMembershipStatusDiffers extends IssueBase
     use ICanFixThem;
 
     private int $userMembershipId;
+
     private string $remote_status;
+
     private string $local_status;
 
     public function __construct($userMembershipId, $remote_status, $local_status)
@@ -29,7 +31,7 @@ class UserMembershipStatusDiffers extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: User membership status differs";
+        return 'Internal Consistency: User membership status differs';
     }
 
     public function getIssueText(): string
@@ -40,7 +42,7 @@ class UserMembershipStatusDiffers extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Update User Membership from WordPress", function() {
+            ->option('Update User Membership from WordPress', function () {
                 /** @var WooCommerceApi $wooCommerceApi */
                 $wooCommerceApi = app(WooCommerceApi::class);
                 $userMembership = $wooCommerceApi->members->get($this->userMembershipId)->toArray();

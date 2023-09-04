@@ -12,8 +12,11 @@ class NewMemberCardActivationLiveModal implements ModalInterface
     use ModalTrait;
 
     private Modal $modalView;
-    private string $infoHeading = "This modal will change as their card goes through the various states of activation. Please keep it open until it tells you to scan the card to test or it times out trying to perform a particular step.";
+
+    private string $infoHeading = 'This modal will change as their card goes through the various states of activation. Please keep it open until it tells you to scan the card to test or it times out trying to perform a particular step.';
+
     private string $activationFailedMessage = "The member's card may not be activated at this time. Please wait 10 minutes and if it's still not activated, an email will be sent to access@denhac.org and to the member on the next failed card scan.";
+
     private string $lockupProcedure = "Please make sure to go over how to lock up the space if they're the last one out.";
 
     public function __construct()
@@ -25,7 +28,8 @@ class NewMemberCardActivationLiveModal implements ModalInterface
             ->close('Close');
     }
 
-    public function placeholder() {
+    public function placeholder()
+    {
         $this->modalView->newSection()
             ->mrkdwnText("This is a placeholder and should go away soon. If it hasn't after a few seconds, something broke. Oops.");
 
@@ -83,7 +87,7 @@ class NewMemberCardActivationLiveModal implements ModalInterface
     public function showScanFailed()
     {
         $this->modalView->newSection()
-            ->mrkdwnText("That card scan failed, unfortunately.");
+            ->mrkdwnText('That card scan failed, unfortunately.');
 
         $this->modalView->newSection()
             ->mrkdwnText($this->activationFailedMessage);

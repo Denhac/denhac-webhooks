@@ -49,6 +49,6 @@ class CardUpdateRequestResource extends JsonResource
             return 'disable';
         }
 
-        return "unknown";
+        return 'unknown';
     }
 }

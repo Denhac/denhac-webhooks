@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 
 /**
  * Class WooCommerceApi.
+ *
  * @property CustomerApi customers
  * @property DenhacApi denhac
  * @property MembersApi members

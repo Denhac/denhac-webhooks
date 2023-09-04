@@ -20,8 +20,11 @@ class EquipmentAuthorization implements ModalInterface
     use RespondsToBlockActions;
 
     private const EQUIPMENT_DROPDOWN = 'equipment-dropdown';
+
     private const PERSON_DROPDOWN = 'person-dropdown';
+
     private const TRAINER_CHECK = 'trainer-check';
+
     private const USER_CHECK = 'user-check';
 
     private Modal $modalView;
@@ -34,7 +37,8 @@ class EquipmentAuthorization implements ModalInterface
         $this->noPerson();
     }
 
-    private function setUpModalCommon() {
+    private function setUpModalCommon()
+    {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('Equipment Authorization')
@@ -45,21 +49,21 @@ class EquipmentAuthorization implements ModalInterface
         $this->modalView->newInput()
             ->dispatchAction()
             ->blockId(self::EQUIPMENT_DROPDOWN)
-            ->label("Equipment")
+            ->label('Equipment')
             ->newSelectMenu()
             ->forExternalOptions()
             ->actionId(self::EQUIPMENT_DROPDOWN)
-            ->placeholder("Select equipment")
+            ->placeholder('Select equipment')
             ->minQueryLength(0);
 
         $this->modalView->newInput()
             ->dispatchAction()
             ->blockId(self::PERSON_DROPDOWN)
-            ->label("Person")
+            ->label('Person')
             ->newSelectMenu()
             ->forExternalOptions()
             ->actionId(self::PERSON_DROPDOWN)
-            ->placeholder("Select a member")
+            ->placeholder('Select a member')
             ->minQueryLength(2);
     }
 
@@ -70,14 +74,14 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info("Equipment authorization");
+        Log::info('Equipment authorization');
         Log::info(print_r($request->payload(), true));
 
         $state = self::getStateValues($request);
         $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
         $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
-        $makeUser = !is_null($state[self::USER_CHECK][self::USER_CHECK] ?? null);
-        $makeTrainer = !is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
+        $makeUser = ! is_null($state[self::USER_CHECK][self::USER_CHECK] ?? null);
+        $makeTrainer = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
         $equipmentId = str_replace('equipment-', '', $equipmentValue);
         $personId = str_replace('customer-', '', $personValue);
@@ -91,16 +95,16 @@ class EquipmentAuthorization implements ModalInterface
         /** @var WooCommerceApi $api */
         $api = app(WooCommerceApi::class);
 
-        if($makeUser) {
+        if ($makeUser) {
             $api->members->addMembership($person->woo_id, $equipment->user_plan_id);
         }
 
-        if($makeTrainer) {
+        if ($makeTrainer) {
             $api->members->addMembership($person->woo_id, $equipment->trainer_plan_id);
         }
 
-        if(!$makeTrainer && !$makeUser) {
-            return (new FailureModal("Neither user nor trainer appear to have been selected. Try again?"))
+        if (! $makeTrainer && ! $makeUser) {
+            return (new FailureModal('Neither user nor trainer appear to have been selected. Try again?'))
                 ->update();
         }
 
@@ -123,12 +127,12 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
-        Log::info("Equipment auth options request");
+        Log::info('Equipment auth options request');
         Log::info(print_r($request->payload(), true));
 
         $blockId = $request->payload()['block_id'];
 
-        if($blockId == self::EQUIPMENT_DROPDOWN) {
+        if ($blockId == self::EQUIPMENT_DROPDOWN) {
             $options = SlackOptions::new();
             $trainingList = $request->customer()->equipmentTrainer;
 
@@ -136,8 +140,9 @@ class EquipmentAuthorization implements ModalInterface
                 /** @var TrainableEquipment $equipment */
                 $options->option($equipment->name, "equipment-{$equipment->id}");
             }
+
             return $options;
-        } else if($blockId == self::PERSON_DROPDOWN) {
+        } elseif ($blockId == self::PERSON_DROPDOWN) {
             return SelectAMemberModal::getOptions($request);
         }
 
@@ -149,7 +154,7 @@ class EquipmentAuthorization implements ModalInterface
         return $this->modalView->jsonSerialize();
     }
 
-    static function onBlockAction(SlackRequest $request)
+    public static function onBlockAction(SlackRequest $request)
     {
         $modal = new EquipmentAuthorization();
         $modal->setUpModalCommon();
@@ -158,15 +163,15 @@ class EquipmentAuthorization implements ModalInterface
         $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
         $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
 
-        if(is_null($equipmentValue)) {
+        if (is_null($equipmentValue)) {
             $modal->noEquipment();
         }
 
-        if(is_null($personValue)) {
+        if (is_null($personValue)) {
             $modal->noPerson();
         }
 
-        if(!is_null($equipmentValue) && !is_null($personValue)) {
+        if (! is_null($equipmentValue) && ! is_null($personValue)) {
             $equipmentId = str_replace('equipment-', '', $equipmentValue);
             $personId = str_replace('customer-', '', $personValue);
             /** @var Customer $person */
@@ -175,12 +180,12 @@ class EquipmentAuthorization implements ModalInterface
 
             /** @var TrainableEquipment $equipment */
             $equipment = TrainableEquipment::find($equipmentId);
-            if($person->hasMembership($equipment->user_plan_id)) {
+            if ($person->hasMembership($equipment->user_plan_id)) {
                 $modal->modalView->newSection()
                     ->plainText(":white_check_mark: $name is already an authorized user.");
             } else {
-                $option = Option::new("User")
-                    ->description("The person can use the equipment.")
+                $option = Option::new('User')
+                    ->description('The person can use the equipment.')
                     ->value('true');
                 $modal->modalView->newActions()
                     ->blockId(self::USER_CHECK)
@@ -189,12 +194,12 @@ class EquipmentAuthorization implements ModalInterface
                     ->addOption($option, true);
             }
 
-            if($person->hasMembership($equipment->trainer_plan_id)) {
+            if ($person->hasMembership($equipment->trainer_plan_id)) {
                 $modal->modalView->newSection()
                     ->plainText(":white_check_mark: $name is already an authorized trainer.");
             } else {
-                $option = Option::new("Trainer")
-                    ->description("The person can train others to use the equipment and add new trainers.")
+                $option = Option::new('Trainer')
+                    ->description('The person can train others to use the equipment and add new trainers.')
                     ->value('true');
                 $modal->modalView->newActions()
                     ->blockId(self::TRAINER_CHECK)

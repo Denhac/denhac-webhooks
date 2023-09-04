@@ -9,19 +9,22 @@ trait RespondsToBlockActions
     /**
      * @return BlockActionInterface[]
      */
-    public abstract static function getBlockActions(): array;
+    abstract public static function getBlockActions(): array;
 
-    static abstract function onBlockAction(SlackRequest $request);
+    abstract public static function onBlockAction(SlackRequest $request);
 
     protected static function blockActionUpdate($blockId, $actionId = null): BlockActionInterface
     {
-        if(is_null($actionId)) {
+        if (is_null($actionId)) {
             $actionId = $blockId;
         }
 
-        return new class(static::class, $blockId, $actionId) implements BlockActionInterface {
+        return new class(static::class, $blockId, $actionId) implements BlockActionInterface
+        {
             private string $className;
+
             private string $blockId;
+
             private string $actionId;
 
             public function __construct($className, $blockId, $actionId)
@@ -46,20 +49,23 @@ trait RespondsToBlockActions
                 $r = new \ReflectionClass($this->className);
 
                 /** @var RespondsToBlockActions $instance */
-                $instance =  $r->newInstanceWithoutConstructor();
+                $instance = $r->newInstanceWithoutConstructor();
 
                 return $instance::onBlockAction($request);
             }
         };
     }
 
-    protected static function blockActionDoNothing($blockId, $actionId = null): BlockActionInterface {
-        if(is_null($actionId)) {
+    protected static function blockActionDoNothing($blockId, $actionId = null): BlockActionInterface
+    {
+        if (is_null($actionId)) {
             $actionId = $blockId;
         }
 
-        return new class($blockId, $actionId) implements BlockActionInterface {
+        return new class($blockId, $actionId) implements BlockActionInterface
+        {
             private string $blockId;
+
             private string $actionId;
 
             public function __construct($blockId, $actionId)

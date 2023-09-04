@@ -28,7 +28,7 @@ class RemoveFromChannel
 
         if ($response['ok']) {
             return;
-        } else if ($response['error'] == 'not_in_channel') {
+        } elseif ($response['error'] == 'not_in_channel') {
             return; // Everything's fine, user isn't in channel
         }
 

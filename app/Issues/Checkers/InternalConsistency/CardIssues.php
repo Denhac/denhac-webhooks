@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-
 use App\Card;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
@@ -46,7 +45,7 @@ class CardIssues implements IssueCheck
 
             // $member['cards'] is the list of cards in WooCommerce
             $member->cards->each(function ($memberCard) use ($member, $cardsForMember) {
-                if (!$cardsForMember->contains('number', $memberCard)) {
+                if (! $cardsForMember->contains('number', $memberCard)) {
                     $this->issues->add(new CustomerHasUnknownCard($member, $memberCard));
 
                     return;
@@ -57,11 +56,11 @@ class CardIssues implements IssueCheck
 
                 $shouldHaveActiveCard = $member->isMember && $member->hasSignedWaiver;
 
-                if ($shouldHaveActiveCard && !$card->active) {
+                if ($shouldHaveActiveCard && ! $card->active) {
                     $this->issues->add(new MemberCardIsNotActive($member, $memberCard));
                 }
 
-                if (!$shouldHaveActiveCard && $card->active) {
+                if (! $shouldHaveActiveCard && $card->active) {
                     $this->issues->add(new CardIsActivateWhenItShouldNotBe($member, $memberCard));
                 }
             });
@@ -83,12 +82,12 @@ class CardIssues implements IssueCheck
         });
 
         $cards
-            ->filter(fn($card) => $card->member_has_card)
-            ->groupBy(fn($card) => $card->number)
-            ->filter(fn($value) => $value->count() > 1)
+            ->filter(fn ($card) => $card->member_has_card)
+            ->groupBy(fn ($card) => $card->number)
+            ->filter(fn ($value) => $value->count() > 1)
             ->each(function ($cards, $cardNum) {
                 $uniqueCustomers = $cards
-                    ->map(fn($card) => $card->woo_customer_id)
+                    ->map(fn ($card) => $card->woo_customer_id)
                     ->unique();
                 $numEntries = $cards->count();
 

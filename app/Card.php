@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Card.
+ *
  * @property string number
  * @property bool active
  * @property bool member_has_card

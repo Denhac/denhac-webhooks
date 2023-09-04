@@ -12,27 +12,27 @@ class SlackInteractivityController extends Controller
 {
     public function __invoke(SlackRequest $request)
     {
-//        Log::info("Interactive request!");
-//        Log::info(print_r($request->payload(), true));
+        //        Log::info("Interactive request!");
+        //        Log::info(print_r($request->payload(), true));
 
         $payload = $request->payload();
         $type = $payload['type'];
 
         if ($type == 'view_submission') {
             return $this->viewSubmission($request);
-        } else if ($type == 'shortcut') {
+        } elseif ($type == 'shortcut') {
             return $this->shortcut($request);
-        } else if ($type == 'block_actions') {
+        } elseif ($type == 'block_actions') {
             return $this->blockAction($request);
         } else {
-            throw new \Exception('Slack interactive payload has unknown type: ' . $type);
+            throw new \Exception('Slack interactive payload has unknown type: '.$type);
         }
     }
 
     private function viewSubmission(SlackRequest $request)
     {
-//        Log::info("View submitted!");
-//        Log::info(print_r($request->payload(), true));
+        //        Log::info("View submitted!");
+        //        Log::info(print_r($request->payload(), true));
 
         $view = $request->payload()['view'];
         $callbackId = $view['callback_id'];
@@ -48,7 +48,7 @@ class SlackInteractivityController extends Controller
 
     private function shortcut(SlackRequest $request)
     {
-        Log::info("Shortcut!");
+        Log::info('Shortcut!');
         Log::info(print_r($request->payload(), true));
 
         $callbackId = $request->payload()['callback_id'];
@@ -63,15 +63,15 @@ class SlackInteractivityController extends Controller
 
     private function blockAction(SlackRequest $request)
     {
-        Log::info("Block Action!");
+        Log::info('Block Action!');
         Log::info(print_r($request->payload(), true));
 
         $payload = $request->payload();
         $actions = $payload['actions'];
 
         // If we're a modal, try to find a block action on the modal
-        if(array_key_exists('view', $payload) && $payload['view']['type'] == 'modal') {
-            Log::info("View is a modal!");
+        if (array_key_exists('view', $payload) && $payload['view']['type'] == 'modal') {
+            Log::info('View is a modal!');
             $view = $request->payload()['view'];
             $callbackId = $view['callback_id'];
 
@@ -84,8 +84,9 @@ class SlackInteractivityController extends Controller
                     $actionId = $action['action_id'];
                     /** @var BlockActionInterface $blockAction */
                     foreach ($modalBlockActions as $blockAction) {
-                        if($blockAction->blockId() == $blockId && $blockAction->actionId() == $actionId) {
-                            Log::info("We found a match for that modal, block, and action combo.");
+                        if ($blockAction->blockId() == $blockId && $blockAction->actionId() == $actionId) {
+                            Log::info('We found a match for that modal, block, and action combo.');
+
                             return $blockAction->handle($request);
                         }
                     }
@@ -108,6 +109,6 @@ class SlackInteractivityController extends Controller
             return $blockAction::handle($request);
         }
 
-        throw new \Exception("No actions found in ".print_r($payload, true));
+        throw new \Exception('No actions found in '.print_r($payload, true));
     }
 }

@@ -44,11 +44,11 @@ class NewRequirementsWaiverNeeded extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('Card Access Revoked - Sign New Waiver')
-                    ->replyTo(config('denhac.access_email'))
-                    ->view('emails.new_waiver_needed', [
-                        'customerWaiverUrl' => $this->customer->getWaiverUrl(),
-                    ]);
+            ->line('Card Access Revoked - Sign New Waiver')
+            ->replyTo(config('denhac.access_email'))
+            ->view('emails.new_waiver_needed', [
+                'customerWaiverUrl' => $this->customer->getWaiverUrl(),
+            ]);
     }
 
     /**

@@ -16,10 +16,13 @@ trait MakeCustomerMemberInSlackMixin
      * @var SlackApi
      */
     protected $slackApi;
+
     public $wooCustomerId;
 
     private $customerInfoFetched = false;
+
     private $customerEmail = null;
+
     protected $customerSlackId = null;
 
     private function fetchCustomerInfo()
@@ -39,7 +42,7 @@ trait MakeCustomerMemberInSlackMixin
         $customer = $this->wooCommerceApi->customers->get($this->wooCustomerId);
         $this->customerEmail = $customer['email'];
         $this->customerSlackId = collect($customer['meta_data'])
-                ->firstWhere('key', 'access_slack_id')['value'] ?? null;
+            ->firstWhere('key', 'access_slack_id')['value'] ?? null;
         $this->customerInfoFetched = true;
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 class TeamApi
 {
     use SlackApiTrait;

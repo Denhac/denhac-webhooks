@@ -20,8 +20,6 @@ class MembersApi
     }
 
     /**
-     * @param ApiProgress|null $progress
-     * @return Collection
      * @throws ApiCallFailed
      */
     public function list(ApiProgress $progress = null): Collection
@@ -34,9 +32,8 @@ class MembersApi
     }
 
     /**
-     * @param $woo_id
-     * @param $plan_id
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function addMembership($woo_id, $plan_id)
@@ -62,8 +59,8 @@ class MembersApi
     }
 
     /**
-     * @param $woo_id
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function get($woo_id)

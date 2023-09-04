@@ -2,9 +2,7 @@
 
 namespace App\Notifications;
 
-use DateTime;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -33,8 +31,9 @@ class CardAccessDeniedBadDoor extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
+     *
      * @throws \Exception
      */
     public function toMail($notifiable)

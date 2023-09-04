@@ -20,7 +20,7 @@ class ActiveCardNoRecord extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: Active card no record";
+        return 'Access Cards: Active card no record';
     }
 
     public function getIssueText(): string

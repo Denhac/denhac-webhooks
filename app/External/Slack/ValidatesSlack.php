@@ -34,14 +34,14 @@ trait ValidatesSlack
         $clientVerify = $request->server('X_CLIENT_VERIFY');
         $clientCertificateDataEncoded = $request->server('X_CLIENT_CERTIFICATE');
 
-        if($clientVerify != 'SUCCESS') {
+        if ($clientVerify != 'SUCCESS') {
             return false;
         }
 
         $clientCertificateData = urldecode($clientCertificateDataEncoded);
         $clientCertificate = SslCertificate::createFromString($clientCertificateData);
 
-        if(! $clientCertificate->isValid("platform-tls-client.slack.com")) {
+        if (! $clientCertificate->isValid('platform-tls-client.slack.com')) {
             return false;
         }
 

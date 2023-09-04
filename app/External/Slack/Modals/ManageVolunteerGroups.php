@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Modals;
 
-
 use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
 use App\VolunteerGroup;
@@ -16,6 +15,7 @@ class ManageVolunteerGroups implements ModalInterface
     private Modal $modalView;
 
     private const GROUP = 'group';
+
     private const CREATE_NEW = 'create-new';
 
     public function __construct()
@@ -35,15 +35,15 @@ class ManageVolunteerGroups implements ModalInterface
             ->label('Group')
             ->newSelectMenu(self::GROUP)
             ->forExternalOptions()
-            ->placeholder("Select Volunteer Group");
+            ->placeholder('Select Volunteer Group');
 
         $this->modalView->divider();
 
         $this->modalView->newSection()
             ->blockId(self::CREATE_NEW)
-            ->mrkdwnText("Or, create a new volunteer group:")
+            ->mrkdwnText('Or, create a new volunteer group:')
             ->newButtonAccessory(self::CREATE_NEW)
-            ->text("Create New");
+            ->text('Create New');
     }
 
     public static function callbackId(): string

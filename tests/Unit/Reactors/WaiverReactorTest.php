@@ -12,7 +12,6 @@ use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\WaiverAccepted;
 use App\StorableEvents\WaiverAssignedToCustomer;
 use App\Waiver;
-use Illuminate\Support\Facades\Queue;
 use Tests\AssertsActions;
 use Tests\TestCase;
 
@@ -26,9 +25,13 @@ class WaiverReactorTest extends TestCase
     use AssertsActions;
 
     private string $firstName;
+
     private string $lastName;
+
     private string $email;
+
     private Customer $matchingCustomer;
+
     private Waiver $matchingWaiver;
 
     protected function setUp(): void
@@ -75,7 +78,7 @@ class WaiverReactorTest extends TestCase
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
                     $this->matchingCustomer->woo_id,
-                )
+                ),
             ]);
     }
 
@@ -174,7 +177,7 @@ class WaiverReactorTest extends TestCase
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
                     $this->matchingCustomer->woo_id,
-                )
+                ),
             ]);
     }
 
@@ -272,7 +275,7 @@ class WaiverReactorTest extends TestCase
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
                     $this->matchingCustomer->woo_id,
-                )
+                ),
             ]);
     }
 
@@ -370,7 +373,7 @@ class WaiverReactorTest extends TestCase
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
                     $this->matchingCustomer->woo_id,
-                )
+                ),
             ]);
     }
 

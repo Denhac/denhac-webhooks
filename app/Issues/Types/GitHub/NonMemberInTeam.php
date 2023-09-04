@@ -25,7 +25,7 @@ class NonMemberInTeam extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "GitHub: Non member in team";
+        return 'GitHub: Non member in team';
     }
 
     public function getIssueText(): string
@@ -36,10 +36,10 @@ class NonMemberInTeam extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Remove from GitHub team", function() {
+            ->option('Remove from GitHub team', function () {
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
-                $gitHubApi->team("members")->remove($this->member->githubUsername);
+                $gitHubApi->team('members')->remove($this->member->githubUsername);
 
                 return true;
             })

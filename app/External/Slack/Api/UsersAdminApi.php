@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
@@ -26,14 +25,12 @@ class UsersAdminApi
      *
      * Channels should either be a comma separated list of channel ids, or an array of channel names.
      *
-     * @param $emails
-     * @param $channels
      * @throws GuzzleException
      */
     public function inviteBulk($emails, $channels)
     {
         $emails = Arr::wrap($emails);
-        if (!Arr::isAssoc($emails)) {
+        if (! Arr::isAssoc($emails)) {
             $emails = array_fill_keys($emails, 'regular');
         }
 

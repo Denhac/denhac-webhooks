@@ -25,7 +25,7 @@ class UserMembershipNotFoundOnRemote extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: User membership not found on remote";
+        return 'Internal Consistency: User membership not found on remote';
     }
 
     public function getIssueText(): string
@@ -36,7 +36,7 @@ class UserMembershipNotFoundOnRemote extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Delete local user membership", function () {
+            ->option('Delete local user membership', function () {
                 /** @var UserMembership $user_membership */
                 $userMembership = UserMembership::find($this->userMembershipId);
 

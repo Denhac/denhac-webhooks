@@ -14,14 +14,23 @@ class MembershipOptionsModal implements ModalInterface
     use ModalTrait;
 
     private const MEMBERSHIP_OPTION = 'membership-option';
+
     private const CANCEL_MEMBERSHIP_VALUE = 'value-cancel-membership';
+
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
+
     private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
+
     private const MANAGE_OPEN_HOUSE_VALUE = 'value-manage-open-house-doors';
+
     private const QUICK_OPEN_HOUSE_VALUE = 'value-quick-open-house';
+
     private const ALL_DOORS_DEFAULT_VALUE = 'value-all-doors-default';
+
     private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
+
     private const EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
+
     private const MANAGE_VOLUNTEER_GROUPS = 'value-manage-volunteer-groups';
 
     private const COUNTDOWN_TEST_VALUE = 'value-countdown-test';
@@ -68,9 +77,11 @@ class MembershipOptionsModal implements ModalInterface
                 break;
             case self::QUICK_OPEN_HOUSE_VALUE:
                 Door::quickOpenHouse();
+
                 return self::clearViewStack();
             case self::ALL_DOORS_DEFAULT_VALUE:
                 Door::quickDefaultDoors();
+
                 return self::clearViewStack();
             case self::CANCEL_MEMBERSHIP_VALUE:
                 $modal = new CancelMembershipConfirmationModal($request->customer());
@@ -135,9 +146,9 @@ class MembershipOptionsModal implements ModalInterface
         $subscriptions = $customer->subscriptions;
         $hasActiveMembership = $subscriptions->where('status', 'active')->count() > 0;
 
-//        if ($hasActiveMembership) {
-//            $options->option('Cancel My Membership', self::CANCEL_MEMBERSHIP_VALUE);
-//        }
+        //        if ($hasActiveMembership) {
+        //            $options->option('Cancel My Membership', self::CANCEL_MEMBERSHIP_VALUE);
+        //        }
 
         return $options;
     }

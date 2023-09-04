@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\Stripe;
 
-
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
@@ -28,28 +27,28 @@ class CardHolderIssues implements IssueCheck
         $members = $this->issueData->members();
         $cardHolders = $this->issueData->stripeCardHolders();
 
-        foreach($cardHolders as $cardHolder) {
+        foreach ($cardHolders as $cardHolder) {
             /** @var Cardholder $cardHolder */
-            $membersWithThatStripeId = $members->filter(fn($m) => $m->stripeCardHolderId == $cardHolder['id']);
+            $membersWithThatStripeId = $members->filter(fn ($m) => $m->stripeCardHolderId == $cardHolder['id']);
 
-            if($membersWithThatStripeId->isEmpty()) {
-                if($cardHolder->status == "active") {
+            if ($membersWithThatStripeId->isEmpty()) {
+                if ($cardHolder->status == 'active') {
                     $this->issues->add(new NoMemberForCardHolder($cardHolder));
                 }
-            } else if($membersWithThatStripeId->count() > 1) {
+            } elseif ($membersWithThatStripeId->count() > 1) {
                 // More than one member has that id
                 $this->issues->add(new MultipleMembersForCardHolder($membersWithThatStripeId, $cardHolder));
             }
         }
 
-        foreach($members as $member) {
+        foreach ($members as $member) {
             /** @var MemberData $member */
-            if(is_null($member->stripeCardHolderId)) {
+            if (is_null($member->stripeCardHolderId)) {
                 continue;
             }
             $cardHolder = $cardHolders->where('id', $member->stripeCardHolderId)->first();
 
-            if(is_null($cardHolder)) {
+            if (is_null($cardHolder)) {
                 $this->issues->add(new NoCardHolderFoundForId($member));
             }
         }

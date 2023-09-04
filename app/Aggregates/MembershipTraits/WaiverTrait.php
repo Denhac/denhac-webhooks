@@ -2,7 +2,6 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-
 use App\StorableEvents\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\WaiverAssignedToCustomer;
 use App\Waiver;
@@ -11,7 +10,9 @@ use Illuminate\Support\Collection;
 trait WaiverTrait
 {
     public Collection $waivers;
+
     public bool $membershipWaiverSigned = false;
+
     public bool $manualBootstrapTriggered = false;
 
     public function bootWaiverTrait(): void

@@ -2,7 +2,6 @@
 
 namespace App\Issues\Types\GoogleGroups;
 
-
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
@@ -14,6 +13,7 @@ class TwoMembersSameEmail extends IssueBase
     use ICanFixThem;
 
     private string $email;
+
     private Collection $membersForEmail;
 
     public function __construct(string $email, Collection $membersForEmail)
@@ -29,7 +29,7 @@ class TwoMembersSameEmail extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Google Groups: Two members have the same email";
+        return 'Google Groups: Two members have the same email';
     }
 
     public function getIssueText(): string
@@ -49,15 +49,15 @@ class TwoMembersSameEmail extends IssueBase
                 $name = "$member->first_name $member->last_name";
                 if ($this->email == $member->primaryEmail) {
                     // We can't remove the primary email, only update it to something else
-                    $this->info("Update primary email for $name", fn() => $this->updatePrimaryEmail($member, $needToUpdate));
+                    $this->info("Update primary email for $name", fn () => $this->updatePrimaryEmail($member, $needToUpdate));
                 } else {
                     // We only offer to remove secondary emails
-                    $this->info("Remove secondary email for $name", fn() => $this->removeSecondaryEmail($member, $needToUpdate));
+                    $this->info("Remove secondary email for $name", fn () => $this->removeSecondaryEmail($member, $needToUpdate));
                 }
             }
 
             $runResult = $options->run();
-            if (!$runResult) {  // Cancelled
+            if (! $runResult) {  // Cancelled
                 return false;
             }
         }
@@ -67,7 +67,7 @@ class TwoMembersSameEmail extends IssueBase
 
     private function updatePrimaryEmail(MemberData $member, Collection &$needToUpdate): bool
     {
-        $newEmail = $this->ask("What should the new email be?");
+        $newEmail = $this->ask('What should the new email be?');
 
         /** @var WooCommerceApi $wooCommerceApi */
         $wooCommerceApi = app(WooCommerceApi::class);
@@ -77,7 +77,8 @@ class TwoMembersSameEmail extends IssueBase
                 'email' => $newEmail,   // TODO This won't update subscription emails, but it updates GoogleGroup which is what this issue cares about
             ]);
 
-        $needToUpdate = $needToUpdate->reject(fn($m) => $m === $member);
+        $needToUpdate = $needToUpdate->reject(fn ($m) => $m === $member);
+
         return false;
     }
 
@@ -100,7 +101,8 @@ class TwoMembersSameEmail extends IssueBase
                 ],
             ]);
 
-        $needToUpdate = $needToUpdate->reject(fn($m) => $m === $member);
+        $needToUpdate = $needToUpdate->reject(fn ($m) => $m === $member);
+
         return false;
     }
 }

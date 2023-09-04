@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\External\WinDSX;
-
 
 use App\Events\DoorControlUpdated;
 use Illuminate\Support\Collection;
@@ -15,21 +13,20 @@ class Door
 
     private function __construct(
         public string $humanReadableName,
-        public int    $dsxDeviceId, // The specific hardware ID based on what 1042 card this door is wired to.
-        public int    $dsxRelayBoard, // The relay board ID in the stack attached to the Raspberry Pi
-        public int    $dsxRelayId, // The specific relay number on that board.
-        public bool   $openDuringOpenHouseByDefault,
-        public bool   $membersCanBadgeIn,
-        public int    $momentaryOpenTime // How long to keep just this door open
-    )
-    {
+        public int $dsxDeviceId, // The specific hardware ID based on what 1042 card this door is wired to.
+        public int $dsxRelayBoard, // The relay board ID in the stack attached to the Raspberry Pi
+        public int $dsxRelayId, // The specific relay number on that board.
+        public bool $openDuringOpenHouseByDefault,
+        public bool $membersCanBadgeIn,
+        public int $momentaryOpenTime // How long to keep just this door open
+    ) {
         $this->shouldOpen = $this->openDuringOpenHouseByDefault;
     }
 
     public static function quickOpenHouse(): void
     {
-        $doors = self::all()->filter(fn($d) => $d->openDuringOpenHouseByDefault);
-        $elevenPM = now()->tz("America/Denver");
+        $doors = self::all()->filter(fn ($d) => $d->openDuringOpenHouseByDefault);
+        $elevenPM = now()->tz('America/Denver');
         $elevenPM->hour = 23;
         $elevenPM->minute = 00;
 
@@ -38,7 +35,7 @@ class Door
 
     public static function quickDefaultDoors(): void
     {
-        $doors = self::all()->map(fn($d) => $d->shouldOpen(false));
+        $doors = self::all()->map(fn ($d) => $d->shouldOpen(false));
         event(new DoorControlUpdated(1, ...$doors->toArray()));
     }
 
@@ -49,14 +46,14 @@ class Door
         return $this;
     }
 
-    #[ArrayShape(["device" => "int", "board" => "int", "relay" => "int", "open" => "bool"])]
+    #[ArrayShape(['device' => 'int', 'board' => 'int', 'relay' => 'int', 'open' => 'bool'])]
     public function toRelay(): array
     {
         return [
-            "device" => $this->dsxDeviceId,
-            "board" => $this->dsxRelayBoard,
-            "relay" => $this->dsxRelayId,
-            "open" => $this->shouldOpen,
+            'device' => $this->dsxDeviceId,
+            'board' => $this->dsxRelayBoard,
+            'relay' => $this->dsxRelayId,
+            'open' => $this->shouldOpen,
         ];
     }
 
@@ -84,10 +81,11 @@ class Door
             });
     }
 
-    #[Pure] public static function glassWorkshopDoor(): Door
+    #[Pure]
+    public static function glassWorkshopDoor(): Door
     {
         return new Door(
-            humanReadableName: "Glass Workshop Door",
+            humanReadableName: 'Glass Workshop Door',
             dsxDeviceId: 3,
             dsxRelayBoard: 0,
             dsxRelayId: 1,
@@ -97,10 +95,11 @@ class Door
         );
     }
 
-    #[Pure] public static function kitchenWorkshopDoor(): Door
+    #[Pure]
+    public static function kitchenWorkshopDoor(): Door
     {
         return new Door(
-            humanReadableName: "Kitchen Workshop Door",
+            humanReadableName: 'Kitchen Workshop Door',
             dsxDeviceId: 8,
             dsxRelayBoard: 0,
             dsxRelayId: 7,
@@ -110,10 +109,11 @@ class Door
         );
     }
 
-    #[Pure] public static function electronicsAndLavaRoom(): Door
+    #[Pure]
+    public static function electronicsAndLavaRoom(): Door
     {
         return new Door(
-            humanReadableName: "Electronics/Lounge Door",
+            humanReadableName: 'Electronics/Lounge Door',
             dsxDeviceId: 9,
             dsxRelayBoard: 0,
             dsxRelayId: 8,
@@ -123,10 +123,11 @@ class Door
         );
     }
 
-    #[Pure] public static function printersAndCrafts(): Door
+    #[Pure]
+    public static function printersAndCrafts(): Door
     {
         return new Door(
-            humanReadableName: "Craft/3D Room Door",
+            humanReadableName: 'Craft/3D Room Door',
             dsxDeviceId: 10,
             dsxRelayBoard: 0,
             dsxRelayId: 4,
@@ -136,10 +137,11 @@ class Door
         );
     }
 
-    #[Pure] public static function dirtyRoomDoor(): Door
+    #[Pure]
+    public static function dirtyRoomDoor(): Door
     {
         return new Door(
-            humanReadableName: "Dirty Room Door",
+            humanReadableName: 'Dirty Room Door',
             dsxDeviceId: 2,
             dsxRelayBoard: 0,
             dsxRelayId: 2,
@@ -149,10 +151,11 @@ class Door
         );
     }
 
-    #[Pure] public static function kitchenGlassDoor(): Door
+    #[Pure]
+    public static function kitchenGlassDoor(): Door
     {
         return new Door(
-            humanReadableName: "Kitchen Glass Door",
+            humanReadableName: 'Kitchen Glass Door',
             dsxDeviceId: 1,
             dsxRelayBoard: 0,
             dsxRelayId: 5,
@@ -162,10 +165,11 @@ class Door
         );
     }
 
-    #[Pure] public static function glassDoubleDoors(): Door
+    #[Pure]
+    public static function glassDoubleDoors(): Door
     {
         return new Door(
-            humanReadableName: "Glass Double Doors",
+            humanReadableName: 'Glass Double Doors',
             dsxDeviceId: 0,
             dsxRelayBoard: 0,
             dsxRelayId: 6,
@@ -175,39 +179,42 @@ class Door
         );
     }
 
-    #[Pure] public static function classroom1(): Door
+    #[Pure]
+    public static function classroom1(): Door
     {
         return new Door(
-            humanReadableName: "Classroom 1",
+            humanReadableName: 'Classroom 1',
             dsxDeviceId: 12,
-            dsxRelayBoard: 1,  # Actually, None
-            dsxRelayId: 0,  # Actually, None
+            dsxRelayBoard: 1,  // Actually, None
+            dsxRelayId: 0,  // Actually, None
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true,
             momentaryOpenTime: 3
         );
     }
 
-    #[Pure] public static function classroom2(): Door
+    #[Pure]
+    public static function classroom2(): Door
     {
         return new Door(
-            humanReadableName: "classroom 2",
+            humanReadableName: 'classroom 2',
             dsxDeviceId: 11,
-            dsxRelayBoard: 1,  # Actually, None
-            dsxRelayId: 0,  # Actually, None
+            dsxRelayBoard: 1,  // Actually, None
+            dsxRelayId: 0,  // Actually, None
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true,
             momentaryOpenTime: 3
         );
     }
 
-    #[Pure] public static function fishbowl(): Door
+    #[Pure]
+    public static function fishbowl(): Door
     {
         return new Door(
-            humanReadableName: "Fishbowl",
+            humanReadableName: 'Fishbowl',
             dsxDeviceId: 13,
-            dsxRelayBoard: 1,  # Actually, None
-            dsxRelayId: 0,  # Actually, None
+            dsxRelayBoard: 1,  // Actually, None
+            dsxRelayId: 0,  // Actually, None
             openDuringOpenHouseByDefault: true,
             membersCanBadgeIn: true,
             momentaryOpenTime: 3

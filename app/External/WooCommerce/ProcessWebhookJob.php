@@ -10,6 +10,7 @@ use Spatie\WebhookClient\Models\WebhookCall;
 
 /**
  * Class ProcessWebhookJob.
+ *
  * @property \App\External\WooCommerce\WebhookCall $webhookCall
  */
 class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
@@ -53,7 +54,7 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
                     ->persist();
                 break;
             case 'user_membership.updated':
-                if(array_key_exists('customer_id', $payload)) {
+                if (array_key_exists('customer_id', $payload)) {
                     $customerId = $payload['customer_id'];
                 } else {
                     $customerId = $this->customerIdFromUserMembershipId($payload['id']);
@@ -101,6 +102,7 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
         if (! is_null($user_membership)) {
             return $user_membership->customer_id;
         }
+
         return null;
     }
 
@@ -112,6 +114,7 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
         if (! is_null($subscription)) {
             return $subscription->customer_id;
         }
+
         return null;
     }
 }

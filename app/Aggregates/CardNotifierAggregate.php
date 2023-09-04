@@ -12,6 +12,7 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 final class CardNotifierAggregate extends AggregateRoot
 {
     private const GLOBAL_UUID = '81baf399-436e-405b-948c-a5a19b751bb3';
+
     /**
      * @var Collection
      */

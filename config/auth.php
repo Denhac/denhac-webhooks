@@ -77,10 +77,10 @@ return [
             'model' => App\User::class,
         ],
 
-         'customers' => [
-             'driver' => 'database',
-             'table' => App\Customer::class,
-         ],
+        'customers' => [
+            'driver' => 'database',
+            'table' => App\Customer::class,
+        ],
     ],
 
     /*

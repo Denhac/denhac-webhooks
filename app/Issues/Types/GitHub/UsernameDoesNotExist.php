@@ -2,7 +2,6 @@
 
 namespace App\Issues\Types\GitHub;
 
-use App\External\GitHub\GitHubApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
@@ -26,7 +25,7 @@ class UsernameDoesNotExist extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "GitHub: Username does not exist";
+        return 'GitHub: Username does not exist';
     }
 
     public function getIssueText(): string
@@ -37,7 +36,7 @@ class UsernameDoesNotExist extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Clear GitHub username field for member", function () {
+            ->option('Clear GitHub username field for member', function () {
                 $wooCommerceApi = app(WooCommerceApi::class);
 
                 $wooCommerceApi->customers

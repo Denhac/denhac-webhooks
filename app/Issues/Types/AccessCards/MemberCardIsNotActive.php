@@ -7,13 +7,13 @@ use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\CardSentForActivation;
-use App\StorableEvents\CardSentForDeactivation;
 
 class MemberCardIsNotActive extends IssueBase
 {
     use ICanFixThem;
 
     private MemberData $member;
+
     private $cardNumber;
 
     public function __construct(MemberData $member, $cardNumber)
@@ -29,7 +29,7 @@ class MemberCardIsNotActive extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: Member card is not active";
+        return 'Access Cards: Member card is not active';
     }
 
     public function getIssueText(): string
@@ -40,10 +40,11 @@ class MemberCardIsNotActive extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Activate Card", function () {
+            ->option('Activate Card', function () {
                 MembershipAggregate::make($this->member->id)
                     ->recordThat(new CardSentForActivation($this->member->id, $this->cardNumber))
                     ->persist();
+
                 return true;
             })
             ->run();

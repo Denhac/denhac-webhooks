@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-
 use App\TempBan;
 use Carbon\Carbon;
 use Tests\TestCase;

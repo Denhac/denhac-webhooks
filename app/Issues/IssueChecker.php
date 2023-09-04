@@ -2,7 +2,6 @@
 
 namespace App\Issues;
 
-
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
@@ -14,9 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class IssueChecker
 {
     protected Collection $checkers;
-    protected Collection|null $issues = null;
+
+    protected ?Collection $issues = null;
+
     private IssueData $issueData;
-    private OutputInterface|null $output = null;
+
+    private ?OutputInterface $output = null;
 
     public function __construct()
     {
@@ -24,11 +26,11 @@ class IssueChecker
         app()->instance(IssueData::class, $this->issueData);
 
         $this->checkers = collect(get_declared_classes())
-            ->filter(fn($name) => str_starts_with($name, 'App\\Issues\\Checkers'))
-            ->map(fn($name) => new ReflectionClass($name))
-            ->filter(fn($reflect) => $reflect->implementsInterface(IssueCheck::class))
-            ->map(fn($reflect) => $reflect->getName())
-            ->map(fn($name) => app($name));
+            ->filter(fn ($name) => str_starts_with($name, 'App\\Issues\\Checkers'))
+            ->map(fn ($name) => new ReflectionClass($name))
+            ->filter(fn ($reflect) => $reflect->implementsInterface(IssueCheck::class))
+            ->map(fn ($reflect) => $reflect->getName())
+            ->map(fn ($name) => app($name));
     }
 
     public function setOutput(OutputInterface $output): void
@@ -46,7 +48,7 @@ class IssueChecker
             $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
-                if (!is_null($this->output)) {
+                if (! is_null($this->output)) {
                     $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
                     $this->output->writeln("Getting issues for: $shortName");
                 }
@@ -63,17 +65,15 @@ class IssueChecker
      *
      * The idea here is that we should have possible fixes for most if not all of these issues. But checking every file
      * to see which ones we haven't yet updated can be tedious. Hence, this helper function.
-     *
-     * @return Collection
      */
     public static function getUnfixableIssueTypes(): Collection
     {
         return collect(get_declared_classes())
-            ->filter(fn($name) => str_starts_with($name, 'App\\Issues\\Types'))
-            ->map(fn($name) => new ReflectionClass($name))
-            ->filter(fn($reflect) => $reflect->isSubclassOf(IssueBase::class))
-            ->filter(fn($reflect) => !array_key_exists(ICanFixThem::class, $reflect->getTraits()))
-            ->map(fn($reflect) => $reflect->getName())
+            ->filter(fn ($name) => str_starts_with($name, 'App\\Issues\\Types'))
+            ->map(fn ($name) => new ReflectionClass($name))
+            ->filter(fn ($reflect) => $reflect->isSubclassOf(IssueBase::class))
+            ->filter(fn ($reflect) => ! array_key_exists(ICanFixThem::class, $reflect->getTraits()))
+            ->map(fn ($reflect) => $reflect->getName())
             ->values();
     }
 

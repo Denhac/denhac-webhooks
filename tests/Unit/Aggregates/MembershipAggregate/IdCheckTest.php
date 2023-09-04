@@ -56,7 +56,7 @@ class IdCheckTest extends TestCase
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
-                new CustomerCreated($customer->meta_data('id_was_checked', true))
+                new CustomerCreated($customer->meta_data('id_was_checked', true)),
             ])
             ->updateCustomer($customer)
             ->assertRecorded([
@@ -80,5 +80,4 @@ class IdCheckTest extends TestCase
                 new CustomerUpdated($customer),
             ]);
     }
-
 }

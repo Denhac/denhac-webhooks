@@ -16,8 +16,6 @@ class InviteCustomerNeedIdCheckOnlyMemberInSlack implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param $wooCustomerId
      */
     public function __construct($wooCustomerId)
     {

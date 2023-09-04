@@ -19,8 +19,6 @@ class CustomerApi
     }
 
     /**
-     * @param ApiProgress|null $progress
-     * @return Collection
      * @throws ApiCallFailed
      */
     public function list(ApiProgress $progress = null): Collection
@@ -33,9 +31,8 @@ class CustomerApi
     }
 
     /**
-     * @param $woo_id
-     * @param array $json
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function update($woo_id, array $json)
@@ -48,8 +45,8 @@ class CustomerApi
     }
 
     /**
-     * @param $woo_id
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function get($woo_id)
@@ -60,8 +57,8 @@ class CustomerApi
     }
 
     /**
-     * @param int $woo_id
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function capabilities(int $woo_id)

@@ -33,7 +33,9 @@ use YlsIdeas\FeatureFlags\Facades\Features;
 class AccessCardTest extends TestCase
 {
     private string $memberWaiverTemplateId;
+
     private string $memberWaiverTemplateVersion;
+
     private Waiver $membershipWaiver;
 
     protected function setUp(): void

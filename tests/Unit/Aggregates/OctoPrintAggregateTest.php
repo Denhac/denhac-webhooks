@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Aggregates;
 
-
 use App\Aggregates\OctoPrintAggregate;
 use App\StorableEvents\OctoPrintStatusUpdated;
 use Illuminate\Support\Facades\Event;

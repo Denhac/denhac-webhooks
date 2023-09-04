@@ -13,8 +13,6 @@ class AuthorizeSlackRequest
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
@@ -27,7 +25,7 @@ class AuthorizeSlackRequest
             ]);
         }
 
-        if (!$this->isCertificateValid($request)) {
+        if (! $this->isCertificateValid($request)) {
             return response()->json([
                 'response_type' => 'ephemeral',
                 'text' => "The certificate from slack didn't match the computed value. Did the certificate expire?",
@@ -36,7 +34,7 @@ class AuthorizeSlackRequest
 
         $type = $request->get('type');
 
-        if($type == 'url_verification') {
+        if ($type == 'url_verification') {
             $challenge = $request->get('challenge');
 
             return response($challenge);

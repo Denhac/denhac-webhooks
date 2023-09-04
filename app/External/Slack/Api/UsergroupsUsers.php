@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
 

@@ -8,8 +8,6 @@ use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\IdWasChecked;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionCreated;
-use App\StorableEvents\SubscriptionUpdated;
 use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipUpdated;
 use App\UserMembership;

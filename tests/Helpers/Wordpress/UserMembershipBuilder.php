@@ -6,6 +6,7 @@ use Tests\Helpers\BaseBuilder;
 
 /**
  * Class CustomerBuilder.
+ *
  * @property int id
  */
 class UserMembershipBuilder extends BaseBuilder
@@ -15,25 +16,25 @@ class UserMembershipBuilder extends BaseBuilder
     public function __construct()
     {
         $this->data = [
-            "id" => 1,
-            "status" => "active",
-            "plan_id" => 1,
-            "end_date" => null,
-            "order_id" => null,
-            "view_url" => "https://denhac.org/my-account/members-area/1/my-membership-content/",
-            "meta_data" => [],
-            "product_id" => null,
-            "start_date" => '2020-01-01T00:00:00',
-            "customer_id" => 1,
-            "paused_date" => null,
-            "date_created" => '2020-01-01T00:00:00',
-            "end_date_gmt" => null,
-            "cancelled_date" => null,
-            "start_date_gmt" => '2020-01-01T00:00:00',
-            "paused_date_gmt" => null,
-            "subscription_id" => null,
-            "date_created_gmt" => '2020-01-01T00:00:00',
-            "cancelled_date_gmt" => null,
+            'id' => 1,
+            'status' => 'active',
+            'plan_id' => 1,
+            'end_date' => null,
+            'order_id' => null,
+            'view_url' => 'https://denhac.org/my-account/members-area/1/my-membership-content/',
+            'meta_data' => [],
+            'product_id' => null,
+            'start_date' => '2020-01-01T00:00:00',
+            'customer_id' => 1,
+            'paused_date' => null,
+            'date_created' => '2020-01-01T00:00:00',
+            'end_date_gmt' => null,
+            'cancelled_date' => null,
+            'start_date_gmt' => '2020-01-01T00:00:00',
+            'paused_date_gmt' => null,
+            'subscription_id' => null,
+            'date_created_gmt' => '2020-01-01T00:00:00',
+            'cancelled_date_gmt' => null,
         ];
     }
 

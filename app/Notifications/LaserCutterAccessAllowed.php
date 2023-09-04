@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -15,8 +14,6 @@ class LaserCutterAccessAllowed extends Notification
 
     /**
      * Create a new notification instance.
-     *
-     * @param $customer
      */
     public function __construct($customer)
     {

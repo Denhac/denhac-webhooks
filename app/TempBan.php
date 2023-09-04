@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TempBan
- * @package App
+ *
  * @property string user_id
  * @property string channel_id
  * @property ?Carbon expires_at
@@ -37,7 +37,7 @@ class TempBan extends Model
             ->get();
 
         return $tempBans
-            ->filter(function($tempBan) {
+            ->filter(function ($tempBan) {
                 /** @var TempBan $tempBan */
                 return is_null($tempBan->expires_at) || $tempBan->expires_at >= Carbon::now();
             })

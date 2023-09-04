@@ -8,6 +8,7 @@ use App\Issues\Types\IssueBase;
 class CardHolderIncorrectName extends IssueBase
 {
     private MemberData $member;
+
     private $cardHolder;
 
     public function __construct(MemberData $member, $cardHolder)
@@ -23,7 +24,7 @@ class CardHolderIncorrectName extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: Card holder incorrect name";
+        return 'Access Cards: Card holder incorrect name';
     }
 
     public function getIssueText(): string

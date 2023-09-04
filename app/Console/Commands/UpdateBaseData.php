@@ -25,6 +25,7 @@ class UpdateBaseData extends Command
      * @var string
      */
     protected $description = 'Updates the base layer of data with things we might have missed with WooCommerce';
+
     /**
      * @var WooCommerceApi
      */
@@ -34,8 +35,6 @@ class UpdateBaseData extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param WooCommerceApi $api
      */
     public function __construct(WooCommerceApi $api)
     {
@@ -52,7 +51,7 @@ class UpdateBaseData extends Command
     {
         $this->isDryRun = $this->option('dry-run');
         if ($this->isDryRun) {
-            $this->line("Dry run, will not actually update anything.");
+            $this->line('Dry run, will not actually update anything.');
         }
 
         $this->createCustomersInDatabase();
@@ -73,10 +72,10 @@ class UpdateBaseData extends Command
         $customersInWooCommerce = $this->api->customers->list();
         $customersInWooCommerce->each(function ($customer) use ($customersInDB) {
             $wooId = $customer['id'];
-            if (!$customersInDB->contains('woo_id', $wooId)) {
+            if (! $customersInDB->contains('woo_id', $wooId)) {
                 $username = $customer['username'];
                 $this->line("{$username} was not in our internal store, adding.");
-                if (!$this->isDryRun) {
+                if (! $this->isDryRun) {
                     MembershipAggregate::make($customer['id'])
                         ->importCustomer($customer)
                         ->persist();
@@ -96,10 +95,10 @@ class UpdateBaseData extends Command
         $subscriptionsInWooCommerce = $this->api->subscriptions->list();
         $subscriptionsInWooCommerce->each(function ($subscription) use ($subscriptionsInDB) {
             $wooId = $subscription['id'];
-            if (!$subscriptionsInDB->contains('woo_id', $wooId)) {
+            if (! $subscriptionsInDB->contains('woo_id', $wooId)) {
                 $this->line("Subscription {$wooId} was not in our internal store, adding.");
 
-                if (!$this->isDryRun) {
+                if (! $this->isDryRun) {
                     MembershipAggregate::make($subscription['customer_id'])
                         ->importSubscription($subscription)
                         ->persist();
@@ -116,10 +115,10 @@ class UpdateBaseData extends Command
         $userMembershipsInWooCommerce = $this->api->members->list();
         $userMembershipsInWooCommerce->each(function ($membership) use ($userMembershipsInDB) {
             $wooId = $membership['id'];
-            if (!$userMembershipsInDB->contains('id', $wooId)) {
+            if (! $userMembershipsInDB->contains('id', $wooId)) {
                 $this->line("User Membership {$wooId} was not in our internal store, adding.");
 
-                if (!$this->isDryRun) {
+                if (! $this->isDryRun) {
                     MembershipAggregate::make($membership['customer_id'])
                         ->importUserMembership($membership)
                         ->persist();

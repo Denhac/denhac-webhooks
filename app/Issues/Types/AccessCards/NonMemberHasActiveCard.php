@@ -13,6 +13,7 @@ class NonMemberHasActiveCard extends IssueBase
     use ICanFixThem;
 
     private MemberData $member;
+
     private $cardNumber;
 
     public function __construct(MemberData $member, $cardNumber)
@@ -28,7 +29,7 @@ class NonMemberHasActiveCard extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: Non member has active card";
+        return 'Access Cards: Non member has active card';
     }
 
     public function getIssueText(): string
@@ -39,10 +40,11 @@ class NonMemberHasActiveCard extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Deactivate Card", function () {
+            ->option('Deactivate Card', function () {
                 MembershipAggregate::make($this->member->id)
                     ->recordThat(new CardSentForDeactivation($this->member->id, $this->cardNumber))
                     ->persist();
+
                 return true;
             })
             ->run();

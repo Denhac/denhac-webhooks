@@ -26,7 +26,7 @@ class UnknownGitHubUsernameInTeam extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "GitHub: Unknown GitHub username in team";
+        return 'GitHub: Unknown GitHub username in team';
     }
 
     public function getIssueText(): string
@@ -37,8 +37,8 @@ class UnknownGitHubUsernameInTeam extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Remove from GitHub team", fn() => $this->removeFromGitHubTeam())
-            ->option("Assign to member", fn() => $this->assignGitHubUsernameToMember())
+            ->option('Remove from GitHub team', fn () => $this->removeFromGitHubTeam())
+            ->option('Assign to member', fn () => $this->assignGitHubUsernameToMember())
             ->run();
     }
 
@@ -46,12 +46,10 @@ class UnknownGitHubUsernameInTeam extends IssueBase
     {
         /** @var GitHubApi $gitHubApi */
         $gitHubApi = app(GitHubApi::class);
-        $gitHubApi->team("members")->remove($this->gitHubUsername);
+        $gitHubApi->team('members')->remove($this->gitHubUsername);
 
         return true;
     }
-
-
 
     private function assignGitHubUsernameToMember(): bool
     {

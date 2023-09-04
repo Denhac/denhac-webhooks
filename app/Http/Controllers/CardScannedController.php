@@ -61,10 +61,10 @@ class CardScannedController extends Controller
         if ($customer->member) {
             Log::info("They're a member!");
             if ($accessAllowed) {
-                if (!is_null($newMemberCardActivation)) {
+                if (! is_null($newMemberCardActivation)) {
                     Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
                     if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
-                        Log::info("Updated to success");
+                        Log::info('Updated to success');
                         $newMemberCardActivation->state = $newMemberCardActivation::SUCCESS;
                         $newMemberCardActivation->save();
                     }
@@ -79,26 +79,27 @@ class CardScannedController extends Controller
                     Log::info("We don't know about this door {$device}");
                     // We don't know about this door. Do nothing
                     return;
-                } else if ($door->membersCanBadgeIn) {
-                    if (!$customer->hasSignedMembershipWaiver()) {
+                } elseif ($door->membersCanBadgeIn) {
+                    if (! $customer->hasSignedMembershipWaiver()) {
                         $notification = new CardAccessDeniedNoWaiver($customer);
 
                         Notification::route('mail', $customer->email)
                             ->notify($notification);
+
                         return;
                     }
 
                     /** @var Waiver $waiver */
                     $waiver = $customer->getMembershipWaiver();
 
-                    if($scanTime->subMinutes(10) < $waiver->updated_at) {
+                    if ($scanTime->subMinutes(10) < $waiver->updated_at) {
                         return;  // They just signed the waiver, give it a bit to activate their card before emailing everyone
                     }
 
-                    if (!is_null($newMemberCardActivation)) {
+                    if (! is_null($newMemberCardActivation)) {
                         Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
                         if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
-                            Log::info("Updated to failed");
+                            Log::info('Updated to failed');
                             $newMemberCardActivation->state = $newMemberCardActivation::SCAN_FAILED;
                             $newMemberCardActivation->save();
                         }

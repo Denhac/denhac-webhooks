@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ActiveCardHolderUpdate.
+ *
  * @property array card_holders
  */
 class ActiveCardHolderUpdate extends Model

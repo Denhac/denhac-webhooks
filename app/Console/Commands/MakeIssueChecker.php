@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Input\InputArgument;
 
 class MakeIssueChecker extends GeneratorCommand
 {
@@ -21,7 +20,7 @@ class MakeIssueChecker extends GeneratorCommand
      */
     protected $description = 'Generate a new issue checker class';
 
-    protected $type = "Issue Checker";
+    protected $type = 'Issue Checker';
 
     protected function getStub()
     {
@@ -30,6 +29,6 @@ class MakeIssueChecker extends GeneratorCommand
 
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\Issues\Checkers';
+        return $rootNamespace.'\Issues\Checkers';
     }
 }

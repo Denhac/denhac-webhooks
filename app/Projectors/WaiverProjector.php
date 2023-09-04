@@ -31,7 +31,7 @@ class WaiverProjector extends Projector
         $email = null;
 
         foreach ($data as $field) {
-            if (!array_key_exists('type', $field)) {
+            if (! array_key_exists('type', $field)) {
                 continue;
             }
 
@@ -42,7 +42,7 @@ class WaiverProjector extends Projector
             if ($type == 'name_field' && is_null($firstName)) {
                 $firstName = $field['first_name'];
                 $lastName = $field['last_name'];
-            } else if ($type == 'email_field') {
+            } elseif ($type == 'email_field') {
                 $email = $field['value'];
             }
         }

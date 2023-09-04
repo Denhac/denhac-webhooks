@@ -26,11 +26,9 @@ class WebhookApi
     }
 
     /**
-     * @param $topicKey
-     * @param $topicName
-     * @param $deliveryUrl
-     * @param null $secret
+     * @param  null  $secret
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function create($topicKey, $topicName, $deliveryUrl, $secret = null)

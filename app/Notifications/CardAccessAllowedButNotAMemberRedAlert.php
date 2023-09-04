@@ -5,7 +5,6 @@ namespace App\Notifications;
 use DateTime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
 class CardAccessAllowedButNotAMemberRedAlert extends Notification
@@ -13,17 +12,15 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
     use Queueable;
 
     private $firstName;
+
     private $lastName;
+
     private $scanTime;
+
     private $cardNum;
 
     /**
      * Create a new notification instance.
-     *
-     * @param $firstName
-     * @param $lastName
-     * @param $cardNum
-     * @param $scanTime
      */
     public function __construct($firstName, $lastName, $cardNum, $scanTime)
     {
@@ -47,8 +44,9 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
+     *
      * @throws \Exception
      */
     public function toMail($notifiable)

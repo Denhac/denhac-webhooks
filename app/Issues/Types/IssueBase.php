@@ -5,13 +5,13 @@ namespace App\Issues\Types {
     {
         public function getIssueURL(): string
         {
-            return sprintf("https://github.com/Denhac/denhac-webhooks/wiki/Issues#%d", static::getIssueNumber());
+            return sprintf('https://github.com/Denhac/denhac-webhooks/wiki/Issues#%d', static::getIssueNumber());
         }
 
-        public static abstract function getIssueNumber(): int;
+        abstract public static function getIssueNumber(): int;
 
-        public static abstract function getIssueTitle(): string;
+        abstract public static function getIssueTitle(): string;
 
-        public abstract function getIssueText(): string;
+        abstract public function getIssueText(): string;
     }
 }

@@ -2,13 +2,11 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-
 use App\Customer;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
-use App\Issues\Types\InternalConsistency\CannotFindCustomer;
 use App\Issues\Types\InternalConsistency\RemoteIsMemberButLocalIsNot;
 use App\Issues\Types\InternalConsistency\RemoteIsNotMemberButLocalIs;
 
@@ -39,9 +37,9 @@ class IsMemberIssues implements IssueCheck
 
             if (is_null($customer)) {
                 continue;  // CustomerIssues handles reporting this error
-            } else if ($member->isMember && !$customer->member) {  // Remote says member, we don't.
+            } elseif ($member->isMember && ! $customer->member) {  // Remote says member, we don't.
                 $this->issues->add(new RemoteIsMemberButLocalIsNot($member));
-            } else if (!$member->isMember && $customer->member) {  // Remote says not a member, we do.
+            } elseif (! $member->isMember && $customer->member) {  // Remote says not a member, we do.
                 $this->issues->add(new RemoteIsNotMemberButLocalIs($member));
             }
         }

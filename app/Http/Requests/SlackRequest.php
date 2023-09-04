@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 class SlackRequest extends Request
 {
     private ?array $payload_json = null;
+
     private ?array $event_json = null;
 
     public function payload()
@@ -69,7 +70,7 @@ class SlackRequest extends Request
             return null;
         }
 
-        if(is_string($data['user'])) {
+        if (is_string($data['user'])) {
             return $data['user'];
         }
 

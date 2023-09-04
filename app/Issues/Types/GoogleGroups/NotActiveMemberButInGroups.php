@@ -2,7 +2,6 @@
 
 namespace App\Issues\Types\GoogleGroups;
 
-
 use App\External\Google\GoogleApi;
 use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
@@ -13,7 +12,9 @@ class NotActiveMemberButInGroups extends IssueBase
     use ICanFixThem;
 
     private MemberData $member;
+
     private $email;
+
     private $groupsForEmail;
 
     public function __construct(MemberData $member, $email, $groupsForEmail)
@@ -30,7 +31,7 @@ class NotActiveMemberButInGroups extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Google Groups: Not active member found in groups";
+        return 'Google Groups: Not active member found in groups';
     }
 
     public function getIssueText(): string
@@ -41,12 +42,13 @@ class NotActiveMemberButInGroups extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Remove member from groups", function () {
+            ->option('Remove member from groups', function () {
                 /** @var GoogleApi $googleApi */
                 $googleApi = app(GoogleApi::class);
                 foreach ($this->groupsForEmail as $group) {
                     $googleApi->group($group)->remove($this->email);
                 }
+
                 return true;
             })
             ->run();

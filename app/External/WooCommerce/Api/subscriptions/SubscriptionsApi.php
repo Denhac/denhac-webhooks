@@ -19,8 +19,6 @@ class SubscriptionsApi
     }
 
     /**
-     * @param ApiProgress|null $progress
-     * @return Collection
      * @throws ApiCallFailed
      */
     public function list(ApiProgress $progress = null): Collection
@@ -29,9 +27,8 @@ class SubscriptionsApi
     }
 
     /**
-     * @param $woo_id
-     * @param array $json
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function update($woo_id, array $json)
@@ -43,10 +40,9 @@ class SubscriptionsApi
         return $this->jsonOrError($response);
     }
 
-
     /**
-     * @param $woo_id
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     public function get($woo_id)

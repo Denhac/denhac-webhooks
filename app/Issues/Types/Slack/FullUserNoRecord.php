@@ -27,7 +27,7 @@ class FullUserNoRecord extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Slack: Full user no record";
+        return 'Slack: Full user no record';
     }
 
     public function getIssueText(): string
@@ -37,14 +37,14 @@ class FullUserNoRecord extends IssueBase
 
     public function fix(): bool
     {
-        $this->line("Please note that assigning this account to a member will almost definitely");
-        $this->line("leave their old account in this same state the next time someone checks for");
-        $this->line("issues to fix.");
+        $this->line('Please note that assigning this account to a member will almost definitely');
+        $this->line('leave their old account in this same state the next time someone checks for');
+        $this->line('issues to fix.');
         $this->newLine();
 
         return $this->issueFixChoice()
-            ->option("Deactivate Slack Account", fn() => $this->deactivateSlackAccount())
-            ->option("Assign to member", fn() => $this->assignSlackUserToMember())
+            ->option('Deactivate Slack Account', fn () => $this->deactivateSlackAccount())
+            ->option('Assign to member', fn () => $this->assignSlackUserToMember())
             ->run();
     }
 

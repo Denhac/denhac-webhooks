@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers;
 
-
 trait SlackMembershipHelper
 {
     private function isFullSlackUser($slackUser): bool

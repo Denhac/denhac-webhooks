@@ -39,7 +39,7 @@ class IdentifyIssues extends Command
         $this->info("There are {$allIssues->count()} total issues.");
         $this->newLine();
 
-        $issuesByNumber = $allIssues->groupBy(fn($i) => $i->getIssueNumber());
+        $issuesByNumber = $allIssues->groupBy(fn ($i) => $i->getIssueNumber());
         $sortedIssueNumbers = $issuesByNumber->keys()->sort();
 
         $fixableIssues = collect();
@@ -51,10 +51,10 @@ class IdentifyIssues extends Command
             $issueTitle = $firstIssue->getIssueTitle();
             $canFixThisIssueType = array_key_exists(ICanFixThem::class, (new \ReflectionClass($firstIssue))->getTraits());
 
-            $this->info(sprintf("%d: %s (%d)", $issueNumber, $issueTitle, count($myIssues)));
+            $this->info(sprintf('%d: %s (%d)', $issueNumber, $issueTitle, count($myIssues)));
             $this->info("URL: {$firstIssue->getIssueURL()}");
-            if($canFixThisIssueType) {
-                $this->info("These issues can be fixed by this tool.");
+            if ($canFixThisIssueType) {
+                $this->info('These issues can be fixed by this tool.');
             }
             foreach ($myIssues as $issue) {
                 /** @var IssueBase $issue */
@@ -67,29 +67,29 @@ class IdentifyIssues extends Command
         }
 
         $fixableIssueCount = $fixableIssues->count();
-        $issueOrIssues = Str::plural("issue", $fixableIssueCount);
+        $issueOrIssues = Str::plural('issue', $fixableIssueCount);
         $this->info("We have $fixableIssueCount $issueOrIssues we can fix.");
 
         if ($fixableIssueCount == 0) {
             return;
         }
 
-        if (!$this->confirm("Would you like to fix these now?")) {
+        if (! $this->confirm('Would you like to fix these now?')) {
             return;
         }
 
         $numIssuesFixed = 0;
-        foreach($fixableIssues as $issue) {
+        foreach ($fixableIssues as $issue) {
             /** @var IssueBase|ICanFixThem $issue */
-            $this->info(sprintf("%d: %s", $issue::getIssueNumber(), $issue->getIssueText()));
+            $this->info(sprintf('%d: %s', $issue::getIssueNumber(), $issue->getIssueText()));
             $issue->setOutput($this->output);
-            if($issue->fix()) {
+            if ($issue->fix()) {
                 $numIssuesFixed++;
             }
             $this->newLine();
         }
 
-        $fixedIssueOrIssues = Str::plural("issue", $numIssuesFixed);
+        $fixedIssueOrIssues = Str::plural('issue', $numIssuesFixed);
         $this->newLine();
         $this->info("We fixed $numIssuesFixed $fixedIssueOrIssues out of $fixableIssueCount $issueOrIssues");
     }

@@ -28,7 +28,6 @@ class UpdateSpaceBotAppHome
     /**
      * Execute the action.
      *
-     * @param string $slack_id
      * @return void
      */
     public function execute(string $slack_id)
@@ -36,9 +35,9 @@ class UpdateSpaceBotAppHome
         /** @var Customer $member */
         $member = Customer::whereSlackId($slack_id)->first();
 
-        if(is_null($member)) {
+        if (is_null($member)) {
             $this->home->text(CommonResponses::unrecognizedUser());
-        } else if(! $member->member) {
+        } elseif (! $member->member) {
             $this->home->text(CommonResponses::notAMemberInGoodStanding());
         } else {
             $this->activeMember($member);

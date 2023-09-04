@@ -15,7 +15,6 @@ use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
-use Spatie\EventSourcing\Facades\Projectionist;
 
 final class CustomerProjector extends Projector
 {
@@ -52,7 +51,6 @@ final class CustomerProjector extends Projector
     }
 
     /**
-     * @param CustomerDeleted $event
      * @throws \Exception
      */
     public function onCustomerDeleted(CustomerDeleted $event)
@@ -62,6 +60,7 @@ final class CustomerProjector extends Projector
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
+
             return;
         }
         $customer->delete();
@@ -74,6 +73,7 @@ final class CustomerProjector extends Projector
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
+
             return;
         }
 
@@ -88,6 +88,7 @@ final class CustomerProjector extends Projector
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
+
             return;
         }
 
@@ -102,6 +103,7 @@ final class CustomerProjector extends Projector
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
+
             return;
         }
 
@@ -110,7 +112,6 @@ final class CustomerProjector extends Projector
     }
 
     /**
-     * @param array $customer_json
      * @return Customer
      */
     private function addOrGetCustomer(array $customer_json)
@@ -137,15 +138,14 @@ final class CustomerProjector extends Projector
     }
 
     /**
-     * @param array $customer
-     * @param string $key The name of the metadata field to lookup
+     * @param  string  $key The name of the metadata field to lookup
      * @return mixed|null
      */
     private function getMetadataField(array $customer, string $key)
     {
         return collect($customer['meta_data'])
-                ->where('key', $key)
-                ->first()['value'] ?? null;
+            ->where('key', $key)
+            ->first()['value'] ?? null;
     }
 
     private function getMetadataFieldDate(array $customer, string $key)

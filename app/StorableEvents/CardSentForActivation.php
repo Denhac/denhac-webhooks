@@ -7,6 +7,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 final class CardSentForActivation extends ShouldBeStored
 {
     public $wooCustomerId;
+
     public $cardNumber;
 
     public function __construct($wooCustomerId, $cardNumber)

@@ -30,7 +30,7 @@ class GithubMembershipReactorTest extends TestCase
         $gitHubApi->allows('team')
             ->withArgs(['members'])
             ->andReturn($memberTeamApi);
-        $memberTeamApi->allows("list")
+        $memberTeamApi->allows('list')
             ->andReturn(collect([['login' => 'test']]));
 
         Queue::fake();

@@ -2,7 +2,6 @@
 
 namespace App\External\WooCommerce\Api;
 
-
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 
@@ -13,11 +12,13 @@ class ProductsApi
     public function __construct(Client $client)
     {
         $this->client = $client;
-    }    /**
- * @param $woo_id
- * @return Collection
- * @throws ApiCallFailed
- */
+    }
+
+    /**
+     * @return Collection
+     *
+     * @throws ApiCallFailed
+     */
     public function get($woo_id)
     {
         $response = $this->client->get("/wp-json/wc/v3/products/$woo_id");

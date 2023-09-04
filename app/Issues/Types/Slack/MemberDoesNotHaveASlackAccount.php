@@ -25,7 +25,7 @@ class MemberDoesNotHaveASlackAccount extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Slack: Member does not have a slack account";
+        return 'Slack: Member does not have a slack account';
     }
 
     public function getIssueText(): string
@@ -36,7 +36,7 @@ class MemberDoesNotHaveASlackAccount extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Activate Slack account", function () {
+            ->option('Activate Slack account', function () {
                 dispatch(new MakeCustomerRegularMemberInSlack($this->member->id));
 
                 return true;

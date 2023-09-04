@@ -2,7 +2,6 @@
 
 namespace App\External\QuickBooks;
 
-
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use QuickBooksOnline\API\Data\IPPReferenceType;
@@ -27,21 +26,21 @@ class QuickBookReferences
      * updating the knownPrefixes array bellow. You can use either a single value or you can use a key => value to
      * customize what the replacement looks like.
      *
-     * @param string $name The property name to read or write
+     * @param  string  $name The property name to read or write
      * @return string the setting we're going to access
      */
     public function getSettingKey(string $name): string
     {
         $knownPrefixes = [
-            "vending",
+            'vending',
         ];
 
         foreach ($knownPrefixes as $prefix => $replacement) {
-            if (!is_string($prefix)) {
+            if (! is_string($prefix)) {
                 $prefix = $replacement;
             }
 
-            if (!Str::startsWith($name, $prefix)) {
+            if (! Str::startsWith($name, $prefix)) {
                 continue;
             }
 
@@ -51,6 +50,7 @@ class QuickBookReferences
         }
 
         $name = Str::camel($name);
+
         return "quickbook.references.other.$name";
     }
 
@@ -84,7 +84,7 @@ class QuickBookReferences
 
         $settingKey = $this->getSettingKey($name);
 
-        if($value instanceof IPPReferenceType) {
+        if ($value instanceof IPPReferenceType) {
             $value = $value->value;
         }
 

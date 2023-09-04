@@ -3,7 +3,6 @@
 namespace Tests\Unit\Projectors;
 
 use App\Customer;
-use App\FeatureFlags;
 use App\Projectors\CustomerProjector;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
@@ -15,7 +14,6 @@ use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\SubscriptionImported;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 class CustomerProjectorTest extends TestCase
 {
@@ -111,7 +109,7 @@ class CustomerProjectorTest extends TestCase
         $builder->first_name = $this->faker->firstName;
         $builder->last_name = $this->faker->lastName;
         $builder->github_username = $this->faker->userName;
-        $builder->slack_id = "U" . $this->faker->randomNumber();
+        $builder->slack_id = 'U'.$this->faker->randomNumber();
         $builder->birthday = $this->faker->date;
 
         event(new CustomerUpdated($builder->toArray()));
@@ -162,7 +160,7 @@ class CustomerProjectorTest extends TestCase
     public function member_field_kept_as_false_on_active_membership_import()
     {
         $customer = $this->customer();
-        $subscription = $this->subscription()->customer($customer)->status("active");
+        $subscription = $this->subscription()->customer($customer)->status('active');
 
         event(new CustomerImported($customer->toArray()));
         $this->assertFalse(Customer::find($customer->id)->member);
@@ -176,7 +174,7 @@ class CustomerProjectorTest extends TestCase
     public function member_field_set_kept_as_false_on_inactive_membership_import()
     {
         $customer = $this->customer();
-        $subscription = $this->subscription()->customer($customer)->status("paused");
+        $subscription = $this->subscription()->customer($customer)->status('paused');
 
         event(new CustomerImported($customer->toArray()));
         $this->assertFalse(Customer::find($customer->id)->member);

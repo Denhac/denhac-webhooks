@@ -31,7 +31,7 @@ class CardProjector extends Projector
             ->where('woo_customer_id', $event->wooCustomerId)
             ->first();
 
-        if(is_null($card)) {
+        if (is_null($card)) {
             Card::create([
                 'number' => $cardNumber,
                 'woo_customer_id' => $event->wooCustomerId,
@@ -112,7 +112,7 @@ class CardProjector extends Projector
     public function onCustomerDeleted(CustomerDeleted $event)
     {
         $cards = Card::where('woo_customer_id', $event->customerId)->get();
-        foreach($cards as $card) {
+        foreach ($cards as $card) {
             /* @var Card $card */
             $card->delete();
         }

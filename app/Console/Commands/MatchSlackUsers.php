@@ -23,10 +23,12 @@ class MatchSlackUsers extends Command
      * @var string
      */
     protected $description = 'Tries to match the woo commerce users with their slack id';
+
     /**
      * @var WooCommerceApi
      */
     private $wooCommerceApi;
+
     /**
      * @var SlackApi
      */
@@ -34,9 +36,6 @@ class MatchSlackUsers extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param WooCommerceApi $wooCommerceApi
-     * @param SlackApi $slackApi
      */
     public function __construct(WooCommerceApi $wooCommerceApi, SlackApi $slackApi)
     {
@@ -49,6 +48,7 @@ class MatchSlackUsers extends Command
      * Execute the console command.
      *
      * @return void
+     *
      * @throws ApiCallFailed
      */
     public function handle()
@@ -126,6 +126,7 @@ class MatchSlackUsers extends Command
 
     /**
      * @return Collection
+     *
      * @throws ApiCallFailed
      */
     private function getCustomersWithNoSlackId()
@@ -137,7 +138,7 @@ class MatchSlackUsers extends Command
                 }
 
                 $access_slack_id = collect($customer['meta_data'])
-                        ->firstWhere('key', 'access_slack_id') ?? null;
+                    ->firstWhere('key', 'access_slack_id') ?? null;
 
                 if (! is_null($access_slack_id) && $access_slack_id != '') {
                     return false;

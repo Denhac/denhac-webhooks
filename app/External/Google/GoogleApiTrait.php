@@ -2,7 +2,6 @@
 
 namespace App\External\Google;
 
-
 use App\External\ApiProgress;
 use Illuminate\Support\Collection;
 
@@ -10,7 +9,7 @@ trait GoogleApiTrait
 {
     protected function paginate($key, $request, ApiProgress $progress = null): Collection
     {
-        $nextPageToken = "";
+        $nextPageToken = '';
         $collection = collect();
         $stepCount = 0;
         do {
@@ -23,16 +22,18 @@ trait GoogleApiTrait
 
             $stepCount++;
 
-            if (!array_key_exists("nextPageToken", $response)) break;
+            if (! array_key_exists('nextPageToken', $response)) {
+                break;
+            }
 
-            $nextPageToken = $response["nextPageToken"];
+            $nextPageToken = $response['nextPageToken'];
 
-            if (!is_null($progress)) {
+            if (! is_null($progress)) {
                 $progress->setProgress($stepCount, $stepCount + 1);
             }
-        } while ($nextPageToken != "");
+        } while ($nextPageToken != '');
 
-        if (!is_null($progress)) {
+        if (! is_null($progress)) {
             $progress->setProgress($stepCount, $stepCount);
         }
 

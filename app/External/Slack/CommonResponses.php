@@ -2,7 +2,6 @@
 
 namespace App\External\Slack;
 
-
 class CommonResponses
 {
     public static function unrecognizedUser(): string

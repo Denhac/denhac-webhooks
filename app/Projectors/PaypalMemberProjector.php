@@ -59,8 +59,6 @@ final class PaypalMemberProjector extends Projector
 
     /**
      * It's safe to do this because we won't let someone sign up via paypal again.
-     *
-     * @param PaypalMemberDeactivated $event
      */
     public function onPaypalMemberDeactivated(PaypalMemberDeactivated $event)
     {

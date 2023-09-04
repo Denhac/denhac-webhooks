@@ -2,7 +2,6 @@
 
 namespace App\Issues\Types;
 
-
 use App\Issues\ChoiceHelper;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
@@ -13,7 +12,7 @@ trait ICanFixThem
 {
     use InteractsWithIO;
 
-    public abstract function fix(): bool;
+    abstract public function fix(): bool;
 
     public function setOutput(?OutputInterface $output): void
     {
@@ -25,10 +24,10 @@ trait ICanFixThem
         /** @var IssueData $issueData */
         $issueData = app(IssueData::class);
         $memberNames = $issueData->members()
-            ->mapWithKeys(fn($m) => ["$m->first_name $m->last_name" => $m]);  // TODO What happens when we have duplicate names
+            ->mapWithKeys(fn ($m) => ["$m->first_name $m->last_name" => $m]);  // TODO What happens when we have duplicate names
 
         do {
-            $choice = $this->anticipate("Select customer/member", function ($input) use ($memberNames) {
+            $choice = $this->anticipate('Select customer/member', function ($input) use ($memberNames) {
                 if (empty($input)) {
                     return [];
                 }
@@ -41,13 +40,14 @@ trait ICanFixThem
                     ->keys()
                     ->map(function ($n) use ($input) {
                         similar_text($input, $n, $percent);
+
                         return [$n, $percent];
                     })
-                    ->sortBy(fn($arr) => $arr[1], SORT_REGULAR, true)
+                    ->sortBy(fn ($arr) => $arr[1], SORT_REGULAR, true)
                     ->take(5)
-                    ->map(fn($arr) => $arr[0])
+                    ->map(fn ($arr) => $arr[0])
                     ->toArray();
-//                Log::info(print_r($values, true));
+                //                Log::info(print_r($values, true));
                 return $values;
             });
 
@@ -69,7 +69,7 @@ trait ICanFixThem
         return $memberNames->get($choice);
     }
 
-    protected function issueFixChoice($text = "How do you want to fix this issue?"): ChoiceHelper
+    protected function issueFixChoice($text = 'How do you want to fix this issue?'): ChoiceHelper
     {
         return new ChoiceHelper($this->output, $text);
     }
@@ -78,6 +78,7 @@ trait ICanFixThem
     {
         /** @var IssueData $issueData */
         $issueData = app(IssueData::class);
-        return $issueData->members()->filter(fn($m) => $m->id == $memberId)->first();
+
+        return $issueData->members()->filter(fn ($m) => $m->id == $memberId)->first();
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Tests\Helpers\Wordpress;
 
-
 trait HasMetaData
 {
     private int $metaKeyId = 1;

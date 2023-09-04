@@ -8,6 +8,7 @@ use App\Issues\Types\IssueBase;
 class CustomerHasUnknownCard extends IssueBase
 {
     private MemberData $member;
+
     private $cardNumber;
 
     public function __construct(MemberData $member, $cardNumber)
@@ -23,7 +24,7 @@ class CustomerHasUnknownCard extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Internal Consistency: Customer has unknown card";
+        return 'Internal Consistency: Customer has unknown card';
     }
 
     public function getIssueText(): string

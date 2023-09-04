@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 use App\External\Slack\SlackApi;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
@@ -21,19 +20,16 @@ class ConversationsApi
 
     /**
      * Note: Helper method, not official slack API
-     *
-     * @param $wantedChannels
-     * @return Collection
      */
     public function toSlackIds($wantedChannels): Collection
     {
         $wantedChannels = Arr::wrap($wantedChannels);
 
         return $this->list()
-            ->filter(fn($ch) => (
+            ->filter(fn ($ch) => (
                 in_array($ch['id'], $wantedChannels) || in_array($ch['name'], $wantedChannels)
             ))
-            ->map(fn($channel) => $channel['id'])
+            ->map(fn ($channel) => $channel['id'])
             ->values();
     }
 
@@ -43,7 +39,7 @@ class ConversationsApi
             ->post('https://denhac.slack.com/api/conversations.create', [
                 RequestOptions::FORM_PARAMS => [
                     'name' => $name,
-                    'is_private' => $private
+                    'is_private' => $private,
                 ],
             ]);
 
@@ -52,7 +48,7 @@ class ConversationsApi
 
     public function list(...$types): Collection
     {
-        if(empty($types)) {
+        if (empty($types)) {
             $types = [
                 SlackApi::PUBLIC_CHANNEL,
                 SlackApi::PRIVATE_CHANNEL,

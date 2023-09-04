@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\GitHub;
 
-
 use App\External\GitHub\GitHubApi;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
@@ -21,6 +20,7 @@ class GitHubIssues implements IssueCheck
     use IssueCheckTrait;
 
     private IssueData $issueData;
+
     private GitHubApi $gitHubApi;
 
     public function __construct(IssueData $issueData, GitHubApi $gitHubApi)
@@ -31,12 +31,12 @@ class GitHubIssues implements IssueCheck
 
     protected function generateIssues(): void
     {
-        $gitHubMembers = $this->issueData->gitHubTeamMembers()->map(fn($ghm) => $ghm['login']);
-        $gitHubPendingMembers = $this->issueData->gitHubPendingTeamMembers()->map(fn($ghm) => $ghm['login']);
+        $gitHubMembers = $this->issueData->gitHubTeamMembers()->map(fn ($ghm) => $ghm['login']);
+        $gitHubPendingMembers = $this->issueData->gitHubPendingTeamMembers()->map(fn ($ghm) => $ghm['login']);
         /** @var Collection<MemberData> $members */
         $members = $this->issueData->members();
 
-        $progress = $this->issueData->apiProgress("Checking GitHub users");
+        $progress = $this->issueData->apiProgress('Checking GitHub users');
         $progress->setProgress(0, $members->count());
         foreach ($members as $member) {
 
@@ -50,34 +50,36 @@ class GitHubIssues implements IssueCheck
             $validUsername = $this->confirmValidGitHubUsername($member->githubUsername);
             if (is_null($validUsername)) {
                 $this->issues->add(new UsernameDoesNotExist($member));
+
                 continue;
-            } else if (Str::lower($validUsername) != Str::lower($member->githubUsername)) {
+            } elseif (Str::lower($validUsername) != Str::lower($member->githubUsername)) {
                 $this->issues->add(new InvalidUsername($member, $validUsername));
+
                 continue;
             }
 
             $partOfTheTeam = $gitHubMembers
-                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->filter(fn ($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
             $pendingOnTheTeam = $gitHubPendingMembers
-                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->filter(fn ($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
             $invited = $partOfTheTeam || $pendingOnTheTeam;
 
-            if (!$invited && $member->isMember) {
+            if (! $invited && $member->isMember) {
                 $this->issues->add(new UsernameNotListedInMembersTeam($member));
-            } else if ($invited && !$member->isMember) {
+            } elseif ($invited && ! $member->isMember) {
                 $this->issues->add(new NonMemberInTeam($member));
             }
         }
 
-        foreach($gitHubMembers as $gitHubMember) {
+        foreach ($gitHubMembers as $gitHubMember) {
             $member = $members
-                ->filter(fn($m) => !is_null($m->githubUsername))
-                ->filter(fn($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
+                ->filter(fn ($m) => ! is_null($m->githubUsername))
+                ->filter(fn ($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
                 ->first();
 
-            if(!is_null($member)) {
+            if (! is_null($member)) {
                 continue;  // We only care here if we COULDN'T find a matching member
             }
 
@@ -85,25 +87,26 @@ class GitHubIssues implements IssueCheck
         }
     }
 
-    private function confirmValidGitHubUsername(?string $githubUsername): string|null
+    private function confirmValidGitHubUsername(?string $githubUsername): ?string
     {
         $matches = [];
-        if(1 === preg_match(";(http(s)?)?://github.com/(?P<username>[\w-]+);", $githubUsername, $matches)) {
+        if (1 === preg_match(";(http(s)?)?://github.com/(?P<username>[\w-]+);", $githubUsername, $matches)) {
             $githubUsername = $matches['username'];
         }
 
         $data = $this->gitHubApi->userLookup($githubUsername);
-        if (array_key_exists("login", $data)) {
+        if (array_key_exists('login', $data)) {
             return $data['login'];
         }
 
         $data = $this->gitHubApi->emailLookup($githubUsername);  // In case they put their email instead of username
-        if(!array_key_exists("total_count", $data)) {
+        if (! array_key_exists('total_count', $data)) {
             error_log(print_r($data, true));  // Probably rate limited
+
             return null;
         }
-        if ($data["total_count"] == 1) {
-            return $data["items"][0]["login"];
+        if ($data['total_count'] == 1) {
+            return $data['items'][0]['login'];
         }
 
         return null;

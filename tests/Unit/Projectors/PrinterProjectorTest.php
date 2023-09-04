@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Projectors;
 
-
 use App\Printer3D;
 use App\Projectors\PrinterProjector;
 use App\StorableEvents\OctoPrintStatusUpdated;
@@ -41,7 +40,7 @@ class PrinterProjectorTest extends TestCase
         event(new OctoPrintStatusUpdated($this->octoPrintUpdate()->toArray()));
 
         $payload = $this->octoPrintUpdate()
-            ->topic("Print Failed")
+            ->topic('Print Failed')
             ->currentTime(1601670000);
 
         $this->assertEquals(1, Printer3D::where('name', $payload->deviceIdentifier)->count());

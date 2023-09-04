@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -12,14 +11,11 @@ class OctoPrintNewUser extends Notification
     use Queueable;
 
     private $username;
+
     private $host;
+
     private $password;
 
-    /**
-     * @param $username
-     * @param $host
-     * @param $password
-     */
     public function __construct($host, $username, $password)
     {
         $this->host = $host;

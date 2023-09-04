@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Api;
 
-
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 use SlackPhp\BlockKit\Surfaces\Message;

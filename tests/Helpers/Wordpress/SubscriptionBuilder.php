@@ -6,6 +6,7 @@ use Tests\Helpers\BaseBuilder;
 
 /**
  * Class SubscriptionBuilder.
+ *
  * @property int id
  * @property string status
  * @property string customer_id

@@ -17,9 +17,6 @@ class AppHomeReactor extends Reactor implements ShouldQueue
         $this->updateHomeForMemberships($plan_id);
     }
 
-    /**
-     * @param int $plan_id
-     */
     protected function updateHomeForMemberships(int $plan_id): void
     {
         /** @var Collection $slack_ids */
@@ -34,9 +31,6 @@ class AppHomeReactor extends Reactor implements ShouldQueue
         $this->updateHomeForSlackIDs($slack_ids);
     }
 
-    /**
-     * @param Collection $slack_ids
-     */
     protected function updateHomeForSlackIDs(Collection $slack_ids): void
     {
         $slack_ids->each(function ($slack_id) {
