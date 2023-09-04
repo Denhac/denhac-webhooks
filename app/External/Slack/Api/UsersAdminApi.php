@@ -95,4 +95,16 @@ class UsersAdminApi
 
         return json_decode($response->getBody(), true)['ok'];
     }
+
+    public function setInactive($slack_id)
+    {
+        $response = $this->clients->adminClient
+            ->post('https://denhac.slack.com/api/users.admin.setInactive', [
+                RequestOptions::FORM_PARAMS => [
+                    'user' => $slack_id,
+                ],
+            ]);
+
+        return json_decode($response->getBody(), true)['ok'];
+    }
 }
