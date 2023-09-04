@@ -5,7 +5,7 @@ namespace App\Issues\Types\InternalConsistency;
 use App\Aggregates\MembershipAggregate;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
-use App\UserMembership;
+use App\Models\UserMembership;
 
 class UserMembershipNotFoundOnRemote extends IssueBase
 {

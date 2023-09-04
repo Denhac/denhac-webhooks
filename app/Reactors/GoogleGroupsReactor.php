@@ -4,7 +4,7 @@ namespace App\Reactors;
 
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
-use App\Customer;
+use App\Models\Customer;
 use App\External\Google\GoogleApi;
 use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerDeleted;
@@ -12,7 +12,7 @@ use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\UserMembershipCreated;
-use App\TrainableEquipment;
+use App\Models\TrainableEquipment;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;

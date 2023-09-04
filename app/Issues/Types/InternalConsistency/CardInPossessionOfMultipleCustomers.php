@@ -2,7 +2,7 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
-use App\Card;
+use App\Models\Card;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;

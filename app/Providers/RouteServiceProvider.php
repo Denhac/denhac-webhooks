@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\ADUpdateRequest;
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;

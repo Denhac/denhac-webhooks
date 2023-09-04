@@ -2,7 +2,7 @@
 
 namespace App\Actions\OctoPrint;
 
-use App\Customer;
+use App\Models\Customer;
 use App\External\OctoPrint\OctoPrintApi;
 use App\Notifications\OctoPrintNewUser;
 use Illuminate\Support\Str;

@@ -2,7 +2,7 @@
 
 namespace App\External\Slack\Modals;
 
-use App\Customer;
+use App\Models\Customer;
 use App\External\Slack\ClassFinder;
 use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;

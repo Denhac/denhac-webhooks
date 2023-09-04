@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Models;
 
-use App\Customer;
-use App\TrainableEquipment;
-use App\UserMembership;
+use App\Models\Customer;
+use App\Models\TrainableEquipment;
+use App\Models\UserMembership;
 use Tests\TestCase;
 
 class CustomerTrainerTest extends TestCase

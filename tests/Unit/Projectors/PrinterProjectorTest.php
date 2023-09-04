@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Projectors;
 
-use App\Printer3D;
+use App\Models\Printer3D;
 use App\Projectors\PrinterProjector;
 use App\StorableEvents\OctoPrintStatusUpdated;
 use Carbon\Carbon;

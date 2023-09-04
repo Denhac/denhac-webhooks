@@ -8,7 +8,7 @@ use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\SubscriptionDoesNotExistInOurLocalDatabase;
 use App\Issues\Types\InternalConsistency\SubscriptionNotFoundOnRemote;
 use App\Issues\Types\InternalConsistency\SubscriptionStatusDiffers;
-use App\Subscription;
+use App\Models\Subscription;
 
 class SubscriptionIssues implements IssueCheck
 {

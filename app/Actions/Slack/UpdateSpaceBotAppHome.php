@@ -3,7 +3,7 @@
 namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
-use App\Customer;
+use App\Models\Customer;
 use App\External\Slack\CommonResponses;
 use App\External\Slack\SlackApi;
 use SlackPhp\BlockKit\Kit;

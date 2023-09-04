@@ -27,7 +27,7 @@ use App\StorableEvents\UserMembershipDeleted;
 use App\StorableEvents\UserMembershipImported;
 use App\StorableEvents\UserMembershipUpdated;
 use App\StorableEvents\WaiverAssignedToCustomer;
-use App\Waiver;
+use App\Models\Waiver;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use YlsIdeas\FeatureFlags\Facades\Features;
 

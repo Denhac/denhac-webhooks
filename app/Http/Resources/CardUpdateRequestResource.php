@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
-use App\CardUpdateRequest;
-use App\Customer;
+use App\Models\CardUpdateRequest;
+use App\Models\Customer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

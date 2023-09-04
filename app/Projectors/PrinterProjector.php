@@ -2,8 +2,8 @@
 
 namespace App\Projectors;
 
-use App\Customer;
-use App\Printer3D;
+use App\Models\Customer;
+use App\Models\Printer3D;
 use App\StorableEvents\OctoPrintStatusUpdated;
 use Carbon\Carbon;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;

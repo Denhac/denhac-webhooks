@@ -3,7 +3,7 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use App\StorableEvents\CustomerIsNoEventTestUser;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;

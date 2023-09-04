@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Projectors;
 
-use App\Customer;
+use App\Models\Customer;
 use App\Projectors\WaiverProjector;
 use App\StorableEvents\WaiverAssignedToCustomer;
-use App\Waiver;
+use App\Models\Waiver;
 use Tests\TestCase;
 
 class WaiverProjectorTest extends TestCase

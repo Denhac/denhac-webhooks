@@ -2,7 +2,7 @@
 
 namespace App\Reactors;
 
-use App\NewMemberCardActivation;
+use App\Models\NewMemberCardActivation;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardSentForActivation;
 use Illuminate\Contracts\Queue\ShouldQueue;

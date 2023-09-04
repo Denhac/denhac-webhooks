@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Reactors;
 
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use App\Reactors\CardUpdateRequestReactor;
 use App\StorableEvents\CardSentForActivation;
 use App\StorableEvents\CardSentForDeactivation;

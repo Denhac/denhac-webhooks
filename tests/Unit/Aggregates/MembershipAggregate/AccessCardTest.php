@@ -3,7 +3,7 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use App\FeatureFlags;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
@@ -21,8 +21,8 @@ use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\UserMembershipCreated;
 use App\StorableEvents\UserMembershipUpdated;
 use App\StorableEvents\WaiverAssignedToCustomer;
-use App\UserMembership;
-use App\Waiver;
+use App\Models\UserMembership;
+use App\Models\Waiver;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;

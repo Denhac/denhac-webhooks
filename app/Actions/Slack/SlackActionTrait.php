@@ -2,7 +2,7 @@
 
 namespace App\Actions\Slack;
 
-use App\Customer;
+use App\Models\Customer;
 
 trait SlackActionTrait
 {

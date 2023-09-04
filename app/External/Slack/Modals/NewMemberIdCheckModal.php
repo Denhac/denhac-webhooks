@@ -3,13 +3,13 @@
 namespace App\External\Slack\Modals;
 
 use App\Actions\NewMemberCardSlackLiveView;
-use App\Customer;
+use App\Models\Customer;
 use App\External\Slack\SlackOptions;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
-use App\NewMemberCardActivation;
+use App\Models\NewMemberCardActivation;
 use App\Notifications\IdCheckedWithNoWaiver;
-use App\Waiver;
+use App\Models\Waiver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Notification;
 use SlackPhp\BlockKit\Kit;

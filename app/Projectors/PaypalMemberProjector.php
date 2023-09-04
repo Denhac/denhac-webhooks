@@ -2,7 +2,7 @@
 
 namespace App\Projectors;
 
-use App\PaypalBasedMember;
+use App\Models\PaypalBasedMember;
 use App\StorableEvents\PaypalMemberCardUpdated;
 use App\StorableEvents\PaypalMemberDeactivated;
 use App\StorableEvents\PaypalMemberEmailUpdated;

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\ActiveCardHolderUpdate;
+use App\Models\ActiveCardHolderUpdate;
 use App\Aggregates\MembershipAggregate;
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use App\Http\Resources\CardUpdateRequestResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

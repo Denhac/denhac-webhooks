@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Customer;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 
 class SlackRequest extends Request

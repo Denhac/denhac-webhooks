@@ -2,8 +2,8 @@
 
 namespace App\Issues\Checkers\AccessCards;
 
-use App\ActiveCardHolderUpdate;
-use App\Card;
+use App\Models\ActiveCardHolderUpdate;
+use App\Models\Card;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;

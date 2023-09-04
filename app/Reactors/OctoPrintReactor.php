@@ -4,11 +4,11 @@ namespace App\Reactors;
 
 use App\Actions\OctoPrint\AddUserToOctoPrintHosts;
 use App\Actions\OctoPrint\DeactivateOctoPrintUser;
-use App\Customer;
+use App\Models\Customer;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\UserMembershipCreated;
-use App\UserMembership;
+use App\Models\UserMembership;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 

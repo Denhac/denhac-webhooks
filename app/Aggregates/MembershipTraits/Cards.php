@@ -2,7 +2,7 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\CardUpdateRequest;
+use App\Models\CardUpdateRequest;
 use App\StorableEvents\CardActivated;
 use App\StorableEvents\CardAdded;
 use App\StorableEvents\CardDeactivated;

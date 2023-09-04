@@ -4,7 +4,7 @@ namespace App\External\Slack\Events;
 
 use App\Actions\Slack\RemoveFromChannel;
 use App\Http\Requests\SlackRequest;
-use App\TempBan;
+use App\Models\TempBan;
 use Illuminate\Support\Facades\Log;
 
 class MemberJoinedChannel implements EventInterface

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\TempBan;
+use App\Models\TempBan;
 use Carbon\Carbon;
 use Tests\TestCase;
 

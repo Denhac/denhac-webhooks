@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Models;
 
-use App\Customer;
-use App\Waiver;
+use App\Models\Customer;
+use App\Models\Waiver;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;

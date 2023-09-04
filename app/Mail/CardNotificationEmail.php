@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Customer;
+use App\Models\Customer;
 use App\StorableEvents\CardNotificationNeeded;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
