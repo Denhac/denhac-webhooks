@@ -2,7 +2,7 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\StorableEvents\IdWasChecked;
+use App\StorableEvents\Membership\IdWasChecked;
 
 trait IdWasCheckedTrait
 {

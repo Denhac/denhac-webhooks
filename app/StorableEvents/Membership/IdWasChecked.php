@@ -1,12 +1,12 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\Membership;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class MembershipDeactivated extends ShouldBeStored
+class IdWasChecked extends ShouldBeStored
 {
-    public $customerId;
+    public int $customerId;
 
     public function __construct($customerId)
     {

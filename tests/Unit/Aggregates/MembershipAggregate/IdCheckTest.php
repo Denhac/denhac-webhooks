@@ -3,7 +3,7 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\StorableEvents\IdWasChecked;
+use App\StorableEvents\Membership\IdWasChecked;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerImported;
 use App\StorableEvents\WooCommerce\CustomerUpdated;

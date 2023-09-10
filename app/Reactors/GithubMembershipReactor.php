@@ -7,8 +7,8 @@ use App\Actions\GitHub\RemoveFromGitHubTeam;
 use App\Models\Customer;
 use App\External\GitHub\GitHubApi;
 use App\StorableEvents\GitHub\GitHubUsernameUpdated;
-use App\StorableEvents\MembershipActivated;
-use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\Membership\MembershipActivated;
+use App\StorableEvents\Membership\MembershipDeactivated;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 

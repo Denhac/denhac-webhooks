@@ -3,9 +3,9 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\StorableEvents\IdWasChecked;
-use App\StorableEvents\MembershipActivated;
-use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\Membership\IdWasChecked;
+use App\StorableEvents\Membership\MembershipActivated;
+use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerUpdated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;

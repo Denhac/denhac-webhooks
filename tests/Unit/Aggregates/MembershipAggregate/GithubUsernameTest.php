@@ -4,7 +4,7 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
 use App\StorableEvents\GitHub\GitHubUsernameUpdated;
-use App\StorableEvents\MembershipActivated;
+use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerUpdated;
 use Illuminate\Support\Facades\Event;

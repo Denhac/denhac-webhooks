@@ -3,7 +3,7 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\StorableEvents\MembershipActivated;
+use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\SubscriptionCreated;
 use App\StorableEvents\WooCommerce\SubscriptionUpdated;

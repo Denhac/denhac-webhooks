@@ -105,6 +105,11 @@ return [
 
         // GitHub
         'App\StorableEvents\GithubUsernameUpdated' => 'App\StorableEvents\GitHub\GitHubUsernameUpdated',
+
+        // Membership
+        'App\StorableEvents\IdWasChecked' => 'App\StorableEvents\Membership\IdWasChecked',
+        'App\StorableEvents\MembershipActivated' => 'App\StorableEvents\Membership\MembershipActivated',
+        'App\StorableEvents\MembershipDeactivated' => 'App\StorableEvents\Membership\MembershipDeactivated',
     ],
 
     /*

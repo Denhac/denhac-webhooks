@@ -3,8 +3,8 @@
 namespace App\Reactors;
 
 use App\Models\Customer;
-use App\StorableEvents\MembershipActivated;
-use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\Membership\MembershipActivated;
+use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use App\Models\UserMembership;
 use Spatie\EventSourcing\EventHandlers\EventHandler;

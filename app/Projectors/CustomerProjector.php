@@ -3,9 +3,9 @@
 namespace App\Projectors;
 
 use App\Models\Customer;
-use App\StorableEvents\IdWasChecked;
-use App\StorableEvents\MembershipActivated;
-use App\StorableEvents\MembershipDeactivated;
+use App\StorableEvents\Membership\IdWasChecked;
+use App\StorableEvents\Membership\MembershipActivated;
+use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
 use App\StorableEvents\WooCommerce\CustomerImported;

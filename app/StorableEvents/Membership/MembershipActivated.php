@@ -1,6 +1,6 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\Membership;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
