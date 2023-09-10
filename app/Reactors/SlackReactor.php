@@ -3,17 +3,11 @@
 namespace App\Reactors;
 
 use App\Actions\Slack\AddToChannel;
-use App\Actions\Slack\AddToUserGroup;
-use App\Actions\Slack\RemoveFromChannel;
-use App\Actions\Slack\RemoveFromUserGroup;
 use App\Models\Customer;
-use App\External\Slack\Channels;
 use App\External\Slack\SlackProfileFields;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
-use App\StorableEvents\CustomerBecameBoardMember;
-use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
@@ -48,18 +42,6 @@ final class SlackReactor implements EventHandler
         }
 
         dispatch(new DemoteMemberToPublicOnlyMemberInSlack($event->customerId));
-    }
-
-    public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)
-    {
-        AddToChannel::queue()->execute($event->customerId, Channels::BOARD);
-        AddToUserGroup::queue()->execute($event->customerId, 'theboard');
-    }
-
-    public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
-    {
-        RemoveFromChannel::queue()->execute($event->customerId, Channels::BOARD);
-        RemoveFromUserGroup::queue()->execute($event->customerId, 'theboard');
     }
 
     public function onUserMembershipCreated(UserMembershipCreated $event)

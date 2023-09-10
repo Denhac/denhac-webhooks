@@ -7,8 +7,6 @@ use App\Actions\Google\RemoveFromGroup;
 use App\Models\Customer;
 use App\External\Google\GoogleApi;
 use App\Reactors\GoogleGroupsReactor;
-use App\StorableEvents\CustomerBecameBoardMember;
-use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
@@ -97,24 +95,6 @@ class GoogleGroupsReactorTest extends TestCase
 
         $this->assertAction(RemoveFromGroup::class)
             ->with($this->customer->email, $group);
-    }
-
-    /** @test */
-    public function on_customer_became_board_member_adds_to_board_group()
-    {
-        event(new CustomerBecameBoardMember($this->customer->id));
-
-        $this->assertAction(AddToGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_BOARD);
-    }
-
-    /** @test */
-    public function on_customer_removed_from_board_removes_from_board_group()
-    {
-        event(new CustomerRemovedFromBoard($this->customer->id));
-
-        $this->assertAction(RemoveFromGroup::class)
-            ->with($this->customer->email, GoogleGroupsReactor::GROUP_BOARD);
     }
 
     /**

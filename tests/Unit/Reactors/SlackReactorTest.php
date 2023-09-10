@@ -3,16 +3,10 @@
 namespace Tests\Unit\Reactors;
 
 use App\Actions\Slack\AddToChannel;
-use App\Actions\Slack\AddToUserGroup;
-use App\Actions\Slack\RemoveFromChannel;
-use App\Actions\Slack\RemoveFromUserGroup;
-use App\External\Slack\Channels;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Reactors\SlackReactor;
-use App\StorableEvents\CustomerBecameBoardMember;
-use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
@@ -39,32 +33,6 @@ class SlackReactorTest extends TestCase
             MakeCustomerRegularMemberInSlack::class,
             InviteCustomerNeedIdCheckOnlyMemberInSlack::class,
         ]);
-    }
-
-    /** @test */
-    public function on_becoming_board_member_customer_is_added_to_board_slack_channel_and_group()
-    {
-        $customerId = 1;
-        event(new CustomerBecameBoardMember($customerId));
-
-        $this->assertAction(AddToChannel::class)
-            ->with($customerId, Channels::BOARD);
-
-        $this->assertAction(AddToUserGroup::class)
-            ->with($customerId, 'theboard');
-    }
-
-    /** @test */
-    public function on_removal_from_board_customer_is_removed_from_board_slack_channel_and_group()
-    {
-        $customer = $this->customerModel();
-        event(new CustomerRemovedFromBoard($customer->id));
-
-        $this->assertAction(RemoveFromChannel::class)
-            ->with($customer->id, Channels::BOARD);
-
-        $this->assertAction(RemoveFromUserGroup::class)
-            ->with($customer->id, 'theboard');
     }
 
     /** @test */

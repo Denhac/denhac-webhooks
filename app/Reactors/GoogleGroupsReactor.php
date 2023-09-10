@@ -6,8 +6,6 @@ use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
 use App\Models\Customer;
 use App\External\Google\GoogleApi;
-use App\StorableEvents\CustomerBecameBoardMember;
-use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
@@ -74,22 +72,6 @@ final class GoogleGroupsReactor implements EventHandler
             ->each(function ($group) use ($customer) {
                 RemoveFromGroup::queue()->execute($customer->email, $group);
             });
-    }
-
-    public function onCustomerBecameBoardMember(CustomerBecameBoardMember $event)
-    {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
-
-        AddToGroup::queue()->execute($customer->email, self::GROUP_BOARD);
-    }
-
-    public function onCustomerRemovedFromBoard(CustomerRemovedFromBoard $event)
-    {
-        /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
-
-        RemoveFromGroup::queue()->execute($customer->email, self::GROUP_BOARD);
     }
 
     public function onUserMembershipCreated(UserMembershipCreated $event)
