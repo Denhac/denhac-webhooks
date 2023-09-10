@@ -44,9 +44,6 @@ class CustomerIssues implements IssueCheck
 
         foreach ($members as $member) {
             /** @var MemberData $member */
-            if ($member->system == IssueData::SYSTEM_PAYPAL) {
-                continue;
-            }
 
             /** @var Customer $customer */
             $customer = $customers->where('woo_id', $member->id)->first();

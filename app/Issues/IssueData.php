@@ -26,10 +26,6 @@ class IssueData
 {
     use HasApiProgressBar;
 
-    public const SYSTEM_WOOCOMMERCE = 'WooCommerce';
-
-    public const SYSTEM_PAYPAL = 'PayPal';
-
     private WooCommerceApi $wooCommerceApi;
 
     private SlackApi $slackApi;
@@ -188,34 +184,8 @@ class IssueData
                     slackId: $this->getMetaValue($meta_data, 'access_slack_id'),
                     githubUsername: $this->getMetaValue($meta_data, 'github_username'),
                     stripeCardHolderId: $this->getMetaValue($meta_data, 'stripe_card_holder_id'),
-                    system: self::SYSTEM_WOOCOMMERCE,
                 );
             });
-
-            $this->_members = $this->_members->concat(PaypalBasedMember::all()
-                ->map(function ($member) {
-                    $emails = collect();
-                    if (! is_null($member->email)) {
-                        $emails->push(GmailEmailHelper::handleGmail(Str::lower($member->email)));
-                    }
-
-                    return new MemberData(
-                        id: $member->paypal_id,
-                        first_name: $member->first_name,
-                        last_name: $member->last_name,
-                        primaryEmail: $member->email,
-                        emails: $emails,
-                        isMember: $member->active,
-                        hasSignedWaiver: false,  // No way for me to actually handle this.
-                        subscriptions: collect(),
-                        userMemberships: collect(),
-                        cards: is_null($member->card) ? collect() : collect([$member->card]),
-                        slackId: $member->slack_id,
-                        githubUsername: null,
-                        stripeCardHolderId: null,
-                        system: self::SYSTEM_PAYPAL,
-                    );
-                }));
         }
 
         return $this->_members;

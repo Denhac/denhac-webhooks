@@ -35,10 +35,6 @@ class CardIssues implements IssueCheck
 
         $members->each(function ($member) use ($cards) {
             /** @var MemberData $member */
-            if ($member->system == IssueData::SYSTEM_PAYPAL) {
-                // We don't update the cards database for paypal members
-                return;
-            }
 
             $cardsForMember = $cards
                 ->where('woo_customer_id', $member->id);
