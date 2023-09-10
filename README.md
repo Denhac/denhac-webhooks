@@ -6,19 +6,8 @@ Quite a bit of the code runs using event sourcing. The MembershipAggregate is th
 
 ## Helpful Things
 ### Aggregate Version Reset
-Usually, you don't delete events from the database, but it can be useful to do so in the event of deprecation of events or fixing badly stored events. Sometimes, when that happens, the version numbers for the aggregate get out of wack. This is a helpful bit of SQL to fix that issue:
+Usually, you don't delete events from the database, but it can be useful to do so in the event of deprecation of events or fixing badly stored events. Sometimes, when that happens, the version numbers for the aggregate get out of wack. Here is a helper command to fix that:
 
-```sql
-UPDATE stored_events
-JOIN (
-	SELECT
-		id,
-		aggregate_version,
-		ROW_NUMBER() OVER (PARTITION BY aggregate_uuid ORDER BY id) as rn
-	FROM stored_events
-	WHERE aggregate_version IS NOT NULL
-) subq
-ON subq.id = stored_events.id
-SET stored_events.aggregate_version = subq.rn
-WHERE subq.rn != subq.aggregate_version
+```bash
+php artisan event-sourcing:fix-aggregate-version
 ```
