@@ -7,7 +7,7 @@ use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
-use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\AccessCards\CardSentForDeactivation;
 
 class ActiveCardNotInCustomerProfile extends IssueBase
 {

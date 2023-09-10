@@ -1,10 +1,10 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\AccessCards;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class CardAdded extends ShouldBeStored
+final class CardDeactivated extends ShouldBeStored
 {
     public $wooCustomerId;
 

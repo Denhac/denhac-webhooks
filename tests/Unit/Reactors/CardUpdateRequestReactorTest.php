@@ -4,8 +4,8 @@ namespace Tests\Unit\Reactors;
 
 use App\Models\CardUpdateRequest;
 use App\Reactors\CardUpdateRequestReactor;
-use App\StorableEvents\CardSentForActivation;
-use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\AccessCards\CardSentForActivation;
+use App\StorableEvents\AccessCards\CardSentForDeactivation;
 use Tests\TestCase;
 
 class CardUpdateRequestReactorTest extends TestCase

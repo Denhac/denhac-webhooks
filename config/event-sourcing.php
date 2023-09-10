@@ -79,7 +79,17 @@ return [
      * event class. This allows you to change the namespace or classnames
      * of your events but still handle older events correctly.
      */
-    'event_class_map' => [],
+    'event_class_map' => [
+        'App\StorableEvents\CardActivated' => 'App\StorableEvents\AccessCards\CardActivated',
+        'App\StorableEvents\CardAdded' => 'App\StorableEvents\AccessCards\CardAdded',
+        'App\StorableEvents\CardDeactivated' => 'App\StorableEvents\AccessCards\CardDeactivated',
+        'App\StorableEvents\CardNotificationEmailNeeded' => 'App\StorableEvents\AccessCards\CardNotificationEmailNeeded',
+        'App\StorableEvents\CardNotificationNeeded' => 'App\StorableEvents\AccessCards\CardNotificationNeeded',
+        'App\StorableEvents\CardRemoved' => 'App\StorableEvents\AccessCards\CardRemoved',
+        'App\StorableEvents\CardSentForActivation' => 'App\StorableEvents\AccessCards\CardSentForActivation',
+        'App\StorableEvents\CardSentForDeactivation' => 'App\StorableEvents\AccessCards\CardSentForDeactivation',
+        'App\StorableEvents\CardStatusUpdated' => 'App\StorableEvents\AccessCards\CardStatusUpdated',
+    ],
 
     /*
      * This class is responsible for serializing events. By default an event will be serialized

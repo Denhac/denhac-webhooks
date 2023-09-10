@@ -3,8 +3,8 @@
 namespace App\Reactors;
 
 use App\Models\CardUpdateRequest;
-use App\StorableEvents\CardSentForActivation;
-use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\AccessCards\CardSentForActivation;
+use App\StorableEvents\AccessCards\CardSentForDeactivation;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 

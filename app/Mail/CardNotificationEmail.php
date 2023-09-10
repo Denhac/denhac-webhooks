@@ -3,7 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Customer;
-use App\StorableEvents\CardNotificationNeeded;
+use App\StorableEvents\AccessCards\CardNotificationNeeded;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

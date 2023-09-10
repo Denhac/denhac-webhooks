@@ -3,8 +3,8 @@
 namespace App\Projectors;
 
 use App\Models\CardUpdateRequest;
-use App\StorableEvents\CardActivated;
-use App\StorableEvents\CardDeactivated;
+use App\StorableEvents\AccessCards\CardDeactivated;
+use App\StorableEvents\AccessCards\CardActivated;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 

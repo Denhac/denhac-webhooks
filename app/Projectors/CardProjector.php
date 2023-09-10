@@ -3,10 +3,10 @@
 namespace App\Projectors;
 
 use App\Models\Card;
-use App\StorableEvents\CardActivated;
-use App\StorableEvents\CardAdded;
-use App\StorableEvents\CardDeactivated;
-use App\StorableEvents\CardRemoved;
+use App\StorableEvents\AccessCards\CardAdded;
+use App\StorableEvents\AccessCards\CardDeactivated;
+use App\StorableEvents\AccessCards\CardRemoved;
+use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\UserMembershipImported;
 use Illuminate\Database\Eloquent\Collection;

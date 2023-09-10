@@ -6,7 +6,7 @@ use App\Aggregates\MembershipAggregate;
 use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
-use App\StorableEvents\CardRemoved;
+use App\StorableEvents\AccessCards\CardRemoved;
 
 class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
 {

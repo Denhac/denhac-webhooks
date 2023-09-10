@@ -1,6 +1,6 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\AccessCards;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 

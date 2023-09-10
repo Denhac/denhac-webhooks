@@ -3,13 +3,13 @@
 namespace App\Aggregates\MembershipTraits;
 
 use App\Models\CardUpdateRequest;
-use App\StorableEvents\CardActivated;
-use App\StorableEvents\CardAdded;
-use App\StorableEvents\CardDeactivated;
-use App\StorableEvents\CardRemoved;
-use App\StorableEvents\CardSentForActivation;
-use App\StorableEvents\CardSentForDeactivation;
-use App\StorableEvents\CardStatusUpdated;
+use App\StorableEvents\AccessCards\CardAdded;
+use App\StorableEvents\AccessCards\CardDeactivated;
+use App\StorableEvents\AccessCards\CardRemoved;
+use App\StorableEvents\AccessCards\CardSentForActivation;
+use App\StorableEvents\AccessCards\CardSentForDeactivation;
+use App\StorableEvents\AccessCards\CardStatusUpdated;
+use App\StorableEvents\AccessCards\CardActivated;
 use Exception;
 use Illuminate\Support\Collection;
 

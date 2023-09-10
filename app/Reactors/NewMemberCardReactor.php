@@ -3,8 +3,8 @@
 namespace App\Reactors;
 
 use App\Models\NewMemberCardActivation;
-use App\StorableEvents\CardActivated;
-use App\StorableEvents\CardSentForActivation;
+use App\StorableEvents\AccessCards\CardSentForActivation;
+use App\StorableEvents\AccessCards\CardActivated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 

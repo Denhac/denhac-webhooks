@@ -2,10 +2,10 @@
 
 namespace App\Aggregates;
 
-use App\StorableEvents\CardActivated;
-use App\StorableEvents\CardDeactivated;
-use App\StorableEvents\CardNotificationEmailNeeded;
-use App\StorableEvents\CardNotificationNeeded;
+use App\StorableEvents\AccessCards\CardDeactivated;
+use App\StorableEvents\AccessCards\CardNotificationEmailNeeded;
+use App\StorableEvents\AccessCards\CardNotificationNeeded;
+use App\StorableEvents\AccessCards\CardActivated;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 

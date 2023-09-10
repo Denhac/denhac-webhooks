@@ -9,7 +9,7 @@ use App\Aggregates\MembershipTraits\Subscription;
 use App\Aggregates\MembershipTraits\UserMembership;
 use App\Aggregates\MembershipTraits\WaiverTrait;
 use App\FeatureFlags;
-use App\StorableEvents\CardSentForDeactivation;
+use App\StorableEvents\AccessCards\CardSentForDeactivation;
 use App\StorableEvents\CustomerCreated;
 use App\StorableEvents\CustomerDeleted;
 use App\StorableEvents\CustomerImported;
