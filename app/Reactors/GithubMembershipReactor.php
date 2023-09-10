@@ -6,7 +6,7 @@ use App\Actions\GitHub\AddToGitHubTeam;
 use App\Actions\GitHub\RemoveFromGitHubTeam;
 use App\Models\Customer;
 use App\External\GitHub\GitHubApi;
-use App\StorableEvents\GithubUsernameUpdated;
+use App\StorableEvents\GitHub\GitHubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
@@ -18,7 +18,7 @@ final class GithubMembershipReactor implements EventHandler
 
     const MEMBERS_TEAM = 'members';
 
-    public function onGithubUsernameUpdated(GithubUsernameUpdated $event)
+    public function onGithubUsernameUpdated(GitHubUsernameUpdated $event)
     {
         if (! is_null($event->oldUsername)) {
             /** @var GitHubApi $gitHubApi */

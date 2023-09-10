@@ -3,7 +3,7 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\StorableEvents\GithubUsernameUpdated;
+use App\StorableEvents\GitHub\GitHubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerUpdated;
@@ -39,7 +39,7 @@ class GithubUsernameTest extends TestCase
             ->updateCustomer($customer)
             ->assertRecorded([
                 new CustomerUpdated($customer),
-                new GithubUsernameUpdated(null, $username, true),
+                new GitHubUsernameUpdated(null, $username, true),
             ]);
     }
 
@@ -60,7 +60,7 @@ class GithubUsernameTest extends TestCase
             ->updateCustomer($customer)
             ->assertRecorded([
                 new CustomerUpdated($customer),
-                new GithubUsernameUpdated(null, $username, false),
+                new GitHubUsernameUpdated(null, $username, false),
             ]);
     }
 
@@ -74,7 +74,7 @@ class GithubUsernameTest extends TestCase
         $aggregate = MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),
-                new GithubUsernameUpdated(null, $oldUsername, false),
+                new GitHubUsernameUpdated(null, $oldUsername, false),
             ]);
 
         $customer->github_username($newUsername);
@@ -83,7 +83,7 @@ class GithubUsernameTest extends TestCase
             ->updateCustomer($customer)
             ->assertRecorded([
                 new CustomerUpdated($customer),
-                new GithubUsernameUpdated($oldUsername, $newUsername, false),
+                new GitHubUsernameUpdated($oldUsername, $newUsername, false),
             ]);
     }
 }

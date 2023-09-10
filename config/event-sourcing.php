@@ -103,6 +103,9 @@ return [
         'App\StorableEvents\UserMembershipDeleted' => 'App\StorableEvents\WooCommerce\UserMembershipDeleted',
         'App\StorableEvents\UserMembershipImported' => 'App\StorableEvents\WooCommerce\UserMembershipImported',
         'App\StorableEvents\UserMembershipUpdated' => 'App\StorableEvents\WooCommerce\UserMembershipUpdated',
+
+        // GitHub
+        'App\StorableEvents\GithubUsernameUpdated' => 'App\StorableEvents\GitHub\GitHubUsernameUpdated',
     ],
 
     /*

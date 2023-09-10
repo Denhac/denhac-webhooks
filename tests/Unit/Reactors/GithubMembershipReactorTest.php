@@ -8,7 +8,7 @@ use App\Models\Customer;
 use App\External\GitHub\GitHubApi;
 use App\External\GitHub\TeamApi;
 use App\Reactors\GithubMembershipReactor;
-use App\StorableEvents\GithubUsernameUpdated;
+use App\StorableEvents\GitHub\GitHubUsernameUpdated;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
 use Illuminate\Support\Facades\Queue;
@@ -40,7 +40,7 @@ class GithubMembershipReactorTest extends TestCase
     public function test_github_username_updated_from_null_when_member()
     {
         $username = 'test';
-        event(new GithubUsernameUpdated(null, $username, true));
+        event(new GitHubUsernameUpdated(null, $username, true));
 
         $this->assertAction(AddToGitHubTeam::class)
             ->with($username, 'members');
@@ -52,7 +52,7 @@ class GithubMembershipReactorTest extends TestCase
     public function test_github_username_updated_from_null_when_not_member()
     {
         $username = 'test';
-        event(new GithubUsernameUpdated(null, $username, false));
+        event(new GitHubUsernameUpdated(null, $username, false));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)->never();
@@ -62,7 +62,7 @@ class GithubMembershipReactorTest extends TestCase
     public function test_github_username_updated_from_name_to_null_when_member()
     {
         $username = 'test';
-        event(new GithubUsernameUpdated($username, null, true));
+        event(new GitHubUsernameUpdated($username, null, true));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)
@@ -73,7 +73,7 @@ class GithubMembershipReactorTest extends TestCase
     public function test_github_username_updated_from_name_to_null_when_not_member()
     {
         $username = 'test';
-        event(new GithubUsernameUpdated($username, null, false));
+        event(new GitHubUsernameUpdated($username, null, false));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)
@@ -84,7 +84,7 @@ class GithubMembershipReactorTest extends TestCase
     public function test_github_username_updated_from_bad_username_does_not_emit_remove_action()
     {
         $badUsername = 'https://github.com/example';
-        event(new GithubUsernameUpdated($badUsername, null, false));
+        event(new GitHubUsernameUpdated($badUsername, null, false));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)->never();

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\GitHub;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class GithubUsernameUpdated extends ShouldBeStored
+final class GitHubUsernameUpdated extends ShouldBeStored
 {
     public $oldUsername;
 

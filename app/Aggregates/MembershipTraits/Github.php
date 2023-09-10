@@ -2,7 +2,7 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\StorableEvents\GithubUsernameUpdated;
+use App\StorableEvents\GitHub\GitHubUsernameUpdated;
 
 trait Github
 {
@@ -16,11 +16,11 @@ trait Github
             ->first()['value'] ?? null;
 
         if ($this->githubUsername != $githubUsername) {
-            $this->recordThat(new GithubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));
+            $this->recordThat(new GitHubUsernameUpdated($this->githubUsername, $githubUsername, $this->isActiveMember()));
         }
     }
 
-    public function applyGithubUsernameUpdated(GithubUsernameUpdated $event)
+    public function applyGithubUsernameUpdated(GitHubUsernameUpdated $event)
     {
         $this->githubUsername = $event->newUsername;
     }
