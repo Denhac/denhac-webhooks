@@ -3,7 +3,7 @@
 namespace App\External\WaiverForever;
 
 
-use App\StorableEvents\WaiverAccepted;
+use App\StorableEvents\Waiver\WaiverAccepted;
 use Spatie\WebhookClient\Models\WebhookCall;
 
 class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob

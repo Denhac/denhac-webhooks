@@ -2,8 +2,8 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\StorableEvents\ManualBootstrapWaiverNeeded;
-use App\StorableEvents\WaiverAssignedToCustomer;
+use App\StorableEvents\Waiver\ManualBootstrapWaiverNeeded;
+use App\StorableEvents\Waiver\WaiverAssignedToCustomer;
 use App\Models\Waiver;
 use Illuminate\Support\Collection;
 

@@ -110,6 +110,11 @@ return [
         'App\StorableEvents\IdWasChecked' => 'App\StorableEvents\Membership\IdWasChecked',
         'App\StorableEvents\MembershipActivated' => 'App\StorableEvents\Membership\MembershipActivated',
         'App\StorableEvents\MembershipDeactivated' => 'App\StorableEvents\Membership\MembershipDeactivated',
+
+        // Waiver
+        'App\StorableEvents\ManualBootstrapWaiverNeeded' => 'App\StorableEvents\Waiver\ManualBootstrapWaiverNeeded',
+        'App\StorableEvents\WaiverAccepted' => 'App\StorableEvents\Waiver\WaiverAccepted',
+        'App\StorableEvents\WaiverAssignedToCustomer' => 'App\StorableEvents\Waiver\WaiverAssignedToCustomer',
     ],
 
     /*

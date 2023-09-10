@@ -1,6 +1,6 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\Waiver;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
