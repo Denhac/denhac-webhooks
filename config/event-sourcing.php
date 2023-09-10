@@ -76,46 +76,7 @@ return [
      * event class. This allows you to change the namespace or classnames
      * of your events but still handle older events correctly.
      */
-    'event_class_map' => [
-        // Access Cards
-        'App\StorableEvents\CardActivated' => 'App\StorableEvents\AccessCards\CardActivated',
-        'App\StorableEvents\CardAdded' => 'App\StorableEvents\AccessCards\CardAdded',
-        'App\StorableEvents\CardDeactivated' => 'App\StorableEvents\AccessCards\CardDeactivated',
-        'App\StorableEvents\CardNotificationEmailNeeded' => 'App\StorableEvents\AccessCards\CardNotificationEmailNeeded',
-        'App\StorableEvents\CardNotificationNeeded' => 'App\StorableEvents\AccessCards\CardNotificationNeeded',
-        'App\StorableEvents\CardRemoved' => 'App\StorableEvents\AccessCards\CardRemoved',
-        'App\StorableEvents\CardSentForActivation' => 'App\StorableEvents\AccessCards\CardSentForActivation',
-        'App\StorableEvents\CardSentForDeactivation' => 'App\StorableEvents\AccessCards\CardSentForDeactivation',
-        'App\StorableEvents\CardStatusUpdated' => 'App\StorableEvents\AccessCards\CardStatusUpdated',
-
-        // WooCommerce
-        'App\StorableEvents\CustomerCreated' => 'App\StorableEvents\WooCommerce\CustomerCreated',
-        'App\StorableEvents\CustomerDeleted' => 'App\StorableEvents\WooCommerce\CustomerDeleted',
-        'App\StorableEvents\CustomerImported' => 'App\StorableEvents\WooCommerce\CustomerImported',
-        'App\StorableEvents\CustomerIsNoEventTestUser' => 'App\StorableEvents\WooCommerce\CustomerIsNoEventTestUser',
-        'App\StorableEvents\CustomerUpdated' => 'App\StorableEvents\WooCommerce\CustomerUpdated',
-        'App\StorableEvents\SubscriptionCreated' => 'App\StorableEvents\WooCommerce\SubscriptionCreated',
-        'App\StorableEvents\SubscriptionDeleted' => 'App\StorableEvents\WooCommerce\SubscriptionDeleted',
-        'App\StorableEvents\SubscriptionImported' => 'App\StorableEvents\WooCommerce\SubscriptionImported',
-        'App\StorableEvents\SubscriptionUpdated' => 'App\StorableEvents\WooCommerce\SubscriptionUpdated',
-        'App\StorableEvents\UserMembershipCreated' => 'App\StorableEvents\WooCommerce\UserMembershipCreated',
-        'App\StorableEvents\UserMembershipDeleted' => 'App\StorableEvents\WooCommerce\UserMembershipDeleted',
-        'App\StorableEvents\UserMembershipImported' => 'App\StorableEvents\WooCommerce\UserMembershipImported',
-        'App\StorableEvents\UserMembershipUpdated' => 'App\StorableEvents\WooCommerce\UserMembershipUpdated',
-
-        // GitHub
-        'App\StorableEvents\GithubUsernameUpdated' => 'App\StorableEvents\GitHub\GitHubUsernameUpdated',
-
-        // Membership
-        'App\StorableEvents\IdWasChecked' => 'App\StorableEvents\Membership\IdWasChecked',
-        'App\StorableEvents\MembershipActivated' => 'App\StorableEvents\Membership\MembershipActivated',
-        'App\StorableEvents\MembershipDeactivated' => 'App\StorableEvents\Membership\MembershipDeactivated',
-
-        // Waiver
-        'App\StorableEvents\ManualBootstrapWaiverNeeded' => 'App\StorableEvents\Waiver\ManualBootstrapWaiverNeeded',
-        'App\StorableEvents\WaiverAccepted' => 'App\StorableEvents\Waiver\WaiverAccepted',
-        'App\StorableEvents\WaiverAssignedToCustomer' => 'App\StorableEvents\Waiver\WaiverAssignedToCustomer',
-    ],
+    'event_class_map' => [],
 
     /*
      * This class is responsible for serializing events. By default an event will be serialized
