@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
+use Spatie\SchemalessAttributes\SchemalessAttributes;
 
 class FixEventSourcingAggregateVersion extends Command
 {
@@ -50,12 +51,13 @@ class FixEventSourcingAggregateVersion extends Command
             $aggregateUuid = $event->aggregate_uuid;
             if (is_null($aggregateUuid)) {
                 // We clear the meta data just in case, but it's probably empty
+                /** @var SchemalessAttributes $metaData */
                 $metaData = $event->meta_data;
-                if (array_key_exists('aggregate-root-uuid', $metaData)) {
-                    unset($metaData['aggregate-root-uuid']);
+                if (isset($metaData['aggregate-root-uuid'])) {
+                    $metaData->forget('aggregate-root-uuid');
                 }
-                if (array_key_exists('aggregate-root-version', $metaData)) {
-                    unset($metaData['aggregate-root-version']);
+                if (isset($metaData['aggregate-root-version'])) {
+                    $metaData->forget('aggregate-root-version');
                 }
                 $event->meta_data = $metaData;
                 $event->aggregate_version = null;
@@ -74,6 +76,7 @@ class FixEventSourcingAggregateVersion extends Command
                 Log::info("Updating aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
             }
 
+            /** @var SchemalessAttributes $metaData */
             $metaData = $event->meta_data;
             $metaData['aggregate-root-uuid'] = $aggregateUuid;
             $metaData['aggregate-root-version'] = $aggregateVersion;
