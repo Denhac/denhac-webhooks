@@ -19,7 +19,6 @@ return [
         \App\Projectors\CardProjector::class,
         \App\Projectors\CardUpdateRequestProjector::class,
         \App\Projectors\CustomerProjector::class,
-        \App\Projectors\PaypalMemberProjector::class,
         \App\Projectors\SubscriptionProjector::class,
         \App\Projectors\WaiverProjector::class,
     ],
