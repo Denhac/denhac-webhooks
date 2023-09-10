@@ -4,8 +4,8 @@ namespace App\Reactors;
 
 use App\Models\Customer;
 use App\Notifications\LaserCutterAccessAllowed;
-use App\StorableEvents\UserMembershipCreated;
 use App\Models\UserMembership;
+use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 
@@ -25,7 +25,7 @@ class LaserCutterReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->membership['customer_id'])->first();
 
-        if (! $customer->member) {
+        if (!$customer->member) {
             return;
         }
 

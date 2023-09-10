@@ -15,7 +15,7 @@ use App\StorableEvents\CustomerBecameBoardMember;
 use App\StorableEvents\CustomerRemovedFromBoard;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\UserMembershipCreated;
+use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use App\Models\TrainableEquipment;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;

@@ -5,13 +5,13 @@ namespace Tests\Unit\Reactors;
 use App\Aggregates\MembershipAggregate;
 use App\Models\Customer;
 use App\Reactors\WaiverReactor;
-use App\StorableEvents\CustomerCreated;
-use App\StorableEvents\CustomerDeleted;
-use App\StorableEvents\CustomerImported;
-use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\WaiverAccepted;
 use App\StorableEvents\WaiverAssignedToCustomer;
 use App\Models\Waiver;
+use App\StorableEvents\WooCommerce\CustomerCreated;
+use App\StorableEvents\WooCommerce\CustomerDeleted;
+use App\StorableEvents\WooCommerce\CustomerImported;
+use App\StorableEvents\WooCommerce\CustomerUpdated;
 use Tests\AssertsActions;
 use Tests\TestCase;
 

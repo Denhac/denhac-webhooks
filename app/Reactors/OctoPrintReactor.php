@@ -2,12 +2,10 @@
 
 namespace App\Reactors;
 
-use App\Actions\OctoPrint\AddUserToOctoPrintHosts;
-use App\Actions\OctoPrint\DeactivateOctoPrintUser;
 use App\Models\Customer;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\UserMembershipCreated;
+use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use App\Models\UserMembership;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
@@ -28,7 +26,7 @@ class OctoPrintReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->membership['customer_id'])->first();
 
-        if (! $customer->member) {
+        if (!$customer->member) {
             return;
         }
 
@@ -41,7 +39,7 @@ class OctoPrintReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if (! $customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
+        if (!$customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
             return;
         }
 
@@ -54,7 +52,7 @@ class OctoPrintReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::whereWooId($event->customerId)->first();
 
-        if (! $customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
+        if (!$customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
             return;
         }
 

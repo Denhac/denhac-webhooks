@@ -1,10 +1,10 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\WooCommerce;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class CustomerImported extends ShouldBeStored
+final class CustomerCreated extends ShouldBeStored
 {
     public $customer;
 

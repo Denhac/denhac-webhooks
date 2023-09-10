@@ -2,9 +2,9 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\StorableEvents\SubscriptionCreated;
-use App\StorableEvents\SubscriptionImported;
-use App\StorableEvents\SubscriptionUpdated;
+use App\StorableEvents\WooCommerce\SubscriptionCreated;
+use App\StorableEvents\WooCommerce\SubscriptionImported;
+use App\StorableEvents\WooCommerce\SubscriptionUpdated;
 use Illuminate\Support\Collection;
 
 /**

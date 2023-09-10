@@ -1,6 +1,6 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\WooCommerce;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 

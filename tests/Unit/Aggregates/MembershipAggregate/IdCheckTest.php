@@ -3,10 +3,10 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\StorableEvents\CustomerCreated;
-use App\StorableEvents\CustomerImported;
-use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\IdWasChecked;
+use App\StorableEvents\WooCommerce\CustomerCreated;
+use App\StorableEvents\WooCommerce\CustomerImported;
+use App\StorableEvents\WooCommerce\CustomerUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;

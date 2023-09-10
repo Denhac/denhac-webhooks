@@ -2,9 +2,10 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\StorableEvents\UserMembershipCreated;
-use App\StorableEvents\UserMembershipImported;
-use App\StorableEvents\UserMembershipUpdated;
+
+use App\StorableEvents\WooCommerce\UserMembershipCreated;
+use App\StorableEvents\WooCommerce\UserMembershipImported;
+use App\StorableEvents\WooCommerce\UserMembershipUpdated;
 
 trait UserMembership
 {

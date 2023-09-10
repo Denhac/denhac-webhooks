@@ -3,12 +3,12 @@
 namespace App\Projectors;
 
 use App\Models\Card;
+use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardAdded;
 use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\AccessCards\CardRemoved;
-use App\StorableEvents\AccessCards\CardActivated;
-use App\StorableEvents\CustomerDeleted;
-use App\StorableEvents\UserMembershipImported;
+use App\StorableEvents\WooCommerce\CustomerDeleted;
+use App\StorableEvents\WooCommerce\UserMembershipImported;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;

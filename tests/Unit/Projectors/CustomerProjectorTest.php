@@ -4,14 +4,14 @@ namespace Tests\Unit\Projectors;
 
 use App\Models\Customer;
 use App\Projectors\CustomerProjector;
-use App\StorableEvents\CustomerCreated;
-use App\StorableEvents\CustomerDeleted;
-use App\StorableEvents\CustomerImported;
-use App\StorableEvents\CustomerUpdated;
 use App\StorableEvents\IdWasChecked;
 use App\StorableEvents\MembershipActivated;
 use App\StorableEvents\MembershipDeactivated;
-use App\StorableEvents\SubscriptionImported;
+use App\StorableEvents\WooCommerce\CustomerCreated;
+use App\StorableEvents\WooCommerce\CustomerDeleted;
+use App\StorableEvents\WooCommerce\CustomerImported;
+use App\StorableEvents\WooCommerce\CustomerUpdated;
+use App\StorableEvents\WooCommerce\SubscriptionImported;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 

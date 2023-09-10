@@ -1,10 +1,10 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\WooCommerce;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class UserMembershipDeleted extends ShouldBeStored
+class UserMembershipUpdated extends ShouldBeStored
 {
     public $membership;
 

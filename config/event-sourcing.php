@@ -80,6 +80,7 @@ return [
      * of your events but still handle older events correctly.
      */
     'event_class_map' => [
+        // Access Cards
         'App\StorableEvents\CardActivated' => 'App\StorableEvents\AccessCards\CardActivated',
         'App\StorableEvents\CardAdded' => 'App\StorableEvents\AccessCards\CardAdded',
         'App\StorableEvents\CardDeactivated' => 'App\StorableEvents\AccessCards\CardDeactivated',
@@ -89,6 +90,21 @@ return [
         'App\StorableEvents\CardSentForActivation' => 'App\StorableEvents\AccessCards\CardSentForActivation',
         'App\StorableEvents\CardSentForDeactivation' => 'App\StorableEvents\AccessCards\CardSentForDeactivation',
         'App\StorableEvents\CardStatusUpdated' => 'App\StorableEvents\AccessCards\CardStatusUpdated',
+
+        // WooCommerce
+        'App\StorableEvents\CustomerCreated' => 'App\StorableEvents\WooCommerce\CustomerCreated',
+        'App\StorableEvents\CustomerDeleted' => 'App\StorableEvents\WooCommerce\CustomerDeleted',
+        'App\StorableEvents\CustomerImported' => 'App\StorableEvents\WooCommerce\CustomerImported',
+        'App\StorableEvents\CustomerIsNoEventTestUser' => 'App\StorableEvents\WooCommerce\CustomerIsNoEventTestUser',
+        'App\StorableEvents\CustomerUpdated' => 'App\StorableEvents\WooCommerce\CustomerUpdated',
+        'App\StorableEvents\SubscriptionCreated' => 'App\StorableEvents\WooCommerce\SubscriptionCreated',
+        'App\StorableEvents\SubscriptionDeleted' => 'App\StorableEvents\WooCommerce\SubscriptionDeleted',
+        'App\StorableEvents\SubscriptionImported' => 'App\StorableEvents\WooCommerce\SubscriptionImported',
+        'App\StorableEvents\SubscriptionUpdated' => 'App\StorableEvents\WooCommerce\SubscriptionUpdated',
+        'App\StorableEvents\UserMembershipCreated' => 'App\StorableEvents\WooCommerce\UserMembershipCreated',
+        'App\StorableEvents\UserMembershipDeleted' => 'App\StorableEvents\WooCommerce\UserMembershipDeleted',
+        'App\StorableEvents\UserMembershipImported' => 'App\StorableEvents\WooCommerce\UserMembershipImported',
+        'App\StorableEvents\UserMembershipUpdated' => 'App\StorableEvents\WooCommerce\UserMembershipUpdated',
     ],
 
     /*

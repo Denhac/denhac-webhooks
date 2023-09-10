@@ -3,14 +3,14 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\StorableEvents\CustomerCreated;
-use App\StorableEvents\CustomerDeleted;
-use App\StorableEvents\CustomerImported;
-use App\StorableEvents\CustomerIsNoEventTestUser;
-use App\StorableEvents\CustomerUpdated;
-use App\StorableEvents\SubscriptionCreated;
-use App\StorableEvents\SubscriptionImported;
-use App\StorableEvents\SubscriptionUpdated;
+use App\StorableEvents\WooCommerce\CustomerCreated;
+use App\StorableEvents\WooCommerce\CustomerDeleted;
+use App\StorableEvents\WooCommerce\CustomerImported;
+use App\StorableEvents\WooCommerce\CustomerIsNoEventTestUser;
+use App\StorableEvents\WooCommerce\CustomerUpdated;
+use App\StorableEvents\WooCommerce\SubscriptionCreated;
+use App\StorableEvents\WooCommerce\SubscriptionImported;
+use App\StorableEvents\WooCommerce\SubscriptionUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;

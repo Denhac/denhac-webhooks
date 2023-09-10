@@ -2,11 +2,11 @@
 
 namespace App\Projectors;
 
-use App\StorableEvents\CustomerDeleted;
-use App\StorableEvents\UserMembershipCreated;
-use App\StorableEvents\UserMembershipDeleted;
-use App\StorableEvents\UserMembershipImported;
-use App\StorableEvents\UserMembershipUpdated;
+use App\StorableEvents\WooCommerce\CustomerDeleted;
+use App\StorableEvents\WooCommerce\UserMembershipCreated;
+use App\StorableEvents\WooCommerce\UserMembershipDeleted;
+use App\StorableEvents\WooCommerce\UserMembershipImported;
+use App\StorableEvents\WooCommerce\UserMembershipUpdated;
 use App\Models\UserMembership;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;

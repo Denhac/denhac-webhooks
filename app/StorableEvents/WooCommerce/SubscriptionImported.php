@@ -1,10 +1,10 @@
 <?php
 
-namespace App\StorableEvents;
+namespace App\StorableEvents\WooCommerce;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-final class SubscriptionCreated extends ShouldBeStored
+final class SubscriptionImported extends ShouldBeStored
 {
     public $subscription;
 

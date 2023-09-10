@@ -2,11 +2,11 @@
 
 namespace App\Projectors;
 
-use App\StorableEvents\CustomerDeleted;
-use App\StorableEvents\SubscriptionCreated;
-use App\StorableEvents\SubscriptionDeleted;
-use App\StorableEvents\SubscriptionImported;
-use App\StorableEvents\SubscriptionUpdated;
+use App\StorableEvents\WooCommerce\CustomerDeleted;
+use App\StorableEvents\WooCommerce\SubscriptionCreated;
+use App\StorableEvents\WooCommerce\SubscriptionDeleted;
+use App\StorableEvents\WooCommerce\SubscriptionImported;
+use App\StorableEvents\WooCommerce\SubscriptionUpdated;
 use App\Models\Subscription;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
