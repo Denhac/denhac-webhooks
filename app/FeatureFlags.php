@@ -8,10 +8,17 @@ namespace App;
  */
 class FeatureFlags
 {
-    public const WAIVER_REQUIRED_FOR_CARD_ACCESS = 'waiver-required-for-card-access';
-
     // The following flags are no longer used but are kept here as a reference to make sure they're not re-used.
     // When removing a feature, mark it as private so it cannot be used anywhere else and tag it as deprecated.
+
+    /**
+     * @deprecated true
+     *
+     * New insurance requirements forced us to get a digital signature for every member. In order to facilitate that,
+     * while still letting members use the space before we signed the insurance paperwork, we used this feature flag
+     * to allow people to still use the space right up until we cut-over to require waivers to access the space.
+     */
+    private const WAIVER_REQUIRED_FOR_CARD_ACCESS = 'waiver-required-for-card-access';
 
     /**
      * @deprecated true

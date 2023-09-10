@@ -23,10 +23,6 @@ class UserMembership extends Model
 
     public const MEMBERSHIP_3DP_TRAINER = 8750;
 
-    public const MEMBERSHIP_LASER_CUTTER_TRAINER = 8761;
-
-    public const MEMBERSHIP_LASER_CUTTER_USER = 8762;
-
     public const MEMBERSHIP_META_TRAINER = 15914;
 
     public const MEMBERSHIP_CAN_ID_CHECK = 17682;
