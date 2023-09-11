@@ -31,7 +31,7 @@ use Illuminate\Support\Collection;
  * @property bool id_checked
  * @property ?string stripe_card_holder_id
  * @property ?int id_was_checked_by_id
- * @property ?Customer id_was_checked_by
+ * @property ?Customer idWasCheckedBy
  *
  * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)

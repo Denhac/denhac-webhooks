@@ -3,6 +3,7 @@
 namespace App\Aggregates\MembershipTraits;
 
 use App\Models\CardUpdateRequest;
+use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
 use App\StorableEvents\AccessCards\CardAdded;
 use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\AccessCards\CardRemoved;
@@ -23,17 +24,20 @@ trait Cards
 
     public Collection $cardsSentForDeactivation;  // Cards that have been posted and need to be deactivated by the card access server.
 
+    public Collection $cardsEverActivated;  // Cards that have ever been activated. Cards are not removed on deactivation.
+
     public function bootCards()
     {
         $this->cardsOnAccount = collect();
         $this->cardsNeedingActivation = collect();
         $this->cardsSentForActivation = collect();
         $this->cardsSentForDeactivation = collect();
+        $this->cardsEverActivated = collect();
     }
 
     public function updateCardStatus(CardUpdateRequest $cardUpdateRequest, $status)
     {
-        if (! $this->respondToEvents) {
+        if (!$this->respondToEvents) {
             return $this;
         }
 
@@ -45,7 +49,16 @@ trait Cards
 
         if ($status == CardUpdateRequest::STATUS_SUCCESS) {
             if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
+                // We query this parameter here because the CardActivated field updates cardsEverActivated.
+                // Otherwise older code that didn't emit the CardActivatedForTheFirstTime event would emit it on
+                // re-activation, which would notify whomever did the ID check.
+                $cardHasEverBeenActivated = $this->cardsEverActivated->has($cardUpdateRequest->card);
+
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
+
+                if (!$cardHasEverBeenActivated) {
+                    $this->recordThat(new CardActivatedForTheFirstTime($this->customerId, $cardUpdateRequest->card));
+                }
             } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
                 $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
             } else {
@@ -54,8 +67,8 @@ trait Cards
             }
         } else {
             $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
-                ."Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
-                .'not successful';
+                . "Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
+                . 'not successful';
             throw new Exception($message);
         }
 
@@ -79,7 +92,7 @@ trait Cards
                 continue;
             }
 
-            if (! $this->cardsOnAccount->contains($card)) {
+            if (!$this->cardsOnAccount->contains($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
                 if ($this->shouldHavePhysicalBuildingAccess()) {
@@ -89,7 +102,7 @@ trait Cards
         }
 
         foreach ($this->allCards() as $card) {
-            if (! $cardList->contains($card)) {
+            if (!$cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
@@ -98,7 +111,7 @@ trait Cards
 
     public function activateCardsNeedingActivation(): void
     {
-        if (! $this->shouldHavePhysicalBuildingAccess()) {
+        if (!$this->shouldHavePhysicalBuildingAccess()) {
             return;  // We'll check again when they sign the waiver
         }
 
@@ -116,54 +129,44 @@ trait Cards
 
     protected function applyCardAdded(CardAdded $event)
     {
-        $this->cardsOnAccount->push($event->cardNumber);
-        $this->cardsNeedingActivation->push($event->cardNumber);
+        $this->cardsOnAccount->put($event->cardNumber, null);
+        $this->cardsNeedingActivation->put($event->cardNumber, null);
     }
 
     protected function applyCardSentForActivation(CardSentForActivation $event)
     {
-        $this->cardsNeedingActivation = $this->cardsNeedingActivation
-            ->reject(function ($value) use ($event) {
-                return $value == $event->cardNumber;
-            });
-        $this->cardsSentForActivation->push($event->cardNumber);
+        $this->cardsNeedingActivation->forget($event->cardNumber);
+        $this->cardsSentForActivation->put($event->cardNumber, null);
     }
 
     protected function applyCardActivated(CardActivated $event)
     {
-        $this->cardsSentForActivation = $this->cardsSentForActivation
-            ->reject(function ($value) use ($event) {
-                return $value == $event->cardNumber;
-            });
+        $this->cardsSentForActivation->forget($event->cardNumber);
+        $this->cardsEverActivated->put($event->cardNumber, null);
     }
 
     protected function applyCardRemoved(CardRemoved $event)
     {
-        $this->cardsOnAccount = $this->cardsOnAccount
-            ->reject(function ($value) use ($event) {
-                return $value == $event->cardNumber;
-            });
+        $this->cardsOnAccount->forget($event->cardNumber);
+        $this->cardsEverActivated->forget($event->cardNumber);
     }
 
     protected function applyCardSentForDeactivation(CardSentForDeactivation $event)
     {
-        $this->cardsSentForDeactivation->push($event->cardNumber);
+        $this->cardsSentForDeactivation->put($event->cardNumber, null);
     }
 
     protected function applyCardDeactivated(CardDeactivated $event)
     {
-        $this->cardsSentForDeactivation = $this->cardsSentForDeactivation
-            ->reject(function ($value) use ($event) {
-                return $value == $event->cardNumber;
-            });
+        $this->cardsSentForDeactivation->forget($event->cardNumber);
     }
 
     private function allCards()
     {
         return collect()
-            ->merge($this->cardsNeedingActivation)
-            ->merge($this->cardsSentForActivation)
-            ->merge($this->cardsOnAccount)
+            ->merge($this->cardsNeedingActivation->keys())
+            ->merge($this->cardsSentForActivation->keys())
+            ->merge($this->cardsOnAccount->keys())
             ->unique();
     }
 }

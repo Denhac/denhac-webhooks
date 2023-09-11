@@ -12,6 +12,7 @@ use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\StorableEvents\AccessCards\CardActivated;
+use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
 use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
@@ -110,20 +111,33 @@ final class SlackReactor implements EventHandler
         app(SendMessage::class)
             ->onQueue()
             ->execute($customer, $customerFacingMessage);
+    }
 
-        /** @var Customer $idChecker */
-        $idChecker = $customer->id_was_checked_by;
-        // We only want to notify the id checker if this card was created within the last hour, ie during the id check
-        $shouldNotifyIdChecker = $card->created_at >= Carbon::now()->subHour();
-        if (! is_null($idChecker) && $shouldNotifyIdChecker) {
-            $idCheckerFacingMessage = Message::new()
-                ->inChannel()
-                ->text("Card {$event->cardNumber} activated for {$customer->first_name} {$customer->last_name}");
+    public function onCardActivatedForTheFirstTime(CardActivatedForTheFirstTime $event)
+    {
+        /** @var Card $card */
+        $card = Card::where('number', ltrim($event->cardNumber, '0'))
+            ->where('customer_id', $event->customerId)
+            ->first();
 
-            app(SendMessage::class)
-                ->onQueue()
-                ->execute($customer, $idCheckerFacingMessage);
+        if (is_null($card)) {
+            return;
         }
+
+        /** @var Customer $customer */
+        $customer = Customer::find($event->customerId);
+
+        if (is_null($customer) || is_null($customer->idWasCheckedBy)) {
+            return;
+        }
+
+        $idCheckerFacingMessage = Message::new()
+            ->inChannel()
+            ->text("Card {$event->cardNumber} activated for {$customer->first_name} {$customer->last_name}");
+
+        app(SendMessage::class)
+            ->onQueue()
+            ->execute($customer->idWasCheckedBy, $idCheckerFacingMessage);
     }
 
 }

@@ -274,9 +274,7 @@ final class MembershipAggregate extends AggregateRoot
 
         $this->recordThat(new ManualBootstrapWaiverNeeded($this->customerId));
 
-        foreach ($this->allCards() as $card) {
-            $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
-        }
+        $this->deactivateAllCards();
 
         return $this;
     }
@@ -309,7 +307,7 @@ final class MembershipAggregate extends AggregateRoot
 
         // We're going to force enable any cards here by saying they all need activation.
         // This is mostly to handle the case of someone re-signing up rather than for new users.
-        $this->cardsNeedingActivation = $this->cardsOnAccount;
+        $this->cardsNeedingActivation = collect($this->cardsOnAccount);
     }
 
     protected function applyMembershipDeactivated()
