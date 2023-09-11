@@ -39,10 +39,10 @@ final class SubscriptionProjector extends Projector
     public function onSubscriptionDeleted(SubscriptionDeleted $event)
     {
         /** @var Subscription $subscription */
-        $subscription = Subscription::find($event->subscription);
+        $subscription = Subscription::find($event->subscriptionId);
 
         if (is_null($subscription)) {
-            report(new Exception("Failed to find subscription {$event->subscription}"));
+            report(new Exception("Failed to find subscription {$event->subscriptionId}"));
 
             return;
         }

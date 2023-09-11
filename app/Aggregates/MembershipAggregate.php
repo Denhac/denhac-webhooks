@@ -196,7 +196,7 @@ final class MembershipAggregate extends AggregateRoot
             return $this;
         }
 
-        $this->recordThat(new SubscriptionDeleted($subscription));
+        $this->recordThat(new SubscriptionDeleted($subscription['id']));
 
         return $this;
     }
