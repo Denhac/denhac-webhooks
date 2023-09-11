@@ -42,7 +42,7 @@ final class SubscriptionProjector extends Projector
         $subscription = Subscription::find($event->subscriptionId);
 
         if (is_null($subscription)) {
-            report(new Exception("Failed to find subscription {$event->subscriptionId}"));
+            throw new Exception("Failed to find subscription {$event->subscriptionId}");
 
             return;
         }
