@@ -8,7 +8,6 @@ use App\Console\Commands\IdentifyIssues;
 use App\Console\Commands\LinkQuickbooks;
 use App\Console\Commands\MakeIssue;
 use App\Console\Commands\MakeIssueChecker;
-use App\Console\Commands\MatchSlackUsers;
 use App\Console\Commands\SetUpDenhacWebhooks;
 use App\Console\Commands\SlackProfileFieldsUpdate;
 use App\Console\Commands\UpdateBaseData;
@@ -30,7 +29,6 @@ class Kernel extends ConsoleKernel
         LinkQuickbooks::class,
         MakeIssue::class,
         MakeIssueChecker::class,
-        MatchSlackUsers::class,
         SetUpDenhacWebhooks::class,
         SlackProfileFieldsUpdate::class,
         UpdateBaseData::class,
