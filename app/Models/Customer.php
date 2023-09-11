@@ -91,7 +91,7 @@ class Customer extends Model
 
     public function idWasCheckedBy()
     {
-        return $this->hasOne(Customer::class, 'id_was_checked_by_id');
+        return $this->hasOne(Customer::class, 'id','id_was_checked_by_id');
     }
 
     public function isABoardMember(): bool
