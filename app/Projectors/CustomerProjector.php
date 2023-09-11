@@ -125,6 +125,8 @@ final class CustomerProjector extends Projector
         $customerModel->slack_id = $this->getMetadataField($customer_json, 'access_slack_id');
         $customerModel->birthday = $this->getMetadataFieldDate($customer_json, 'account_birthday');
         $customerModel->stripe_card_holder_id = $this->getMetadataField($customer_json, 'stripe_card_holder_id');
+        $idWasCheckedByField = $this->getMetadataField($customer_json, 'id_was_checked_by');
+        $customerModel->id_was_checked_by_id = empty($idWasCheckedByField) ? null : intval($idWasCheckedByField);
         $customerModel->save();
 
         return $customerModel;

@@ -30,6 +30,8 @@ use Illuminate\Support\Collection;
  * @property string member_code
  * @property bool id_checked
  * @property ?string stripe_card_holder_id
+ * @property ?int id_was_checked_by_id
+ * @property ?Customer id_was_checked_by
  *
  * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)
@@ -85,6 +87,11 @@ class Customer extends Model
     public function cards()
     {
         return $this->hasMany(Card::class);
+    }
+
+    public function idWasCheckedBy()
+    {
+        return $this->hasOne(Customer::class, 'id_was_checked_by_id');
     }
 
     public function isABoardMember(): bool
