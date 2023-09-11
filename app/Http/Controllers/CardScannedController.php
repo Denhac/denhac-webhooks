@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Card;
 use App\External\WinDSX\Door;
-use App\Models\NewMemberCardActivation;
 use App\Notifications\CardAccessAllowedButNotAMemberRedAlert;
 use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
@@ -56,20 +55,9 @@ class CardScannedController extends Controller
             return;
         }
 
-        $newMemberCardActivation = NewMemberCardActivation::search($customer, $card);
-
         if ($customer->member) {
             Log::info("They're a member!");
-            if ($accessAllowed) {
-                if (! is_null($newMemberCardActivation)) {
-                    Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
-                    if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
-                        Log::info('Updated to success');
-                        $newMemberCardActivation->state = $newMemberCardActivation::SUCCESS;
-                        $newMemberCardActivation->save();
-                    }
-                }
-            } else {
+            if (!$accessAllowed) {
                 Log::info('No access though.');
                 // They weren't given access
 
@@ -80,7 +68,7 @@ class CardScannedController extends Controller
                     // We don't know about this door. Do nothing
                     return;
                 } elseif ($door->membersCanBadgeIn) {
-                    if (! $customer->hasSignedMembershipWaiver()) {
+                    if (!$customer->hasSignedMembershipWaiver()) {
                         $notification = new CardAccessDeniedNoWaiver($customer);
 
                         Notification::route('mail', $customer->email)
@@ -94,15 +82,6 @@ class CardScannedController extends Controller
 
                     if ($scanTime->subMinutes(10) < $waiver->updated_at) {
                         return;  // They just signed the waiver, give it a bit to activate their card before emailing everyone
-                    }
-
-                    if (! is_null($newMemberCardActivation)) {
-                        Log::info("Found a new member card activation with state {$newMemberCardActivation->state}");
-                        if ($newMemberCardActivation->state == NewMemberCardActivation::CARD_ACTIVATED) {
-                            Log::info('Updated to failed');
-                            $newMemberCardActivation->state = $newMemberCardActivation::SCAN_FAILED;
-                            $newMemberCardActivation->save();
-                        }
                     }
 
                     if ($scanTime->subMinutes(10) < $updatedAt) {

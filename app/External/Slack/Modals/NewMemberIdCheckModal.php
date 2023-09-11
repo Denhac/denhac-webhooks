@@ -2,12 +2,10 @@
 
 namespace App\External\Slack\Modals;
 
-use App\Actions\NewMemberCardSlackLiveView;
 use App\Models\Customer;
 use App\External\Slack\SlackOptions;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
-use App\Models\NewMemberCardActivation;
 use App\Notifications\IdCheckedWithNoWaiver;
 use App\Models\Waiver;
 use Carbon\Carbon;
@@ -158,22 +156,10 @@ class NewMemberIdCheckModal implements ModalInterface
         if (! $customer->hasSignedMembershipWaiver()) {
             Notification::route('mail', $customer->email)
                 ->notify(new IdCheckedWithNoWaiver($customer));
+            // TODO Pop something up so id checker can match the waiver
         }
 
-        $newMemberCardActivation = NewMemberCardActivation::create([
-            'woo_customer_id' => $customerId,
-            'card_number' => ltrim($card, '0'),
-            'state' => NewMemberCardActivation::SUBMITTED,
-        ]);
-
-        app(NewMemberCardSlackLiveView::class)
-            ->onQueue()
-            ->execute($viewId, $newMemberCardActivation);
-
-        // TODO return things to go over popup instead after modal for waiver if needed
-        return (new NewMemberCardActivationLiveModal())->placeholder()->update();
-
-        //return (new SuccessModal())->update();
+        return (new NewMemberInfoModal())->update();
     }
 
     public static function getOptions(SlackRequest $request)
