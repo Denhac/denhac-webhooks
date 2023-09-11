@@ -8,6 +8,7 @@ use App\StorableEvents\WooCommerce\SubscriptionDeleted;
 use App\StorableEvents\WooCommerce\SubscriptionImported;
 use App\StorableEvents\WooCommerce\SubscriptionUpdated;
 use App\Models\Subscription;
+use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
@@ -22,26 +23,30 @@ final class SubscriptionProjector extends Projector
 
     public function onSubscriptionImported(SubscriptionImported $event)
     {
-        $this->addOrGetSubscription($event->subscription);
+        $this->addOrUpdateSubscriptionFromJson($event->subscription);
     }
 
     public function onSubscriptionCreated(SubscriptionCreated $event)
     {
-        $this->addOrGetSubscription($event->subscription);
+        $this->addOrUpdateSubscriptionFromJson($event->subscription);
     }
 
     public function onSubscriptionUpdated(SubscriptionUpdated $event)
     {
-        $subscription = $this->addOrGetSubscription($event->subscription);
-
-        $subscription->status = $event->subscription['status'];
-
-        $subscription->save();
+        $this->addOrUpdateSubscriptionFromJson($event->subscription);
     }
 
     public function onSubscriptionDeleted(SubscriptionDeleted $event)
     {
-        Subscription::whereWooId($event->subscription['id'])->delete();
+        /** @var Subscription $subscription */
+        $subscription = Subscription::find($event->subscription);
+
+        if (is_null($subscription)) {
+            report(new Exception("Failed to find subscription {$event->subscription}"));
+
+            return;
+        }
+        $subscription->delete();
     }
 
     public function onCustomerDeleted(CustomerDeleted $event)
@@ -53,22 +58,22 @@ final class SubscriptionProjector extends Projector
     /**
      * @return Subscription
      */
-    private function addOrGetSubscription($subscription)
+    private function addOrUpdateSubscriptionFromJson($subscription_json)
     {
-        $subscriptionModel = Subscription::whereWooId($subscription['id'])->first();
+        $subscriptionModel = Subscription::whereWooId($subscription_json['id'])->first();
 
         if (is_null($subscriptionModel)) {
-            $wooId = $subscription['id'];
-            $customerId = $subscription['customer_id'];
-            $status = $subscription['status'];
-
-            return Subscription::create([
-                'woo_id' => $wooId,
-                'customer_id' => $customerId,
-                'status' => $status,
-            ]);
-        } else {
-            return $subscriptionModel;
+            /** @var Subscription $subscriptionModel */
+            $subscriptionModel = Subscription::make();
         }
+
+        $subscriptionModel->id = $subscription_json['id'];
+        $subscriptionModel->woo_id = $subscription_json['id'];
+        $subscriptionModel->status = $subscription_json['status'];
+        $subscriptionModel->customer_id = $subscription_json['customer_id'];
+
+        $subscriptionModel->save();
+
+        return $subscriptionModel;
     }
 }

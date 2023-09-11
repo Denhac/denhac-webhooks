@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @property int id
  * @property string status
  * @property int woo_id
  * @property int customer_id
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 class Subscription extends Model
 {
     protected $fillable = [
+        'id',
         'customer_id',
         'status',
         'woo_id',

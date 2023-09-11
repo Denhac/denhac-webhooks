@@ -6,7 +6,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class SubscriptionDeleted extends ShouldBeStored
 {
-    public $subscription;  // Realy just the subscription id
+    public $subscription;  // Really just the subscription id
 
     public function __construct($subscription)
     {
