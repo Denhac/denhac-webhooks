@@ -135,7 +135,7 @@ class SubscriptionProjectorTest extends TestCase
 
         $this->expectException(\Exception::class);
 
-        event(new SubscriptionDeleted($builder->toArray()));
+        event(new SubscriptionDeleted($builder->id));
     }
 
     /** @test */
