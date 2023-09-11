@@ -41,7 +41,7 @@ class SubscriptionNotFoundOnRemote extends IssueBase
                 $subscription = Subscription::whereWooId($this->subscription_id)->first();
 
                 MembershipAggregate::make($subscription->customer_id)
-                    ->deleteSubscription(['id' => $subscription->woo_id])
+                    ->deleteSubscription(['id' => $subscription->id])
                     ->persist();
 
                 return true;

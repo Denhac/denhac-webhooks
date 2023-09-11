@@ -30,7 +30,7 @@ class SubscriptionIssues implements IssueCheck
             $sub_id = $subscription_api['id'];
             $sub_status = $subscription_api['status'];
 
-            $model = $subscriptions_models->where('woo_id', $sub_id)->first();
+            $model = $subscriptions_models->find($sub_id);
 
             if (is_null($model)) {
                 $this->issues->add(new SubscriptionDoesNotExistInOurLocalDatabase($sub_id));
@@ -45,7 +45,7 @@ class SubscriptionIssues implements IssueCheck
 
         foreach ($subscriptions_models as $subscription_model) {
             /** @var Subscription $subscription_model */
-            $sub_id = $subscription_model->woo_id;
+            $sub_id = $subscription_model->id;
 
             $api = $subscriptions_api->where('id', $sub_id)->first();
 

@@ -95,7 +95,7 @@ class UpdateBaseData extends Command
         $subscriptionsInWooCommerce = $this->api->subscriptions->list();
         $subscriptionsInWooCommerce->each(function ($subscription) use ($subscriptionsInDB) {
             $wooId = $subscription['id'];
-            if (! $subscriptionsInDB->contains('woo_id', $wooId)) {
+            if (! $subscriptionsInDB->contains('id', $wooId)) {
                 $this->line("Subscription {$wooId} was not in our internal store, adding.");
 
                 if (! $this->isDryRun) {

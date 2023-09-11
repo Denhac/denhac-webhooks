@@ -37,7 +37,6 @@ class SubscriptionProjectorTest extends TestCase
 
         $this->assertNotNull($subscription);
         $this->assertEquals($builder->id, $subscription->id);
-        $this->assertEquals($builder->id, $subscription->woo_id);
         $this->assertEquals($builder->status, $subscription->status);
         $this->assertEquals($builder->customer_id, $subscription->customer_id);
     }
@@ -56,7 +55,6 @@ class SubscriptionProjectorTest extends TestCase
 
         $this->assertNotNull($subscription);
         $this->assertEquals($builder->id, $subscription->id);
-        $this->assertEquals($builder->id, $subscription->woo_id);
         $this->assertEquals($builder->status, $subscription->status);
         $this->assertEquals($builder->customer_id, $subscription->customer_id);
     }
@@ -75,7 +73,6 @@ class SubscriptionProjectorTest extends TestCase
 
         $this->assertNotNull($subscription);
         $this->assertEquals($builder->id, $subscription->id);
-        $this->assertEquals($builder->id, $subscription->woo_id);
         $this->assertEquals($builder->status, $subscription->status);
         $this->assertEquals($builder->customer_id, $subscription->customer_id);
     }
@@ -94,7 +91,6 @@ class SubscriptionProjectorTest extends TestCase
 
         $this->assertNotNull($subscription);
         $this->assertEquals($builder->id, $subscription->id);
-        $this->assertEquals($builder->id, $subscription->woo_id);
         $this->assertEquals($builder->status, $subscription->status);
         $this->assertEquals($builder->customer_id, $subscription->customer_id);
 
@@ -105,7 +101,6 @@ class SubscriptionProjectorTest extends TestCase
 
         $this->assertNotNull($subscription);
         $this->assertEquals($builder->id, $subscription->id);
-        $this->assertEquals($builder->id, $subscription->woo_id);
         $this->assertEquals($builder->status, $subscription->status);
         $this->assertEquals($builder->customer_id, $subscription->customer_id);
     }

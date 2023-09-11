@@ -60,7 +60,7 @@ final class SubscriptionProjector extends Projector
      */
     private function addOrUpdateSubscriptionFromJson($subscription_json)
     {
-        $subscriptionModel = Subscription::whereWooId($subscription_json['id'])->first();
+        $subscriptionModel = Subscription::find($subscription_json['id']);
 
         if (is_null($subscriptionModel)) {
             /** @var Subscription $subscriptionModel */
@@ -68,7 +68,6 @@ final class SubscriptionProjector extends Projector
         }
 
         $subscriptionModel->id = $subscription_json['id'];
-        $subscriptionModel->woo_id = $subscription_json['id'];
         $subscriptionModel->status = $subscription_json['status'];
         $subscriptionModel->customer_id = $subscription_json['customer_id'];
 

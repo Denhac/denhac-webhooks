@@ -48,7 +48,7 @@ class CancelMembershipConfirmationModal implements ModalInterface
             /* @var Subscription $subscription */
 
             $wooCommerceApi->subscriptions
-                ->update($subscription->woo_id, [
+                ->update($subscription->id, [
                     'status' => 'pending-cancel',
                 ]);
         }
