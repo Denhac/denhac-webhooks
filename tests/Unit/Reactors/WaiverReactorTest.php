@@ -55,7 +55,7 @@ class WaiverReactorTest extends TestCase
         ]);
 
         $this->matchingCustomer = Customer::create([
-            'id' => $this->faker->randomNumber(),
+            'id' => $this->faker->numberBetween(1),
             'username' => $this->faker->userName,
             'member' => true,
             'first_name' => $this->firstName,
