@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property string status
  * @property int woo_id
- * @property string customer_id
+ * @property int customer_id
  * @property Customer customer
  */
 class Subscription extends Model

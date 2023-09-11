@@ -40,7 +40,10 @@ class Customer extends Model
     use SoftDeletes;
     use Notifiable;
 
+    public $incrementing = false;
+
     protected $fillable = [
+        'id',
         'username',
         'email',
         'woo_id',

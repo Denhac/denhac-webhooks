@@ -95,9 +95,10 @@ class GithubMembershipReactorTest extends TestCase
     {
         /** @var Customer $customer */
         $customer = Customer::create([
+            'id' => 1,
+            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
-            'woo_id' => 1,
             // Their membership is being activated, this field is probably false in db
             'member' => false,
             'github_username' => 'test',
@@ -115,9 +116,10 @@ class GithubMembershipReactorTest extends TestCase
     {
         /** @var Customer $customer */
         $customer = Customer::create([
+            'id' => 1,
+            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
-            'woo_id' => 1,
             // Their membership is being deactivated, this field is probably true in db
             'member' => true,
             'github_username' => 'test',
@@ -135,9 +137,10 @@ class GithubMembershipReactorTest extends TestCase
     {
         /** @var Customer $customer */
         $customer = Customer::create([
+            'id' => 1,
+            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
-            'woo_id' => 1,
             // Their membership is being activated, this field is probably false in db
             'member' => false,
             'github_username' => null,
@@ -154,9 +157,10 @@ class GithubMembershipReactorTest extends TestCase
     {
         /** @var Customer $customer */
         $customer = Customer::create([
+            'id' => 1,
+            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
-            'woo_id' => 1,
             // Their membership is being deactivated, this field is probably true in db
             'member' => true,
             'github_username' => null,

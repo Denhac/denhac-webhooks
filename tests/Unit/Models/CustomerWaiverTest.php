@@ -48,9 +48,11 @@ class CustomerWaiverTest extends TestCase
     public function customer_who_signed_good_waiver_returns_true(): void
     {
         /** @var Customer $customer */
+        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->faker->userName,
-            'woo_id' => $this->faker->randomNumber(),
             'member' => true,
             'email' => $this->faker->email,
             'first_name' => $this->faker->firstName,
@@ -68,9 +70,11 @@ class CustomerWaiverTest extends TestCase
     public function customer_who_signed_other_waiver_returns_false(): void
     {
         /** @var Customer $customer */
+        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->faker->userName,
-            'woo_id' => $this->faker->randomNumber(),
             'member' => true,
             'email' => $this->faker->email,
             'first_name' => $this->faker->firstName,
@@ -88,9 +92,11 @@ class CustomerWaiverTest extends TestCase
     public function customer_get_waiver_url(): void
     {
         /** @var Customer $customer */
+        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->faker->userName,
-            'woo_id' => $this->faker->randomNumber(),
             'member' => true,
             'email' => $this->faker->email,
             'first_name' => $this->faker->firstName,

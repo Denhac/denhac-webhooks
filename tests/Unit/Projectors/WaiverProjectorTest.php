@@ -34,9 +34,11 @@ class WaiverProjectorTest extends TestCase
             'last_name' => $lastName,
         ]);
 
+        $wooId = $this->faker->randomNumber();
         $this->customer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->faker->userName,
-            'woo_id' => $this->faker->randomNumber(),
             'member' => true,
             'first_name' => $firstName,
             'last_name' => $lastName,

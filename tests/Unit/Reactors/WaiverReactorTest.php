@@ -54,9 +54,11 @@ class WaiverReactorTest extends TestCase
             'last_name' => $this->lastName,
         ]);
 
+        $wooId = $this->faker->randomNumber();
         $this->matchingCustomer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->faker->userName,
-            'woo_id' => $this->faker->randomNumber(),
             'member' => true,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
@@ -85,9 +87,11 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function waiver_accepted_with_different_first_name_is_not_assigned_to_customer()
     {
+        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->matchingCustomer->username,
-            'woo_id' => $this->matchingCustomer->woo_id,
             'member' => $this->matchingCustomer->member,
             'last_name' => $this->matchingCustomer->last_name,
             'email' => $this->matchingCustomer->email,
@@ -111,9 +115,11 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function waiver_accepted_with_different_last_name_is_not_assigned_to_customer()
     {
+        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->matchingCustomer->username,
-            'woo_id' => $this->matchingCustomer->woo_id,
             'member' => $this->matchingCustomer->member,
             'first_name' => $this->matchingCustomer->first_name,
             'email' => $this->matchingCustomer->email,
@@ -137,9 +143,11 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function waiver_accepted_with_different_email_is_not_assigned_to_customer()
     {
+        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
+            'id' => $wooId,
+            'woo_id' => $wooId,
             'username' => $this->matchingCustomer->username,
-            'woo_id' => $this->matchingCustomer->woo_id,
             'member' => $this->matchingCustomer->member,
             'first_name' => $this->matchingCustomer->first_name,
             'last_name' => $this->matchingCustomer->last_name,
@@ -166,7 +174,7 @@ class WaiverReactorTest extends TestCase
     {
         event(new CustomerCreated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -187,7 +195,7 @@ class WaiverReactorTest extends TestCase
         $firstName = $this->faker->firstName;
         event(new CustomerCreated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($firstName)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -207,7 +215,7 @@ class WaiverReactorTest extends TestCase
         $lastName = $this->faker->lastName;
         event(new CustomerCreated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($lastName)
                 ->email($this->matchingCustomer->email)
@@ -227,7 +235,7 @@ class WaiverReactorTest extends TestCase
         $email = $this->faker->email;
         event(new CustomerCreated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($email)
@@ -244,12 +252,12 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_created_with_all_fields_matching_is_not_reassigned_to_customer()
     {
-        $this->matchingWaiver->customer_id = $this->matchingCustomer->woo_id;
+        $this->matchingWaiver->customer_id = $this->matchingCustomer->id;
         $this->matchingWaiver->save();
 
         event(new CustomerCreated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -264,7 +272,7 @@ class WaiverReactorTest extends TestCase
     {
         event(new CustomerUpdated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -285,7 +293,7 @@ class WaiverReactorTest extends TestCase
         $firstName = $this->faker->firstName;
         event(new CustomerUpdated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($firstName)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -305,7 +313,7 @@ class WaiverReactorTest extends TestCase
         $lastName = $this->faker->lastName;
         event(new CustomerUpdated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($lastName)
                 ->email($this->matchingCustomer->email)
@@ -325,7 +333,7 @@ class WaiverReactorTest extends TestCase
         $email = $this->faker->email;
         event(new CustomerUpdated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($email)
@@ -342,12 +350,12 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_updated_with_all_fields_matching_is_not_reassigned_to_customer()
     {
-        $this->matchingWaiver->customer_id = $this->matchingCustomer->woo_id;
+        $this->matchingWaiver->customer_id = $this->matchingCustomer->id;
         $this->matchingWaiver->save();
 
         event(new CustomerUpdated(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -362,7 +370,7 @@ class WaiverReactorTest extends TestCase
     {
         event(new CustomerImported(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -383,7 +391,7 @@ class WaiverReactorTest extends TestCase
         $firstName = $this->faker->firstName;
         event(new CustomerImported(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($firstName)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)
@@ -403,7 +411,7 @@ class WaiverReactorTest extends TestCase
         $lastName = $this->faker->lastName;
         event(new CustomerImported(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($lastName)
                 ->email($this->matchingCustomer->email)
@@ -423,7 +431,7 @@ class WaiverReactorTest extends TestCase
         $email = $this->faker->email;
         event(new CustomerImported(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($email)
@@ -440,12 +448,12 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_deleted_with_all_fields_matching_is_not_reassigned_to_customer()
     {
-        $this->matchingWaiver->customer_id = $this->matchingCustomer->woo_id;
+        $this->matchingWaiver->customer_id = $this->matchingCustomer->id;
         $this->matchingWaiver->save();
 
         event(new CustomerDeleted(
             $this->customer()
-                ->id($this->matchingCustomer->woo_id)
+                ->id($this->matchingCustomer->id)
                 ->first_name($this->matchingCustomer->first_name)
                 ->last_name($this->matchingCustomer->last_name)
                 ->email($this->matchingCustomer->email)

@@ -8,7 +8,6 @@ use App\Aggregates\MembershipTraits\IdWasCheckedTrait;
 use App\Aggregates\MembershipTraits\Subscription;
 use App\Aggregates\MembershipTraits\UserMembership;
 use App\Aggregates\MembershipTraits\WaiverTrait;
-use App\FeatureFlags;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
@@ -29,7 +28,6 @@ use App\StorableEvents\WooCommerce\UserMembershipImported;
 use App\StorableEvents\WooCommerce\UserMembershipUpdated;
 use App\Models\Waiver;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 final class MembershipAggregate extends AggregateRoot
 {
