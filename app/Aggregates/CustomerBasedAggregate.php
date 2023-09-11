@@ -10,14 +10,14 @@ use Tests\Helpers\Wordpress\CustomerBuilder;
 
 trait CustomerBasedAggregate
 {
-    public $customerId;
+    public int $customerId;
 
     public $respondToEvents = true;
 
     /**
      * @return MembershipAggregate
      */
-    public static function make(string $customerId): AggregateRoot
+    public static function make(int $customerId): AggregateRoot
     {
         $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customerId);
         $aggregateRoot = self::retrieve($uuid);
