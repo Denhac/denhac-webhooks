@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\ADUpdateRequest;
 use App\Models\CardUpdateRequest;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -40,7 +39,6 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         Route::model('card_update_request', CardUpdateRequest::class);
-        Route::model('ad_update_request', ADUpdateRequest::class);
 
         $this->routes(function () {
             Route::prefix('api')
