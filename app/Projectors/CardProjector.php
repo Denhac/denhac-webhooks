@@ -28,13 +28,13 @@ class CardProjector extends Projector
 
         /** @var Card $card */
         $card = Card::where('number', $cardNumber)
-            ->where('woo_customer_id', $event->wooCustomerId)
+            ->where('customer_id', $event->wooCustomerId)
             ->first();
 
         if (is_null($card)) {
             Card::create([
                 'number' => $cardNumber,
-                'woo_customer_id' => $event->wooCustomerId,
+                'customer_id' => $event->wooCustomerId,
                 'active' => false,
                 'member_has_card' => true,
             ]);
@@ -48,7 +48,7 @@ class CardProjector extends Projector
     {
         /** @var Card $card */
         $card = Card::where('number', ltrim($event->cardNumber, '0'))
-            ->where('woo_customer_id', $event->wooCustomerId)
+            ->where('customer_id', $event->wooCustomerId)
             ->first();
 
         if (is_null($card)) {
@@ -64,7 +64,7 @@ class CardProjector extends Projector
     {
         /** @var Card $card */
         $card = Card::where('number', ltrim($event->cardNumber, '0'))
-            ->where('woo_customer_id', $event->wooCustomerId)
+            ->where('customer_id', $event->wooCustomerId)
             ->first();
 
         if (is_null($card)) {
@@ -80,7 +80,7 @@ class CardProjector extends Projector
     {
         /** @var Card $card */
         $card = Card::where('number', ltrim($event->cardNumber, '0'))
-            ->where('woo_customer_id', $event->wooCustomerId)
+            ->where('customer_id', $event->wooCustomerId)
             ->first();
 
         if (is_null($card)) {
@@ -99,7 +99,7 @@ class CardProjector extends Projector
         }
 
         /** @var Collection $cards */
-        $cards = Card::where('woo_customer_id', $event->membership['customer_id'])->get();
+        $cards = Card::where('customer_id', $event->membership['customer_id'])->get();
 
         $cards->each(function ($card) {
             /* @var Card $card */
@@ -111,7 +111,7 @@ class CardProjector extends Projector
 
     public function onCustomerDeleted(CustomerDeleted $event)
     {
-        $cards = Card::where('woo_customer_id', $event->customerId)->get();
+        $cards = Card::where('customer_id', $event->customerId)->get();
         foreach ($cards as $card) {
             /* @var Card $card */
             $card->delete();

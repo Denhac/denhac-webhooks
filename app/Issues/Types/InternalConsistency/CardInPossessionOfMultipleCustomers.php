@@ -77,7 +77,7 @@ class CardInPossessionOfMultipleCustomers extends IssueBase
             }
 
             /** @var Card $card */
-            $card = Card::where('number', $this->cardNum)->where('woo_customer_id', $customerId)->first();
+            $card = Card::where('number', $this->cardNum)->where('customer_id', $customerId)->first();
             if ($card->active) {
                 $this->line('We think the card is currently active');
             } else {

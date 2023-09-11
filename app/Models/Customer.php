@@ -84,7 +84,7 @@ class Customer extends Model
 
     public function cards()
     {
-        return $this->hasMany(Card::class, 'woo_customer_id');
+        return $this->hasMany(Card::class);
     }
 
     public function isABoardMember(): bool

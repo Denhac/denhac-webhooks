@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string number
  * @property bool active
  * @property bool member_has_card
- * @property int woo_customer_id
+ * @property int customer_id
  * @property Customer customer
  * @property Carbon created_at
  * @property Carbon updated_at
@@ -22,11 +22,11 @@ class Card extends Model
         'number',
         'active',
         'member_has_card',
-        'woo_customer_id',
+        'customer_id',
     ];
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'woo_customer_id');
+        return $this->belongsTo(Customer::class);
     }
 }

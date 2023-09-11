@@ -37,7 +37,7 @@ class CardIssues implements IssueCheck
             /** @var MemberData $member */
 
             $cardsForMember = $cards
-                ->where('woo_customer_id', $member->id);
+                ->where('customer_id', $member->id);
 
             // $member['cards'] is the list of cards in WooCommerce
             $member->cards->each(function ($memberCard) use ($member, $cardsForMember) {
@@ -83,7 +83,7 @@ class CardIssues implements IssueCheck
             ->filter(fn ($value) => $value->count() > 1)
             ->each(function ($cards, $cardNum) {
                 $uniqueCustomers = $cards
-                    ->map(fn ($card) => $card->woo_customer_id)
+                    ->map(fn ($card) => $card->customer_id)
                     ->unique();
                 $numEntries = $cards->count();
 
