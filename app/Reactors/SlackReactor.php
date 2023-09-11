@@ -18,6 +18,7 @@ use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use App\Models\TrainableEquipment;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use SlackPhp\BlockKit\Surfaces\Message;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
@@ -112,7 +113,9 @@ final class SlackReactor implements EventHandler
 
         /** @var Customer $idChecker */
         $idChecker = $customer->id_was_checked_by;
-        if (!is_null($idChecker)) {
+        // We only want to notify the id checker if this card was created within the last hour, ie during the id check
+        $shouldNotifyIdChecker = $card->created_at >= Carbon::now()->subHour();
+        if (! is_null($idChecker) && $shouldNotifyIdChecker) {
             $idCheckerFacingMessage = Message::new()
                 ->inChannel()
                 ->text("Card {$event->cardNumber} activated for {$customer->first_name} {$customer->last_name}");

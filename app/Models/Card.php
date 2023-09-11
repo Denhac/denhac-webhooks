@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string number
  * @property bool active
  * @property bool member_has_card
- * @property bool ever_activated If the card has ever been activated. This should only be set to false on creation and true on activation.
  * @property int customer_id
  * @property Customer customer
  * @property Carbon created_at
@@ -24,7 +23,6 @@ class Card extends Model
         'active',
         'member_has_card',
         'customer_id',
-        'ever_activated',
     ];
 
     public function customer()

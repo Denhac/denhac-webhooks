@@ -37,7 +37,6 @@ class CardProjector extends Projector
                 'customer_id' => $event->wooCustomerId,
                 'active' => false,
                 'member_has_card' => true,
-                'ever_activated' => false,
             ]);
         } else {
             $card->member_has_card = true;
@@ -57,7 +56,6 @@ class CardProjector extends Projector
         }
 
         $card->active = true;
-        $card->ever_activated = true;
 
         $card->save();
     }
