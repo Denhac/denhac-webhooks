@@ -84,7 +84,7 @@ class SelectAMemberModal implements ModalInterface
                 $text = "$name (Not a Member)";
             }
 
-            $value = "customer-{$customer->woo_id}";
+            $value = "customer-{$customer->id}";
 
             $options->option($text, $value);
         }

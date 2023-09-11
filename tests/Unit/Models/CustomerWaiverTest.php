@@ -48,10 +48,8 @@ class CustomerWaiverTest extends TestCase
     public function customer_who_signed_good_waiver_returns_true(): void
     {
         /** @var Customer $customer */
-        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->faker->userName,
             'member' => true,
             'email' => $this->faker->email,
@@ -59,7 +57,7 @@ class CustomerWaiverTest extends TestCase
             'last_name' => $this->faker->lastName,
         ]);
 
-        $this->validMembershipWaiver->customer_id = $customer->woo_id;
+        $this->validMembershipWaiver->customer_id = $customer->id;
         $this->validMembershipWaiver->save();
         $customer->refresh();
 
@@ -70,10 +68,8 @@ class CustomerWaiverTest extends TestCase
     public function customer_who_signed_other_waiver_returns_false(): void
     {
         /** @var Customer $customer */
-        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->faker->userName,
             'member' => true,
             'email' => $this->faker->email,
@@ -81,7 +77,7 @@ class CustomerWaiverTest extends TestCase
             'last_name' => $this->faker->lastName,
         ]);
 
-        $this->someOtherWaiver->customer_id = $customer->woo_id;
+        $this->someOtherWaiver->customer_id = $customer->id;
         $this->someOtherWaiver->save();
         $customer->refresh();
 
@@ -92,10 +88,8 @@ class CustomerWaiverTest extends TestCase
     public function customer_get_waiver_url(): void
     {
         /** @var Customer $customer */
-        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->faker->userName,
             'member' => true,
             'email' => $this->faker->email,

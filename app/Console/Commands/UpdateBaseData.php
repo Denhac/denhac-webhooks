@@ -72,7 +72,7 @@ class UpdateBaseData extends Command
         $customersInWooCommerce = $this->api->customers->list();
         $customersInWooCommerce->each(function ($customer) use ($customersInDB) {
             $wooId = $customer['id'];
-            if (! $customersInDB->contains('woo_id', $wooId)) {
+            if (! $customersInDB->contains('id', $wooId)) {
                 $username = $customer['username'];
                 $this->line("{$username} was not in our internal store, adding.");
                 if (! $this->isDryRun) {

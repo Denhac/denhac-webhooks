@@ -27,6 +27,6 @@ class Card extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'woo_customer_id', 'woo_id');
+        return $this->belongsTo(Customer::class, 'woo_customer_id');
     }
 }

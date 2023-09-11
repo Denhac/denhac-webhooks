@@ -30,7 +30,7 @@ class IsMemberIssues implements IssueCheck
             /** @var MemberData $member */
 
             /** @var Customer $customer */
-            $customer = $customers->where('woo_id', $member->id)->first();
+            $customer = $customers->find($member->id);
 
             if (is_null($customer)) {
                 continue;  // CustomerIssues handles reporting this error

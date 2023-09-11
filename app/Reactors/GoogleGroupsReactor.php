@@ -40,7 +40,7 @@ final class GoogleGroupsReactor implements EventHandler
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         AddToGroup::queue()->execute($customer->email, self::GROUP_MEMBERS);
         AddToGroup::queue()->execute($customer->email, self::GROUP_ANNOUNCE);
@@ -49,7 +49,7 @@ final class GoogleGroupsReactor implements EventHandler
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         $this->googleApi->groupsForMember($customer->email)
             ->filter(function ($group) {
@@ -63,10 +63,11 @@ final class GoogleGroupsReactor implements EventHandler
     // Deleted customers get removed from everything
     public function onCustomerDeleted(CustomerDeleted $event)
     {
+        // TODO This function should handle _all_ emails from this person, but if they're deleted we can't access their
+        // emails from WordPress and they aren't currently projected onto the customers table
         /** @var Customer $customer */
-        $customer = Customer::withTrashed()
-            ->where('woo_id', $event->customerId)
-            ->first();
+        $customer = Customer::withTrashed()  // With trashed because Customer Projector will have already soft-deleted it
+            ->find($event->customerId);
 
         $this->googleApi->groupsForMember($customer->email)
             ->each(function ($group) use ($customer) {
@@ -84,7 +85,7 @@ final class GoogleGroupsReactor implements EventHandler
         $plan_id = $event->membership['plan_id'];
 
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($customerId)->first();
+        $customer = Customer::find($customerId);
 
         /** @var Collection $userSlackIds */
         $userEmailGroups = TrainableEquipment::select('user_email')

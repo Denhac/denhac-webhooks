@@ -34,7 +34,7 @@ class NewMemberIdCheckModal implements ModalInterface
     public function __construct($customer_id)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($customer_id)->first();
+        $customer = Customer::find($customer_id);
 
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
@@ -42,7 +42,7 @@ class NewMemberIdCheckModal implements ModalInterface
             ->clearOnClose(true)
             ->close('Cancel')
             ->submit('Submit')
-            ->privateMetadata($customer->woo_id);
+            ->privateMetadata($customer->id);
 
         if ($customer->hasSignedMembershipWaiver()) {
             $this->modalView->newSection()
@@ -121,10 +121,12 @@ class NewMemberIdCheckModal implements ModalInterface
         }
 
         $customerId = $view['private_metadata'];
+        /** @var Customer $customer */
+        $customer = Customer::find($customerId);
 
         $wooCommerceApi = app(WooCommerceApi::class);
 
-        $customer = $request->customer();
+        $idChecker = $request->customer();
         $wooCommerceApi->customers
             ->update($customerId, [
                 'first_name' => $firstName,
@@ -140,7 +142,7 @@ class NewMemberIdCheckModal implements ModalInterface
                     ],
                     [
                         'key' => 'id_was_checked_by',
-                        'value' => $customer->woo_id,
+                        'value' => $idChecker->id,
                     ],
                     [
                         'key' => 'id_was_checked_when',

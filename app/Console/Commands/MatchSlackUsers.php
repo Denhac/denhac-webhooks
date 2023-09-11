@@ -84,7 +84,7 @@ class MatchSlackUsers extends Command
             });
             if (! is_null($member)) {
                 $matchingCustomers->push([
-                    'woo_id' => $customer['id'],
+                    'id' => $customer['id'],
                     'slack_id' => $member['id'],
                     'email' => $customer['email'],
                     'customer_name' => "{$customer['first_name']} {$customer['last_name']}",
@@ -97,7 +97,7 @@ class MatchSlackUsers extends Command
 
         $matchingCustomers->each(function ($customer) {
             $slack_id = $customer['slack_id'];
-            $woo_id = $customer['woo_id'];
+            $woo_id = $customer['id'];
             $this->line("Setting slack id {$slack_id} for customer {$customer['customer_name']} with woo id {$woo_id}");
 
             $this->wooCommerceApi->customers->update($woo_id, [

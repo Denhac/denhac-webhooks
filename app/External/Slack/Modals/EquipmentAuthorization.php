@@ -87,7 +87,7 @@ class EquipmentAuthorization implements ModalInterface
         $personId = str_replace('customer-', '', $personValue);
 
         /** @var Customer $person */
-        $person = Customer::whereWooId($personId)->first();
+        $person = Customer::find($personId);
 
         /** @var TrainableEquipment $equipment */
         $equipment = TrainableEquipment::find($equipmentId);
@@ -96,11 +96,11 @@ class EquipmentAuthorization implements ModalInterface
         $api = app(WooCommerceApi::class);
 
         if ($makeUser) {
-            $api->members->addMembership($person->woo_id, $equipment->user_plan_id);
+            $api->members->addMembership($person->id, $equipment->user_plan_id);
         }
 
         if ($makeTrainer) {
-            $api->members->addMembership($person->woo_id, $equipment->trainer_plan_id);
+            $api->members->addMembership($person->id, $equipment->trainer_plan_id);
         }
 
         if (! $makeTrainer && ! $makeUser) {
@@ -175,7 +175,7 @@ class EquipmentAuthorization implements ModalInterface
             $equipmentId = str_replace('equipment-', '', $equipmentValue);
             $personId = str_replace('customer-', '', $personValue);
             /** @var Customer $person */
-            $person = Customer::whereWooId($personId)->first();
+            $person = Customer::find($personId);
             $name = "{$person->first_name} {$person->last_name}";
 
             /** @var TrainableEquipment $equipment */

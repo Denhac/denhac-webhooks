@@ -55,7 +55,7 @@ class CreateTrainableEquipment implements ModalInterface
 
         if (! is_null($user)) {
             $name = "{$user->first_name} {$user->last_name}";
-            $trainerInput->initialOption($name, "customer-{$user->woo_id}");
+            $trainerInput->initialOption($name, "customer-{$user->id}");
         }
 
         $this->modalView->divider();
@@ -131,13 +131,13 @@ class CreateTrainableEquipment implements ModalInterface
         $wooCommerceApi = app(WooCommerceApi::class);
         $responseTrainer = $wooCommerceApi->denhac->createUserPlan(
             "$equipmentName Trainer",
-            $request->customer()->woo_id
+            $request->customer()->id
         );
         $trainerPlanId = $responseTrainer['id'];
 
         $responseUser = $wooCommerceApi->denhac->createUserPlan(
             "$equipmentName User",
-            $request->customer()->woo_id
+            $request->customer()->id
         );
         $userPlanId = $responseUser['id'];
 

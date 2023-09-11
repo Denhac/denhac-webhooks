@@ -96,7 +96,6 @@ class GithubMembershipReactorTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::create([
             'id' => 1,
-            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
             // Their membership is being activated, this field is probably false in db
@@ -104,7 +103,7 @@ class GithubMembershipReactorTest extends TestCase
             'github_username' => 'test',
         ]);
 
-        event(new MembershipActivated($customer->woo_id));
+        event(new MembershipActivated($customer->id));
 
         $this->assertAction(AddToGitHubTeam::class)
             ->with($customer->github_username, 'members');
@@ -117,7 +116,6 @@ class GithubMembershipReactorTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::create([
             'id' => 1,
-            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
             // Their membership is being deactivated, this field is probably true in db
@@ -125,7 +123,7 @@ class GithubMembershipReactorTest extends TestCase
             'github_username' => 'test',
         ]);
 
-        event(new MembershipDeactivated($customer->woo_id));
+        event(new MembershipDeactivated($customer->id));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)
@@ -138,7 +136,6 @@ class GithubMembershipReactorTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::create([
             'id' => 1,
-            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
             // Their membership is being activated, this field is probably false in db
@@ -146,7 +143,7 @@ class GithubMembershipReactorTest extends TestCase
             'github_username' => null,
         ]);
 
-        event(new MembershipActivated($customer->woo_id));
+        event(new MembershipActivated($customer->id));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)->never();
@@ -158,7 +155,6 @@ class GithubMembershipReactorTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::create([
             'id' => 1,
-            'woo_id' => 1,
             'username' => 'something',
             'email' => 'test@email.com',
             // Their membership is being deactivated, this field is probably true in db
@@ -166,7 +162,7 @@ class GithubMembershipReactorTest extends TestCase
             'github_username' => null,
         ]);
 
-        event(new MembershipDeactivated($customer->woo_id));
+        event(new MembershipDeactivated($customer->id));
 
         $this->assertAction(AddToGitHubTeam::class)->never();
         $this->assertAction(RemoveFromGitHubTeam::class)->never();

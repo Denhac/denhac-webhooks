@@ -24,7 +24,7 @@ class OctoPrintReactor implements EventHandler
         }
 
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->membership['customer_id'])->first();
+        $customer = Customer::find($event->membership['customer_id']);
 
         if (!$customer->member) {
             return;
@@ -37,7 +37,7 @@ class OctoPrintReactor implements EventHandler
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (!$customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
             return;
@@ -50,7 +50,7 @@ class OctoPrintReactor implements EventHandler
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (!$customer->hasMembership(UserMembership::MEMBERSHIP_3DP_USER)) {
             return;

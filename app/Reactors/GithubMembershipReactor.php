@@ -40,7 +40,7 @@ final class GithubMembershipReactor implements EventHandler
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (! is_null($customer->github_username)) {
             AddToGitHubTeam::queue()->execute($customer->github_username, self::MEMBERS_TEAM);
@@ -50,7 +50,7 @@ final class GithubMembershipReactor implements EventHandler
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (! is_null($customer->github_username)) {
             RemoveFromGitHubTeam::queue()->execute($customer->github_username, self::MEMBERS_TEAM);

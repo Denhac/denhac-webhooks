@@ -23,7 +23,7 @@ class CancelMembershipConfirmationModal implements ModalInterface
             ->clearOnClose(true)
             ->close('No')
             ->submit('Yes')
-            ->privateMetadata($customer->woo_id);
+            ->privateMetadata($customer->id);
 
         $this->modalView->newSection()
             ->plainText('Are you sure you want to cancel?');
@@ -38,7 +38,7 @@ class CancelMembershipConfirmationModal implements ModalInterface
     {
         $customerId = $request->payload()['view']['private_metadata'];
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($customerId)->first();
+        $customer = Customer::find($customerId);
         $activeSubscriptions = $customer->subscriptions
             ->where('status', 'active');
 

@@ -18,7 +18,6 @@ use Illuminate\Support\Collection;
  * @property string first_name
  * @property string last_name
  * @property string email
- * @property int woo_id
  * @property string username
  * @property bool member
  * @property string github_username
@@ -46,7 +45,6 @@ class Customer extends Model
         'id',
         'username',
         'email',
-        'woo_id',
         'member',
         'first_name',
         'last_name',
@@ -71,7 +69,7 @@ class Customer extends Model
 
     public function memberships()
     {
-        return $this->hasMany(UserMembership::class, 'customer_id', 'woo_id');
+        return $this->hasMany(UserMembership::class);
     }
 
     public function hasMembership($planId): bool
@@ -81,12 +79,12 @@ class Customer extends Model
 
     public function subscriptions()
     {
-        return $this->hasMany(Subscription::class, 'customer_id', 'woo_id');
+        return $this->hasMany(Subscription::class);
     }
 
     public function cards()
     {
-        return $this->hasMany(Card::class, 'woo_customer_id', 'woo_id');
+        return $this->hasMany(Card::class, 'woo_customer_id');
     }
 
     public function isABoardMember(): bool
@@ -117,7 +115,7 @@ class Customer extends Model
             UserMembership::class,
             'customer_id',  // Foreign key on the user memberships table
             'trainer_plan_id', // Foreign key on the trainable equipment table
-            'woo_id', // Local key on the customer table
+            'id', // Local key on the customer table
             'plan_id' // Local key on the user membership table
         );
     }
@@ -146,12 +144,12 @@ class Customer extends Model
             '23456789ABCDEFGHKNQRSTUVXZ',
         );
 
-        return $hashids->encode($this->woo_id);
+        return $hashids->encode($this->id);
     }
 
     public function waivers()
     {
-        return $this->hasMany(Waiver::class, 'customer_id', 'woo_id');
+        return $this->hasMany(Waiver::class);
     }
 
     public function hasSignedMembershipWaiver()

@@ -55,17 +55,6 @@ abstract class TestCase extends BaseTestCase
         return null;
     }
 
-    public function customerModel(): Customer
-    {
-        return Customer::create([
-            'username' => $this->faker->userName,
-            'email' => $this->faker->email,
-            'woo_id' => $this->faker->randomNumber(),
-            'member' => $this->faker->boolean,
-            'slack_id' => 'U'.$this->faker->numberBetween(1e5, 1e7),
-        ]);
-    }
-
     public function customer(): CustomerBuilder
     {
         return new CustomerBuilder();

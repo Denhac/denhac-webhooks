@@ -139,7 +139,7 @@ class CustomerProjectorTest extends TestCase
 
         $this->assertNotNull(Customer::find($builder->id));
 
-        event(new CustomerDeleted($builder->toArray()));
+        event(new CustomerDeleted($builder->id));
 
         $this->assertNull(Customer::find($builder->id));
     }

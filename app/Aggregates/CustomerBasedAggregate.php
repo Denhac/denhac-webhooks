@@ -34,15 +34,13 @@ trait CustomerBasedAggregate
     /**
      * This method shouldn't be called in production, only in testing when needed.
      *
-     * @param  string|CustomerBuilder|Customer  $customer
+     * @param  int|CustomerBuilder|Customer  $customer
      * @return $this
      */
     public static function fakeCustomer($customer): FakeAggregateRoot
     {
-        if (is_a($customer, CustomerBuilder::class)) {
+        if (is_a($customer, CustomerBuilder::class) || is_a($customer, Customer::class)) {
             $customer = $customer->id;
-        } elseif (is_a($customer, Customer::class)) {
-            $customer = $customer->woo_id;
         }
 
         $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customer);

@@ -34,10 +34,8 @@ class WaiverProjectorTest extends TestCase
             'last_name' => $lastName,
         ]);
 
-        $wooId = $this->faker->randomNumber();
         $this->customer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->faker->userName,
             'member' => true,
             'first_name' => $firstName,
@@ -51,10 +49,10 @@ class WaiverProjectorTest extends TestCase
     {
         $this->assertNull($this->waiver->customer_id);
 
-        event(new WaiverAssignedToCustomer($this->waiver->waiver_id, $this->customer->woo_id));
+        event(new WaiverAssignedToCustomer($this->waiver->waiver_id, $this->customer->id));
 
         $this->waiver->refresh();
 
-        $this->assertEquals($this->customer->woo_id, $this->waiver->customer_id);
+        $this->assertEquals($this->customer->id, $this->waiver->customer_id);
     }
 }

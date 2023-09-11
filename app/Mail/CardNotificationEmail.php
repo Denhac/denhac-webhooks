@@ -38,7 +38,7 @@ class CardNotificationEmail extends Mailable
             return is_array($cardNotification) ? $cardNotification['wooCustomerId'] : $cardNotification->wooCustomerId;
         });
 
-        $customers = Customer::whereIn('woo_id', $customerIds)->get();
+        $customers = Customer::whereIn('id', $customerIds)->get();
 
         $activatedCards = collect();
         $deactivatedCards = collect();
@@ -46,7 +46,7 @@ class CardNotificationEmail extends Mailable
         $this->cardNotificationsNeeded->each(function ($cardNotification) use ($customers, $activatedCards, $deactivatedCards) {
             /** @var CardNotificationNeeded|array $cardNotification */
             $customerId = is_array($cardNotification) ? $cardNotification['wooCustomerId'] : $cardNotification->wooCustomerId;
-            $customer = $customers->where('woo_id', $customerId)->first();
+            $customer = $customers->where('id', $customerId)->first();
 
             if ($customer == null) {
                 return; // TODO Is this an okay solution?

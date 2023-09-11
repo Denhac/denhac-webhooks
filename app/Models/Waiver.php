@@ -33,7 +33,7 @@ class Waiver extends Model
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'woo_id');
+        return $this->belongsTo(Customer::class);
     }
 
     public static function getValidMembershipWaiverId()  // TODO Just turn this into a property with a magic get method

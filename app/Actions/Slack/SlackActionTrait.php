@@ -10,7 +10,7 @@ trait SlackActionTrait
     {
         if (is_numeric($id)) {
             /** @var Customer $customer */
-            $customer = Customer::whereWooId($id)->first();
+            $customer = Customer::find($id);
 
             throw_if(is_null($customer), "Customer $id was not found");
             throw_if(is_null($customer->slack_id), "Customer $id has no slack id");

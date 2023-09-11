@@ -30,7 +30,7 @@ class ManageMembersCardsModal implements ModalInterface
             ->privateMetadata($customerId);
 
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($customerId)->first();
+        $customer = Customer::find($customerId);
 
         $cardsInput = $this->modalView->newInput()
             ->blockId(self::CARD_NUM)

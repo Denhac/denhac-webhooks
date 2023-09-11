@@ -21,6 +21,7 @@ class WaiverReactor extends Reactor
         /** @var Waiver $waiver */
         $waiver = Waiver::where('waiver_id', $event->waiverEvent['content']['id'])->first();
 
+        /** @var Customer $customer */
         $customer = Customer::where('first_name', $waiver->first_name)
             ->where('last_name', $waiver->last_name)
             ->where('email', $waiver->email)
@@ -30,7 +31,7 @@ class WaiverReactor extends Reactor
             return; // No matching customer to assign this waiver to
         }
 
-        MembershipAggregate::make($customer->woo_id)
+        MembershipAggregate::make($customer->id)
             ->assignWaiver($waiver)
             ->persist();
     }
@@ -65,11 +66,11 @@ class WaiverReactor extends Reactor
         );
     }
 
-    private function matchByCustomer(mixed $woo_id, string $first_name, string $last_name, string $email): void
+    private function matchByCustomer(mixed $customerId, string $firstName, string $lastName, string $email): void
     {
         /** @var Waiver $waiver */
-        $waiver = Waiver::where('first_name', $first_name)
-            ->where('last_name', $last_name)
+        $waiver = Waiver::where('first_name', $firstName)
+            ->where('last_name', $lastName)
             ->where('email', $email)
             ->whereNull('customer_id')
             ->first();
@@ -78,7 +79,7 @@ class WaiverReactor extends Reactor
             return; // No matching waiver, meaning this customer either hasn't signed one or their info doesn't match
         }
 
-        MembershipAggregate::make($woo_id)
+        MembershipAggregate::make($customerId)
             ->assignWaiver($waiver)
             ->persist();
     }
@@ -86,7 +87,7 @@ class WaiverReactor extends Reactor
     public function onManualBootstrapWaiverNeeded(ManualBootstrapWaiverNeeded $event): void
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         $notification = new NewRequirementsWaiverNeeded($customer);
         Notification::route('mail', $customer->email)->notify($notification);

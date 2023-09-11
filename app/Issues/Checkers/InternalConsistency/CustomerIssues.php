@@ -34,7 +34,7 @@ class CustomerIssues implements IssueCheck
         // TODO Handle birthday
         // TODO Handle id checked field
         $propertyMapping = [
-            'id' => 'woo_id',
+            'id' => 'id',
             'first_name' => 'first_name',
             'last_name' => 'last_name',
             'slackId' => 'slack_id',
@@ -46,7 +46,7 @@ class CustomerIssues implements IssueCheck
             /** @var MemberData $member */
 
             /** @var Customer $customer */
-            $customer = $customers->where('woo_id', $member->id)->first();
+            $customer = $customers->find($member->id);
 
             if (is_null($customer)) {
                 $this->issues->add(new CannotFindCustomer($member));

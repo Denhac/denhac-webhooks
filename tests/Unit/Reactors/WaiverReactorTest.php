@@ -54,10 +54,8 @@ class WaiverReactorTest extends TestCase
             'last_name' => $this->lastName,
         ]);
 
-        $wooId = $this->faker->randomNumber();
         $this->matchingCustomer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->faker->userName,
             'member' => true,
             'first_name' => $this->firstName,
@@ -79,7 +77,7 @@ class WaiverReactorTest extends TestCase
             ->assertApplied([
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
-                    $this->matchingCustomer->woo_id,
+                    $this->matchingCustomer->id,
                 ),
             ]);
     }
@@ -87,10 +85,8 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function waiver_accepted_with_different_first_name_is_not_assigned_to_customer()
     {
-        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->matchingCustomer->username,
             'member' => $this->matchingCustomer->member,
             'last_name' => $this->matchingCustomer->last_name,
@@ -115,10 +111,8 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function waiver_accepted_with_different_last_name_is_not_assigned_to_customer()
     {
-        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->matchingCustomer->username,
             'member' => $this->matchingCustomer->member,
             'first_name' => $this->matchingCustomer->first_name,
@@ -143,10 +137,8 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function waiver_accepted_with_different_email_is_not_assigned_to_customer()
     {
-        $wooId = $this->faker->randomNumber();
         $customer = Customer::create([
-            'id' => $wooId,
-            'woo_id' => $wooId,
+            'id' => $this->faker->randomNumber(),
             'username' => $this->matchingCustomer->username,
             'member' => $this->matchingCustomer->member,
             'first_name' => $this->matchingCustomer->first_name,
@@ -184,7 +176,7 @@ class WaiverReactorTest extends TestCase
             ->assertApplied([
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
-                    $this->matchingCustomer->woo_id,
+                    $this->matchingCustomer->id,
                 ),
             ]);
     }
@@ -282,7 +274,7 @@ class WaiverReactorTest extends TestCase
             ->assertApplied([
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
-                    $this->matchingCustomer->woo_id,
+                    $this->matchingCustomer->id,
                 ),
             ]);
     }
@@ -380,7 +372,7 @@ class WaiverReactorTest extends TestCase
             ->assertApplied([
                 new WaiverAssignedToCustomer(
                     $this->matchingWaiver->waiver_id,
-                    $this->matchingCustomer->woo_id,
+                    $this->matchingCustomer->id,
                 ),
             ]);
     }

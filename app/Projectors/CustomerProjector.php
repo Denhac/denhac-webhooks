@@ -46,7 +46,7 @@ final class CustomerProjector extends Projector
     public function onCustomerDeleted(CustomerDeleted $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
@@ -59,7 +59,7 @@ final class CustomerProjector extends Projector
     public function onMembershipActivated(MembershipActivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
@@ -74,7 +74,7 @@ final class CustomerProjector extends Projector
     public function onMembershipDeactivated(MembershipDeactivated $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
@@ -89,7 +89,7 @@ final class CustomerProjector extends Projector
     public function onIdWasChecked(IdWasChecked $event)
     {
         /** @var Customer $customer */
-        $customer = Customer::whereWooId($event->customerId)->first();
+        $customer = Customer::find($event->customerId);
 
         if (is_null($customer)) {
             report(new Exception("Failed to find customer {$event->customerId}"));
@@ -108,7 +108,7 @@ final class CustomerProjector extends Projector
     private function addOrUpdateCustomerFromJson(array $customer_json): Customer
     {
         /** @var Customer $customerModel */
-        $customerModel = Customer::whereWooId($customer_json['id'])->first();
+        $customerModel = Customer::find($customer_json['id']);
 
         if (is_null($customerModel)) {
             /** @var Customer $customerModel */
@@ -117,7 +117,6 @@ final class CustomerProjector extends Projector
         }
 
         $customerModel->id = $customer_json['id'];
-        $customerModel->woo_id = $customer_json['id'];
         $customerModel->email = $customer_json['email'];
         $customerModel->username = $customer_json['username'];
         $customerModel->first_name = $customer_json['first_name'];
