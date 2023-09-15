@@ -92,7 +92,7 @@ trait Cards
                 continue;
             }
 
-            if (!$this->cardsOnAccount->contains($card)) {
+            if (!$this->cardsOnAccount->has($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
                 if ($this->shouldHavePhysicalBuildingAccess()) {
