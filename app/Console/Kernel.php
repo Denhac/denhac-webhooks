@@ -85,7 +85,7 @@ class Kernel extends ConsoleKernel
 
         $dataService->updateOAuth2Token($accessToken);
 
-        QuickBooksAuthSettings::saveDataServiceInfo();
+        QuickBooksAuthSettings::saveDataServiceInfo($accessToken);
     }
 
     protected function generateVendingNetJournalEntry(): void

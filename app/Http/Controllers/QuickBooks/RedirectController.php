@@ -32,7 +32,7 @@ class RedirectController extends Controller
         $accessToken = $authLoginHelper->exchangeAuthorizationCodeForToken($code, $realmId);
         $dataService->updateOAuth2Token($accessToken);
 
-        QuickBooksAuthSettings::saveDataServiceInfo();
+        QuickBooksAuthSettings::saveDataServiceInfo($accessToken);
 
         return redirect('/quickbooks/success');
     }
