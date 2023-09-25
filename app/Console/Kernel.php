@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Actions\QuickBooks\GenerateVendingNetJournalEntry;
+use App\Actions\Stripe\SetIssuingBalanceToValue;
 use App\Aggregates\CardNotifierAggregate;
 use App\Console\Commands\IdentifyIssues;
 use App\Console\Commands\LinkQuickbooks;
@@ -57,10 +58,12 @@ class Kernel extends ConsoleKernel
         // QuickBooks tokens expire every hour. Every half should prevent any issues with a job running right as a token expires.
         $schedule->call(fn() => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
 
-        // daily at noon because te cron is in UTC but I grab Denver timezone minus one day. This makes the date string
+        // daily at noon because the cron is in UTC but I grab Denver timezone minus one day. This makes the date string
         // for searching orders as well as the date used for the QuickBooks entry correct regardless of if it's daylight
         //savings time or not.
         $schedule->call(fn() => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
+
+        $schedule->call(fn() => $this->topUpIssuingBalance())->daily();
     }
 
     protected function refreshQuickBooksAccessToken(): void
@@ -106,5 +109,15 @@ class Kernel extends ConsoleKernel
         $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
+    }
+
+    private function topUpIssuingBalance(): void
+    {
+        // This code should only be temporary until we have the full system built out to manage current issuing balance
+
+        $today = Carbon::today();
+        app(SetIssuingBalanceToValue::class)
+            ->onQueue()
+            ->execute(100000, "Top-Up to $1,000 on {$today->toFormattedDayDateString()}");
     }
 }
