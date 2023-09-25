@@ -38,34 +38,17 @@ class AppServiceProvider extends ServiceProvider
             return new StripeClient(['api_key' => config('denhac.stripe.stripe_api_key')]);
         });
 
-        $this->app->scoped(DataService::class, function () {
+        $this->app->bind(DataService::class, function () {
             $dataService = DataService::Configure(QuickBooksAuthSettings::getDataServiceParameters());
             $dataService->setMinorVersion(53);  // So we can auto assign DocNumber's for journal entries
 
             return $dataService;
         });
 
-        $this->app->scoped(OAuth2LoginHelper::class, function () {
+        $this->app->bind(OAuth2LoginHelper::class, function () {
             /** @var DataService $dataService */
             $dataService = app(DataService::class);
-            $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
-
-            try {
-                // If this throws, we don't have a token to refresh.
-                // I have not found a better way to do it.
-                $OAuth2LoginHelper->getAccessToken();
-            } catch (SdkException) {
-                return $OAuth2LoginHelper;
-            }
-
-            $accessToken = $OAuth2LoginHelper->refreshToken();
-            // TODO check $OAuth2LoginHelper->getLastError()
-
-            $dataService->updateOAuth2Token($accessToken);
-
-            QuickBooksAuthSettings::saveDataServiceInfo();
-
-            return $OAuth2LoginHelper;
+            return $dataService->getOAuth2LoginHelper();
         });
 
         RateLimiter::for('slack-profile-update', function () {

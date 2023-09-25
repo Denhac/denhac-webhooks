@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
+use QuickBooksOnline\API\DataService\DataService;
+use QuickBooksOnline\API\Exception\SdkException;
 
 class Kernel extends ConsoleKernel
 {
@@ -53,25 +55,39 @@ class Kernel extends ConsoleKernel
         $schedule->command('passport:purge')->hourly();
 
         // QuickBooks tokens expire every hour. Every half should prevent any issues with a job running right as a token expires.
-        $schedule->call(fn () => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
+        $schedule->call(fn() => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
 
         // daily at noon because te cron is in UTC but I grab Denver timezone minus one day. This makes the date string
         // for searching orders as well as the date used for the QuickBooks entry correct regardless of if it's daylight
         //savings time or not.
-        $schedule->call(fn () => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
+        $schedule->call(fn() => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
     }
 
     protected function refreshQuickBooksAccessToken(): void
     {
-        if (! QuickBooksAuthSettings::hasKnownAuth()) {
+        if (!QuickBooksAuthSettings::hasKnownAuth()) {
             return;
         }
-        app(OAuth2LoginHelper::class);  // This should refresh the token automatically on resolving
+        /** @var DataService $dataService */
+        $dataService = app(DataService::class);
+        /** @var OAuth2LoginHelper $OAuth2LoginHelper */
+        $OAuth2LoginHelper = app(OAuth2LoginHelper::class);
+
+        // If this throws, we don't have a token to refresh.
+        // I have not found a better way to do it.
+        $OAuth2LoginHelper->getAccessToken();
+
+        $accessToken = $OAuth2LoginHelper->refreshToken();
+        // TODO check $OAuth2LoginHelper->getLastError() or if refreshToken just throws for us
+
+        $dataService->updateOAuth2Token($accessToken);
+
+        QuickBooksAuthSettings::saveDataServiceInfo();
     }
 
     protected function generateVendingNetJournalEntry(): void
     {
-        if (! QuickBooksAuthSettings::hasKnownAuth()) {
+        if (!QuickBooksAuthSettings::hasKnownAuth()) {
             return;
         }
         $yesterday = Carbon::now('America/Denver')->subDay();
@@ -87,7 +103,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
