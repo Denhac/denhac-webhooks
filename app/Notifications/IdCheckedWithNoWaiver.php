@@ -40,7 +40,7 @@ class IdCheckedWithNoWaiver extends Notification
         return (new MailMessage)
             ->line("Welcome! We couldn't find your waiver")
             ->replyTo(config('denhac.access_email'))
-            ->view('emails.new_member_signup_waiver_needed.blade', [
+            ->view('emails.new_member_signup_waiver_needed', [
                 'customerWaiverUrl' => $this->customer->getWaiverUrl(),
             ]);
     }
