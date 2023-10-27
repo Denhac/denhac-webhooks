@@ -37,6 +37,7 @@ class SetIssuingBalanceToValue
             "amount" => $moneyNeeded,
             "description" => $message,
             "destination_balance" => "issuing",
+            "statement_descriptor" => "Stripe Issuing Top-up",
         ];
 
         $topUp = $this->stripeClient->topups->create($topUpParams);
