@@ -13,7 +13,7 @@ use Spatie\WebhookClient\Models\WebhookCall;
  *
  * @property \App\External\WooCommerce\WebhookCall $webhookCall
  */
-class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
+class ProcessWebhookJob extends \Spatie\WebhookClient\Jobs\ProcessWebhookJob
 {
     public function __construct(WebhookCall $webhookCall)
     {
