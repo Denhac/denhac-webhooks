@@ -3,8 +3,8 @@
 namespace App\Actions\OctoPrint;
 
 use App\Actions\StaticAction;
-use App\Models\Customer;
 use App\External\OctoPrint\OctoPrintApi;
+use App\Models\Customer;
 use Spatie\QueueableAction\QueueableAction;
 
 class DeactivateOctoPrintUser

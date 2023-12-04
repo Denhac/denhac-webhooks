@@ -4,13 +4,13 @@ namespace App\Reactors;
 
 use App\Aggregates\MembershipAggregate;
 use App\Models\Customer;
+use App\Models\Waiver;
 use App\Notifications\NewRequirementsWaiverNeeded;
 use App\StorableEvents\Waiver\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\Waiver\WaiverAccepted;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerImported;
 use App\StorableEvents\WooCommerce\CustomerUpdated;
-use App\Models\Waiver;
 use Illuminate\Support\Facades\Notification;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 

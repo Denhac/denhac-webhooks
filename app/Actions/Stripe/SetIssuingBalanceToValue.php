@@ -5,7 +5,6 @@ namespace App\Actions\Stripe;
 use Illuminate\Support\Facades\Log;
 use Spatie\QueueableAction\QueueableAction;
 use Stripe\StripeClient;
-use Stripe\Topup;
 
 class SetIssuingBalanceToValue
 {
@@ -22,7 +21,7 @@ class SetIssuingBalanceToValue
     {
         $currentBalance = $this->stripeClient->balance->retrieve()->issuing->available[0]->amount;
         $pendingTopUps = collect($this->stripeClient->topups->all(['status' => 'pending'])->data);
-        $pendingAmount = $pendingTopUps->where('destination_balance', 'issuing')->sum(fn($tu) => $tu->amount);
+        $pendingAmount = $pendingTopUps->where('destination_balance', 'issuing')->sum(fn ($tu) => $tu->amount);
 
         $expectedBalance = $currentBalance + $pendingAmount;
 
@@ -33,11 +32,11 @@ class SetIssuingBalanceToValue
         $moneyNeeded = $amountInPennies - $expectedBalance;
 
         $topUpParams = [
-            "currency" => "usd",
-            "amount" => $moneyNeeded,
-            "description" => $message,
-            "destination_balance" => "issuing",
-            "statement_descriptor" => "Issuing Top-Up",
+            'currency' => 'usd',
+            'amount' => $moneyNeeded,
+            'description' => $message,
+            'destination_balance' => 'issuing',
+            'statement_descriptor' => 'Issuing Top-Up',
         ];
 
         $topUp = $this->stripeClient->topups->create($topUpParams);

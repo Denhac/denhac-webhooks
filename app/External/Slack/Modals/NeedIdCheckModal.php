@@ -2,9 +2,9 @@
 
 namespace App\External\Slack\Modals;
 
-use App\Models\Customer;
 use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
+use App\Models\Customer;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 

@@ -18,7 +18,6 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
-use QuickBooksOnline\API\Exception\SdkException;
 
 class Kernel extends ConsoleKernel
 {
@@ -56,19 +55,19 @@ class Kernel extends ConsoleKernel
         $schedule->command('passport:purge')->hourly();
 
         // QuickBooks tokens expire every hour. Every half should prevent any issues with a job running right as a token expires.
-        $schedule->call(fn() => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
+        $schedule->call(fn () => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
 
         // daily at noon because the cron is in UTC but I grab Denver timezone minus one day. This makes the date string
         // for searching orders as well as the date used for the QuickBooks entry correct regardless of if it's daylight
         //savings time or not.
-        $schedule->call(fn() => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
+        $schedule->call(fn () => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
 
-        $schedule->call(fn() => $this->topUpIssuingBalance())->daily();
+        $schedule->call(fn () => $this->topUpIssuingBalance())->daily();
     }
 
     protected function refreshQuickBooksAccessToken(): void
     {
-        if (!QuickBooksAuthSettings::hasKnownAuth()) {
+        if (! QuickBooksAuthSettings::hasKnownAuth()) {
             return;
         }
         /** @var DataService $dataService */
@@ -90,7 +89,7 @@ class Kernel extends ConsoleKernel
 
     protected function generateVendingNetJournalEntry(): void
     {
-        if (!QuickBooksAuthSettings::hasKnownAuth()) {
+        if (! QuickBooksAuthSettings::hasKnownAuth()) {
             return;
         }
         $yesterday = Carbon::now('America/Denver')->subDay();
@@ -106,7 +105,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }

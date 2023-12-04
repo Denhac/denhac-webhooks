@@ -2,9 +2,9 @@
 
 namespace App\External\Slack\Modals;
 
-use App\Models\Customer;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
+use App\Models\Customer;
 use App\Models\Subscription;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;

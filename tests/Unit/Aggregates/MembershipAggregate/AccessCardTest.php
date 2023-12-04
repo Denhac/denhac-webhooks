@@ -4,7 +4,8 @@ namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
 use App\Models\CardUpdateRequest;
-use App\FeatureFlags;
+use App\Models\UserMembership;
+use App\Models\Waiver;
 use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
 use App\StorableEvents\AccessCards\CardAdded;
@@ -18,8 +19,6 @@ use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\Waiver\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\Waiver\WaiverAssignedToCustomer;
-use App\Models\UserMembership;
-use App\Models\Waiver;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerUpdated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
@@ -29,7 +28,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;
-use YlsIdeas\FeatureFlags\Facades\Features;
 
 class AccessCardTest extends TestCase
 {

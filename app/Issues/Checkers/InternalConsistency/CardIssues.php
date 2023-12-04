@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-use App\Models\Card;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
@@ -13,6 +12,7 @@ use App\Issues\Types\InternalConsistency\CardIsActivateWhenItShouldNotBe;
 use App\Issues\Types\InternalConsistency\CustomerHasUnknownCard;
 use App\Issues\Types\InternalConsistency\CustomerStillInPossessionOfCardNotInCustomerProfile;
 use App\Issues\Types\InternalConsistency\MemberCardIsNotActive;
+use App\Models\Card;
 use Illuminate\Support\Collection;
 
 class CardIssues implements IssueCheck
@@ -35,7 +35,6 @@ class CardIssues implements IssueCheck
 
         $members->each(function ($member) use ($cards) {
             /** @var MemberData $member */
-
             $cardsForMember = $cards
                 ->where('customer_id', $member->id);
 

@@ -3,6 +3,7 @@
 namespace App\Aggregates\MembershipTraits;
 
 use App\Models\CardUpdateRequest;
+use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
 use App\StorableEvents\AccessCards\CardAdded;
 use App\StorableEvents\AccessCards\CardDeactivated;
@@ -10,7 +11,6 @@ use App\StorableEvents\AccessCards\CardRemoved;
 use App\StorableEvents\AccessCards\CardSentForActivation;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
 use App\StorableEvents\AccessCards\CardStatusUpdated;
-use App\StorableEvents\AccessCards\CardActivated;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -37,7 +37,7 @@ trait Cards
 
     public function updateCardStatus(CardUpdateRequest $cardUpdateRequest, $status)
     {
-        if (!$this->respondToEvents) {
+        if (! $this->respondToEvents) {
             return $this;
         }
 
@@ -56,7 +56,7 @@ trait Cards
 
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
 
-                if (!$cardHasEverBeenActivated) {
+                if (! $cardHasEverBeenActivated) {
                     $this->recordThat(new CardActivatedForTheFirstTime($this->customerId, $cardUpdateRequest->card));
                 }
             } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
@@ -67,8 +67,8 @@ trait Cards
             }
         } else {
             $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
-                . "Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
-                . 'not successful';
+                ."Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
+                .'not successful';
             throw new Exception($message);
         }
 
@@ -92,7 +92,7 @@ trait Cards
                 continue;
             }
 
-            if (!$this->cardsOnAccount->has($card)) {
+            if (! $this->cardsOnAccount->has($card)) {
                 $this->recordThat(new CardAdded($this->customerId, $card));
 
                 if ($this->shouldHavePhysicalBuildingAccess()) {
@@ -102,7 +102,7 @@ trait Cards
         }
 
         foreach ($this->allCards() as $card) {
-            if (!$cardList->contains($card)) {
+            if (! $cardList->contains($card)) {
                 $this->recordThat(new CardRemoved($this->customerId, $card));
                 $this->recordThat(new CardSentForDeactivation($this->customerId, $card));
             }
@@ -111,7 +111,7 @@ trait Cards
 
     public function activateCardsNeedingActivation(): void
     {
-        if (!$this->shouldHavePhysicalBuildingAccess()) {
+        if (! $this->shouldHavePhysicalBuildingAccess()) {
             return;  // We'll check again when they sign the waiver
         }
 

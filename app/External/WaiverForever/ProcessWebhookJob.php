@@ -2,7 +2,6 @@
 
 namespace App\External\WaiverForever;
 
-
 use App\StorableEvents\Waiver\WaiverAccepted;
 use Spatie\WebhookClient\Models\WebhookCall;
 

@@ -4,27 +4,24 @@ namespace App\Reactors;
 
 use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\SendMessage;
-use App\External\Slack\SlackApi;
-use App\Models\Card;
-use App\Models\Customer;
 use App\External\Slack\SlackProfileFields;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
+use App\Models\Card;
+use App\Models\Customer;
+use App\Models\TrainableEquipment;
 use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
-use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
-use App\Models\TrainableEquipment;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use function ltrim;
 use SlackPhp\BlockKit\Surfaces\Message;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;
-use function ltrim;
 
 final class SlackReactor implements EventHandler
 {
@@ -46,7 +43,7 @@ final class SlackReactor implements EventHandler
         /** @var Customer $customer */
         $customer = Customer::find($event->customerId);
 
-        if (!is_null($customer)) {
+        if (! is_null($customer)) {
             SlackProfileFields::updateIfNeeded($customer->slack_id, []);
         }
 
@@ -66,13 +63,13 @@ final class SlackReactor implements EventHandler
         $userSlackIds = TrainableEquipment::select('user_slack_id')
             ->where('user_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['user_slack_id']);
+            ->map(fn ($row) => $row['user_slack_id']);
 
         /** @var Collection $trainerSlackIds */
         $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
             ->where('trainer_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['trainer_slack_id']);
+            ->map(fn ($row) => $row['trainer_slack_id']);
 
         $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
 
@@ -139,5 +136,4 @@ final class SlackReactor implements EventHandler
             ->onQueue()
             ->execute($customer->idWasCheckedBy, $idCheckerFacingMessage);
     }
-
 }

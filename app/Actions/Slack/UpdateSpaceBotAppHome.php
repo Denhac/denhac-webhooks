@@ -3,9 +3,9 @@
 namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
-use App\Models\Customer;
 use App\External\Slack\CommonResponses;
 use App\External\Slack\SlackApi;
+use App\Models\Customer;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\AppHome;
 use Spatie\QueueableAction\QueueableAction;

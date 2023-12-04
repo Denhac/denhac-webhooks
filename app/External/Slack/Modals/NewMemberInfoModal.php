@@ -29,7 +29,7 @@ class NewMemberInfoModal implements ModalInterface
         $this->modalView->newSection()
             ->mrkdwnText("4. Our Slack instance has many channels, you'll only be in a few by default. Channel prefixes like help- are a good place to start to ask for training on equipment.");
         $this->modalView->newSection()
-            ->mrkdwnText("5. Leave the space better than you found it. Communicate any issues through Slack.");
+            ->mrkdwnText('5. Leave the space better than you found it. Communicate any issues through Slack.');
     }
 
     public static function callbackId(): string

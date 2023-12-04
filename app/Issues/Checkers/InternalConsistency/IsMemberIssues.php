@@ -2,13 +2,13 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-use App\Models\Customer;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\RemoteIsMemberButLocalIsNot;
 use App\Issues\Types\InternalConsistency\RemoteIsNotMemberButLocalIs;
+use App\Models\Customer;
 
 class IsMemberIssues implements IssueCheck
 {

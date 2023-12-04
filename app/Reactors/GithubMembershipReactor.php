@@ -4,8 +4,8 @@ namespace App\Reactors;
 
 use App\Actions\GitHub\AddToGitHubTeam;
 use App\Actions\GitHub\RemoveFromGitHubTeam;
-use App\Models\Customer;
 use App\External\GitHub\GitHubApi;
+use App\Models\Customer;
 use App\StorableEvents\GitHub\GitHubUsernameUpdated;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;

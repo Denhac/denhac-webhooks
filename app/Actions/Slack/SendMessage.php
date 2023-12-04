@@ -20,22 +20,17 @@ class SendMessage
         $this->api = $api;
     }
 
-    /**
-     * @param int|string|Customer $userId
-     * @param Message $message
-     * @return void
-     */
     public function execute(Customer|int|string $userId, Message $message): void
     {
-        if($userId instanceof Customer) {
+        if ($userId instanceof Customer) {
             $userId = $userId->slack_id;
-        } elseif(is_string($userId)) {
-            if(! Str::startsWith($userId, ['U', 'C'])) {  // Not a user or channel, assume customer id is a string
+        } elseif (is_string($userId)) {
+            if (! Str::startsWith($userId, ['U', 'C'])) {  // Not a user or channel, assume customer id is a string
                 $userId = intval($userId);
             }
         }
 
-        if(is_int($userId)) {
+        if (is_int($userId)) {
             $userId = $this->slackIdFromGeneralId($userId);
         }
 

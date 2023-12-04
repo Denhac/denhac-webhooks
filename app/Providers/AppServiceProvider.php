@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
-use QuickBooksOnline\API\Exception\SdkException;
 use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
@@ -48,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(OAuth2LoginHelper::class, function () {
             /** @var DataService $dataService */
             $dataService = app(DataService::class);
+
             return $dataService->getOAuth2LoginHelper();
         });
 
