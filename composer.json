@@ -17,7 +17,6 @@
         "doctrine/dbal": "^2.12",
         "fabpot/goutte": "^4.0",
         "fideloper/proxy": "^4.4",
-        "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "hashids/hashids": "^4.1",
         "laravel/framework": "^8.50.0",
