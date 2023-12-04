@@ -15,7 +15,6 @@
         "anlutro/l4-settings": "^1.1",
         "beyondcode/laravel-websockets": "^1.13",
         "doctrine/dbal": "^2.13",
-        "fabpot/goutte": "^4.0",
         "guzzlehttp/guzzle": "^7.2",
         "hashids/hashids": "^4.1",
         "laravel/framework": "^9.52",
