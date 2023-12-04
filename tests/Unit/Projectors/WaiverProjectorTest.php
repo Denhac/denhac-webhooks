@@ -20,14 +20,14 @@ class WaiverProjectorTest extends TestCase
 
         $this->withOnlyEventHandlerType(WaiverProjector::class);
 
-        $firstName = $this->faker->firstName;
-        $lastName = $this->faker->lastName;
-        $email = $this->faker->email;
+        $firstName = $this->faker->firstName();
+        $lastName = $this->faker->lastName();
+        $email = $this->faker->email();
 
         $this->waiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->faker->uuid,
-            'template_version' => $this->faker->uuid,
+            'waiver_id' => $this->faker->uuid(),
+            'template_id' => $this->faker->uuid(),
+            'template_version' => $this->faker->uuid(),
             'status' => 'accepted',
             'email' => $email,
             'first_name' => $firstName,
@@ -36,7 +36,7 @@ class WaiverProjectorTest extends TestCase
 
         $this->customer = Customer::create([
             'id' => $this->faker->randomNumber(),
-            'username' => $this->faker->userName,
+            'username' => $this->faker->userName(),
             'member' => true,
             'first_name' => $firstName,
             'last_name' => $lastName,

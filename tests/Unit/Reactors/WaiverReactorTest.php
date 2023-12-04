@@ -40,14 +40,14 @@ class WaiverReactorTest extends TestCase
 
         $this->withOnlyEventHandlerType(WaiverReactor::class);
 
-        $this->firstName = $this->faker->firstName;
-        $this->lastName = $this->faker->lastName;
-        $this->email = $this->faker->email;
+        $this->firstName = $this->faker->firstName();
+        $this->lastName = $this->faker->lastName();
+        $this->email = $this->faker->email();
 
         $this->matchingWaiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->faker->uuid,
-            'template_version' => $this->faker->uuid,
+            'waiver_id' => $this->faker->uuid(),
+            'template_id' => $this->faker->uuid(),
+            'template_version' => $this->faker->uuid(),
             'status' => 'accepted',
             'email' => $this->email,
             'first_name' => $this->firstName,
@@ -56,7 +56,7 @@ class WaiverReactorTest extends TestCase
 
         $this->matchingCustomer = Customer::create([
             'id' => $this->faker->numberBetween(1),
-            'username' => $this->faker->userName,
+            'username' => $this->faker->userName(),
             'member' => true,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
@@ -92,7 +92,7 @@ class WaiverReactorTest extends TestCase
             'last_name' => $this->matchingCustomer->last_name,
             'email' => $this->matchingCustomer->email,
 
-            'first_name' => $this->faker->firstName,
+            'first_name' => $this->faker->firstName(),
         ]);
 
         $this->assertNotEquals($customer->first_name, $this->matchingCustomer->first_name);
@@ -118,7 +118,7 @@ class WaiverReactorTest extends TestCase
             'first_name' => $this->matchingCustomer->first_name,
             'email' => $this->matchingCustomer->email,
 
-            'last_name' => $this->faker->lastName,
+            'last_name' => $this->faker->lastName(),
         ]);
 
         $this->assertNotEquals($customer->last_name, $this->matchingCustomer->last_name);
@@ -144,7 +144,7 @@ class WaiverReactorTest extends TestCase
             'first_name' => $this->matchingCustomer->first_name,
             'last_name' => $this->matchingCustomer->last_name,
 
-            'email' => $this->faker->email,
+            'email' => $this->faker->email(),
         ]);
 
         $this->assertNotEquals($customer->email, $this->matchingCustomer->email);
@@ -184,7 +184,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_created_with_different_first_name_is_not_assigned_to_customer()
     {
-        $firstName = $this->faker->firstName;
+        $firstName = $this->faker->firstName();
         event(new CustomerCreated(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -204,7 +204,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_created_with_different_last_name_is_not_assigned_to_customer()
     {
-        $lastName = $this->faker->lastName;
+        $lastName = $this->faker->lastName();
         event(new CustomerCreated(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -224,7 +224,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_created_with_different_email_is_not_assigned_to_customer()
     {
-        $email = $this->faker->email;
+        $email = $this->faker->email();
         event(new CustomerCreated(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -282,7 +282,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_updated_with_different_first_name_is_not_assigned_to_customer()
     {
-        $firstName = $this->faker->firstName;
+        $firstName = $this->faker->firstName();
         event(new CustomerUpdated(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -302,7 +302,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_updated_with_different_last_name_is_not_assigned_to_customer()
     {
-        $lastName = $this->faker->lastName;
+        $lastName = $this->faker->lastName();
         event(new CustomerUpdated(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -322,7 +322,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_updated_with_different_email_is_not_assigned_to_customer()
     {
-        $email = $this->faker->email;
+        $email = $this->faker->email();
         event(new CustomerUpdated(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -380,7 +380,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_imported_with_different_first_name_is_not_assigned_to_customer()
     {
-        $firstName = $this->faker->firstName;
+        $firstName = $this->faker->firstName();
         event(new CustomerImported(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -400,7 +400,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_imported_with_different_last_name_is_not_assigned_to_customer()
     {
-        $lastName = $this->faker->lastName;
+        $lastName = $this->faker->lastName();
         event(new CustomerImported(
             $this->customer()
                 ->id($this->matchingCustomer->id)
@@ -420,7 +420,7 @@ class WaiverReactorTest extends TestCase
     /** @test */
     public function customer_imported_with_different_email_is_not_assigned_to_customer()
     {
-        $email = $this->faker->email;
+        $email = $this->faker->email();
         event(new CustomerImported(
             $this->customer()
                 ->id($this->matchingCustomer->id)

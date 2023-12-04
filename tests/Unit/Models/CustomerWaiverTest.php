@@ -22,22 +22,22 @@ class CustomerWaiverTest extends TestCase
 
         // The only thing that makes this one valid and the next one not is the config setting below.
         $this->validMembershipWaiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->faker->uuid,
-            'template_version' => $this->faker->uuid,
+            'waiver_id' => $this->faker->uuid(),
+            'template_id' => $this->faker->uuid(),
+            'template_version' => $this->faker->uuid(),
             'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
         ]);
         $this->someOtherWaiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->faker->uuid,
-            'template_version' => $this->faker->uuid,
+            'waiver_id' => $this->faker->uuid(),
+            'template_id' => $this->faker->uuid(),
+            'template_version' => $this->faker->uuid(),
             'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
         ]);
 
         Config::set('denhac.waiver.membership_waiver_template_id', $this->validMembershipWaiver->template_id);
@@ -50,11 +50,11 @@ class CustomerWaiverTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::create([
             'id' => $this->faker->randomNumber(),
-            'username' => $this->faker->userName,
+            'username' => $this->faker->userName(),
             'member' => true,
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
         ]);
 
         $this->validMembershipWaiver->customer_id = $customer->id;
@@ -70,11 +70,11 @@ class CustomerWaiverTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::create([
             'id' => $this->faker->randomNumber(),
-            'username' => $this->faker->userName,
+            'username' => $this->faker->userName(),
             'member' => true,
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
         ]);
 
         $this->someOtherWaiver->customer_id = $customer->id;
@@ -90,11 +90,11 @@ class CustomerWaiverTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::create([
             'id' => $this->faker->randomNumber(),
-            'username' => $this->faker->userName,
+            'username' => $this->faker->userName(),
             'member' => true,
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
         ]);
 
         $this->assertEquals(
