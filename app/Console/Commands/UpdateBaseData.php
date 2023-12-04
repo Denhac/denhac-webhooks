@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Aggregates\MembershipAggregate;
-use App\Models\Customer;
 use App\External\WooCommerce\Api\ApiCallFailed;
 use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Models\Customer;
 use App\Models\Subscription;
 use App\Models\UserMembership;
 use Illuminate\Console\Command;

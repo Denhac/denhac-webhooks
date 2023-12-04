@@ -62,11 +62,12 @@ class FixEventSourcingAggregateVersion extends Command
                 $event->meta_data = $metaData;
                 $event->aggregate_version = null;
                 $event->save();
+
                 continue;
             }
 
             // At this point, we know we have an aggregate uuid
-            if (!$uuidToVersion->has($aggregateUuid)) {
+            if (! $uuidToVersion->has($aggregateUuid)) {
                 $uuidToVersion->put($aggregateUuid, 0);
             }
 

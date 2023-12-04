@@ -2,12 +2,12 @@
 
 namespace App\External\Slack\Modals;
 
-use App\Models\Customer;
 use App\External\Slack\SlackOptions;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
-use App\Notifications\IdCheckedWithNoWaiver;
+use App\Models\Customer;
 use App\Models\Waiver;
+use App\Notifications\IdCheckedWithNoWaiver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Notification;
 use SlackPhp\BlockKit\Kit;

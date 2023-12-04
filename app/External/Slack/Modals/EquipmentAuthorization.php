@@ -2,12 +2,12 @@
 
 namespace App\External\Slack\Modals;
 
-use App\Models\Customer;
 use App\External\Slack\BlockActions\BlockActionInterface;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\External\Slack\SlackOptions;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
+use App\Models\Customer;
 use App\Models\TrainableEquipment;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;

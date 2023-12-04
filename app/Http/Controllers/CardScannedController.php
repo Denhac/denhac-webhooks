@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Card;
 use App\External\WinDSX\Door;
+use App\Models\Card;
+use App\Models\Waiver;
 use App\Notifications\CardAccessAllowedButNotAMemberRedAlert;
 use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
 use App\Notifications\CardAccessDeniedNoWaiver;
-use App\Models\Waiver;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -57,7 +57,7 @@ class CardScannedController extends Controller
 
         if ($customer->member) {
             Log::info("They're a member!");
-            if (!$accessAllowed) {
+            if (! $accessAllowed) {
                 Log::info('No access though.');
                 // They weren't given access
 
@@ -68,7 +68,7 @@ class CardScannedController extends Controller
                     // We don't know about this door. Do nothing
                     return;
                 } elseif ($door->membersCanBadgeIn) {
-                    if (!$customer->hasSignedMembershipWaiver()) {
+                    if (! $customer->hasSignedMembershipWaiver()) {
                         $notification = new CardAccessDeniedNoWaiver($customer);
 
                         Notification::route('mail', $customer->email)

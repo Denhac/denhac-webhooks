@@ -2,8 +2,8 @@
 
 namespace App\Actions\OctoPrint;
 
-use App\Models\Customer;
 use App\External\OctoPrint\OctoPrintApi;
+use App\Models\Customer;
 use App\Notifications\OctoPrintNewUser;
 use Illuminate\Support\Str;
 use Spatie\QueueableAction\QueueableAction;

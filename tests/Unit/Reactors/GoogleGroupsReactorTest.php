@@ -4,15 +4,15 @@ namespace Tests\Unit\Reactors;
 
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
-use App\Models\Customer;
 use App\External\Google\GoogleApi;
+use App\Models\Customer;
+use App\Models\TrainableEquipment;
+use App\Models\UserMembership;
 use App\Reactors\GoogleGroupsReactor;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
-use App\Models\TrainableEquipment;
-use App\Models\UserMembership;
 use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 use Tests\AssertsActions;

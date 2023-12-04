@@ -2,9 +2,9 @@
 
 namespace App\Aggregates\MembershipTraits;
 
+use App\Models\Waiver;
 use App\StorableEvents\Waiver\ManualBootstrapWaiverNeeded;
 use App\StorableEvents\Waiver\WaiverAssignedToCustomer;
-use App\Models\Waiver;
 use Illuminate\Support\Collection;
 
 trait WaiverTrait

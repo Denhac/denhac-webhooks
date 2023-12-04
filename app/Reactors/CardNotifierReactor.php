@@ -4,9 +4,9 @@ namespace App\Reactors;
 
 use App\Aggregates\CardNotifierAggregate;
 use App\Mail\CardNotificationEmail;
+use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\AccessCards\CardNotificationEmailNeeded;
-use App\StorableEvents\AccessCards\CardActivated;
 use Illuminate\Support\Facades\Mail;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;

@@ -3,9 +3,9 @@
 namespace Tests\Unit\Projectors;
 
 use App\Models\Customer;
+use App\Models\Waiver;
 use App\Projectors\WaiverProjector;
 use App\StorableEvents\Waiver\WaiverAssignedToCustomer;
-use App\Models\Waiver;
 use Tests\TestCase;
 
 class WaiverProjectorTest extends TestCase

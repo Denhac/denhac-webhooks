@@ -2,10 +2,10 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
-use App\Models\Card;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use App\Models\Card;
 use Illuminate\Support\Collection;
 
 class CardInPossessionOfMultipleCustomers extends IssueBase

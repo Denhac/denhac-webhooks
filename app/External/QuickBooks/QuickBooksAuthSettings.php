@@ -5,7 +5,6 @@ namespace App\External\QuickBooks;
 use anlutro\LaravelSettings\Facades\Setting;
 use Illuminate\Support\Facades\Crypt;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
-use QuickBooksOnline\API\DataService\DataService;
 
 class QuickBooksAuthSettings
 {

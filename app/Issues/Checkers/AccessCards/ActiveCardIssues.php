@@ -2,8 +2,6 @@
 
 namespace App\Issues\Checkers\AccessCards;
 
-use App\Models\ActiveCardHolderUpdate;
-use App\Models\Card;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
@@ -14,6 +12,8 @@ use App\Issues\Types\AccessCards\CardHolderIncorrectName;
 use App\Issues\Types\AccessCards\MemberCardIsNotActive;
 use App\Issues\Types\AccessCards\NonMemberHasActiveCard;
 use App\Issues\Types\AccessCards\UnknownActiveCardForMember;
+use App\Models\ActiveCardHolderUpdate;
+use App\Models\Card;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

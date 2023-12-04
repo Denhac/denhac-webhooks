@@ -4,10 +4,10 @@ namespace Tests\Unit\Reactors;
 
 use App\Aggregates\MembershipAggregate;
 use App\Models\Customer;
+use App\Models\Waiver;
 use App\Reactors\WaiverReactor;
 use App\StorableEvents\Waiver\WaiverAccepted;
 use App\StorableEvents\Waiver\WaiverAssignedToCustomer;
-use App\Models\Waiver;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
 use App\StorableEvents\WooCommerce\CustomerImported;

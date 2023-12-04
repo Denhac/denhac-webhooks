@@ -4,13 +4,13 @@ namespace App\Reactors;
 
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
-use App\Models\Customer;
 use App\External\Google\GoogleApi;
+use App\Models\Customer;
+use App\Models\TrainableEquipment;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
-use App\Models\TrainableEquipment;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\EventHandlers\EventHandler;
 use Spatie\EventSourcing\EventHandlers\HandlesEvents;

@@ -101,10 +101,6 @@ final class CustomerProjector extends Projector
         $customer->save();
     }
 
-    /**
-     * @param array $customer_json
-     * @return Customer
-     */
     private function addOrUpdateCustomerFromJson(array $customer_json): Customer
     {
         /** @var Customer $customerModel */
@@ -133,7 +129,7 @@ final class CustomerProjector extends Projector
     }
 
     /**
-     * @param string $key The name of the metadata field to lookup
+     * @param  string  $key The name of the metadata field to lookup
      * @return mixed|null
      */
     private function getMetadataField(array $customer, string $key)
