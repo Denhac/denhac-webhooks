@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActiveCardHolderUpdatesTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class CreateActiveCardHolderUpdatesTable extends Migration
     {
         Schema::dropIfExists('active_card_holder_updates');
     }
-}
+};
