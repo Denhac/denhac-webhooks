@@ -34,6 +34,8 @@
         "spatie/laravel-webhook-client": "^3.1",
         "spatie/ssl-certificate": "^1.22",
         "stripe/stripe-php": "^7.94",
+        "symfony/http-client": "^7.0",
+        "symfony/mailgun-mailer": "^7.0",
         "ylsideas/feature-flags": "^1.5"
     },
     "require-dev": {
