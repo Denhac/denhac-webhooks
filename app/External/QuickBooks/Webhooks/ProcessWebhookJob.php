@@ -6,7 +6,7 @@ use App\External\QuickBooks\QuickBooksAuthSettings;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Models\WebhookCall;
 
-class ProcessWebhookJob extends \Spatie\WebhookClient\ProcessWebhookJob
+class ProcessWebhookJob extends \Spatie\WebhookClient\Jobs\ProcessWebhookJob
 {
     public function __construct(WebhookCall $webhookCall)
     {
