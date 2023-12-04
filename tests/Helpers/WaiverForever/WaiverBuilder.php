@@ -13,15 +13,15 @@ class WaiverBuilder extends BaseBuilder
     {
         $this->setUpFaker();
 
-        $firstName = $this->faker->firstName;
-        $lastName = $this->faker->lastName;
-        $birthday = $this->faker->dateTime;
+        $firstName = $this->faker->firstName();
+        $lastName = $this->faker->lastName();
+        $birthday = $this->faker->dateTime();
 
         $this->data = [
             'type' => 'new_waiver_accepted',
             'content' => [
-                'id' => $this->faker->uuid,
-                'ip' => $this->faker->ipv4,
+                'id' => $this->faker->uuid(),
+                'ip' => $this->faker->ipv4(),
                 'data' => [
                     [
                         'type' => 'name_field',
@@ -43,7 +43,7 @@ class WaiverBuilder extends BaseBuilder
                     [
                         'type' => 'email_field',
                         'title' => 'Please fill in your email',
-                        'value' => $this->faker->email,
+                        'value' => $this->faker->email(),
                     ],
                     [
                         'type' => 'name_field',
@@ -64,11 +64,11 @@ class WaiverBuilder extends BaseBuilder
                 'request_id' => null,
                 'geolocation' => [],
                 'received_at' => 1687641056,
-                'template_id' => $this->faker->uuid,
+                'template_id' => $this->faker->uuid(),
                 'tracking_id' => null,
                 'template_title' => 'Waiver 2023-06-26 (Updated)',
-                'template_version' => $this->faker->uuid,
-                's3_pdf_download_url' => $this->faker->url,
+                'template_version' => $this->faker->uuid(),
+                's3_pdf_download_url' => $this->faker->url(),
             ],
             'content_type' => 'waiver',
         ];

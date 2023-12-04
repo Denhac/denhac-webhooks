@@ -104,13 +104,13 @@ class CustomerProjectorTest extends TestCase
 
         event(new CustomerCreated($builder->toArray()));
 
-        $builder->username = $this->faker->userName;
-        $builder->email = $this->faker->email;
-        $builder->first_name = $this->faker->firstName;
-        $builder->last_name = $this->faker->lastName;
-        $builder->github_username = $this->faker->userName;
+        $builder->username = $this->faker->userName();
+        $builder->email = $this->faker->email();
+        $builder->first_name = $this->faker->firstName();
+        $builder->last_name = $this->faker->lastName();
+        $builder->github_username = $this->faker->userName();
         $builder->slack_id = 'U'.$this->faker->randomNumber();
-        $builder->birthday = $this->faker->date;
+        $builder->birthday = $this->faker->date();
 
         event(new CustomerUpdated($builder->toArray()));
 

@@ -22,10 +22,10 @@ class CustomerTrainerTest extends TestCase
         /** @var Customer $customer */
         $this->customer = Customer::create([
             'id' => 1,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
-            'username' => $this->faker->userName,
-            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
+            'username' => $this->faker->userName(),
+            'email' => $this->faker->email(),
             'member' => true,
         ]);
 

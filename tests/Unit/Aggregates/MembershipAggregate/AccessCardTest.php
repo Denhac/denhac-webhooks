@@ -41,21 +41,21 @@ class AccessCardTest extends TestCase
     {
         parent::setUp();
 
-        $this->memberWaiverTemplateId = $this->faker->uuid;
-        $this->memberWaiverTemplateVersion = $this->faker->uuid;
+        $this->memberWaiverTemplateId = $this->faker->uuid();
+        $this->memberWaiverTemplateVersion = $this->faker->uuid();
 
         Config::set('denhac.waiver.membership_waiver_template_id', $this->memberWaiverTemplateId);
         Config::set('denhac.waiver.membership_waiver_template_version', $this->memberWaiverTemplateVersion);
 
         /** @var Waiver $waiver */
         $this->membershipWaiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
+            'waiver_id' => $this->faker->uuid(),
             'template_id' => $this->memberWaiverTemplateId,
             'template_version' => $this->memberWaiverTemplateVersion,
             'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
         ]);
 
         Event::fake();
@@ -148,13 +148,13 @@ class AccessCardTest extends TestCase
 
         /** @var Waiver $waiver */
         $waiver = Waiver::create([
-            'waiver_id' => $this->faker->uuid,
-            'template_id' => $this->faker->uuid,  // Incorrect template ID
-            'template_version' => $this->faker->uuid,
+            'waiver_id' => $this->faker->uuid(),
+            'template_id' => $this->faker->uuid(),  // Incorrect template ID
+            'template_version' => $this->faker->uuid(),
             'status' => 'accepted',
-            'email' => $this->faker->email,
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
         ]);
 
         MembershipAggregate::fakeCustomer($customer)
