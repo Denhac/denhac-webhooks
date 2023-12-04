@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
 
-class CreateSettingsTable extends Migration
+return new class extends Migration
 {
     public function __construct()
     {
@@ -43,4 +43,4 @@ class CreateSettingsTable extends Migration
     {
         Schema::drop($this->tablename);
     }
-}
+};

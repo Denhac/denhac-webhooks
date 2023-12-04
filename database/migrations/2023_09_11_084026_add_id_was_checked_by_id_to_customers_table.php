@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIdWasCheckedByIdToCustomersTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class AddIdWasCheckedByIdToCustomersTable extends Migration
             $table->dropColumn('id_was_checked_by_id');
         });
     }
-}
+};
