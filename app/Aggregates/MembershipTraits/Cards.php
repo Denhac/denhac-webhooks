@@ -127,36 +127,36 @@ trait Cards
         }
     }
 
-    protected function applyCardAdded(CardAdded $event)
+    protected function applyCardAdded(CardAdded $event): void
     {
         $this->cardsOnAccount->put($event->cardNumber, null);
         $this->cardsNeedingActivation->put($event->cardNumber, null);
     }
 
-    protected function applyCardSentForActivation(CardSentForActivation $event)
+    protected function applyCardSentForActivation(CardSentForActivation $event): void
     {
         $this->cardsNeedingActivation->forget($event->cardNumber);
         $this->cardsSentForActivation->put($event->cardNumber, null);
     }
 
-    protected function applyCardActivated(CardActivated $event)
+    protected function applyCardActivated(CardActivated $event): void
     {
         $this->cardsSentForActivation->forget($event->cardNumber);
         $this->cardsEverActivated->put($event->cardNumber, null);
     }
 
-    protected function applyCardRemoved(CardRemoved $event)
+    protected function applyCardRemoved(CardRemoved $event): void
     {
         $this->cardsOnAccount->forget($event->cardNumber);
         $this->cardsEverActivated->forget($event->cardNumber);
     }
 
-    protected function applyCardSentForDeactivation(CardSentForDeactivation $event)
+    protected function applyCardSentForDeactivation(CardSentForDeactivation $event): void
     {
         $this->cardsSentForDeactivation->put($event->cardNumber, null);
     }
 
-    protected function applyCardDeactivated(CardDeactivated $event)
+    protected function applyCardDeactivated(CardDeactivated $event): void
     {
         $this->cardsSentForDeactivation->forget($event->cardNumber);
     }

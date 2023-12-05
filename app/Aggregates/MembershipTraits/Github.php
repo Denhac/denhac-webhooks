@@ -20,7 +20,7 @@ trait Github
         }
     }
 
-    public function applyGithubUsernameUpdated(GitHubUsernameUpdated $event)
+    public function applyGithubUsernameUpdated(GitHubUsernameUpdated $event): void
     {
         $this->githubUsername = $event->newUsername;
     }

@@ -14,12 +14,9 @@ use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
-use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
 final class CustomerProjector extends Projector
 {
-    use ProjectsEvents;
-
     public function onStartingEventReplay()
     {
         Customer::truncate();

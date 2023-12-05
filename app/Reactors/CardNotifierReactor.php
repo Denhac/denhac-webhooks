@@ -8,13 +8,10 @@ use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\AccessCards\CardNotificationEmailNeeded;
 use Illuminate\Support\Facades\Mail;
-use Spatie\EventSourcing\EventHandlers\EventHandler;
-use Spatie\EventSourcing\EventHandlers\HandlesEvents;
+use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
-final class CardNotifierReactor implements EventHandler
+final class CardNotifierReactor extends Reactor
 {
-    use HandlesEvents;
-
     public function onCardActivated(CardActivated $event)
     {
         CardNotifierAggregate::make()

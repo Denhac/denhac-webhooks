@@ -58,7 +58,7 @@ final class CardNotifierAggregate extends AggregateRoot
         return $this;
     }
 
-    protected function applyCardNotificationNeeded(CardNotificationNeeded $event)
+    protected function applyCardNotificationNeeded(CardNotificationNeeded $event): void
     {
         $existingNotifications = $this->cardNotifications
             ->filter(function ($notification) use ($event) {
@@ -87,7 +87,7 @@ final class CardNotifierAggregate extends AggregateRoot
         }
     }
 
-    protected function applyCardNotificationEmailNeeded(CardNotificationEmailNeeded $event)
+    protected function applyCardNotificationEmailNeeded(CardNotificationEmailNeeded $event): void
     {
         $this->cardNotifications = collect();
     }

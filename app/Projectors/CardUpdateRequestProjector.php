@@ -6,12 +6,9 @@ use App\Models\CardUpdateRequest;
 use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardDeactivated;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
-use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
 final class CardUpdateRequestProjector extends Projector
 {
-    use ProjectsEvents;
-
     public function onCardActivated(CardActivated $event)
     {
         CardUpdateRequest::where('customer_id', $event->wooCustomerId)

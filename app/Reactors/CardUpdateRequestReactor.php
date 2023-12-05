@@ -5,13 +5,10 @@ namespace App\Reactors;
 use App\Models\CardUpdateRequest;
 use App\StorableEvents\AccessCards\CardSentForActivation;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
-use Spatie\EventSourcing\EventHandlers\EventHandler;
-use Spatie\EventSourcing\EventHandlers\HandlesEvents;
+use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
-final class CardUpdateRequestReactor implements EventHandler
+final class CardUpdateRequestReactor extends Reactor
 {
-    use HandlesEvents;
-
     public function onCardSentForActivation(CardSentForActivation $event)
     {
         CardUpdateRequest::create([

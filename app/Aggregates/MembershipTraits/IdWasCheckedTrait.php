@@ -24,7 +24,7 @@ trait IdWasCheckedTrait
         }
     }
 
-    public function applyIdWasChecked(IdWasChecked $_): void
+    public function applyIdWasChecked(IdWasChecked $event): void
     {
         $this->idWasChecked = true;
     }

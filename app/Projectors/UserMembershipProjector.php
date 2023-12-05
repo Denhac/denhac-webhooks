@@ -9,12 +9,9 @@ use App\StorableEvents\WooCommerce\UserMembershipDeleted;
 use App\StorableEvents\WooCommerce\UserMembershipImported;
 use App\StorableEvents\WooCommerce\UserMembershipUpdated;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
-use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
 class UserMembershipProjector extends Projector
 {
-    use ProjectsEvents;
-
     public function onUserMembershipCreated(UserMembershipCreated $event)
     {
         $this->addOrGetUserMembership($event->membership);

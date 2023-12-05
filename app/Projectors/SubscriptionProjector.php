@@ -10,12 +10,9 @@ use App\StorableEvents\WooCommerce\SubscriptionImported;
 use App\StorableEvents\WooCommerce\SubscriptionUpdated;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
-use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
 final class SubscriptionProjector extends Projector
 {
-    use ProjectsEvents;
-
     public function onStartingEventReplay()
     {
         Subscription::truncate();
