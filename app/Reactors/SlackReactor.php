@@ -18,15 +18,12 @@ use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Illuminate\Support\Collection;
+use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 use function ltrim;
 use SlackPhp\BlockKit\Surfaces\Message;
-use Spatie\EventSourcing\EventHandlers\EventHandler;
-use Spatie\EventSourcing\EventHandlers\HandlesEvents;
 
-final class SlackReactor implements EventHandler
+final class SlackReactor extends Reactor
 {
-    use HandlesEvents;
-
     public function onCustomerCreated(CustomerCreated $event)
     {
         // TODO Technically this should be specific to a new customer who is signing up, vs something like a manual user

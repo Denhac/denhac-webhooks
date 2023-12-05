@@ -7,13 +7,10 @@ use App\Models\UserMembership;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
-use Spatie\EventSourcing\EventHandlers\EventHandler;
-use Spatie\EventSourcing\EventHandlers\HandlesEvents;
+use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
-class OctoPrintReactor implements EventHandler
+class OctoPrintReactor extends Reactor
 {
-    use HandlesEvents;
-
     public function onUserMembershipCreated(UserMembershipCreated $event)
     {
         if ($event->membership['plan_id'] != UserMembership::MEMBERSHIP_3DP_USER) {

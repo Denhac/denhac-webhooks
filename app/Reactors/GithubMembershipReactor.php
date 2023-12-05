@@ -9,13 +9,10 @@ use App\Models\Customer;
 use App\StorableEvents\GitHub\GitHubUsernameUpdated;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
-use Spatie\EventSourcing\EventHandlers\EventHandler;
-use Spatie\EventSourcing\EventHandlers\HandlesEvents;
+use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
-final class GithubMembershipReactor implements EventHandler
+final class GithubMembershipReactor extends Reactor
 {
-    use HandlesEvents;
-
     const MEMBERS_TEAM = 'members';
 
     public function onGithubUsernameUpdated(GitHubUsernameUpdated $event)

@@ -6,12 +6,9 @@ use App\Models\Waiver;
 use App\StorableEvents\Waiver\WaiverAccepted;
 use App\StorableEvents\Waiver\WaiverAssignedToCustomer;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
-use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
 class WaiverProjector extends Projector
 {
-    use ProjectsEvents;
-
     public function onStartingEventReplay()
     {
         Waiver::truncate();

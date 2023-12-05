@@ -11,12 +11,9 @@ use App\StorableEvents\WooCommerce\CustomerDeleted;
 use App\StorableEvents\WooCommerce\UserMembershipImported;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
-use Spatie\EventSourcing\EventHandlers\Projectors\ProjectsEvents;
 
 class CardProjector extends Projector
 {
-    use ProjectsEvents;
-
     public function onStartingEventReplay()
     {
         Card::truncate();

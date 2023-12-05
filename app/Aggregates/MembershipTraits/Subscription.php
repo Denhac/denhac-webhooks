@@ -40,17 +40,17 @@ trait Subscription
      * and the card access system. There won't be any MembershipActivated event because in the real
      * world, that event would have already been emitted.
      */
-    protected function applySubscriptionImported(SubscriptionImported $event)
+    protected function applySubscriptionImported(SubscriptionImported $event): void
     {
         $this->updateStatus($event->subscription['id'], $event->subscription['status']);
     }
 
-    protected function applySubscriptionCreated(SubscriptionCreated $event)
+    protected function applySubscriptionCreated(SubscriptionCreated $event): void
     {
         $this->updateStatus($event->subscription['id'], $event->subscription['status']);
     }
 
-    protected function applySubscriptionUpdated(SubscriptionUpdated $event)
+    protected function applySubscriptionUpdated(SubscriptionUpdated $event): void
     {
         $this->updateStatus($event->subscription['id'], $event->subscription['status']);
     }

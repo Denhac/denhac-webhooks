@@ -12,10 +12,9 @@ use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Illuminate\Support\Collection;
-use Spatie\EventSourcing\EventHandlers\EventHandler;
-use Spatie\EventSourcing\EventHandlers\HandlesEvents;
+use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
-final class GoogleGroupsReactor implements EventHandler
+final class GoogleGroupsReactor extends Reactor
 {
     public const GROUP_MEMBERS = 'members@denhac.org';
 
@@ -24,8 +23,6 @@ final class GoogleGroupsReactor implements EventHandler
     public const GROUP_DENHAC = 'denhac@denhac.org';
 
     public const GROUP_BOARD = 'board@denhac.org';
-
-    use HandlesEvents;
 
     /**
      * @var GoogleApi
