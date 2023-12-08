@@ -19,7 +19,6 @@ trait WooCommerceApiMixin
     private $client;
 
     /**
-     *
      * @throws ApiCallFailed
      */
     private function jsonOrError(ResponseInterface $response): Collection
@@ -78,7 +77,6 @@ trait WooCommerceApiMixin
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     private function handleError(ResponseInterface $response): void

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\Aggregates\MembershipAggregate;
 use App\Http\Resources\CardUpdateRequestResource;
 use App\Models\ActiveCardHolderUpdate;
 use App\Models\CardUpdateRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

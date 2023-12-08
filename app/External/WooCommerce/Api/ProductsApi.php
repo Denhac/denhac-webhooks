@@ -15,7 +15,6 @@ class ProductsApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function get($woo_id): Collection

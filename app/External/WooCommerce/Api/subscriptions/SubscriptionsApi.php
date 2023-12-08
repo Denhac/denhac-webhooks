@@ -27,7 +27,6 @@ class SubscriptionsApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function update($woo_id, array $json): Collection
@@ -40,7 +39,6 @@ class SubscriptionsApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function get($woo_id): Collection

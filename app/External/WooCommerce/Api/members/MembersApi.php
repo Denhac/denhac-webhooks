@@ -32,7 +32,6 @@ class MembersApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function addMembership($woo_id, $plan_id): Collection
@@ -58,7 +57,6 @@ class MembersApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function get($woo_id): Collection

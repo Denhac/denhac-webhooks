@@ -31,7 +31,6 @@ class CustomerApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function update($woo_id, array $json): Collection
@@ -44,7 +43,6 @@ class CustomerApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function get($woo_id): Collection
@@ -55,7 +53,6 @@ class CustomerApi
     }
 
     /**
-     *
      * @throws ApiCallFailed
      */
     public function capabilities(int $woo_id): Collection
