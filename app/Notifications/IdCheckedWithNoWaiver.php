@@ -18,21 +18,11 @@ class IdCheckedWithNoWaiver extends Notification
         $this->customer = $customer;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     */
     public function via($notifiable): array
     {
         return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     */
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
@@ -43,11 +33,6 @@ class IdCheckedWithNoWaiver extends Notification
             ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     */
     public function toArray($notifiable): array
     {
         return [
