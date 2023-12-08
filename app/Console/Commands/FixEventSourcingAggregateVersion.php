@@ -36,7 +36,7 @@ class FixEventSourcingAggregateVersion extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): void
     {
         $uuidToVersion = collect();
 
@@ -88,7 +88,5 @@ class FixEventSourcingAggregateVersion extends Command
         }
 
         $bar->finish();
-
-        return 0;
     }
 }
