@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use DateTime;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -11,17 +12,14 @@ class CardAccessDeniedButWereWorkingOnIt extends Notification
 {
     use Queueable;
 
-    private $firstName;
+    private string $firstName;
 
-    private $lastName;
+    private string $lastName;
 
-    private $scanTime;
+    private string $scanTime;
 
-    private $cardNum;
+    private string $cardNum;
 
-    /**
-     * Create a new notification instance.
-     */
     public function __construct($firstName, $lastName, $cardNum, $scanTime)
     {
         $this->firstName = $firstName;
@@ -30,22 +28,13 @@ class CardAccessDeniedButWereWorkingOnIt extends Notification
         $this->scanTime = $scanTime;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     */
     public function via($notifiable): array
     {
         return ['mail'];
     }
 
     /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     *
-     * @throws \Exception
+     * @throws Exception
      */
     public function toMail($notifiable): MailMessage
     {
@@ -61,11 +50,6 @@ class CardAccessDeniedButWereWorkingOnIt extends Notification
             ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     */
     public function toArray($notifiable): array
     {
         return [

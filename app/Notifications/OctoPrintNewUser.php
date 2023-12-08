@@ -10,11 +10,11 @@ class OctoPrintNewUser extends Notification
 {
     use Queueable;
 
-    private $username;
+    private string $username;
 
-    private $host;
+    private string $host;
 
-    private $password;
+    private string $password;
 
     public function __construct($host, $username, $password)
     {
@@ -23,21 +23,11 @@ class OctoPrintNewUser extends Notification
         $this->password = $password;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     */
     public function via($notifiable): array
     {
         return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     */
     public function toMail($notifiable): MailMessage
     {
         $url = setting("hosts.{$this->host}.url");
@@ -53,11 +43,6 @@ class OctoPrintNewUser extends Notification
             ->line('Thank you for being a member of denhac!');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     */
     public function toArray($notifiable): array
     {
         return [
