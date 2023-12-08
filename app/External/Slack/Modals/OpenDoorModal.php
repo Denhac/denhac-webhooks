@@ -62,7 +62,7 @@ class OpenDoorModal implements ModalInterface
             ->first();
 
         if (is_null($door)) {
-            throw new \Exception("The door for ${selectedOption['value']} was null");
+            throw new \Exception("The door for {$selectedOption['value']} was null");
         }
 
         /** @var SlackApi $slackApi */
