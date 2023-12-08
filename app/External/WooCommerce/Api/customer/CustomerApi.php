@@ -31,7 +31,6 @@ class CustomerApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */
@@ -45,7 +44,6 @@ class CustomerApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */
@@ -57,7 +55,6 @@ class CustomerApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */

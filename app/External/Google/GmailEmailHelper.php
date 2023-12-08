@@ -9,8 +9,6 @@ class GmailEmailHelper
      * Do not modify emails in the form of foo+bar@test.com.
      *
      * Basically, for gmail based addresses, we can't add a plus based email to a group.
-     *
-     * @return string
      */
     public static function handleGmail($email): string
     {

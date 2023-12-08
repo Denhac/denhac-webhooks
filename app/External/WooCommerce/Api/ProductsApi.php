@@ -15,7 +15,6 @@ class ProductsApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */

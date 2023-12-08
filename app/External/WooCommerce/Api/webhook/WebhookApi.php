@@ -27,7 +27,6 @@ class WebhookApi
 
     /**
      * @param  null  $secret
-     * @return Collection
      *
      * @throws ApiCallFailed
      */
