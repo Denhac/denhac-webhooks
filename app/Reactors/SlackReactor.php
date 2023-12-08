@@ -18,9 +18,9 @@ use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Illuminate\Support\Collection;
-use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 use function ltrim;
 use SlackPhp\BlockKit\Surfaces\Message;
+use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 final class SlackReactor extends Reactor
 {
