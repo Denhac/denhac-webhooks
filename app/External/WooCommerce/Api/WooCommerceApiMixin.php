@@ -24,7 +24,7 @@ trait WooCommerceApiMixin
      *
      * @throws ApiCallFailed
      */
-    private function jsonOrError($response)
+    private function jsonOrError(ResponseInterface $response): Collection
     {
         $this->handleError($response);
 
@@ -84,7 +84,7 @@ trait WooCommerceApiMixin
      *
      * @throws ApiCallFailed
      */
-    private function handleError($response): void
+    private function handleError(ResponseInterface $response): void
     {
         if ($response->getStatusCode() != Response::HTTP_CREATED &&
             $response->getStatusCode() != Response::HTTP_OK) {

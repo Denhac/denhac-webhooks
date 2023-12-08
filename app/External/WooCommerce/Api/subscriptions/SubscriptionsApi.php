@@ -31,7 +31,7 @@ class SubscriptionsApi
      *
      * @throws ApiCallFailed
      */
-    public function update($woo_id, array $json)
+    public function update($woo_id, array $json): Collection
     {
         $response = $this->client->post("/wp-json/wc/v1/subscriptions/$woo_id", [
             RequestOptions::JSON => $json,
@@ -45,7 +45,7 @@ class SubscriptionsApi
      *
      * @throws ApiCallFailed
      */
-    public function get($woo_id)
+    public function get($woo_id): Collection
     {
         $response = $this->client->get("/wp-json/wc/v1/subscriptions/$woo_id");
 

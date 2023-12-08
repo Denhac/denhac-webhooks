@@ -35,7 +35,7 @@ class UsergroupsApi
      *
      * @return array
      */
-    public function byName($handle)
+    public function byName($handle): array
     {
         return $this->list()
             ->firstWhere('handle', $handle);

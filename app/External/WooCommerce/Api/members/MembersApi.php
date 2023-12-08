@@ -36,7 +36,7 @@ class MembersApi
      *
      * @throws ApiCallFailed
      */
-    public function addMembership($woo_id, $plan_id)
+    public function addMembership($woo_id, $plan_id): Collection
     {
         $response = $this->client->post('/wp-json/wc/v3/memberships/members', [
             RequestOptions::JSON => [
@@ -63,7 +63,7 @@ class MembersApi
      *
      * @throws ApiCallFailed
      */
-    public function get($woo_id)
+    public function get($woo_id): Collection
     {
         $response = $this->client->get("/wp-json/wc/v3/memberships/members/$woo_id");
 

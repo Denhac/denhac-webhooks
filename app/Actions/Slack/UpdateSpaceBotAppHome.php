@@ -30,7 +30,7 @@ class UpdateSpaceBotAppHome
      *
      * @return void
      */
-    public function execute(string $slack_id)
+    public function execute(string $slack_id): void
     {
         /** @var Customer $member */
         $member = Customer::whereSlackId($slack_id)->first();

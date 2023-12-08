@@ -103,7 +103,7 @@ class GroupApi
      * @param $response ResponseInterface
      * @return bool
      */
-    private function errorsHasDuplicate($response)
+    private function errorsHasDuplicate($response): bool
     {
         $json = json_decode($response->getBody(), true);
 

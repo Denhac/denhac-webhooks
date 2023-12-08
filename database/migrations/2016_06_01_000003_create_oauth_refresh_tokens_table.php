@@ -53,7 +53,7 @@ return new class extends Migration
      *
      * @return string|null
      */
-    public function getConnection()
+    public function getConnection(): ?string
     {
         return config('passport.storage.database.connection');
     }

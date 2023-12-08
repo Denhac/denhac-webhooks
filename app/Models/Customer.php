@@ -135,7 +135,7 @@ class Customer extends Model
      * @param  Notification  $notification
      * @return string
      */
-    public function routeNotificationForMail($notification)
+    public function routeNotificationForMail(Notification $notification): string
     {
         return $this->email;
     }

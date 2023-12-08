@@ -31,7 +31,7 @@ class CardNotificationEmail extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): static
     {
         $customerIds = $this->cardNotificationsNeeded->map(function ($cardNotification) {
             /** @var CardNotificationNeeded|array $cardNotification */
