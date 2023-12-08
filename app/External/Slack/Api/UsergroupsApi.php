@@ -32,8 +32,6 @@ class UsergroupsApi
 
     /**
      * Note: Helper method, not official slack API
-     *
-     * @return array
      */
     public function byName($handle): array
     {

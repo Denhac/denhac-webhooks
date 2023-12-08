@@ -101,7 +101,6 @@ class GroupApi
 
     /**
      * @param $response ResponseInterface
-     * @return bool
      */
     private function errorsHasDuplicate($response): bool
     {

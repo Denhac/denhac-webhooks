@@ -22,8 +22,6 @@ trait ModalTrait
      * instead.
      *
      * See https://api.slack.com/surfaces/modals/using#updating_response
-     *
-     * @return JsonResponse
      */
     public function update(): JsonResponse
     {
@@ -38,8 +36,6 @@ trait ModalTrait
      * to all be happy. You MUST use this method in response to a block action which is why the request is passed in.
      *
      * If you need to call update on an existing view id, just use the SlackApi class directly.
-     *
-     * @return Response
      */
     public function updateViaApi(SlackRequest $request): Response
     {

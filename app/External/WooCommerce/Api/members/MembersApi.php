@@ -32,7 +32,6 @@ class MembersApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */
@@ -59,7 +58,6 @@ class MembersApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */

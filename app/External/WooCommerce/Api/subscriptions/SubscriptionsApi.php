@@ -27,7 +27,6 @@ class SubscriptionsApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */
@@ -41,7 +40,6 @@ class SubscriptionsApi
     }
 
     /**
-     * @return Collection
      *
      * @throws ApiCallFailed
      */

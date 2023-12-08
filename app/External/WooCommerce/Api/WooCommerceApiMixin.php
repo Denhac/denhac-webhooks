@@ -19,8 +19,6 @@ trait WooCommerceApiMixin
     private $client;
 
     /**
-     * @param  ResponseInterface  $response
-     * @return Collection
      *
      * @throws ApiCallFailed
      */
@@ -80,7 +78,6 @@ trait WooCommerceApiMixin
     }
 
     /**
-     * @param  ResponseInterface  $response
      *
      * @throws ApiCallFailed
      */

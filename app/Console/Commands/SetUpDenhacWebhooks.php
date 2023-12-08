@@ -80,7 +80,6 @@ class SetUpDenhacWebhooks extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
      *
      * @throws Exception
      */

@@ -131,10 +131,6 @@ class Customer extends Model
             ->count() > 0;
     }
 
-    /**
-     * @param  Notification  $notification
-     * @return string
-     */
     public function routeNotificationForMail(Notification $notification): string
     {
         return $this->email;

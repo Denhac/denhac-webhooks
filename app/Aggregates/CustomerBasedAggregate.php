@@ -14,9 +14,6 @@ trait CustomerBasedAggregate
 
     public $respondToEvents = true;
 
-    /**
-     * @return MembershipAggregate
-     */
     public static function make(int $customerId): AggregateRoot
     {
         $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customerId);
@@ -35,7 +32,6 @@ trait CustomerBasedAggregate
      * This method shouldn't be called in production, only in testing when needed.
      *
      * @param  int|CustomerBuilder|Customer  $customer
-     * @return $this
      */
     public static function fakeCustomer($customer): FakeAggregateRoot
     {

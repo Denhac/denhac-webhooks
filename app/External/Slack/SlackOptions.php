@@ -10,9 +10,6 @@ class SlackOptions extends Element
 {
     use HasOptions;
 
-    /**
-     * @return SlackOptions
-     */
     public static function new(): SlackOptions
     {
         return new self();

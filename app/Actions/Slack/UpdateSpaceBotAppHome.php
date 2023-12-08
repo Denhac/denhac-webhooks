@@ -27,8 +27,6 @@ class UpdateSpaceBotAppHome
 
     /**
      * Execute the action.
-     *
-     * @return void
      */
     public function execute(string $slack_id): void
     {
