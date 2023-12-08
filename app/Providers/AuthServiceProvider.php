@@ -23,8 +23,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
-
         Passport::tokensCan([
             'card:manage' => 'Manage card access', // Used by WinDSX only
             'door:manage' => 'Manage door control', // Used by the Pi that controls doors for open house
