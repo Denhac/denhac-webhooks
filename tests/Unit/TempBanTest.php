@@ -9,7 +9,7 @@ use Tests\TestCase;
 class TempBanTest extends TestCase
 {
     /** @test */
-    public function isBanned_returns_true_if_row_exists_with_both_user_and_channel()
+    public function isBanned_returns_true_if_row_exists_with_both_user_and_channel(): void
     {
         TempBan::create([
             'user_id' => 'foo_user',
@@ -20,7 +20,7 @@ class TempBanTest extends TestCase
     }
 
     /** @test */
-    public function isBanned_returns_false_if_row_only_has_user()
+    public function isBanned_returns_false_if_row_only_has_user(): void
     {
         TempBan::create([
             'user_id' => 'foo_user',
@@ -31,7 +31,7 @@ class TempBanTest extends TestCase
     }
 
     /** @test */
-    public function isBanned_returns_false_if_row_only_has_channel()
+    public function isBanned_returns_false_if_row_only_has_channel(): void
     {
         TempBan::create([
             'user_id' => 'foo_user',
@@ -42,7 +42,7 @@ class TempBanTest extends TestCase
     }
 
     /** @test */
-    public function isBanned_before_expiration_time_returns_true()
+    public function isBanned_before_expiration_time_returns_true(): void
     {
 
         TempBan::create([
@@ -55,7 +55,7 @@ class TempBanTest extends TestCase
     }
 
     /** @test */
-    public function isBanned_after_expiration_time_returns_false()
+    public function isBanned_after_expiration_time_returns_false(): void
     {
 
         TempBan::create([

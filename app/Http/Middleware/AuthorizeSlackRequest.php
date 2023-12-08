@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Symfony\Component\HttpFoundation\Response;
 use App\External\Slack\ValidatesSlack;
 use Closure;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class AuthorizeSlackRequest
      *
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         $secret = config('denhac.slack.spacebot_api_signing_secret');
         if (! $this->isSignatureValid($request, $secret)) {

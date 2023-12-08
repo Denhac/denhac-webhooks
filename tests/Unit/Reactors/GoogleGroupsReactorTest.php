@@ -49,7 +49,7 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_activated_event_adds_to_members_group()
+    public function on_membership_activated_event_adds_to_members_group(): void
     {
         event(new MembershipActivated($this->customer->id));
 
@@ -61,7 +61,7 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_deactivated_remove_from_all_lists_but_denhac()
+    public function on_membership_deactivated_remove_from_all_lists_but_denhac(): void
     {
         $this->googleApi->allows('groupsForMember')
             ->withArgs([$this->customer->email])
@@ -81,7 +81,7 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_customer_deleted_event_even_when_customer_is_already_deleted_in_db()
+    public function on_customer_deleted_event_even_when_customer_is_already_deleted_in_db(): void
     {
         $this->customer->delete();
 
@@ -102,7 +102,7 @@ class GoogleGroupsReactorTest extends TestCase
      *
      * @dataProvider userMembershipStatuses
      */
-    public function on_user_membership_created_with_non_active_status_does_nothing(string $status)
+    public function on_user_membership_created_with_non_active_status_does_nothing(string $status): void
     {
         if ($status == 'active') {
             $this->assertTrue(true);
@@ -121,7 +121,7 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_user_adds_to_google_group()
+    public function being_added_to_trainable_equipment_as_user_adds_to_google_group(): void
     {
         $planId = 1234;
         $groupEmail = 'test@denhac.org';
@@ -145,7 +145,7 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_trainer_adds_to_google_group()
+    public function being_added_to_trainable_equipment_as_trainer_adds_to_google_group(): void
     {
         $planId = 1234;
         $groupEmail = 'test@denhac.org';
@@ -169,7 +169,7 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_user_does_not_add_to_google_group_if_it_is_null()
+    public function being_added_to_trainable_equipment_as_user_does_not_add_to_google_group_if_it_is_null(): void
     {
         $planId = 1234;
 
@@ -190,7 +190,7 @@ class GoogleGroupsReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_trainer_does_not_add_to_google_group_if_it_is_null()
+    public function being_added_to_trainable_equipment_as_trainer_does_not_add_to_google_group_if_it_is_null(): void
     {
         $planId = 1234;
 

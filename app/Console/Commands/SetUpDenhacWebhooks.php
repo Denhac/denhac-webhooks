@@ -84,7 +84,7 @@ class SetUpDenhacWebhooks extends Command
      *
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $existingWebhooks = $this->api->webhooks->list();
 

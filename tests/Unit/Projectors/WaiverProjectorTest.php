@@ -45,7 +45,7 @@ class WaiverProjectorTest extends TestCase
     }
 
     /** @test */
-    public function assign_waiver_to_customer_updates_customer_id()
+    public function assign_waiver_to_customer_updates_customer_id(): void
     {
         $this->assertNull($this->waiver->customer_id);
 

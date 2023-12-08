@@ -26,7 +26,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_from_paused_to_active_does_not_activate_membership_without_id_check()
+    public function user_membership_from_paused_to_active_does_not_activate_membership_without_id_check(): void
     {
         $customer = $this->customer();
 
@@ -47,7 +47,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_from_paused_to_active_activates_membership_with_id_check()
+    public function user_membership_from_paused_to_active_activates_membership_with_id_check(): void
     {
         $customer = $this->customer();
 
@@ -70,7 +70,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_with_different_plan_to_active_does_not_activate_membership()
+    public function user_membership_with_different_plan_to_active_does_not_activate_membership(): void
     {
         $customer = $this->customer();
 
@@ -92,7 +92,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_with_different_plan_to_active_does_not_activate_membership_on_id_check()
+    public function user_membership_with_different_plan_to_active_does_not_activate_membership_on_id_check(): void
     {
         $customer = $this->customer();
 
@@ -112,7 +112,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_when_active_emits_membership_activated_if_id_is_checked()
+    public function user_membership_when_active_emits_membership_activated_if_id_is_checked(): void
     {
         $customer = $this->customer();
 
@@ -133,7 +133,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_from_active_to_cancelled_deactivates_membership()
+    public function user_membership_from_active_to_cancelled_deactivates_membership(): void
     {
         $customer = $this->customer();
 
@@ -163,7 +163,7 @@ class ActiveMembershipTest extends TestCase
      * to a subscription with a card on file AND that user membership has a time limit, the status is expired so we
      * handle it here anyway.
      */
-    public function user_membership_from_active_to_expired_deactivates_membership()
+    public function user_membership_from_active_to_expired_deactivates_membership(): void
     {
         $customer = $this->customer();
 
@@ -186,7 +186,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_from_active_to_active_does_nothing()
+    public function user_membership_from_active_to_active_does_nothing(): void
     {
         $customer = $this->customer();
 
@@ -223,7 +223,7 @@ class ActiveMembershipTest extends TestCase
      */
 
     /** @test */
-    public function user_membership_active_then_paused_does_not_activate_membership_on_id_check()
+    public function user_membership_active_then_paused_does_not_activate_membership_on_id_check(): void
     {
         $customer = $this->customer();
 
@@ -246,7 +246,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_active_then_paused_then_active_again_activates_membership_on_id_check()
+    public function user_membership_active_then_paused_then_active_again_activates_membership_on_id_check(): void
     {
         $customer = $this->customer();
 
@@ -271,7 +271,7 @@ class ActiveMembershipTest extends TestCase
     }
 
     /** @test */
-    public function user_membership_active_then_paused_then_active_again_activates_membership_after_id_check()
+    public function user_membership_active_then_paused_then_active_again_activates_membership_after_id_check(): void
     {
         $customer = $this->customer();
 

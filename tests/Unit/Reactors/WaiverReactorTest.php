@@ -65,7 +65,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function waiver_accepted_with_all_fields_matching_is_assigned_to_customer()
+    public function waiver_accepted_with_all_fields_matching_is_assigned_to_customer(): void
     {
         MembershipAggregate::fakeCustomer($this->matchingCustomer)
             ->assertNothingApplied()
@@ -83,7 +83,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function waiver_accepted_with_different_first_name_is_not_assigned_to_customer()
+    public function waiver_accepted_with_different_first_name_is_not_assigned_to_customer(): void
     {
         $customer = Customer::create([
             'id' => $this->faker->randomNumber(),
@@ -109,7 +109,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function waiver_accepted_with_different_last_name_is_not_assigned_to_customer()
+    public function waiver_accepted_with_different_last_name_is_not_assigned_to_customer(): void
     {
         $customer = Customer::create([
             'id' => $this->faker->randomNumber(),
@@ -135,7 +135,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function waiver_accepted_with_different_email_is_not_assigned_to_customer()
+    public function waiver_accepted_with_different_email_is_not_assigned_to_customer(): void
     {
         $customer = Customer::create([
             'id' => $this->faker->randomNumber(),
@@ -162,7 +162,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_created_with_all_fields_matching_is_assigned_to_customer()
+    public function customer_created_with_all_fields_matching_is_assigned_to_customer(): void
     {
         event(new CustomerCreated(
             $this->customer()
@@ -182,7 +182,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_created_with_different_first_name_is_not_assigned_to_customer()
+    public function customer_created_with_different_first_name_is_not_assigned_to_customer(): void
     {
         $firstName = $this->faker->firstName();
         event(new CustomerCreated(
@@ -202,7 +202,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_created_with_different_last_name_is_not_assigned_to_customer()
+    public function customer_created_with_different_last_name_is_not_assigned_to_customer(): void
     {
         $lastName = $this->faker->lastName();
         event(new CustomerCreated(
@@ -222,7 +222,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_created_with_different_email_is_not_assigned_to_customer()
+    public function customer_created_with_different_email_is_not_assigned_to_customer(): void
     {
         $email = $this->faker->email();
         event(new CustomerCreated(
@@ -242,7 +242,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_created_with_all_fields_matching_is_not_reassigned_to_customer()
+    public function customer_created_with_all_fields_matching_is_not_reassigned_to_customer(): void
     {
         $this->matchingWaiver->customer_id = $this->matchingCustomer->id;
         $this->matchingWaiver->save();
@@ -260,7 +260,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_updated_with_all_fields_matching_is_assigned_to_customer()
+    public function customer_updated_with_all_fields_matching_is_assigned_to_customer(): void
     {
         event(new CustomerUpdated(
             $this->customer()
@@ -280,7 +280,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_updated_with_different_first_name_is_not_assigned_to_customer()
+    public function customer_updated_with_different_first_name_is_not_assigned_to_customer(): void
     {
         $firstName = $this->faker->firstName();
         event(new CustomerUpdated(
@@ -300,7 +300,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_updated_with_different_last_name_is_not_assigned_to_customer()
+    public function customer_updated_with_different_last_name_is_not_assigned_to_customer(): void
     {
         $lastName = $this->faker->lastName();
         event(new CustomerUpdated(
@@ -320,7 +320,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_updated_with_different_email_is_not_assigned_to_customer()
+    public function customer_updated_with_different_email_is_not_assigned_to_customer(): void
     {
         $email = $this->faker->email();
         event(new CustomerUpdated(
@@ -340,7 +340,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_updated_with_all_fields_matching_is_not_reassigned_to_customer()
+    public function customer_updated_with_all_fields_matching_is_not_reassigned_to_customer(): void
     {
         $this->matchingWaiver->customer_id = $this->matchingCustomer->id;
         $this->matchingWaiver->save();
@@ -358,7 +358,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_imported_with_all_fields_matching_is_assigned_to_customer()
+    public function customer_imported_with_all_fields_matching_is_assigned_to_customer(): void
     {
         event(new CustomerImported(
             $this->customer()
@@ -378,7 +378,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_imported_with_different_first_name_is_not_assigned_to_customer()
+    public function customer_imported_with_different_first_name_is_not_assigned_to_customer(): void
     {
         $firstName = $this->faker->firstName();
         event(new CustomerImported(
@@ -398,7 +398,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_imported_with_different_last_name_is_not_assigned_to_customer()
+    public function customer_imported_with_different_last_name_is_not_assigned_to_customer(): void
     {
         $lastName = $this->faker->lastName();
         event(new CustomerImported(
@@ -418,7 +418,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_imported_with_different_email_is_not_assigned_to_customer()
+    public function customer_imported_with_different_email_is_not_assigned_to_customer(): void
     {
         $email = $this->faker->email();
         event(new CustomerImported(
@@ -438,7 +438,7 @@ class WaiverReactorTest extends TestCase
     }
 
     /** @test */
-    public function customer_deleted_with_all_fields_matching_is_not_reassigned_to_customer()
+    public function customer_deleted_with_all_fields_matching_is_not_reassigned_to_customer(): void
     {
         $this->matchingWaiver->customer_id = $this->matchingCustomer->id;
         $this->matchingWaiver->save();

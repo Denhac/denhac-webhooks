@@ -37,13 +37,13 @@ class CustomerTrainerTest extends TestCase
     }
 
     /** @test */
-    public function is_a_trainer_returns_false_if_not_trained_on_anything()
+    public function is_a_trainer_returns_false_if_not_trained_on_anything(): void
     {
         $this->assertFalse($this->customer->isATrainer());
     }
 
     /** @test */
-    public function is_a_trainer_returns_false_if_only_user()
+    public function is_a_trainer_returns_false_if_only_user(): void
     {
         UserMembership::create([
             'id' => $this->faker->randomNumber(),
@@ -56,7 +56,7 @@ class CustomerTrainerTest extends TestCase
     }
 
     /** @test */
-    public function is_a_trainer_returns_false_if_no_active_membership()
+    public function is_a_trainer_returns_false_if_no_active_membership(): void
     {
         UserMembership::create([
             'id' => $this->faker->randomNumber(),
@@ -69,7 +69,7 @@ class CustomerTrainerTest extends TestCase
     }
 
     /** @test */
-    public function is_a_trainer_returns_false_if_a_trainer()
+    public function is_a_trainer_returns_false_if_a_trainer(): void
     {
         UserMembership::create([
             'id' => $this->faker->randomNumber(),

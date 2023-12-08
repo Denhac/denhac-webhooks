@@ -9,7 +9,7 @@ use Tests\TestCase;
 class PreventDuplicateIssueNumbersTest extends TestCase
 {
     /** @test */
-    public function preventDuplicateIssueNumbers()
+    public function preventDuplicateIssueNumbers(): void
     {
         $issues = collect(get_declared_classes())
             ->filter(fn ($name) => str_starts_with($name, 'App\\Issues\\Types'))

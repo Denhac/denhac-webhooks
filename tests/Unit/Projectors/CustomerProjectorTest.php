@@ -27,7 +27,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function importing_a_customer_creates_customer_in_db()
+    public function importing_a_customer_creates_customer_in_db(): void
     {
         $builder = $this->customer();
 
@@ -50,7 +50,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function creating_a_customer_creates_customer_in_db()
+    public function creating_a_customer_creates_customer_in_db(): void
     {
         $builder = $this->customer();
 
@@ -73,7 +73,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function updating_a_non_existent_customer_creates_customer_in_db()
+    public function updating_a_non_existent_customer_creates_customer_in_db(): void
     {
         $builder = $this->customer();
 
@@ -96,7 +96,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function updating_a_customer_updates_customer_in_db()
+    public function updating_a_customer_updates_customer_in_db(): void
     {
         $builder = $this->customer();
 
@@ -129,7 +129,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function deleting_a_customer_deletes_in_db()
+    public function deleting_a_customer_deletes_in_db(): void
     {
         $builder = $this->customer();
 
@@ -145,7 +145,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function deleting_a_non_existent_customer_throws_exception()
+    public function deleting_a_non_existent_customer_throws_exception(): void
     {
         $builder = $this->customer();
 
@@ -157,7 +157,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function member_field_kept_as_false_on_active_membership_import()
+    public function member_field_kept_as_false_on_active_membership_import(): void
     {
         $customer = $this->customer();
         $subscription = $this->subscription()->customer($customer)->status('active');
@@ -171,7 +171,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function member_field_set_kept_as_false_on_inactive_membership_import()
+    public function member_field_set_kept_as_false_on_inactive_membership_import(): void
     {
         $customer = $this->customer();
         $subscription = $this->subscription()->customer($customer)->status('paused');
@@ -185,7 +185,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function member_field_set_to_true_on_membership_activated()
+    public function member_field_set_to_true_on_membership_activated(): void
     {
         $customer = $this->customer();
 
@@ -210,7 +210,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function member_field_set_to_false_on_membership_deactivated()
+    public function member_field_set_to_false_on_membership_deactivated(): void
     {
         $customer = $this->customer();
 
@@ -235,7 +235,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function id_checked_field_set_to_false_by_default()
+    public function id_checked_field_set_to_false_by_default(): void
     {
         $builder = $this->customer();
 
@@ -250,7 +250,7 @@ class CustomerProjectorTest extends TestCase
     }
 
     /** @test */
-    public function id_checked_field_set_to_true_on_id_checked()
+    public function id_checked_field_set_to_true_on_id_checked(): void
     {
         $builder = $this->customer();
 

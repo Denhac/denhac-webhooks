@@ -26,7 +26,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function customer_is_no_event_test_user()
+    public function customer_is_no_event_test_user(): void
     {
         $customer = $this->customer();
 
@@ -36,7 +36,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function create_customer_call_makes_event()
+    public function create_customer_call_makes_event(): void
     {
         $customer = $this->customer();
 
@@ -46,7 +46,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function update_customer_call_makes_event()
+    public function update_customer_call_makes_event(): void
     {
         $customer = $this->customer();
 
@@ -56,7 +56,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function delete_customer_call_makes_event()
+    public function delete_customer_call_makes_event(): void
     {
         $customer = $this->customer();
 
@@ -66,7 +66,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function import_customer_call_makes_event()
+    public function import_customer_call_makes_event(): void
     {
         $customer = $this->customer();
 
@@ -76,7 +76,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function create_subscription_call_makes_event()
+    public function create_subscription_call_makes_event(): void
     {
         $subscription = $this->subscription();
 
@@ -88,7 +88,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function update_subscription_call_makes_event()
+    public function update_subscription_call_makes_event(): void
     {
         $subscription = $this->subscription();
 
@@ -100,7 +100,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function create_then_update_subscription_call_makes_events()
+    public function create_then_update_subscription_call_makes_events(): void
     {
         $subscription = $this->subscription();
 
@@ -114,7 +114,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function update_then_create_subscription_call_makes_events()
+    public function update_then_create_subscription_call_makes_events(): void
     {
         $subscription = $this->subscription();
 
@@ -128,7 +128,7 @@ class PublicMethodEventTest extends TestCase
     }
 
     /** @test */
-    public function import_subscription_call_makes_event()
+    public function import_subscription_call_makes_event(): void
     {
         $subscription = $this->subscription();
 

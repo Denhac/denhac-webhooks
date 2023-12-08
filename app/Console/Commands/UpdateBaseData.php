@@ -47,7 +47,7 @@ class UpdateBaseData extends Command
      *
      * @throws ApiCallFailed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->isDryRun = $this->option('dry-run');
         if ($this->isDryRun) {
