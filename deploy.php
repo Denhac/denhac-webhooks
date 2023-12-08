@@ -5,7 +5,7 @@ require 'recipe/laravel.php';
 
 // Config
 
-set('repository', 'git@github.com:Denhac/denhac-webhooks.git');
+set('repository', 'https://github.com/Denhac/denhac-webhooks.git');
 
 add('shared_files', []);
 add('shared_dirs', []);
