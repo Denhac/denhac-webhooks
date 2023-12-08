@@ -25,7 +25,7 @@ trait ModalTrait
      *
      * @return JsonResponse
      */
-    public function update()
+    public function update(): JsonResponse
     {
         return response()->json([
             'response_action' => 'update',
@@ -41,7 +41,7 @@ trait ModalTrait
      *
      * @return Response
      */
-    public function updateViaApi(SlackRequest $request)
+    public function updateViaApi(SlackRequest $request): Response
     {
         $payload = $request->payload();
         $view = $payload['view'];

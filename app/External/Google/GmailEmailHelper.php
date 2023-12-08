@@ -12,7 +12,7 @@ class GmailEmailHelper
      *
      * @return string
      */
-    public static function handleGmail($email)
+    public static function handleGmail($email): string
     {
         $email = preg_replace("#(.+)\+.*@(gmail.com)#", '$1@$2', $email);
 

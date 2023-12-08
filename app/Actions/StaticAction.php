@@ -11,7 +11,7 @@ trait StaticAction
     /**
      * @return static
      */
-    public static function queue(string $queue = null)
+    public static function queue(string $queue = null): static
     {
         return app(static::class)->onQueue($queue);
     }
@@ -20,7 +20,7 @@ trait StaticAction
      * @param  string|null  $queue
      * @return static
      */
-    public static function now()
+    public static function now(): static
     {
         return app(static::class);
     }

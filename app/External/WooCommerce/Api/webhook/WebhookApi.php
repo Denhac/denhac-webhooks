@@ -31,7 +31,7 @@ class WebhookApi
      *
      * @throws ApiCallFailed
      */
-    public function create($topicKey, $topicName, $deliveryUrl, $secret = null)
+    public function create($topicKey, $topicName, $deliveryUrl, $secret = null): Collection
     {
         $json = [
             'topic' => $topicKey,

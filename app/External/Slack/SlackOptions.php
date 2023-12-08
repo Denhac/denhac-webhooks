@@ -13,7 +13,7 @@ class SlackOptions extends Element
     /**
      * @return SlackOptions
      */
-    public static function new()
+    public static function new(): SlackOptions
     {
         return new self();
     }

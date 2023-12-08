@@ -19,7 +19,7 @@ class ProductsApi
      *
      * @throws ApiCallFailed
      */
-    public function get($woo_id)
+    public function get($woo_id): Collection
     {
         $response = $this->client->get("/wp-json/wc/v3/products/$woo_id");
 

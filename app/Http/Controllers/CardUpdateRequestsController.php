@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Aggregates\MembershipAggregate;
 use App\Http\Resources\CardUpdateRequestResource;
 use App\Models\ActiveCardHolderUpdate;
@@ -30,7 +31,7 @@ class CardUpdateRequestsController extends Controller
         }
     }
 
-    public function updateActiveCardHolders(Request $request)
+    public function updateActiveCardHolders(Request $request): JsonResponse
     {
         // TODO Make this a validation request
         if (! $request->has('card_holders')) {
