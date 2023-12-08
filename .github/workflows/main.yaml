@@ -13,16 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Composer Install
-        run: composer install --ignore-platform-reqs
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1"
+          php-version: "8.2"
 
-      - name: Install dependencies
-        run: composer install
+      - name: Composer Install
+        run: composer install --ignore-platform-reqs
 
       - name: Run Tests
         run: vendor/bin/phpunit
