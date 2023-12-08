@@ -20,4 +20,4 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           host: ${{ secrets.SSH_HOST }}
           key: ${{ secrets.SSH_KEY }}
-          script: 'cd /var/www/html && ./deploy/server_deploy.sh'
+          script: 'cd /var/www/html2 && ./deploy/server_deploy.sh'
