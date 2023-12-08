@@ -32,7 +32,7 @@ class SubscriptionTest extends TestCase
     }
 
     /** @test */
-    public function going_from_paused_to_active_subscription_does_nothing()
+    public function going_from_paused_to_active_subscription_does_nothing(): void
     {
         $customer = $this->customer();
 
@@ -50,7 +50,7 @@ class SubscriptionTest extends TestCase
     }
 
     /** @test */
-    public function going_from_null_to_active_subscription_does_not_activate_membership()
+    public function going_from_null_to_active_subscription_does_not_activate_membership(): void
     {
         $customer = $this->customer();
 
@@ -67,7 +67,7 @@ class SubscriptionTest extends TestCase
     }
 
     /** @test */
-    public function going_from_active_to_cancelled_subscription_does_not_deactivate_membership()
+    public function going_from_active_to_cancelled_subscription_does_not_deactivate_membership(): void
     {
         $customer = $this->customer();
 
@@ -86,7 +86,7 @@ class SubscriptionTest extends TestCase
     }
 
     /** @test */
-    public function going_from_active_to_suspended_payment_subscription_does_not_deactivate_membership()
+    public function going_from_active_to_suspended_payment_subscription_does_not_deactivate_membership(): void
     {
         $customer = $this->customer();
 
@@ -105,7 +105,7 @@ class SubscriptionTest extends TestCase
     }
 
     /** @test */
-    public function going_from_active_to_suspended_manual_subscription_does_not_deactivate_membership()
+    public function going_from_active_to_suspended_manual_subscription_does_not_deactivate_membership(): void
     {
         $customer = $this->customer();
 
@@ -124,7 +124,7 @@ class SubscriptionTest extends TestCase
     }
 
     /** @test */
-    public function going_from_active_to_active_subscription_does_nothing()
+    public function going_from_active_to_active_subscription_does_nothing(): void
     {
         $customer = $this->customer();
 

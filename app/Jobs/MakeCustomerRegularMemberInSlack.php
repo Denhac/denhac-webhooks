@@ -23,7 +23,7 @@ class MakeCustomerRegularMemberInSlack implements ShouldQueue
         $this->wooCustomerId = $wooCustomerId;
     }
 
-    public function handle()
+    public function handle(): void
     {
         if ($this->isExistingSlackUser()) {
             $this->setRegularMember();

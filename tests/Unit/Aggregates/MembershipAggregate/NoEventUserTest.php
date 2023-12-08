@@ -20,7 +20,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function create_customer_call_does_not_make_event()
+    public function create_customer_call_does_not_make_event(): void
     {
         $customer = $this->customer();
 
@@ -31,7 +31,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function update_customer_call_does_not_make_event()
+    public function update_customer_call_does_not_make_event(): void
     {
         $customer = $this->customer();
 
@@ -42,7 +42,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function delete_customer_call_does_not_make_event()
+    public function delete_customer_call_does_not_make_event(): void
     {
         $customer = $this->customer();
 
@@ -53,7 +53,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function import_customer_call_does_not_make_event()
+    public function import_customer_call_does_not_make_event(): void
     {
         $customer = $this->customer();
 
@@ -64,7 +64,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function create_subscription_call_does_not_make_event()
+    public function create_subscription_call_does_not_make_event(): void
     {
         $customer = $this->customer();
 
@@ -75,7 +75,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function update_subscription_call_does_not_make_event()
+    public function update_subscription_call_does_not_make_event(): void
     {
         $customer = $this->customer();
 
@@ -86,7 +86,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function import_subscription_call_does_not_make_event()
+    public function import_subscription_call_does_not_make_event(): void
     {
         $customer = $this->customer();
 
@@ -97,7 +97,7 @@ class NoEventUserTest extends TestCase
     }
 
     /** @test */
-    public function card_update_request_does_not_make_event()
+    public function card_update_request_does_not_make_event(): void
     {
         $customer = $this->customer();
 

@@ -24,7 +24,7 @@ class SubscriptionProjectorTest extends TestCase
     }
 
     /** @test */
-    public function importing_a_subscription_creates_subscription_in_db()
+    public function importing_a_subscription_creates_subscription_in_db(): void
     {
         $builder = $this->subscription();
 
@@ -42,7 +42,7 @@ class SubscriptionProjectorTest extends TestCase
     }
 
     /** @test */
-    public function creating_a_subscription_creates_subscription_in_db()
+    public function creating_a_subscription_creates_subscription_in_db(): void
     {
         $builder = $this->subscription();
 
@@ -60,7 +60,7 @@ class SubscriptionProjectorTest extends TestCase
     }
 
     /** @test */
-    public function updating_a_non_existent_subscription_creates_subscription_in_db()
+    public function updating_a_non_existent_subscription_creates_subscription_in_db(): void
     {
         $builder = $this->subscription();
 
@@ -78,7 +78,7 @@ class SubscriptionProjectorTest extends TestCase
     }
 
     /** @test */
-    public function updating_a_subscription_updates_subscription_in_db()
+    public function updating_a_subscription_updates_subscription_in_db(): void
     {
         $builder = $this->subscription();
 
@@ -106,7 +106,7 @@ class SubscriptionProjectorTest extends TestCase
     }
 
     /** @test */
-    public function deleting_a_subscription_deletes_in_db()
+    public function deleting_a_subscription_deletes_in_db(): void
     {
         $builder = $this->subscription();
 
@@ -122,7 +122,7 @@ class SubscriptionProjectorTest extends TestCase
     }
 
     /** @test */
-    public function deleting_a_non_existent_subscription_throws_exception()
+    public function deleting_a_non_existent_subscription_throws_exception(): void
     {
         $builder = $this->subscription();
 
@@ -134,7 +134,7 @@ class SubscriptionProjectorTest extends TestCase
     }
 
     /** @test */
-    public function deleting_a_customer_deletes_associated_subscription()
+    public function deleting_a_customer_deletes_associated_subscription(): void
     {
         $builder = $this->subscription();
 

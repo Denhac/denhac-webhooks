@@ -22,7 +22,7 @@ class IdCheckTest extends TestCase
     }
 
     /** @test */
-    public function id_was_checked_is_emitted_when_user_meta_key_is_present_on_import()
+    public function id_was_checked_is_emitted_when_user_meta_key_is_present_on_import(): void
     {
         $customer = $this->customer()
             ->meta_data('id_was_checked', true);
@@ -36,7 +36,7 @@ class IdCheckTest extends TestCase
     }
 
     /** @test */
-    public function id_was_checked_is_emitted_when_user_meta_key_is_present_on_create()
+    public function id_was_checked_is_emitted_when_user_meta_key_is_present_on_create(): void
     {
         $customer = $this->customer()
             ->meta_data('id_was_checked', true);
@@ -50,7 +50,7 @@ class IdCheckTest extends TestCase
     }
 
     /** @test */
-    public function id_was_checked_is_emitted_when_user_meta_key_is_present_on_update()
+    public function id_was_checked_is_emitted_when_user_meta_key_is_present_on_update(): void
     {
         $customer = $this->customer();
 
@@ -66,7 +66,7 @@ class IdCheckTest extends TestCase
     }
 
     /** @test */
-    public function id_was_checked_is_only_emitted_once()
+    public function id_was_checked_is_only_emitted_once(): void
     {
         $customer = $this->customer()
             ->meta_data('id_was_checked', true);

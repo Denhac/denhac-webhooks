@@ -18,7 +18,7 @@ class CardUpdateRequestReactorTest extends TestCase
     }
 
     /** @test */
-    public function card_sent_for_activation_creates_update_request()
+    public function card_sent_for_activation_creates_update_request(): void
     {
         $event = new CardSentForActivation(1, 1234);
 
@@ -35,7 +35,7 @@ class CardUpdateRequestReactorTest extends TestCase
     }
 
     /** @test */
-    public function card_sent_for_deactivation_creates_update_request()
+    public function card_sent_for_deactivation_creates_update_request(): void
     {
         $event = new CardSentForDeactivation(1, 1234);
 

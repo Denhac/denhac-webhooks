@@ -63,7 +63,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function access_card_is_not_sent_for_activation_when_membership_is_activated_if_waiver_is_not_signed()
+    public function access_card_is_not_sent_for_activation_when_membership_is_activated_if_waiver_is_not_signed(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -88,7 +88,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function access_card_is_sent_for_activation_when_membership_is_activated_if_waiver_is_signed()
+    public function access_card_is_sent_for_activation_when_membership_is_activated_if_waiver_is_signed(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -114,7 +114,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function access_card_is_sent_for_activation_when_waiver_is_signed_on_membership_activate()
+    public function access_card_is_sent_for_activation_when_waiver_is_signed_on_membership_activate(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -137,7 +137,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function waiver_must_be_correct_template_id()
+    public function waiver_must_be_correct_template_id(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -174,7 +174,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function manual_bootstrapping_deactivates_cards()
+    public function manual_bootstrapping_deactivates_cards(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -199,7 +199,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function manual_bootstrapping_cannot_occur_twice()
+    public function manual_bootstrapping_cannot_occur_twice(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -223,7 +223,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function manual_bootstrapping_does_nothing_if_waiver_is_assigned()
+    public function manual_bootstrapping_does_nothing_if_waiver_is_assigned(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -249,7 +249,7 @@ class AccessCardTest extends TestCase
      * @test
      * We only do updated here since it's impossible to assign a waiver to a customer until we get the customer created event.
      */
-    public function customer_updated_after_user_membership_created_does_not_activate_cards_without_waiver()
+    public function customer_updated_after_user_membership_created_does_not_activate_cards_without_waiver(): void
     {
         $card = '42424';
         $customer = $this->customer()->id_was_checked();
@@ -274,7 +274,7 @@ class AccessCardTest extends TestCase
      * @test
      * We only do updated here since it's impossible to assign a waiver to a customer until we get the customer created event.
      */
-    public function customer_updated_after_user_membership_created_activates_cards_with_waiver()
+    public function customer_updated_after_user_membership_created_activates_cards_with_waiver(): void
     {
         $card = '42424';
         $customer = $this->customer()->id_was_checked();
@@ -298,7 +298,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function former_member_becoming_a_member_again_sends_card_to_be_activated()
+    public function former_member_becoming_a_member_again_sends_card_to_be_activated(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -333,7 +333,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function updating_access_card_removes_old_cards_and_actives_new_ones()
+    public function updating_access_card_removes_old_cards_and_actives_new_ones(): void
     {
         $oldCard = '42424';
         $newCard = '53535';
@@ -358,7 +358,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function multiple_cards_can_be_used_in_comma_separated_fashion()
+    public function multiple_cards_can_be_used_in_comma_separated_fashion(): void
     {
         $cards = '42424,53535';
         $customer = $this->customer()->access_card($cards);
@@ -379,7 +379,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_is_not_sent_for_activation_if_it_has_already_been_sent()
+    public function card_is_not_sent_for_activation_if_it_has_already_been_sent(): void
     {
         $card = '42424';
         $customer = $this->customer()
@@ -397,7 +397,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_is_not_added_if_card_number_is_null()
+    public function card_is_not_added_if_card_number_is_null(): void
     {
         $customer = $this->customer()
             ->access_card(null);
@@ -412,7 +412,7 @@ class AccessCardTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function update_card_status_records_activated_card_on_success()
+    public function update_card_status_records_activated_card_on_success(): void
     {
         $card = '42424';
         $customer = $this->customer();
@@ -445,7 +445,7 @@ class AccessCardTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function update_card_status_records_deactivated_card_on_success()
+    public function update_card_status_records_deactivated_card_on_success(): void
     {
         $card = '42424';
         $customer = $this->customer();
@@ -475,7 +475,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function unknown_update_request_type_throws_exception()
+    public function unknown_update_request_type_throws_exception(): void
     {
         $fakeType = 'lol_what_is_a_type_anyway';
         $card = '42424';
@@ -501,7 +501,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function non_successful_card_update_request_status_throws_exception()
+    public function non_successful_card_update_request_status_throws_exception(): void
     {
         $fakeStatus = 'fake_status_goes_here';
         $card = '42424';
@@ -528,7 +528,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_added_adds_to_cards_on_account()
+    public function card_added_adds_to_cards_on_account(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -562,7 +562,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_sent_for_activation_adds_to_cards_sent_for_activation()
+    public function card_sent_for_activation_adds_to_cards_sent_for_activation(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -605,7 +605,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_activated_removes_from_other_lists()
+    public function card_activated_removes_from_other_lists(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -660,7 +660,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_sent_for_deactivation_adds_to_cards_sent_for_deactivation()
+    public function card_sent_for_deactivation_adds_to_cards_sent_for_deactivation(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
@@ -720,7 +720,7 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
-    public function card_deactivated_removes_from_other_lists()
+    public function card_deactivated_removes_from_other_lists(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);

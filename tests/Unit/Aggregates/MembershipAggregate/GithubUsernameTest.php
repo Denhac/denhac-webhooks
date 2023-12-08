@@ -22,7 +22,7 @@ class GithubUsernameTest extends TestCase
     }
 
     /** @test */
-    public function active_member_who_updates_github_username_gets_updated_event()
+    public function active_member_who_updates_github_username_gets_updated_event(): void
     {
         $customer = $this->customer();
 
@@ -44,7 +44,7 @@ class GithubUsernameTest extends TestCase
     }
 
     /** @test */
-    public function inactive_member_who_updates_github_username_gets_updated_event()
+    public function inactive_member_who_updates_github_username_gets_updated_event(): void
     {
         $customer = $this->customer();
 
@@ -65,7 +65,7 @@ class GithubUsernameTest extends TestCase
     }
 
     /** @test */
-    public function member_who_changes_github_username_gets_updated_event()
+    public function member_who_changes_github_username_gets_updated_event(): void
     {
         $customer = $this->customer();
         $oldUsername = 'test';

@@ -37,7 +37,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function test_github_username_updated_from_null_when_member()
+    public function test_github_username_updated_from_null_when_member(): void
     {
         $username = 'test';
         event(new GitHubUsernameUpdated(null, $username, true));
@@ -49,7 +49,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function test_github_username_updated_from_null_when_not_member()
+    public function test_github_username_updated_from_null_when_not_member(): void
     {
         $username = 'test';
         event(new GitHubUsernameUpdated(null, $username, false));
@@ -59,7 +59,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function test_github_username_updated_from_name_to_null_when_member()
+    public function test_github_username_updated_from_name_to_null_when_member(): void
     {
         $username = 'test';
         event(new GitHubUsernameUpdated($username, null, true));
@@ -70,7 +70,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function test_github_username_updated_from_name_to_null_when_not_member()
+    public function test_github_username_updated_from_name_to_null_when_not_member(): void
     {
         $username = 'test';
         event(new GitHubUsernameUpdated($username, null, false));
@@ -81,7 +81,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function test_github_username_updated_from_bad_username_does_not_emit_remove_action()
+    public function test_github_username_updated_from_bad_username_does_not_emit_remove_action(): void
     {
         $badUsername = 'https://github.com/example';
         event(new GitHubUsernameUpdated($badUsername, null, false));
@@ -91,7 +91,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_activated_customer_is_added_to_github()
+    public function on_membership_activated_customer_is_added_to_github(): void
     {
         /** @var Customer $customer */
         $customer = Customer::create([
@@ -111,7 +111,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_deactivated_customer_is_removed_from_github()
+    public function on_membership_deactivated_customer_is_removed_from_github(): void
     {
         /** @var Customer $customer */
         $customer = Customer::create([
@@ -131,7 +131,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_activated_with_null_github_username_customer_is_not_added_to_github()
+    public function on_membership_activated_with_null_github_username_customer_is_not_added_to_github(): void
     {
         /** @var Customer $customer */
         $customer = Customer::create([
@@ -150,7 +150,7 @@ class GithubMembershipReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_deactivated_with_null_github_username_customer_is_not_removed_from_github()
+    public function on_membership_deactivated_with_null_github_username_customer_is_not_removed_from_github(): void
     {
         /** @var Customer $customer */
         $customer = Customer::create([

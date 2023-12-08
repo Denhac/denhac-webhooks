@@ -17,7 +17,7 @@ class LinkQuickbooks extends Command
      */
     protected $description = 'Generate link to auth denhac QuickBooks instance';
 
-    public function handle()
+    public function handle(): int
     {
         if (QuickBooksAuthSettings::hasKnownAuth()) {
             $shouldContinue = $this->confirm('We have an existing access token, are you sure you want to generate a new one?');

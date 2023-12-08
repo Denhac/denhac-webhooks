@@ -22,7 +22,7 @@ class DemoteMemberToPublicOnlyMemberInSlack implements ShouldQueue
         $this->wooCustomerId = $wooCustomerId;
     }
 
-    public function handle()
+    public function handle(): void
     {
         if ($this->isExistingSlackUser()) {
             $this->setSingleChannelGuest(Channels::PUBLIC);

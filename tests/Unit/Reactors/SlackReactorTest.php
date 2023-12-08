@@ -36,7 +36,7 @@ class SlackReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_deactivation_they_are_demoted_in_slack()
+    public function on_membership_deactivation_they_are_demoted_in_slack(): void
     {
         $customerId = 1;
         event(new MembershipDeactivated($customerId));
@@ -48,7 +48,7 @@ class SlackReactorTest extends TestCase
     }
 
     /** @test */
-    public function on_membership_activation_they_are_made_a_regular_member_in_slack()
+    public function on_membership_activation_they_are_made_a_regular_member_in_slack(): void
     {
         $customerId = 1;
         event(new MembershipActivated($customerId));
@@ -60,7 +60,7 @@ class SlackReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_user_adds_to_slack_channel()
+    public function being_added_to_trainable_equipment_as_user_adds_to_slack_channel(): void
     {
         $planId = 1234;
         $slackId = 'C1345348';
@@ -85,7 +85,7 @@ class SlackReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_trainer_adds_to_slack_channel()
+    public function being_added_to_trainable_equipment_as_trainer_adds_to_slack_channel(): void
     {
         $planId = 1234;
         $slackId = 'C1345348';
@@ -110,7 +110,7 @@ class SlackReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_user_does_not_add_to_slack_channel_with_null_channel()
+    public function being_added_to_trainable_equipment_as_user_does_not_add_to_slack_channel_with_null_channel(): void
     {
         $planId = 1234;
         $customerId = 27;
@@ -132,7 +132,7 @@ class SlackReactorTest extends TestCase
     }
 
     /** @test */
-    public function being_added_to_trainable_equipment_as_trainer_does_not_add_to_slack_channel_with_null_channel()
+    public function being_added_to_trainable_equipment_as_trainer_does_not_add_to_slack_channel_with_null_channel(): void
     {
         $planId = 1234;
         $customerId = 27;

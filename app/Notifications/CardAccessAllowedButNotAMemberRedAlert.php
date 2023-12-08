@@ -36,7 +36,7 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['mail'];
     }
@@ -49,7 +49,7 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
      *
      * @throws \Exception
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
             ->subject('[important] !ALERT! Non-member badged into the space')
@@ -68,7 +68,7 @@ class CardAccessAllowedButNotAMemberRedAlert extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
             //

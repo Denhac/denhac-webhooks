@@ -25,7 +25,7 @@ class InviteCustomerNeedIdCheckOnlyMemberInSlack implements ShouldQueue
     /**
      * @throws \Exception
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->isExistingSlackUser()) {
             /*
