@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\HorizonSignedUrlController;
 use App\Http\Controllers\SlackEventController;
 use App\Http\Controllers\SlackInteractivityController;
 use App\Http\Controllers\SlackMembershipCommandController;
@@ -36,3 +37,5 @@ Route::prefix('quickbooks')->group(function () {
     Route::get('success', [App\Http\Controllers\Quickbooks\RedirectController::class, 'success']);
     Route::get('fail', [App\Http\Controllers\Quickbooks\RedirectController::class, 'fail']);
 });
+
+Route::get('/horizon-signed-url', HorizonSignedUrlController::class)->name('horizon-signed-url');
