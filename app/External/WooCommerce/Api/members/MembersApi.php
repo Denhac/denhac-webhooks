@@ -33,8 +33,9 @@ class MembersApi
 
     /**
      * @throws ApiCallFailed
+     * @returns true if adding the membership succeeded
      */
-    public function addMembership($woo_id, $plan_id): Collection
+    public function addMembership($woo_id, $plan_id): bool
     {
         $response = $this->client->post('/wp-json/wc/v3/memberships/members', [
             RequestOptions::JSON => [
@@ -49,11 +50,13 @@ class MembersApi
         if ($response->getStatusCode() == Response::HTTP_BAD_REQUEST) {
             $code = $data['code'];
             if ($code == 'woocommerce_rest_wc_user_membership_exists') {
-                return null; // Everything worked out fine.
+                return true; // Everything worked out fine.
             }
         }
 
         $this->jsonOrError($response);
+
+        return false;
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Aggregates\MembershipAggregate;
 use App\Http\Resources\CardUpdateRequestResource;
 use App\Models\ActiveCardHolderUpdate;
 use App\Models\CardUpdateRequest;
+use Fig\Http\Message\StatusCodeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -33,9 +34,9 @@ class CardUpdateRequestsController extends Controller
 
     public function updateActiveCardHolders(Request $request): JsonResponse
     {
-        // TODO Make this a validation request
-        if (! $request->has('card_holders')) {
-            return response()->json([
+        // TODO Make this a validation requestad
+        if (!$request->has('card_holders')) {
+            return response(status: StatusCodeInterface::STATUS_BAD_REQUEST)->json([
                 'error' => 'Missing argument card_holders',
             ]);
         }
@@ -44,5 +45,7 @@ class CardUpdateRequestsController extends Controller
         ActiveCardHolderUpdate::create([
             'card_holders' => $parameterBag,
         ]);
+
+        return response()->json();
     }
 }
