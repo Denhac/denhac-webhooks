@@ -74,7 +74,7 @@ class ActiveCardIssues implements IssueCheck
                 }
 
                 if ($membersWithCard->count() > 1) {
-                    $this->issues->add(new ActiveCardMultipleAccounts($card_holder));
+                    $this->issues->add(new ActiveCardMultipleAccounts($card_holder, $membersWithCard));
 
                     return;
                 }
