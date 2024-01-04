@@ -1,0 +1,25 @@
+services:
+  web:
+    image: nginx:latest
+    container_name: laravel_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ../:/var/www/html
+      - ./nginx/dev.webhooks.denhac.org.nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - laravel_network
+
+  app:
+    build:
+      context: ../
+      dockerfile: dev_containers/Dockerfile
+    container_name: laravel_app
+    volumes:
+      - ..:/var/www/html
+    networks:
+      - laravel_network
+
+networks:
+  laravel_network:
+    driver: bridge
