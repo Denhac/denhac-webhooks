@@ -3,7 +3,7 @@ services:
     image: nginx:latest
     container_name: laravel_web
     ports:
-      - "8080:80"
+      - "${WEBHOOKS_PORT}:80"
     volumes:
       - ../:/var/www/html
       - ./nginx/dev.webhooks.denhac.org.nginx.conf:/etc/nginx/nginx.conf
@@ -17,6 +17,18 @@ services:
     container_name: laravel_app
     volumes:
       - ..:/var/www/html
+    networks:
+      - laravel_network
+
+  ngrok:
+    build:
+      dockerfile: ./ngrok/Dockerfile
+    environment:
+      - WEBHOOKS_PORT=${WEBHOOKS_PORT}
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - NGROK_DOMAIN=${NGROK_DOMAIN}
+    ports:
+      - 4040:4040
     networks:
       - laravel_network
 
