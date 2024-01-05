@@ -16,7 +16,7 @@ fi
 # Note that it matters only what port nginx is actually listening to within the container; the port exposed to the host machine
 # by way of docker-compose mapping is irrelevant.
 # Docker provides DNS resolution based on for containers based on `container_name`, which in this case is defined in docker-compose.yml.
-HOST="laravel_web:80"
+HOST="webhooks-websrv:80"
 
 if [ -z $NGROK_DOMAIN ]; then
     # ngrok's ephermeral mode assigns you a random alphanumeric subdomain, which you can find in:

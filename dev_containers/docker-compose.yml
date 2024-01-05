@@ -1,12 +1,15 @@
+version: "3.9"
 services:
   web:
     image: nginx:latest
-    container_name: laravel_web
+    container_name: webhooks-websrv
     ports:
       - "${WEBHOOKS_PORT}:80"
     volumes:
       - ../:/var/www/html
       - ./nginx/dev.webhooks.denhac.org.nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
     networks:
       - laravel_network
 
@@ -14,9 +17,19 @@ services:
     build:
       context: ../
       dockerfile: dev_containers/Dockerfile
-    container_name: laravel_app
     volumes:
-      - ..:/var/www/html
+      # - ..:/var/www/html
+      - ../storage:/var/www/html/storage
+    develop:
+      watch:
+        - action: rebuild
+          path: ../
+          ignore:
+            - dev_containers/dev_setup.md
+            - storage/*
+            - .git/*
+    depends_on:
+      - db
     networks:
       - laravel_network
 
@@ -28,7 +41,36 @@ services:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
       - NGROK_DOMAIN=${NGROK_DOMAIN}
     ports:
-      - 4040:4040
+      - "4040:4040"
+    depends_on:
+      - web
+    networks:
+      - laravel_network
+
+  db:
+    image: mysql:latest
+    container_name: webhooks-db
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel_network
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=webhooks-db
+      - PMA_PORT=3306
+      - PMA_USER=${DB_USERNAME}
+      - PMA_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
     networks:
       - laravel_network
 
