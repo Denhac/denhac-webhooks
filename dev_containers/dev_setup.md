@@ -27,10 +27,10 @@ You can [create a free workspace](https://slack.com/get-started#/create) for you
   - The bot should now show up under `Apps` in your slack workspace
 10. Configure secrets. In your `<application_root>/.env`, add:
   - `SLACK_SPACEBOT_API_TOKEN=` the "Bot User OAuth Token" from the "OAuth & Permissions" tab
-    This token is used to sign requests that we send to slack, such as the ones that create and update the modals.
-    Note that the membership command uses the `SPACEBOT` variables, not the `MANAGEMENT` ones. 
+    - This token is used to sign requests that we send to slack, such as the ones that create and update the modals.
+    - Note that the membership command uses the `SPACEBOT` variables, not the `MANAGEMENT` ones. 
   - `SLACK_SPACEBOT_API_SIGNING_SECRET=` The "Signing Secret" from the "App Credentials" section under the "Basic Information" tab.
-    This secret is used to verify that requests to the `/slack/*` endpoints were in fact sent by slack (and originate from our workspace).
+    - This secret is used to verify that requests to the `/slack/*` endpoints were in fact sent by slack (and originate from our workspace).
 11. Test the integration
   - Send `\membership` in `#general` or some other channel
   - If you get something like `\membership is not a valid command`, the bot was not configured properly in slack, or it was not added to your workspace
