@@ -85,6 +85,22 @@ services:
     networks:
       - laravel_network
 
+  mock-denhac-dot-org:
+    build:
+      context: ./mocks/denhac_dot_org/
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./mocks/denhac_dot_org/app/:/var/www/
+    ports:
+      - 3000:80
+    develop:
+      watch:
+        - action: rebuild
+          path: ./mocks/denhac_dot_org/Dockerfile
+    networks:
+      - laravel_network
+      - mock_denhac_dot_org
+
 networks:
   laravel_network:
     driver: bridge
