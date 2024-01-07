@@ -20,11 +20,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 RUN composer install --ignore-platform-reqs
 
-COPY dev_containers/webhooks/startup_webhooks_dev .
+COPY dev_containers/webhooks/start_webhooks_dev .
 
 # At runtime, we'll want to be working in html/ rather than container_build/
 WORKDIR /var/www/html
 # This command is executed at runtime, after /var/www/html is mounted from the host
-CMD ["bash", "-c", "/var/www/html/startup_webhooks_dev"]
+CMD ["bash", "-c", "/var/www/html/start_webhooks_dev"]
 
 EXPOSE 9000
