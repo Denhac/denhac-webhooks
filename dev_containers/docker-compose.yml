@@ -25,11 +25,14 @@ services:
         - action: rebuild
           path: ../
           ignore:
-            - dev_containers/dev_setup.md
+            - dev_containers/*
             - storage/*
             - .git/*
+        - action: rebuild
+          path: dev_containers/Dockerfile
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - laravel_network
 
@@ -52,8 +55,16 @@ services:
     container_name: webhooks-db
     ports:
       - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
     networks:
       - laravel_network
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password="$$MYSQL_PASSWORD"
+      interval: 5s
+      timeout: 15s
+      retries: 5
+      start_period: 0s
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - MYSQL_DATABASE=${DB_DATABASE}
@@ -77,3 +88,9 @@ services:
 networks:
   laravel_network:
     driver: bridge
+
+  mock_denhac_dot_org:
+    driver: bridge
+
+volumes:
+  db-data:
