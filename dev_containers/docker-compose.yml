@@ -16,7 +16,7 @@ services:
   app:
     build:
       context: ../
-      dockerfile: dev_containers/Dockerfile
+      dockerfile: dev_containers/webhooks/Dockerfile
     volumes:
       # - ..:/var/www/html
       - ../storage:/var/www/html/storage
@@ -29,7 +29,7 @@ services:
             - storage/*
             - .git/*
         - action: rebuild
-          path: dev_containers/Dockerfile
+          path: dev_containers/webhooks/Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -54,7 +54,7 @@ services:
     image: mysql:latest
     container_name: webhooks-db
     ports:
-      - "3306:3306"
+      - 3306:3306
     volumes:
       - db-data:/var/lib/mysql
     networks:
@@ -87,16 +87,16 @@ services:
 
   mock-denhac-dot-org:
     build:
-      context: ./mocks/denhac_dot_org/
+      context: ./mock_services/denhac_dot_org/
       dockerfile: ./Dockerfile
     volumes:
-      - ./mocks/denhac_dot_org/app/:/var/www/
+      - ./mock_services/denhac_dot_org/app/:/var/www/
     ports:
       - 3000:80
     develop:
       watch:
         - action: rebuild
-          path: ./mocks/denhac_dot_org/Dockerfile
+          path: ./mock_services/denhac_dot_org/Dockerfile
     networks:
       - laravel_network
       - mock_denhac_dot_org
