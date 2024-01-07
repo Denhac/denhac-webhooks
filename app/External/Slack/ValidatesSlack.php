@@ -5,6 +5,7 @@ namespace App\External\Slack;
 use DateTime;
 use Illuminate\Http\Request;
 use Spatie\SslCertificate\SslCertificate;
+use Illuminate\Support\Facades\Log;
 
 trait ValidatesSlack
 {
@@ -32,9 +33,9 @@ trait ValidatesSlack
     public function isCertificateValid(Request $request): bool
     {
         $clientVerify = $request->server('X_CLIENT_VERIFY');
-        $clientCertificateDataEncoded = $request->server('X_CLIENT_CERTIFICATE');
 
         if ($clientVerify != 'SUCCESS') {
+            LOG::info('ValidatesSlack: Slack request had invalid X_CLIENT_VERIFY header: "'.$request->server('X_CLIENT_VERIFY').'"');
             return false;
         }
 
@@ -42,6 +43,7 @@ trait ValidatesSlack
         $clientCertificate = SslCertificate::createFromString($clientCertificateData);
 
         if (! $clientCertificate->isValid('platform-tls-client.slack.com')) {
+            LOG::info('ValidatesSlack: Slack request failed client cerificate verification: X_CLIENT_CERTIFICATE="'.$request->server('X_CLIENT_CERTIFICATE').'"');
             return false;
         }
 
