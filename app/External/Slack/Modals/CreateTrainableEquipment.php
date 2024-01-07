@@ -109,8 +109,6 @@ class CreateTrainableEquipment implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info('Create Trainable Equipment');
-        Log::info(print_r($request->payload(), true));
         $values = $request->payload()['view']['state']['values'];
 
         $equipmentName = $values[self::EQUIPMENT_NAME][self::EQUIPMENT_NAME]['value'];

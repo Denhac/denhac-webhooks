@@ -50,7 +50,7 @@ class EquipmentAuthorization implements ModalInterface
             ->dispatchAction()
             ->blockId(self::EQUIPMENT_DROPDOWN)
             ->label('Equipment')
-            ->newSelectMenu()
+            ->newMultiSelectMenu()
             ->forExternalOptions()
             ->actionId(self::EQUIPMENT_DROPDOWN)
             ->placeholder('Select equipment')
@@ -60,11 +60,20 @@ class EquipmentAuthorization implements ModalInterface
             ->dispatchAction()
             ->blockId(self::PERSON_DROPDOWN)
             ->label('Person')
-            ->newSelectMenu()
+            ->newMultiSelectMenu()
             ->forExternalOptions()
             ->actionId(self::PERSON_DROPDOWN)
             ->placeholder('Select a member')
             ->minQueryLength(2);
+
+        $option = Option::new('Make Trainer(s)')
+            ->description('Also make these members trainers for this equipment.')
+            ->value('true');
+        $this->modalView->newActions()
+            ->blockId(self::TRAINER_CHECK)
+            ->newCheckboxes()
+            ->actionId(self::TRAINER_CHECK)
+            ->addOption($option, false);
     }
 
     public static function callbackId(): string
@@ -74,36 +83,40 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info('Equipment authorization');
-        Log::info(print_r($request->payload(), true));
-
         $state = self::getStateValues($request);
-        $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
-        $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
-        $makeUser = ! is_null($state[self::USER_CHECK][self::USER_CHECK] ?? null);
-        $makeTrainer = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
-
-        $equipmentId = str_replace('equipment-', '', $equipmentValue);
-        $personId = str_replace('customer-', '', $personValue);
-
-        /** @var Customer $person */
-        $person = Customer::find($personId);
-
-        /** @var TrainableEquipment $equipment */
-        $equipment = TrainableEquipment::find($equipmentId);
+        $equipmentValues = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? [];
+        $personValues = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? [];
+        $makeUsers = true;
+        $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
         /** @var WooCommerceApi $api */
         $api = app(WooCommerceApi::class);
 
-        if ($makeUser) {
-            $api->members->addMembership($person->id, $equipment->user_plan_id);
+        $allEquipment = [];
+        foreach($equipmentValues as $equipmentValue) {
+            $equipmentId = str_replace('equipment-', '', $equipmentValue);
+            $allEquipment[] = TrainableEquipment::find($equipmentId);
+        }
+        $allPeople = [];
+        foreach($personValues as $personValue) {
+            $personId = str_replace('customer-', '', $personValue);
+            $allPeople[] = Customer::find($personId);
+        }
+        
+        foreach($allPeople as $person) {
+            foreach($allEquipment as $equipment) {
+                if (!$person->hasMembership($equipment->user_plan_id)) {
+                    $api->members->addMembership($person->id, $equipment->user_plan_id);
+                }
+
+                if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
+                    $api->members->addMembership($person->id, $equipment->trainer_plan_id);
+                }
+            }
         }
 
-        if ($makeTrainer) {
-            $api->members->addMembership($person->id, $equipment->trainer_plan_id);
-        }
 
-        if (! $makeTrainer && ! $makeUser) {
+        if (! $makeTrainers && ! $makeUsers) {
             return (new FailureModal('Neither user nor trainer appear to have been selected. Try again?'))
                 ->update();
         }
@@ -127,9 +140,6 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
-        Log::info('Equipment auth options request');
-        Log::info(print_r($request->payload(), true));
-
         $blockId = $request->payload()['block_id'];
 
         if ($blockId == self::EQUIPMENT_DROPDOWN) {
@@ -160,52 +170,69 @@ class EquipmentAuthorization implements ModalInterface
         $modal->setUpModalCommon();
 
         $state = self::getStateValues($request);
-        $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
-        $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
+        $equipmentValues = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
+        $personValues = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
 
-        if (is_null($equipmentValue)) {
+        if (empty($equipmentValues)) {
             $modal->noEquipment();
         }
 
-        if (is_null($personValue)) {
+        if (empty($personValues)) {
             $modal->noPerson();
         }
 
-        if (! is_null($equipmentValue) && ! is_null($personValue)) {
-            $equipmentId = str_replace('equipment-', '', $equipmentValue);
-            $personId = str_replace('customer-', '', $personValue);
-            /** @var Customer $person */
-            $person = Customer::find($personId);
-            $name = "{$person->first_name} {$person->last_name}";
-
-            /** @var TrainableEquipment $equipment */
-            $equipment = TrainableEquipment::find($equipmentId);
-            if ($person->hasMembership($equipment->user_plan_id)) {
-                $modal->modalView->newSection()
-                    ->plainText(":white_check_mark: $name is already an authorized user.");
-            } else {
-                $option = Option::new('User')
-                    ->description('The person can use the equipment.')
-                    ->value('true');
-                $modal->modalView->newActions()
-                    ->blockId(self::USER_CHECK)
-                    ->newCheckboxes()
-                    ->actionId(self::USER_CHECK)
-                    ->addOption($option, true);
+        
+        if (! empty($equipmentValues) && ! empty($personValues)) {
+            foreach($equipmentValues as $equipmentValue) {
+                $equipmentId = str_replace('equipment-', '', $equipmentValue);
+                $allEquipment[] = TrainableEquipment::find($equipmentId);
+            }
+            $allPeople = [];
+            foreach($personValues as $personValue) {
+                $personId = str_replace('customer-', '', $personValue);
+                $allPeople[] = Customer::find($personId);
             }
 
-            if ($person->hasMembership($equipment->trainer_plan_id)) {
-                $modal->modalView->newSection()
-                    ->plainText(":white_check_mark: $name is already an authorized trainer.");
-            } else {
-                $option = Option::new('Trainer')
-                    ->description('The person can train others to use the equipment and add new trainers.')
-                    ->value('true');
-                $modal->modalView->newActions()
-                    ->blockId(self::TRAINER_CHECK)
-                    ->newCheckboxes()
-                    ->actionId(self::TRAINER_CHECK)
-                    ->addOption($option, false);
+            $alreadyTrained = [];
+            $alreadyTrainers = [];
+
+            foreach($allPeople as $person) {
+                $name = "{$person->first_name} {$person->last_name}";
+                $trainedEquipment = [];
+                $trainerForEquipment = [];
+
+                foreach($allEquipment as $equipment) {
+                    if ($person->hasMembership($equipment->user_plan_id)) {
+                        $trainedEquipment[] = $equipment->name;
+                    }
+                    if ($person->hasMembership($equipment->trainer_plan_id)) {
+                        $trainerForEquipment[] = $equipment->name;
+                    }
+                }
+                if (!empty($trainedEquipment)) {
+                    $alreadyTrained[$name] = $trainedEquipment;
+                }
+                if (!empty($trainerForEquipment)) {
+                    $alreadyTrainers[$name] = $trainerForEquipment;
+                }
+            }
+
+            if (!empty($alreadyTrained) || !empty($alreadyTrainers)) {
+                $modal->modalView->newSection()->mrkdwnText(":information_source:");
+
+                if (!empty($alreadyTrained)) {
+                    foreach($alreadyTrained as $trainee => $equipmentNames) {
+                        $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.implode(', ', $equipmentNames));
+                    }
+
+                    if (!empty($trainerForEquipment)) {
+                        $modal->modalView->newDivider();
+                    }
+                }
+
+                foreach($alreadyTrainers as $trainer => $equipmentNames) {
+                    $modal->modalView->newContext()->mrkdwnText($trainer.' is already a trainer for '.implode(', ', $equipmentNames));
+                }
             }
         }
 
@@ -215,12 +242,12 @@ class EquipmentAuthorization implements ModalInterface
     private function noEquipment()
     {
         $this->modalView->newSection()
-            ->mrkdwnText("Please select the Equipment you're training for.");
+            ->mrkdwnText("Please select at least one piece of equipment above.");
     }
 
     private function noPerson()
     {
         $this->modalView->newSection()
-            ->mrkdwnText("Please select who you're authorizing.");
+            ->mrkdwnText("Please select at least one member to authorize.");
     }
 }
