@@ -6,6 +6,7 @@ use App\External\Slack\CommonResponses;
 use App\External\Slack\Modals\MembershipOptionsModal;
 use App\Http\Requests\SlackRequest;
 use SlackPhp\BlockKit\Kit;
+use Illuminate\Support\Facades\Log;
 
 class SlackMembershipCommandController extends Controller
 {
@@ -14,6 +15,7 @@ class SlackMembershipCommandController extends Controller
         $customer = $request->customer();
 
         if ($customer === null) {
+            Log::info('SlackMembershipCommandController: Dismissing membership command from unknown user with SlackID: "'.$request->getSlackId().'"');
             return Kit::newMessage()->text(CommonResponses::unrecognizedUser());
         }
 

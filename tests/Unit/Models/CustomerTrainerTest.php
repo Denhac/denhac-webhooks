@@ -69,7 +69,7 @@ class CustomerTrainerTest extends TestCase
     }
 
     /** @test */
-    public function is_a_trainer_returns_false_if_a_trainer(): void
+    public function is_a_trainer_returns_true_if_a_trainer(): void
     {
         UserMembership::create([
             'id' => $this->faker->randomNumber(),
