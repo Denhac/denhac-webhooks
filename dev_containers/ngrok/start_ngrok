@@ -15,8 +15,8 @@ fi
 # It needs to connect to the nginx server, which is running on the "web" service connected to the same network and serving on :80
 # Note that it matters only what port nginx is actually listening to within the container; the port exposed to the host machine
 # by way of docker-compose mapping is irrelevant.
-# Docker provides DNS resolution based on for containers based on `container_name`, which in this case is defined in docker-compose.yml.
-HOST="webhooks-websrv:80"
+# Docker provides DNS resolution based on service or container names.
+HOST="web:80"
 
 if [ -z $NGROK_DOMAIN ]; then
     # ngrok's ephermeral mode assigns you a random alphanumeric subdomain, which you can find in:
@@ -28,6 +28,6 @@ if [ -z $NGROK_DOMAIN ]; then
     ngrok http $HOST
 else
     # domain mode allows you to specify a static domain, but requires a paid subscription to ngrok
-    echo "Starting ngrok at $NGROK_DOMAIN:80"
+    echo "Starting ngrok at $NGROK_DOMAIN"
     ngrok http --domain=$NGROK_DOMAIN $HOST
 fi
