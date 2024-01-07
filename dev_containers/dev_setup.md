@@ -39,7 +39,7 @@ You can [create a free workspace](https://slack.com/get-started#/create) for you
 
 ## Orientation
 ### Logging
-Import Laravel's logging util with `use Illuminate/Support/Facades/Log;`.
+Import Laravel's logging util with `use Illuminate\Support\Facades\Log;`.
 Logging is configured at `app/config/logging.php` and with the env variable `LOG_CHANNEL`.
 The `stack` channel (default) is a composite channel defined in `logging.php`. It currently is an alias to the `single` channel, but offers support for multiple channels.
 

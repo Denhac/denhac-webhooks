@@ -93,10 +93,14 @@ services:
       - ./mock_services/denhac_dot_org/app/:/var/www/
     ports:
       - 3000:80
+    environment:
+      - OUTBOUND_SIGNING_SECRET=${DENHAC_ORG_SIGNING_SECRET}
     develop:
       watch:
         - action: rebuild
           path: ./mock_services/denhac_dot_org/Dockerfile
+        - action: rebuild
+          path: .env
     networks:
       - laravel_network
       - mock_denhac_dot_org
