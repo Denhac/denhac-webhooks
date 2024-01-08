@@ -48,6 +48,16 @@ class EquipmentAuthorization implements ModalInterface
 
         $this->modalView->newInput()
             ->dispatchAction()
+            ->blockId(self::PERSON_DROPDOWN)
+            ->label('Member(s)')
+            ->newMultiSelectMenu()
+            ->forExternalOptions()
+            ->actionId(self::PERSON_DROPDOWN)
+            ->placeholder('Select a member')
+            ->minQueryLength(2);
+
+        $this->modalView->newInput()
+            ->dispatchAction()
             ->blockId(self::EQUIPMENT_DROPDOWN)
             ->label('Equipment')
             ->newMultiSelectMenu()
@@ -56,15 +66,7 @@ class EquipmentAuthorization implements ModalInterface
             ->placeholder('Select equipment')
             ->minQueryLength(0);
 
-        $this->modalView->newInput()
-            ->dispatchAction()
-            ->blockId(self::PERSON_DROPDOWN)
-            ->label('Person')
-            ->newMultiSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::PERSON_DROPDOWN)
-            ->placeholder('Select a member')
-            ->minQueryLength(2);
+        $this->modalView->newSection()->mrkdwnText(':heavy_check_mark: The listed member(s) will be authorized to use this equipment.');
 
         $option = Option::new('Make Trainer(s)')
             ->description('Also make these members trainers for this equipment.')
@@ -103,13 +105,17 @@ class EquipmentAuthorization implements ModalInterface
             $allPeople[] = Customer::find($personId);
         }
         
+        $actorId = $request->customer()->id;
+
         foreach($allPeople as $person) {
             foreach($allEquipment as $equipment) {
                 if (!$person->hasMembership($equipment->user_plan_id)) {
+                    Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
                     $api->members->addMembership($person->id, $equipment->user_plan_id);
                 }
 
                 if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
+                    Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
                     $api->members->addMembership($person->id, $equipment->trainer_plan_id);
                 }
             }
@@ -220,14 +226,8 @@ class EquipmentAuthorization implements ModalInterface
             if (!empty($alreadyTrained) || !empty($alreadyTrainers)) {
                 $modal->modalView->newSection()->mrkdwnText(":information_source:");
 
-                if (!empty($alreadyTrained)) {
-                    foreach($alreadyTrained as $trainee => $equipmentNames) {
-                        $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.implode(', ', $equipmentNames));
-                    }
-
-                    if (!empty($trainerForEquipment)) {
-                        $modal->modalView->newDivider();
-                    }
+                foreach($alreadyTrained as $trainee => $equipmentNames) {
+                    $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.implode(', ', $equipmentNames));
                 }
 
                 foreach($alreadyTrainers as $trainer => $equipmentNames) {
