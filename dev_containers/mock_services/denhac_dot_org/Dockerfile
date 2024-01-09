@@ -6,4 +6,8 @@ WORKDIR /var/www/
 # This allows us to use a bind mount rather than copying at build time, which makes reloads faster
 RUN npm install nodemon --global
 
+COPY app/package.json .
+COPY app/package-lock.json .
+RUN npm install
+
 CMD ["nodemon", "src/mock_wordpress_server.js"]
