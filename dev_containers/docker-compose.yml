@@ -18,18 +18,20 @@ services:
       context: ../
       dockerfile: dev_containers/webhooks/Dockerfile
     volumes:
-      # - ..:/var/www/html
-      - ../storage:/var/www/html/storage
+      - ..:/var/www/html
+      # - ../storage:/var/www/html/storage
     develop:
       watch:
+        # - action: rebuild
+        #   path: ../
+        #   ignore:
+        #     - dev_containers/*
+        #     - storage/*
+        #     - .git/*
         - action: rebuild
-          path: ../
-          ignore:
-            - dev_containers/*
-            - storage/*
-            - .git/*
+          path: ./webhooks/
         - action: rebuild
-          path: dev_containers/webhooks/Dockerfile
+          path: ./.env
     depends_on:
       db:
         condition: service_healthy
@@ -49,6 +51,12 @@ services:
       - web
     networks:
       - laravel_network
+    develop:
+      watch:
+        - action: rebuild
+          path: ./ngrok/
+        - action: rebuild
+          path: ./.env
 
   db:
     image: mysql:latest
@@ -98,9 +106,9 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: ./mock_services/denhac_dot_org/Dockerfile
+          path: ./mock_services/denhac_dot_org/
         - action: rebuild
-          path: .env
+          path: ./.env
     networks:
       - laravel_network
       - mock_denhac_dot_org

@@ -1,13 +1,30 @@
 #! /usr/bin/env bash
+echo "Linking vendor packages from build..."
+# cp -r /var/www/build/. .
+rm -rf vendor
+ln -s /var/www/build/vendor vendor
 
-# ln -s /var/www/container_build/vendor /var/www/html/vendor
+# echo "Installing packages..."
+# composer install
 
-echo "Running Migrations"
+echo "Preparing autoload..."
+composer dump-autoload -o
+if [ $? -ne 0 ]; then
+  echo "Autoload failed!"
+  exit $?
+fi
 
+echo "Running migrations..."
 php artisan migrate
+if [ $? -ne 0 ]; then
+  echo "WARNING: Failed to run migrations! Continuing..."
+fi
 
-echo "Starting PHP"
-
+echo "Starting PHP..."
 php-fpm &
 
+echo "Application ready."
+
+mkdir -p storage/logs/
+touch storage/logs/laravel.log
 tail -fn 0 storage/logs/laravel.log
