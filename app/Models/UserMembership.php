@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class UserMembership.
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class UserMembership extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     public const MEMBERSHIP_FULL_MEMBER = 6410;
 
