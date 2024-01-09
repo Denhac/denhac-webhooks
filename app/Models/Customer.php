@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 /**
  * Class Customer.
  *
@@ -40,6 +40,7 @@ class Customer extends Model
 {
     use SoftDeletes;
     use Notifiable;
+    use HasFactory;
 
     public $incrementing = false;
 

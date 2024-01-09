@@ -20,7 +20,10 @@ if [ $? -ne 0 ]; then
   echo "WARNING: Failed to run migrations! Continuing..."
 fi
 
-echo "Starting PHP..."
+echo "Seeding database..."
+php artisan db:seed
+
+echo "Starting PHP"
 php-fpm &
 
 echo "Application ready."
