@@ -6,6 +6,7 @@ use App\External\Slack\CommonResponses;
 use App\External\Slack\Modals\MembershipOptionsModal;
 use App\Http\Requests\SlackRequest;
 use SlackPhp\BlockKit\Kit;
+use Illuminate\Support\Facades\Log;
 
 class SlackMembershipCommandController extends Controller
 {
@@ -14,6 +15,7 @@ class SlackMembershipCommandController extends Controller
         $customer = $request->customer();
 
         if ($customer === null) {
+            Log::info('MembershipCommand: Rejecting command from unrecognised slack id '.$request->getSlackId());
             return Kit::newMessage()->text(CommonResponses::unrecognizedUser());
         }
 
