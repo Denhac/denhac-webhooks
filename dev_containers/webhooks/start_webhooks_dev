@@ -6,6 +6,10 @@ echo "Running Migrations"
 
 php artisan migrate
 
+echo "Seeding database"
+
+php artisan db:seed
+
 echo "Starting PHP"
 
 php-fpm &
