@@ -96,7 +96,18 @@ class EquipmentAuthorization implements ModalInterface
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
         
-        $actorId = $request->customer()->id;
+        $actor = $request->customer();
+        $actorId = $actor->id;
+        foreach($selectedEquipment as $equipment) {
+            // Confirm that user submitting authorization has appropriate permissions
+            if (!$actor->hasMembership($equipment->trainer_plan_id)) {
+                LOG::info('EquipmentAuthorization: Customer '.$actorId.' does not have permission to grant authorizations for equipment '.$equipment->id);
+                return response()->json([
+                    'response_action' => 'errors',
+                    'errors' => [self::EQUIPMENT_DROPDOWN => "You don't have permission to authorize members for ".$equipment->name]
+                ]);
+            }
+        }
 
         foreach($selectedMembers->crossJoin($selectedEquipment)->all() as [$person, $equipment]) {
             if (!$person->hasMembership($equipment->user_plan_id)) {
