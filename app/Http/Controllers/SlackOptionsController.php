@@ -10,9 +10,6 @@ class SlackOptionsController extends Controller
 {
     public function __invoke(SlackRequest $request)
     {
-        //        Log::info("Options request!");
-        //        Log::info(print_r($request->payload(), true));
-
         $payload = $request->payload();
 
         if ($payload['type'] == 'block_suggestion') {

@@ -53,8 +53,5 @@ class ViewsApi
             ->post('https://denhac.slack.com/api/views.update', [
                 RequestOptions::JSON => $data,
             ]);
-
-        Log::info('Slack Views Publish');
-        Log::info(json_decode($response->getBody(), true));
     }
 }
