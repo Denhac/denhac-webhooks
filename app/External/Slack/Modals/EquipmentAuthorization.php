@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
+use Illuminate\Support\Collection;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -86,38 +87,26 @@ class EquipmentAuthorization implements ModalInterface
     public static function handle(SlackRequest $request)
     {
         $state = self::getStateValues($request);
-        $equipmentValues = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? [];
-        $personValues = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? [];
         $makeUsers = true;
         $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
         /** @var WooCommerceApi $api */
         $api = app(WooCommerceApi::class);
 
-        $allEquipment = [];
-        foreach($equipmentValues as $equipmentValue) {
-            $equipmentId = str_replace('equipment-', '', $equipmentValue);
-            $allEquipment[] = TrainableEquipment::find($equipmentId);
-        }
-        $allPeople = [];
-        foreach($personValues as $personValue) {
-            $personId = str_replace('customer-', '', $personValue);
-            $allPeople[] = Customer::find($personId);
-        }
+        $selectedEquipment = self::equipmentFromState($state);
+        $selectedMembers = self::peopleFromState($state);
         
         $actorId = $request->customer()->id;
 
-        foreach($allPeople as $person) {
-            foreach($allEquipment as $equipment) {
-                if (!$person->hasMembership($equipment->user_plan_id)) {
-                    Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
-                    $api->members->addMembership($person->id, $equipment->user_plan_id);
-                }
+        foreach($selectedMembers->crossJoin($selectedEquipment)->all() as [$person, $equipment]) {
+            if (!$person->hasMembership($equipment->user_plan_id)) {
+                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
+                $api->members->addMembership($person->id, $equipment->user_plan_id);
+            }
 
-                if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
-                    Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
-                    $api->members->addMembership($person->id, $equipment->trainer_plan_id);
-                }
+            if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
+                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
+                $api->members->addMembership($person->id, $equipment->trainer_plan_id);
             }
         }
 
@@ -142,6 +131,20 @@ class EquipmentAuthorization implements ModalInterface
             self::blockActionDoNothing(self::USER_CHECK),
             self::blockActionDoNothing(self::TRAINER_CHECK),
         ];
+    }
+
+    public static function equipmentFromState($state)
+    {
+        return collect($state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? [])
+            -> map(fn($formValue) => str_replace('equipment-', '', $formValue))
+            -> map(fn($equipmentId) => TrainableEquipment::find($equipmentId));
+    }
+
+    public static function peopleFromState($state)
+    {
+        return collect($state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? [])
+            -> map(fn($formValue) => str_replace('customer-', '', $formValue))
+            -> map(fn($customerId) => Customer::find($customerId));
     }
 
     public static function getOptions(SlackRequest $request)
@@ -176,38 +179,29 @@ class EquipmentAuthorization implements ModalInterface
         $modal->setUpModalCommon();
 
         $state = self::getStateValues($request);
-        $equipmentValues = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
-        $personValues = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
 
-        if (empty($equipmentValues)) {
+        $selectedEquipment = self::equipmentFromState($state);
+        $selectedMembers = self::peopleFromState($state);
+
+        if (empty($selectedEquipment)) {
             $modal->noEquipment();
         }
 
-        if (empty($personValues)) {
+        if (empty($selectedMembers)) {
             $modal->noPerson();
         }
-
         
-        if (! empty($equipmentValues) && ! empty($personValues)) {
-            foreach($equipmentValues as $equipmentValue) {
-                $equipmentId = str_replace('equipment-', '', $equipmentValue);
-                $allEquipment[] = TrainableEquipment::find($equipmentId);
-            }
-            $allPeople = [];
-            foreach($personValues as $personValue) {
-                $personId = str_replace('customer-', '', $personValue);
-                $allPeople[] = Customer::find($personId);
-            }
+        if (! empty($selectedEquipment) && ! empty($selectedMembers)) {
 
             $alreadyTrained = [];
             $alreadyTrainers = [];
 
-            foreach($allPeople as $person) {
+            foreach($selectedMembers as $person) {
                 $name = "{$person->first_name} {$person->last_name}";
                 $trainedEquipment = [];
                 $trainerForEquipment = [];
 
-                foreach($allEquipment as $equipment) {
+                foreach($selectedEquipment as $equipment) {
                     if ($person->hasMembership($equipment->user_plan_id)) {
                         $trainedEquipment[] = $equipment->name;
                     }
