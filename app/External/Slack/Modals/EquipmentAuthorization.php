@@ -133,14 +133,14 @@ class EquipmentAuthorization implements ModalInterface
         ];
     }
 
-    public static function equipmentFromState($state)
+    public static function equipmentFromState($state): Collection
     {
         return collect($state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? [])
             -> map(fn($formValue) => str_replace('equipment-', '', $formValue))
             -> map(fn($equipmentId) => TrainableEquipment::find($equipmentId));
     }
 
-    public static function peopleFromState($state)
+    public static function peopleFromState($state): Collection
     {
         return collect($state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? [])
             -> map(fn($formValue) => str_replace('customer-', '', $formValue))
@@ -192,6 +192,7 @@ class EquipmentAuthorization implements ModalInterface
         }
         
         if (! empty($selectedEquipment) && ! empty($selectedMembers)) {
+            // Render information about any selected people who have existing permisisons for this equipment.
 
             $alreadyTrained = [];
             $alreadyTrainers = [];
