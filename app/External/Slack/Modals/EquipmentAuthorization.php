@@ -14,6 +14,7 @@ use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
 use Illuminate\Support\Collection;
+use App\Actions\WordPress\BatchAuthorizeEquipmentAction;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -96,19 +97,29 @@ class EquipmentAuthorization implements ModalInterface
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
         
-        $actorId = $request->customer()->id;
+        $actor = $request->customer();
 
-        foreach($selectedMembers->crossJoin($selectedEquipment)->all() as [$person, $equipment]) {
-            if (!$person->hasMembership($equipment->user_plan_id)) {
-                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
-                $api->members->addMembership($person->id, $equipment->user_plan_id);
-            }
-
-            if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
-                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
-                $api->members->addMembership($person->id, $equipment->trainer_plan_id);
-            }
+        $planIds = $selectedEquipment->map(function ($equipment) {
+            return $equipment->user_plan_id;
+        });
+        if ($makeTrainers) {
+            $planIds = $planIds->concat($selectedEquipment->map(function ($equipment) {
+                return $equipment->trainer_plan_id;
+            }));
         }
+
+        app(\App\Actions\WordPress\BatchEquipmentAuthorizationAction::class)->execute($actor, $selectedMembers, $planIds);
+        // foreach($selectedMembers->crossJoin($selectedEquipment)->all() as [$person, $equipment]) {
+        //     if (!$person->hasMembership($equipment->user_plan_id)) {
+        //         Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
+        //         $api->members->addMembership($person->id, $equipment->user_plan_id);
+        //     }
+
+        //     if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
+        //         Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
+        //         $api->members->addMembership($person->id, $equipment->trainer_plan_id);
+        //     }
+        // }
 
 
         if (! $makeTrainers && ! $makeUsers) {

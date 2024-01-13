@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
+use App\Actions\WordPress\BatchAuthorizeEquipmentAction;
+use App\Actions\WordPress\AuthorizeEquipmentAction;
+use App\External\WooCommerce\Api\WooCommerceApi;
 use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
@@ -45,6 +48,14 @@ class AppServiceProvider extends ServiceProvider
             $dataService = app(DataService::class);
 
             return $dataService->getOAuth2LoginHelper();
+        });
+
+        $this->app->bind(\App\Actions\WordPress\AuthorizeEquipmentAction::class, function($app) {
+            return new AuthorizeEquipmentAction($app->make(WooCommerceApi::class));
+        });
+
+        $this->app->bind(\App\Actions\WordPress\BatchEquipmentAuthorizationAction::class, function($app) {
+            return new BatchAuthorizeEquipmentAction($app->make(AuthorizeEquipmentAction::class));
         });
 
         RateLimiter::for('slack-profile-update', function () {
