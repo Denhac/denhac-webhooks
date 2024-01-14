@@ -27,7 +27,7 @@ class AuthorizeEquipmentAction
      */
     public function execute($trainerId, $memberId, $planId)
     {
-        Log::info('AuthorizeEquipmentAction: Customer '.$trainerId.' authorized Customer '.$memberId.' for equipment plan id '.$planId);
         $this->wpApi->members->addMembership($memberId, $planId);
+        Log::info('AuthorizeEquipmentAction: Customer '.$trainerId.' authorized Customer '.$memberId.' for equipment plan id '.$planId);
     }
 }

@@ -99,32 +99,15 @@ class EquipmentAuthorization implements ModalInterface
         
         $actor = $request->customer();
 
-        $planIds = $selectedEquipment->map(function ($equipment) {
-            return $equipment->user_plan_id;
-        });
-        if ($makeTrainers) {
-            $planIds = $planIds->concat($selectedEquipment->map(function ($equipment) {
-                return $equipment->trainer_plan_id;
-            }));
-        }
-
-        app(\App\Actions\WordPress\BatchEquipmentAuthorizationAction::class)->execute($actor, $selectedMembers, $planIds);
-        // foreach($selectedMembers->crossJoin($selectedEquipment)->all() as [$person, $equipment]) {
-        //     if (!$person->hasMembership($equipment->user_plan_id)) {
-        //         Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
-        //         $api->members->addMembership($person->id, $equipment->user_plan_id);
-        //     }
-
-        //     if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
-        //         Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
-        //         $api->members->addMembership($person->id, $equipment->trainer_plan_id);
-        //     }
-        // }
-
-
-        if (! $makeTrainers && ! $makeUsers) {
-            return (new FailureModal('Neither user nor trainer appear to have been selected. Try again?'))
-                ->update();
+        try {
+            app()->make(BatchAuthorizeEquipmentAction::class)->execute($actor, $selectedMembers, $selectedEquipment, $makeTrainers);
+        } catch (\Exception $e) {
+            if ($e->getMessage() == 'NotAuthorized') {
+                return response()->json([
+                    'response_action' => 'errors',
+                    'errors' => [self::EQUIPMENT_DROPDOWN => "You don't have permission to authorize members for this equipment."]
+                ]);
+            }
         }
 
         // TODO actually check error before sending success
