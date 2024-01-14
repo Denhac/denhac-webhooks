@@ -88,7 +88,6 @@ class EquipmentAuthorization implements ModalInterface
     public static function handle(SlackRequest $request)
     {
         $state = self::getStateValues($request);
-        $makeUsers = true;
         $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
         /** @var WooCommerceApi $api */
