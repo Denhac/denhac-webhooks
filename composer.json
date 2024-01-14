@@ -41,6 +41,7 @@
     "require-dev": {
         "deployer/deployer": "^7.3",
         "fakerphp/faker": "^1.13.0",
+        "laravel/sail": "^1.27",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
         "phpunit/phpunit": "^10.0",

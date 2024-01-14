@@ -4,6 +4,7 @@ namespace App\External\Slack;
 
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Spatie\SslCertificate\SslCertificate;
 
 trait ValidatesSlack
@@ -31,6 +32,11 @@ trait ValidatesSlack
 
     public function isCertificateValid(Request $request): bool
     {
+        if (config('app.env') == 'local') {
+            Log::warning('APP_ENV is local, skipping mTLS check for Slack');
+            return true;
+        }
+
         $clientVerify = $request->server('X_CLIENT_VERIFY');
         $clientCertificateDataEncoded = $request->server('X_CLIENT_CERTIFICATE');
 
