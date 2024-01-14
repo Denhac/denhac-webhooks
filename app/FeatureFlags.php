@@ -8,6 +8,14 @@ namespace App;
  */
 class FeatureFlags
 {
+    /**
+     * With this feature flag off, things that would invite people to a specific slack channel will still be handled in
+     * the specific locations they've been hardcoded. For example, the SlackReactor might use the TrainableEquipment
+     * table to manage who gets invited to a channel for a user or for a trainer. With it on, that code should be
+     * prevented from running and instead the VolunteerGroupsReactor should handle it.
+     */
+    public const USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS = 'use-volunteer-groups-for-slack-channels';
+
     // The following flags are no longer used but are kept here as a reference to make sure they're not re-used.
     // When removing a feature, mark it as private so it cannot be used anywhere else and tag it as deprecated.
 

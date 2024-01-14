@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('name');
             $table->unsignedInteger('plan_id');
-            $table->unsignedInteger('max_people');
+            $table->unsignedInteger('max_people')->nullable();
         });
     }
 
