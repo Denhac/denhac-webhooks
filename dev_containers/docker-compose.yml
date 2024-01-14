@@ -90,7 +90,8 @@ services:
       context: ./mock_services/denhac_dot_org/
       dockerfile: ./Dockerfile
     volumes:
-      - ./mock_services/denhac_dot_org/app/:/var/www/
+      - ./mock_services/denhac_dot_org/app/src:/var/www/src
+      - ./mock_services/denhac_dot_org/app/storage:/var/www/storage
     ports:
       - 3000:80
     environment:
