@@ -3,6 +3,7 @@
 namespace App\Actions\Slack;
 
 use App\External\Slack\SlackApi;
+use App\External\Slack\SlackRateLimit;
 use App\Models\Customer;
 use Illuminate\Support\Str;
 use SlackPhp\BlockKit\Surfaces\Message;
@@ -12,6 +13,8 @@ class SendMessage
 {
     use QueueableAction;
     use SlackActionTrait;
+
+    public string $queue = 'slack-rate-limited';
 
     private SlackApi $api;
 
@@ -37,5 +40,12 @@ class SendMessage
         // At this point, userId should be just a string of the slack id that we care about
 
         $this->api->chat->postMessage($userId, $message);
+    }
+
+    public function middleware()
+    {
+        return [
+            SlackRateLimit::chat_postMessage(),
+        ];
     }
 }

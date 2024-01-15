@@ -4,6 +4,7 @@ namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
 use App\External\Slack\SlackApi;
+use App\External\Slack\SlackRateLimit;
 use Spatie\QueueableAction\QueueableAction;
 
 class RemoveFromChannel
@@ -11,6 +12,8 @@ class RemoveFromChannel
     use QueueableAction;
     use StaticAction;
     use SlackActionTrait;
+
+    public string $queue = 'slack-rate-limited';
 
     private SlackApi $slackApi;
 
@@ -33,5 +36,13 @@ class RemoveFromChannel
         }
 
         throw new \Exception("Kick of $userId from $channel failed: ".print_r($response, true));
+    }
+
+    public function middleware()
+    {
+        return [
+            SlackRateLimit::conversations_list(),
+            SlackRateLimit::conversations_kick(),
+        ];
     }
 }
