@@ -179,7 +179,7 @@ class EquipmentAuthorization implements ModalInterface
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
         
-        if (! empty($selectedEquipment) && ! empty($selectedMembers)) {
+        if ($selectedEquipment->isNotEmpty() && $selectedMembers->isNotEmpty()) {
             // Render information about any selected people who have existing permisisons for this equipment.
 
             $alreadyTrained = [];
@@ -198,15 +198,15 @@ class EquipmentAuthorization implements ModalInterface
                         $trainerForEquipment[] = $equipment->name;
                     }
                 }
-                if (!empty($trainedEquipment)) {
+                if ($trainedEquipment->isNotEmpty()) {
                     $alreadyTrained[$name] = $trainedEquipment;
                 }
-                if (!empty($trainerForEquipment)) {
+                if ($trainerForEquipment->isNotEmpty()) {
                     $alreadyTrainers[$name] = $trainerForEquipment;
                 }
             }
 
-            if (!empty($alreadyTrained) || !empty($alreadyTrainers)) {
+            if ($alreadyTrained->isNotEmpty() || $alreadyTrainers->isNotEmpty()) {
                 $modal->modalView->newSection()->mrkdwnText(":information_source:");
 
                 foreach($alreadyTrained as $trainee => $equipmentNames) {
