@@ -46,12 +46,5 @@ class AppServiceProvider extends ServiceProvider
 
             return $dataService->getOAuth2LoginHelper();
         });
-
-        RateLimiter::for('slack-profile-update', function () {
-            // users.profile.set is tier 3, 50+ per minute.
-            // users.profile.get is tier 4, 100+ per minute.
-            // We probably won't update every user, but just to be on the safe side, we assume here that we do.
-            return Limit::perMinute(50);
-        });
     }
 }

@@ -4,7 +4,7 @@ namespace App\Actions\Slack;
 
 use App\External\Slack\SlackApi;
 use App\External\Slack\SlackProfileFields;
-use Illuminate\Queue\Middleware\RateLimited;
+use App\External\Slack\SlackRateLimit;
 use Spatie\QueueableAction\QueueableAction;
 
 /**
@@ -39,6 +39,8 @@ class VerifySlackUserProfile
 
     public function middleware()
     {
-        return [new RateLimited('slack-profile-update')];
+        return [
+            SlackRateLimit::users_profile_get(),
+        ];
     }
 }
