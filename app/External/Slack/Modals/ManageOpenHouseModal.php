@@ -65,6 +65,11 @@ class ManageOpenHouseModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
+        if (!$request->customer()->canIDcheck()) {
+            Log::warning('ManageOpenHouseModal: Rejecting unauthorized submission from user '.$request->customer()->id);
+            throw new \Exception('Unauthorized');
+        }
+
         $values = $request->payload()['view']['state']['values'];
         Log::info('Manage open house modal: '.print_r($values, true));
 
