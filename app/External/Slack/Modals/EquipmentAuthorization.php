@@ -86,6 +86,11 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
+        if (!$request->customer()->isATrainer()) {
+            Log::warning('EquipmentAuthorization: Rejecting unauthorized submission from user '.$request->customer()->id);
+            throw new \Exception('Unauthorized');
+        }
+
         $state = self::getStateValues($request);
         $makeUsers = true;
         $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
