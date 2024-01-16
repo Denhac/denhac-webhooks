@@ -63,15 +63,11 @@ class SlackInteractivityController extends Controller
 
     private function blockAction(SlackRequest $request)
     {
-        Log::info('Block Action!');
-        Log::info(print_r($request->payload(), true));
-
         $payload = $request->payload();
         $actions = $payload['actions'];
 
         // If we're a modal, try to find a block action on the modal
         if (array_key_exists('view', $payload) && $payload['view']['type'] == 'modal') {
-            Log::info('View is a modal!');
             $view = $request->payload()['view'];
             $callbackId = $view['callback_id'];
 

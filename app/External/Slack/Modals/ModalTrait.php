@@ -110,6 +110,12 @@ trait ModalTrait
                     foreach ($selectedOptions as $option) {
                         $result[$blockId][$actionId][] = $option['value'];
                     }
+                } elseif ($actionValues['type'] == 'multi_external_select') {
+                    $selected = [];
+                    foreach ($actionValues['selected_options'] as $selectedOption) {
+                        $selected[] = $selectedOption['value'] ;
+                    }
+                    $result[$blockId][$actionId] = $selected;
                 } elseif (array_key_exists('selected_option', $actionValues)) {
                     $selected = $actionValues['selected_option'];
                     if (empty($selected)) {

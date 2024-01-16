@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
+use Illuminate\Support\Collection;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -48,23 +49,34 @@ class EquipmentAuthorization implements ModalInterface
 
         $this->modalView->newInput()
             ->dispatchAction()
+            ->blockId(self::PERSON_DROPDOWN)
+            ->label('Member(s)')
+            ->newMultiSelectMenu()
+            ->forExternalOptions()
+            ->actionId(self::PERSON_DROPDOWN)
+            ->placeholder('Select a member')
+            ->minQueryLength(2);
+
+        $this->modalView->newInput()
+            ->dispatchAction()
             ->blockId(self::EQUIPMENT_DROPDOWN)
             ->label('Equipment')
-            ->newSelectMenu()
+            ->newMultiSelectMenu()
             ->forExternalOptions()
             ->actionId(self::EQUIPMENT_DROPDOWN)
             ->placeholder('Select equipment')
             ->minQueryLength(0);
 
-        $this->modalView->newInput()
-            ->dispatchAction()
-            ->blockId(self::PERSON_DROPDOWN)
-            ->label('Person')
-            ->newSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::PERSON_DROPDOWN)
-            ->placeholder('Select a member')
-            ->minQueryLength(2);
+        $this->modalView->newSection()->mrkdwnText(':heavy_check_mark: The listed member(s) will be authorized to use this equipment.');
+
+        $option = Option::new('Make Trainer(s)')
+            ->description('Also make these members trainers for this equipment.')
+            ->value('true');
+        $this->modalView->newActions()
+            ->blockId(self::TRAINER_CHECK)
+            ->newCheckboxes()
+            ->actionId(self::TRAINER_CHECK)
+            ->addOption($option, false);
     }
 
     public static function callbackId(): string
@@ -74,36 +86,32 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        Log::info('Equipment authorization');
-        Log::info(print_r($request->payload(), true));
-
         $state = self::getStateValues($request);
-        $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
-        $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
-        $makeUser = ! is_null($state[self::USER_CHECK][self::USER_CHECK] ?? null);
-        $makeTrainer = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
-
-        $equipmentId = str_replace('equipment-', '', $equipmentValue);
-        $personId = str_replace('customer-', '', $personValue);
-
-        /** @var Customer $person */
-        $person = Customer::find($personId);
-
-        /** @var TrainableEquipment $equipment */
-        $equipment = TrainableEquipment::find($equipmentId);
+        $makeUsers = true;
+        $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
         /** @var WooCommerceApi $api */
         $api = app(WooCommerceApi::class);
 
-        if ($makeUser) {
-            $api->members->addMembership($person->id, $equipment->user_plan_id);
+        $selectedEquipment = self::equipmentFromState($state);
+        $selectedMembers = self::peopleFromState($state);
+        
+        $actorId = $request->customer()->id;
+
+        foreach($selectedMembers->crossJoin($selectedEquipment)->all() as [$person, $equipment]) {
+            if (!$person->hasMembership($equipment->user_plan_id)) {
+                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
+                $api->members->addMembership($person->id, $equipment->user_plan_id);
+            }
+
+            if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
+                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
+                $api->members->addMembership($person->id, $equipment->trainer_plan_id);
+            }
         }
 
-        if ($makeTrainer) {
-            $api->members->addMembership($person->id, $equipment->trainer_plan_id);
-        }
 
-        if (! $makeTrainer && ! $makeUser) {
+        if (! $makeTrainers && ! $makeUsers) {
             return (new FailureModal('Neither user nor trainer appear to have been selected. Try again?'))
                 ->update();
         }
@@ -125,11 +133,22 @@ class EquipmentAuthorization implements ModalInterface
         ];
     }
 
+    public static function equipmentFromState($state): Collection
+    {
+        return collect($state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? [])
+            -> map(fn($formValue) => str_replace('equipment-', '', $formValue))
+            -> map(fn($equipmentId) => TrainableEquipment::find($equipmentId));
+    }
+
+    public static function peopleFromState($state): Collection
+    {
+        return collect($state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? [])
+            -> map(fn($formValue) => str_replace('customer-', '', $formValue))
+            -> map(fn($customerId) => Customer::find($customerId));
+    }
+
     public static function getOptions(SlackRequest $request)
     {
-        Log::info('Equipment auth options request');
-        Log::info(print_r($request->payload(), true));
-
         $blockId = $request->payload()['block_id'];
 
         if ($blockId == self::EQUIPMENT_DROPDOWN) {
@@ -160,52 +179,55 @@ class EquipmentAuthorization implements ModalInterface
         $modal->setUpModalCommon();
 
         $state = self::getStateValues($request);
-        $equipmentValue = $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? null;
-        $personValue = $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? null;
 
-        if (is_null($equipmentValue)) {
+        $selectedEquipment = self::equipmentFromState($state);
+        $selectedMembers = self::peopleFromState($state);
+
+        if (empty($selectedEquipment)) {
             $modal->noEquipment();
         }
 
-        if (is_null($personValue)) {
+        if (empty($selectedMembers)) {
             $modal->noPerson();
         }
+        
+        if (! empty($selectedEquipment) && ! empty($selectedMembers)) {
+            // Render information about any selected people who have existing permisisons for this equipment.
 
-        if (! is_null($equipmentValue) && ! is_null($personValue)) {
-            $equipmentId = str_replace('equipment-', '', $equipmentValue);
-            $personId = str_replace('customer-', '', $personValue);
-            /** @var Customer $person */
-            $person = Customer::find($personId);
-            $name = "{$person->first_name} {$person->last_name}";
+            $alreadyTrained = [];
+            $alreadyTrainers = [];
 
-            /** @var TrainableEquipment $equipment */
-            $equipment = TrainableEquipment::find($equipmentId);
-            if ($person->hasMembership($equipment->user_plan_id)) {
-                $modal->modalView->newSection()
-                    ->plainText(":white_check_mark: $name is already an authorized user.");
-            } else {
-                $option = Option::new('User')
-                    ->description('The person can use the equipment.')
-                    ->value('true');
-                $modal->modalView->newActions()
-                    ->blockId(self::USER_CHECK)
-                    ->newCheckboxes()
-                    ->actionId(self::USER_CHECK)
-                    ->addOption($option, true);
+            foreach($selectedMembers as $person) {
+                $name = "{$person->first_name} {$person->last_name}";
+                $trainedEquipment = [];
+                $trainerForEquipment = [];
+
+                foreach($selectedEquipment as $equipment) {
+                    if ($person->hasMembership($equipment->user_plan_id)) {
+                        $trainedEquipment[] = $equipment->name;
+                    }
+                    if ($person->hasMembership($equipment->trainer_plan_id)) {
+                        $trainerForEquipment[] = $equipment->name;
+                    }
+                }
+                if (!empty($trainedEquipment)) {
+                    $alreadyTrained[$name] = $trainedEquipment;
+                }
+                if (!empty($trainerForEquipment)) {
+                    $alreadyTrainers[$name] = $trainerForEquipment;
+                }
             }
 
-            if ($person->hasMembership($equipment->trainer_plan_id)) {
-                $modal->modalView->newSection()
-                    ->plainText(":white_check_mark: $name is already an authorized trainer.");
-            } else {
-                $option = Option::new('Trainer')
-                    ->description('The person can train others to use the equipment and add new trainers.')
-                    ->value('true');
-                $modal->modalView->newActions()
-                    ->blockId(self::TRAINER_CHECK)
-                    ->newCheckboxes()
-                    ->actionId(self::TRAINER_CHECK)
-                    ->addOption($option, false);
+            if (!empty($alreadyTrained) || !empty($alreadyTrainers)) {
+                $modal->modalView->newSection()->mrkdwnText(":information_source:");
+
+                foreach($alreadyTrained as $trainee => $equipmentNames) {
+                    $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.implode(', ', $equipmentNames));
+                }
+
+                foreach($alreadyTrainers as $trainer => $equipmentNames) {
+                    $modal->modalView->newContext()->mrkdwnText($trainer.' is already a trainer for '.implode(', ', $equipmentNames));
+                }
             }
         }
 
@@ -215,12 +237,12 @@ class EquipmentAuthorization implements ModalInterface
     private function noEquipment()
     {
         $this->modalView->newSection()
-            ->mrkdwnText("Please select the Equipment you're training for.");
+            ->mrkdwnText("Please select at least one piece of equipment above.");
     }
 
     private function noPerson()
     {
         $this->modalView->newSection()
-            ->mrkdwnText("Please select who you're authorizing.");
+            ->mrkdwnText("Please select at least one member to authorize.");
     }
 }
