@@ -17,7 +17,7 @@
         "doctrine/dbal": "^3.7",
         "guzzlehttp/guzzle": "^7.2",
         "hashids/hashids": "^4.1",
-        "laravel/framework": "^10.40",
+        "laravel/framework": "^10.41",
         "laravel/horizon": "^5.21",
         "laravel/passport": "^11.10",
         "laravel/slack-notification-channel": "^2.5",
