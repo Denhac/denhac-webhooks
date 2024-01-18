@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
-use App\External\WooCommerce\Api\WooCommerceApi;
 use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
