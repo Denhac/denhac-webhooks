@@ -6,7 +6,7 @@ use App\Models\Customer;
 use App\Actions\WordPress\AddUserMembershipo;
 use Illuminate\Support\Facades\Log;
 
-class BatchAuthorizeEquipmentAction
+class BatchAuthorizeEquipment
 {
     /**
      * Create a new action instance.

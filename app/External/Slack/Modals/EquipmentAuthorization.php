@@ -14,7 +14,7 @@ use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
 use Illuminate\Support\Collection;
-use App\Actions\WordPress\BatchAuthorizeEquipmentAction;
+use App\Actions\WordPress\BatchAuthorizeEquipment;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -99,7 +99,7 @@ class EquipmentAuthorization implements ModalInterface
         $actor = $request->customer();
 
         try {
-            app()->make(BatchAuthorizeEquipmentAction::class)->execute($actor, $selectedMembers, $selectedEquipment, $makeTrainers);
+            app()->make(BatchAuthorizeEquipment::class)->execute($actor, $selectedMembers, $selectedEquipment, $makeTrainers);
         } catch (\Exception $e) {
             if ($e->getMessage() == 'NotAuthorized') {
                 return response()->json([
