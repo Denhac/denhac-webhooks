@@ -6,7 +6,7 @@ use App\External\WooCommerce\Api\WooCommerceApi;
 use Spatie\QueueableAction\QueueableAction;
 use Illuminate\Support\Facades\Log;
 
-class AuthorizeEquipmentAction
+class AddUserMembership
 {
     use QueueableAction;
 
@@ -25,9 +25,9 @@ class AuthorizeEquipmentAction
      *
      * @return mixed
      */
-    public function execute($trainerId, $memberId, $planId)
+    public function execute($actorId, $memberId, $planId)
     {
         $this->wpApi->members->addMembership($memberId, $planId);
-        Log::info('AuthorizeEquipmentAction: Customer '.$trainerId.' authorized Customer '.$memberId.' for equipment plan id '.$planId);
+        Log::info('AddUserMembership: Customer '.$actorId.' granted user plan id '.$planId.' to Customer '.$memberId);
     }
 }

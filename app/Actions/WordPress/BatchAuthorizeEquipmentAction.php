@@ -3,7 +3,7 @@
 namespace App\Actions\WordPress;
 
 use App\Models\Customer;
-use App\Actions\WordPress\AuthorizeEquipmentAction;
+use App\Actions\WordPress\AddUserMembershipo;
 use Illuminate\Support\Facades\Log;
 
 class BatchAuthorizeEquipmentAction
@@ -14,10 +14,10 @@ class BatchAuthorizeEquipmentAction
      * @return void
      */
     public function __construct(
-        AuthorizeEquipmentAction $authorizeEquipmentAction 
+        AddUserMembership $addUserMembership 
     )
     {
-        $this->authorizeAction = $authorizeEquipmentAction;
+        $this->authorizeAction = $addUserMembership;
     }
 
     /**
