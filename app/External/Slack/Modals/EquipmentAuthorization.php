@@ -205,7 +205,8 @@ class EquipmentAuthorization implements ModalInterface
                 }
             }
 
-            // NOTE: $alreadyTrained and $alreadyTrainers are arrays, where as most other iterables in this function are Collections
+            // NOTE: $alreadyTrained and $alreadyTrainers are arrays, where as most other iterables in this function are Collections.
+            // Use `empty` on arrays, and `Collection->isEmpty` on Collections.
             if (!empty($alreadyTrained) || !empty($alreadyTrainers)) {
                 // Render an information section which displays existing permissions
                 $modal->modalView->newSection()->mrkdwnText(":information_source:");
