@@ -221,16 +221,4 @@ class EquipmentAuthorization implements ModalInterface
 
         return $modal->updateViaApi($request);
     }
-
-    private function noEquipment()
-    {
-        $this->modalView->newSection()
-            ->mrkdwnText("Please select at least one piece of equipment above.");
-    }
-
-    private function noPerson()
-    {
-        $this->modalView->newSection()
-            ->mrkdwnText("Please select at least one member to authorize.");
-    }
 }
