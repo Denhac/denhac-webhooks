@@ -31,11 +31,11 @@ class BatchAuthorizeEquipmentAction
     public function execute(Customer $trainer, $members, $equipment, $makeTrainers=false)
     {
         // Validate that trainer is an authorized trainer for all equipment
-        foreach($equipment as $equip) {
-            if (!$trainer->hasMembership($equip->trainer_plan_id)) {
+        foreach($equipment as $e) {
+            if (!$trainer->hasMembership($e->trainer_plan_id)) {
                 Log::info('BatchAuthorizeEquipment: Customer attempted to submit authorization without trainer role. '.json_encode([
                     'trainer_id' => $trainer->id,
-                    'equipment_id' => $equip->id
+                    'equipment_id' => $e->id
                 ]));
 
                 throw new \Exception('NotAuthorized');
@@ -44,15 +44,15 @@ class BatchAuthorizeEquipmentAction
 
         Log::info('BatchAuthorizeEquipment: Submitting batch: '.json_encode([
             'trainer_id' => $trainer->id,
-            'member_ids' => $members->map(function($member) { return $member->id;}),
-            'equipment_ids' => $equipment->map(function($equip) { return $equip->id;}),
+            'member_ids' => $members->map(fn($member) => $member->id),
+            'equipment_ids' => $equipment->map(fn($e) => $e->id),
             'make_trainers' => $makeTrainers
         ]));
 
-        $planIds = $equipment->map(function($equip) { return $equip->user_plan_id; });
+        $planIds = $equipment->map(fn($e) => $e->user_plan_id);
 
         if ($makeTrainers) {
-            $planIds = $planIds->concat($equipment->map(function ($equip) { return $equip->trainer_plan_id;}));
+            $planIds = $planIds->concat($equipment->map(fn ($e) => $e->trainer_plan_id));
         }
 
         foreach($members->crossjoin($planIds) as [$member, $planId]){
