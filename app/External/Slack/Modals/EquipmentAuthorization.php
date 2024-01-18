@@ -128,16 +128,20 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function equipmentFromState($state): Collection
     {
-        return collect($state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? [])
-            -> map(fn($formValue) => str_replace('equipment-', '', $formValue))
-            -> map(fn($equipmentId) => TrainableEquipment::find($equipmentId));
+        $equipmentIds = array_map(
+            fn($formValue) => str_replace('equipment-', '', $formValue), 
+            $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? []
+        );
+        return TrainableEquipment::whereIn('id', $equipmentIds)->get();
     }
 
     public static function peopleFromState($state): Collection
     {
-        return collect($state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? [])
-            -> map(fn($formValue) => str_replace('customer-', '', $formValue))
-            -> map(fn($customerId) => Customer::find($customerId));
+        $customerIds = array_map(
+            fn($formValue) => str_replace('customer-', '', $formValue),
+            $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? []
+        );
+        return Customer::with('memberships')->whereIn('id', $customerIds)->get();
     }
 
     public static function getOptions(SlackRequest $request)
