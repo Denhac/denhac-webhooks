@@ -14,6 +14,7 @@ use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
 use Illuminate\Support\Collection;
+use App\Actions\WordPress\BatchAuthorizeEquipment;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -84,7 +85,6 @@ class EquipmentAuthorization implements ModalInterface
         }
 
         $state = self::getStateValues($request);
-        $makeUsers = true;
         $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
         /** @var WooCommerceApi $api */
@@ -93,24 +93,17 @@ class EquipmentAuthorization implements ModalInterface
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
         
-        $actorId = $request->customer()->id;
+        $actor = $request->customer();
 
-        foreach($selectedMembers->crossJoin($selectedEquipment)->all() as [$person, $equipment]) {
-            if (!$person->hasMembership($equipment->user_plan_id)) {
-                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to use equipment under plan id '.$equipment->user_plan_id);
-                $api->members->addMembership($person->id, $equipment->user_plan_id);
+        try {
+            app()->make(BatchAuthorizeEquipment::class)->execute($actor, $selectedMembers, $selectedEquipment, $makeTrainers);
+        } catch (\Exception $e) {
+            if ($e->getMessage() == 'NotAuthorized') {
+                return response()->json([
+                    'response_action' => 'errors',
+                    'errors' => [self::EQUIPMENT_DROPDOWN => "You don't have permission to authorize members for this equipment."]
+                ]);
             }
-
-            if ($makeTrainers && !$person->hasMembership($equipment->trainer_plan_id)) {
-                Log::info('EquipmentAuthorization: Customer '.$actorId.' authorized Customer '.$person->id.' to train on equipment with plan id '.$equipment->trainer_plan_id);
-                $api->members->addMembership($person->id, $equipment->trainer_plan_id);
-            }
-        }
-
-
-        if (! $makeTrainers && ! $makeUsers) {
-            return (new FailureModal('Neither user nor trainer appear to have been selected. Try again?'))
-                ->update();
         }
 
         // TODO actually check error before sending success
@@ -132,16 +125,20 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function equipmentFromState($state): Collection
     {
-        return collect($state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? [])
-            -> map(fn($formValue) => str_replace('equipment-', '', $formValue))
-            -> map(fn($equipmentId) => TrainableEquipment::find($equipmentId));
+        $equipmentIds = array_map(
+            fn($formValue) => str_replace('equipment-', '', $formValue), 
+            $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? []
+        );
+        return TrainableEquipment::whereIn('id', $equipmentIds)->get();
     }
 
     public static function peopleFromState($state): Collection
     {
-        return collect($state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? [])
-            -> map(fn($formValue) => str_replace('customer-', '', $formValue))
-            -> map(fn($customerId) => Customer::find($customerId));
+        $customerIds = array_map(
+            fn($formValue) => str_replace('customer-', '', $formValue),
+            $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? []
+        );
+        return Customer::with('memberships')->whereIn('id', $customerIds)->get();
     }
 
     public static function getOptions(SlackRequest $request)
