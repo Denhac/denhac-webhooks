@@ -172,6 +172,7 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function onBlockAction(SlackRequest $request)
     {
+        // Rerender view to display information about any permissions that the users already have for this equipment.
         $modal = new EquipmentAuthorization();
 
         $state = self::getStateValues($request);
@@ -179,42 +180,43 @@ class EquipmentAuthorization implements ModalInterface
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
         
-        if (! empty($selectedEquipment) && ! empty($selectedMembers)) {
-            // Render information about any selected people who have existing permisisons for this equipment.
+        if ($selectedEquipment->isNotEmpty() && $selectedMembers->isNotEmpty()) {
 
             $alreadyTrained = [];
             $alreadyTrainers = [];
 
             foreach($selectedMembers as $person) {
-                $name = "{$person->first_name} {$person->last_name}";
-                $trainedEquipment = [];
-                $trainerForEquipment = [];
+                $traineeName = "{$person->first_name} {$person->last_name}";
+                
+                // Get names of equipment for which the member is already a user
+                $trainedEquipmentNames = $selectedEquipment
+                    ->where(fn($e) => $person->hasMembership($e->user_plan_id))
+                    ->map(fn($e) => $e->name);
+                if ($trainedEquipmentNames->isNotEmpty()) {
+                    $alreadyTrained[$traineeName] = $trainedEquipmentNames;
+                }
 
-                foreach($selectedEquipment as $equipment) {
-                    if ($person->hasMembership($equipment->user_plan_id)) {
-                        $trainedEquipment[] = $equipment->name;
-                    }
-                    if ($person->hasMembership($equipment->trainer_plan_id)) {
-                        $trainerForEquipment[] = $equipment->name;
-                    }
-                }
-                if (!empty($trainedEquipment)) {
-                    $alreadyTrained[$name] = $trainedEquipment;
-                }
-                if (!empty($trainerForEquipment)) {
-                    $alreadyTrainers[$name] = $trainerForEquipment;
+                // Get names of equipment for which the member is already a trainer
+                $trainerForEquipmentNames = $selectedEquipment
+                    ->where(fn($e) => $person->hasMembership($e->trainer_plan_id))
+                    ->map(fn($e) => $e->name);
+                if ($trainerForEquipmentNames->isNotEmpty()) {
+                    $alreadyTrainers[$traineeName] = $trainerForEquipmentNames;
                 }
             }
 
+            // NOTE: $alreadyTrained and $alreadyTrainers are arrays, where as most other iterables in this function are Collections.
+            // Use `empty` on arrays, and `Collection->isEmpty` on Collections.
             if (!empty($alreadyTrained) || !empty($alreadyTrainers)) {
+                // Render an information section which displays existing permissions
                 $modal->modalView->newSection()->mrkdwnText(":information_source:");
 
                 foreach($alreadyTrained as $trainee => $equipmentNames) {
-                    $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.implode(', ', $equipmentNames));
+                    $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.$equipmentNames->join(', '));
                 }
 
                 foreach($alreadyTrainers as $trainer => $equipmentNames) {
-                    $modal->modalView->newContext()->mrkdwnText($trainer.' is already a trainer for '.implode(', ', $equipmentNames));
+                    $modal->modalView->newContext()->mrkdwnText($trainer.' is already a trainer for '.$equipmentNames->join(', '));
                 }
             }
         }
