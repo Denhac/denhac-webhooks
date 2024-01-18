@@ -32,14 +32,6 @@ class EquipmentAuthorization implements ModalInterface
 
     public function __construct()
     {
-        $this->setUpModalCommon();
-
-        $this->noEquipment();
-        $this->noPerson();
-    }
-
-    private function setUpModalCommon()
-    {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('Equipment Authorization')
@@ -181,20 +173,11 @@ class EquipmentAuthorization implements ModalInterface
     public static function onBlockAction(SlackRequest $request)
     {
         $modal = new EquipmentAuthorization();
-        $modal->setUpModalCommon();
 
         $state = self::getStateValues($request);
 
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
-
-        if (empty($selectedEquipment)) {
-            $modal->noEquipment();
-        }
-
-        if (empty($selectedMembers)) {
-            $modal->noPerson();
-        }
         
         if (! empty($selectedEquipment) && ! empty($selectedMembers)) {
             // Render information about any selected people who have existing permisisons for this equipment.
