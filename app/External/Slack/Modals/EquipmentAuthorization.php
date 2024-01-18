@@ -33,14 +33,6 @@ class EquipmentAuthorization implements ModalInterface
 
     public function __construct()
     {
-        $this->setUpModalCommon();
-
-        $this->noEquipment();
-        $this->noPerson();
-    }
-
-    private function setUpModalCommon()
-    {
         $this->modalView = Kit::newModal()
             ->callbackId(self::callbackId())
             ->title('Equipment Authorization')
@@ -87,6 +79,11 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
+        if (!$request->customer()->isATrainer()) {
+            Log::warning('EquipmentAuthorization: Rejecting unauthorized submission from user '.$request->customer()->id);
+            throw new \Exception('Unauthorized');
+        }
+
         $state = self::getStateValues($request);
         $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
@@ -173,20 +170,11 @@ class EquipmentAuthorization implements ModalInterface
     public static function onBlockAction(SlackRequest $request)
     {
         $modal = new EquipmentAuthorization();
-        $modal->setUpModalCommon();
 
         $state = self::getStateValues($request);
 
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
-
-        if (empty($selectedEquipment)) {
-            $modal->noEquipment();
-        }
-
-        if (empty($selectedMembers)) {
-            $modal->noPerson();
-        }
         
         if (! empty($selectedEquipment) && ! empty($selectedMembers)) {
             // Render information about any selected people who have existing permisisons for this equipment.
@@ -229,17 +217,5 @@ class EquipmentAuthorization implements ModalInterface
         }
 
         return $modal->updateViaApi($request);
-    }
-
-    private function noEquipment()
-    {
-        $this->modalView->newSection()
-            ->mrkdwnText("Please select at least one piece of equipment above.");
-    }
-
-    private function noPerson()
-    {
-        $this->modalView->newSection()
-            ->mrkdwnText("Please select at least one member to authorize.");
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Requests\SlackRequest;
 use App\Models\UserMembership;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
+use Illuminate\Support\Facades\Log;
 
 class MembershipOptionsModal implements ModalInterface
 {
@@ -76,10 +77,18 @@ class MembershipOptionsModal implements ModalInterface
                 $modal = new ManageOpenHouseModal();
                 break;
             case self::QUICK_OPEN_HOUSE_VALUE:
+                if (!$request->customer()->canIDcheck()) {
+                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
+                    throw new \Exception('Unauthorized');
+                }
                 Door::quickOpenHouse();
 
                 return self::clearViewStack();
             case self::ALL_DOORS_DEFAULT_VALUE:
+                if (!$request->customer()->canIDcheck()) {
+                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
+                    throw new \Exception('Unauthorized');
+                }
                 Door::quickDefaultDoors();
 
                 return self::clearViewStack();
