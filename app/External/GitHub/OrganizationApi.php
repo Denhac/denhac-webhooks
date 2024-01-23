@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Collection;
 
-class TeamApi
+class OrganizationApi
 {
     use GitHubApiTrait;
 
@@ -15,22 +15,29 @@ class TeamApi
 
     private Client $client;
 
-    private string $teamUrl;
+    private string $organizationName;
+    private string $organizationUrl;
 
     /**
      * TeamApi constructor.
      */
-    public function __construct($orgName, $name, string $accessToken)
+    public function __construct($name, string $accessToken)
     {
+        $this->organizationName = $name;
         $this->accessToken = $accessToken;
 
-        $this->teamUrl = "https://api.github.com/orgs/$orgName/teams/$name";
+        $this->organizationUrl = "https://api.github.com/orgs/$name";
         $this->client = new Client();
+    }
+
+    public function team($name): TeamApi
+    {
+        return new TeamApi($this->organizationName, $name, $this->accessToken);
     }
 
     public function list(ApiProgress $progress = null): Collection
     {
-        return $this->paginate("{$this->teamUrl}/members", function ($url) {
+        return $this->paginate("{$this->organizationUrl}/members", function ($url) {
             return $this->client->get($url, [
                 RequestOptions::HEADERS => [
                     'Authorization' => "Bearer {$this->accessToken}",
@@ -42,7 +49,7 @@ class TeamApi
 
     public function pending(ApiProgress $progress = null): Collection
     {
-        return $this->paginate("{$this->teamUrl}/invitations", function ($url) {
+        return $this->paginate("{$this->organizationUrl}/invitations", function ($url) {
             return $this->client->get($url, [
                 RequestOptions::HEADERS => [
                     'Authorization' => "Bearer {$this->accessToken}",
@@ -52,28 +59,15 @@ class TeamApi
         }, $progress);
     }
 
-    public function add($username)
+    public function failed_invitations(ApiProgress $progress = null): Collection
     {
-        $membershipUrl = "{$this->teamUrl}/memberships/$username";
-
-        $response = $this->client->put($membershipUrl, [
-            RequestOptions::HEADERS => [
-                'Authorization' => "Bearer {$this->accessToken}",
-            ],
-        ]);
-
-        error_log($response->getStatusCode());
-        error_log($response->getBody()->getContents());
-    }
-
-    public function remove($username)
-    {
-        $membershipUrl = "{$this->teamUrl}/memberships/$username";
-
-        $this->client->delete($membershipUrl, [
-            RequestOptions::HEADERS => [
-                'Authorization' => "Bearer {$this->accessToken}",
-            ],
-        ]);
+        return $this->paginate("{$this->organizationUrl}/failed_invitations", function ($url) {
+            return $this->client->get($url, [
+                RequestOptions::HEADERS => [
+                    'Authorization' => "Bearer {$this->accessToken}",
+                    'per_page' => 100,
+                ],
+            ]);
+        }, $progress);
     }
 }

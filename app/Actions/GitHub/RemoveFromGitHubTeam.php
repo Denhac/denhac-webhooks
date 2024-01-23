@@ -20,6 +20,6 @@ class RemoveFromGitHubTeam
 
     public function execute($username, $team)
     {
-        $this->gitHubApi->team($team)->remove($username);
+        $this->gitHubApi->denhac()->team($team)->remove($username);
     }
 }

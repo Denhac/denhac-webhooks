@@ -24,10 +24,19 @@ class GitHubApi
         return $this->accessToken;
     }
 
-    public function team($name)
+    public function organizations($name): OrganizationApi
     {
-        // TODO switch this to be under orgs even though we'll almost always be using denhac
-        return new TeamApi($name, $this->getAccessToken());
+        return new OrganizationApi($name, $this->getAccessToken());
+    }
+
+    /**
+     * Convenience function since we most often need to access the denhac organization.
+     *
+     * @return OrganizationApi
+     */
+    public function denhac(): OrganizationApi
+    {
+        return $this->organizations("denhac");
     }
 
     public function userLookup($username)

@@ -39,7 +39,7 @@ class NonMemberInTeam extends IssueBase
             ->option('Remove from GitHub team', function () {
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
-                $gitHubApi->team('members')->remove($this->member->githubUsername);
+                $gitHubApi->denhac()->team('members')->remove($this->member->githubUsername);
 
                 return true;
             })

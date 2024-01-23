@@ -39,7 +39,7 @@ class UsernameNotListedInMembersTeam extends IssueBase
             ->option('Add to GitHub team', function () {
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
-                $gitHubApi->team('members')->add($this->member->githubUsername);
+                $gitHubApi->denhac()->team('members')->add($this->member->githubUsername);
 
                 return true;
             })
