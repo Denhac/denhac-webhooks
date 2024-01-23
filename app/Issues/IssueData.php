@@ -49,9 +49,11 @@ class IssueData
 
     private ?Collection $_googleGroupMembers = null;  // Key is group, value is member list
 
-    private ?Collection $_gitHubTeamMembers = null;  // The GitHub team is called "members"
+    private ?Collection $_gitHubMembers = null;  // The GitHub team is called "members"
 
-    private ?Collection $_gitHubPendingTeamMembers = null;  // The invites to said team
+    private ?Collection $_gitHubPendingMembers = null;  // The invites to said team
+
+    private ?Collection $_gitHubFailedInvites = null;  // The invites to said team that weren't accepted
 
     private ?Collection $_stripeCardHolders = null;
 
@@ -229,26 +231,34 @@ class IssueData
         return $this->_googleGroupMembers->get($group);
     }
 
-    public function gitHubTeamMembers(): Collection
+    public function gitHubMembers(): Collection
     {
-        if (is_null($this->_gitHubTeamMembers)) {
+        if (is_null($this->_gitHubMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubTeamMembers = $this->gitHubApi->denhac()->team('members')
-                ->list($this->apiProgress("Fetching members of GitHub team 'members'"));
+            $this->_gitHubMembers = $this->gitHubApi->denhac()->list($this->apiProgress("Fetching members of GitHub team 'members'"));
         }
 
-        return $this->_gitHubTeamMembers;
+        return $this->_gitHubMembers;
     }
 
-    public function gitHubPendingTeamMembers(): Collection
+    public function gitHubPendingMembers(): Collection
     {
-        if (is_null($this->_gitHubPendingTeamMembers)) {
+        if (is_null($this->_gitHubPendingMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubPendingTeamMembers = $this->gitHubApi->denhac()->team('members')
-                ->pending($this->apiProgress("Fetching invites of GitHub team 'members'"));
+            $this->_gitHubPendingMembers = $this->gitHubApi->denhac()->pending($this->apiProgress("Fetching invites of GitHub team 'members'"));
         }
 
-        return $this->_gitHubPendingTeamMembers;
+        return $this->_gitHubPendingMembers;
+    }
+
+    public function gitHubFailedInvites(): Collection
+    {
+        if (is_null($this->_gitHubFailedInvites)) {
+            // TODO Deduplicate "members" here
+            $this->_gitHubFailedInvites = $this->gitHubApi->denhac()->failed_invitations($this->apiProgress("Fetching invites of GitHub team 'members'"));
+        }
+
+        return $this->_gitHubFailedInvites;
     }
 
     public function stripeCardHolders(): Collection

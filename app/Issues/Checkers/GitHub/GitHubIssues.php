@@ -31,8 +31,9 @@ class GitHubIssues implements IssueCheck
 
     protected function generateIssues(): void
     {
-        $gitHubMembers = $this->issueData->gitHubTeamMembers()->map(fn ($ghm) => $ghm['login']);
-        $gitHubPendingMembers = $this->issueData->gitHubPendingTeamMembers()->map(fn ($ghm) => $ghm['login']);
+        $gitHubMembers = $this->issueData->gitHubMembers()->map(fn($ghm) => $ghm['login']);
+        $gitHubPendingMembers = $this->issueData->gitHubPendingMembers()->map(fn($ghm) => $ghm['login']);
+        $gitHubFailedInvites = $this->issueData->gitHubFailedInvites()->map(fn($ghm) => $ghm['login']);
         /** @var Collection<MemberData> $members */
         $members = $this->issueData->members();
 
@@ -59,27 +60,32 @@ class GitHubIssues implements IssueCheck
             }
 
             $partOfTheTeam = $gitHubMembers
-                ->filter(fn ($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
             $pendingOnTheTeam = $gitHubPendingMembers
-                ->filter(fn ($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->isNotEmpty();
+            $failedInvite = $gitHubFailedInvites
+                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
             $invited = $partOfTheTeam || $pendingOnTheTeam;
 
-            if (! $invited && $member->isMember) {
+            if ($failedInvite) {
+                continue; // Nothing to do here  TODO Write a cron job that checks for this, removes their GitHub username from their account, and sends them an email about it IFF they're currently a member.
+            } elseif (!$invited && $member->isMember) {
                 $this->issues->add(new UsernameNotListedInMembersTeam($member));
-            } elseif ($invited && ! $member->isMember) {
+            } elseif ($invited && !$member->isMember) {
                 $this->issues->add(new NonMemberInTeam($member));
             }
         }
 
         foreach ($gitHubMembers as $gitHubMember) {
             $member = $members
-                ->filter(fn ($m) => ! is_null($m->githubUsername))
-                ->filter(fn ($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
+                ->filter(fn($m) => !is_null($m->githubUsername))
+                ->filter(fn($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
                 ->first();
 
-            if (! is_null($member)) {
+            if (!is_null($member)) {
                 continue;  // We only care here if we COULDN'T find a matching member
             }
 
@@ -100,7 +106,7 @@ class GitHubIssues implements IssueCheck
         }
 
         $data = $this->gitHubApi->emailLookup($githubUsername);  // In case they put their email instead of username
-        if (! array_key_exists('total_count', $data)) {
+        if (!array_key_exists('total_count', $data)) {
             error_log(print_r($data, true));  // Probably rate limited
 
             return null;
