@@ -20,6 +20,6 @@ class AddToGitHubTeam
 
     public function execute($username, $team)
     {
-        $this->githubApi->team($team)->add($username);
+        $this->githubApi->denhac()->team($team)->add($username);
     }
 }

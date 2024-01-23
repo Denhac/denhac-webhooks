@@ -20,7 +20,7 @@ final class GithubMembershipReactor extends Reactor
         if (! is_null($event->oldUsername)) {
             /** @var GitHubApi $gitHubApi */
             $gitHubApi = app(GitHubApi::class);
-            $gitHubUsers = $gitHubApi->team('members')->list()->map(fn ($ghm) => $ghm['login']);
+            $gitHubUsers = $gitHubApi->denhac()->team('members')->list()->map(fn ($ghm) => $ghm['login']);
 
             if ($gitHubUsers->contains($event->oldUsername)) {
                 RemoveFromGitHubTeam::queue()->execute($event->oldUsername, self::MEMBERS_TEAM);

@@ -46,7 +46,7 @@ class UnknownGitHubUsernameInTeam extends IssueBase
     {
         /** @var GitHubApi $gitHubApi */
         $gitHubApi = app(GitHubApi::class);
-        $gitHubApi->team('members')->remove($this->gitHubUsername);
+        $gitHubApi->denhac()->team('members')->remove($this->gitHubUsername);
 
         return true;
     }

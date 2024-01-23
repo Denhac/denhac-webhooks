@@ -233,7 +233,7 @@ class IssueData
     {
         if (is_null($this->_gitHubTeamMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubTeamMembers = $this->gitHubApi->team('members')
+            $this->_gitHubTeamMembers = $this->gitHubApi->denhac()->team('members')
                 ->list($this->apiProgress("Fetching members of GitHub team 'members'"));
         }
 
@@ -244,7 +244,7 @@ class IssueData
     {
         if (is_null($this->_gitHubPendingTeamMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubPendingTeamMembers = $this->gitHubApi->team('members')
+            $this->_gitHubPendingTeamMembers = $this->gitHubApi->denhac()->team('members')
                 ->pending($this->apiProgress("Fetching invites of GitHub team 'members'"));
         }
 
