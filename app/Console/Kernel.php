@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Actions\QuickBooks\GenerateVendingNetJournalEntry;
 use App\Actions\Stripe\SetIssuingBalanceToValue;
 use App\Aggregates\CardNotifierAggregate;
+use App\Console\Commands\ClearOutFailedGitHubInvites;
 use App\Console\Commands\IdentifyIssues;
 use App\Console\Commands\LinkQuickbooks;
 use App\Console\Commands\MakeIssue;
@@ -27,6 +28,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        ClearOutFailedGitHubInvites::class,
         IdentifyIssues::class,
         LinkQuickbooks::class,
         MakeIssue::class,
