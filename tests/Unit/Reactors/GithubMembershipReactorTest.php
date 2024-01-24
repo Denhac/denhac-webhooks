@@ -5,6 +5,7 @@ namespace Tests\Unit\Reactors;
 use App\Actions\GitHub\AddToGitHubTeam;
 use App\Actions\GitHub\RemoveFromGitHubTeam;
 use App\External\GitHub\GitHubApi;
+use App\External\GitHub\OrganizationApi;
 use App\External\GitHub\TeamApi;
 use App\Models\Customer;
 use App\Reactors\GithubMembershipReactor;
@@ -25,9 +26,14 @@ class GithubMembershipReactorTest extends TestCase
 
         $this->withOnlyEventHandlerType(GithubMembershipReactor::class);
 
+        $denhacOrganizationApi = $this->spy(OrganizationApi::class);
         $memberTeamApi = $this->spy(TeamApi::class);
         $gitHubApi = $this->spy(GitHubApi::class);
-        $gitHubApi->allows('team')
+        $gitHubApi->allows('denhac')->andReturn($denhacOrganizationApi);
+        $gitHubApi->allows('organization')
+            ->withArgs(['denhac'])
+            ->andReturn($denhacOrganizationApi);
+        $denhacOrganizationApi->allows('team')
             ->withArgs(['members'])
             ->andReturn($memberTeamApi);
         $memberTeamApi->allows('list')
