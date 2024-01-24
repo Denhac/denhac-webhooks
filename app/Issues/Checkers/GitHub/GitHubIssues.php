@@ -67,7 +67,7 @@ class GitHubIssues implements IssueCheck
             $invited = $partOfTheTeam || $pendingOnTheTeam;
 
             if ($failedInvite) {
-                continue; // Nothing to do here  TODO Write a cron job that checks for this, removes their GitHub username from their account, and sends them an email about it IFF they're currently a member.
+                continue; // Nothing to do here. Failed invites should automatically be cleaned out.
             } elseif (!$invited && $member->isMember) {
                 $this->issues->add(new UsernameNotListedInMembersTeam($member));
             } elseif ($invited && !$member->isMember) {
