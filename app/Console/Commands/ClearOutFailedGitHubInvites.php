@@ -15,7 +15,7 @@ class ClearOutFailedGitHubInvites extends Command
 {
     use HasApiProgressBar;
 
-    protected $signature = 'app:clear-out-failed-git-hub-invites {--dry-run}';
+    protected $signature = 'denhac:clear-out-failed-git-hub-invites {--dry-run}';
 
     protected $description = 'Members can add their GitHub username to their profile, but they don\'t always accept the
     invite and it expires after 7 days. GitHub keeps those and we can check against our customer\'s. If there\'s a
