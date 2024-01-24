@@ -49,10 +49,11 @@ class Kernel extends ConsoleKernel
             })
             ->weeklyOn(Schedule::SATURDAY, '13:00');
 
-        $schedule->command('denhac:slack-profile-fields-update')
-            ->daily();
+        $schedule->command('denhac:slack-profile-fields-update')->daily();
 
         $schedule->command('passport:purge')->hourly();
+
+        $schedule->command('denhac:clear-out-failed-git-hub-invites')->daily();
 
         // QuickBooks tokens expire every hour. Every half should prevent any issues with a job running right as a token expires.
         $schedule->call(fn () => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
