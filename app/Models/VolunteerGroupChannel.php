@@ -21,6 +21,8 @@ class VolunteerGroupChannel extends Model
 {
     use HasFactory;
 
+    private ChannelInterface|null $channelInstance = null;
+
     /*
      * For new channels, add the constant here in the form of <system>_<object type>_<field type> alphabetically.
      * That's not a hard and fast rule, but it groups parts in the same system, let's us know what in that system this
@@ -31,7 +33,8 @@ class VolunteerGroupChannel extends Model
      *
      * Don't forget to make a class that implements ChannelInterface and add it as an entry in the `getChannel` match
      * statement. Channels should be idempotent meaning calling add when someone is already added to a channel should
-     * not do anything.
+     * not do anything. Channels are also required to queue any work they need to do, so really you should use a queued
+     * action and that action should be idempotent.
      */
     public const GITHUB_TEAM_NAME = 'github_team_name';
     public const GOOGLE_GROUP_EMAIL = 'google_group_email';
@@ -49,31 +52,49 @@ class VolunteerGroupChannel extends Model
         return $this->belongsTo(VolunteerGroup::class);
     }
 
-    protected function getChannel(): ChannelInterface {
-        return match ($this->type) {
-            self::SLACK_CHANNEL_ID => app(SlackChannel::class),
-            self::SLACK_USER_GROUP_ID => app(SlackUserGroup::class),
-            self::GOOGLE_GROUP_EMAIL => app(GoogleGroup::class),
-            self::GITHUB_TEAM_NAME => app(GitHubTeam::class),
-            default => throw new \Exception("Unknown channel type: {$this->type}"),
-        };
+    protected function getChannel(): ChannelInterface
+    {
+        if (is_null($this->channelInstance)) {
+            $this->channelInstance = match ($this->type) {
+                self::SLACK_CHANNEL_ID => app(SlackChannel::class),
+                self::SLACK_USER_GROUP_ID => app(SlackUserGroup::class),
+                self::GOOGLE_GROUP_EMAIL => app(GoogleGroup::class),
+                self::GITHUB_TEAM_NAME => app(GitHubTeam::class),
+                default => throw new \Exception("Unknown channel type: {$this->type}"),
+            };
+        }
+
+        return $this->channelInstance;
     }
 
-    public function add(Customer $customer)
+    public function add(Customer $customer): void
     {
-        if(! Features::accessible(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS) && $this->type == self::SLACK_CHANNEL_ID) {
+        if (! Features::accessible(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS) && $this->type == self::SLACK_CHANNEL_ID) {
             return;  // If we're a slack channel, but the feature flag isn't enabled, don't add the customer this way.
         }
 
-        $this->getChannel()->add($customer);
+        try {
+            $this->getChannel()->add($customer, $this->value);
+        } catch (\Exception $exception) {
+            report($exception);
+        }
     }
 
-    public function remove(Customer $customer)
+    public function remove(Customer $customer): void
     {
-        if(! Features::accessible(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS) && $this->type == self::SLACK_CHANNEL_ID) {
+        if (! Features::accessible(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS) && $this->type == self::SLACK_CHANNEL_ID) {
             return;  // If we're a slack channel, but the feature flag isn't enabled, don't remove the customer this way.
         }
 
-        $this->getChannel()->remove($customer);
+        try {
+            $this->getChannel()->remove($customer, $this->value);
+        } catch (\Exception $exception) {
+            report($exception);
+        }
+    }
+
+    public function removeOnMembershipLost(): bool
+    {
+        return $this->getChannel()::removeOnMembershipLost();
     }
 }

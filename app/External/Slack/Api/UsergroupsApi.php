@@ -33,10 +33,11 @@ class UsergroupsApi
     /**
      * Note: Helper method, not official slack API
      */
-    public function byName($handle): array
+    public function byNameOrId($identifier): array|null
     {
         return $this->list()
-            ->firstWhere('handle', $handle);
+            ->where(fn($userGroup) => $userGroup['handle'] == $identifier || $userGroup['id'] == $identifier)
+            ->first();
     }
 
     public function list(): Collection

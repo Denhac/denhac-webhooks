@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int customer_id
  * @property int plan_id
  * @property string status
+ *
+ * @property Customer $customer
  */
 class UserMembership extends Model
 {

@@ -17,6 +17,8 @@ final class GithubMembershipReactor extends Reactor
 
     public function onGithubUsernameUpdated(GitHubUsernameUpdated $event)
     {
+        // TODO Make this handle adding/removing all teams based on the volunteer groups for this customer
+
         if (! is_null($event->oldUsername)) {
             /** @var GitHubApi $gitHubApi */
             $gitHubApi = app(GitHubApi::class);

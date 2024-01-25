@@ -7,7 +7,9 @@ use App\Models\Customer;
 
 interface ChannelInterface
 {
-    function add(Customer $customer);
+    function add(Customer $customer, string $channelValue): void;
 
-    function remove(Customer $customer);
+    function remove(Customer $customer, string $channelValue): void;
+
+    static function removeOnMembershipLost(): bool;
 }

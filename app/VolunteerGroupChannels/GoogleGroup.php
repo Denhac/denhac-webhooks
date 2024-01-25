@@ -3,19 +3,27 @@
 namespace App\VolunteerGroupChannels;
 
 
+use App\Actions\Google\AddToGroup;
+use App\Actions\Google\RemoveFromGroup;
 use App\Models\Customer;
-use App\VolunteerGroupChannels\ChannelInterface;
 
 class GoogleGroup implements ChannelInterface
 {
 
-    function add(Customer $customer)
+    function add(Customer $customer, string $channelValue): void
     {
-        // TODO: Implement add() method.
+        AddToGroup::queue()->execute($customer->email, $channelValue);
     }
 
-    function remove(Customer $customer)
+    function remove(Customer $customer, string $channelValue): void
     {
-        // TODO: Implement remove() method.
+        RemoveFromGroup::queue()->execute($customer->email, $channelValue);
+    }
+
+    static function removeOnMembershipLost(): bool
+    {
+        // There's no overall structure to Google Groups that someone can be removed from. We have to handle each group
+        // individually.
+        return true;
     }
 }
