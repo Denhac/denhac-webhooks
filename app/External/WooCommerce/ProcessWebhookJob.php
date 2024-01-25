@@ -109,7 +109,7 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\Jobs\ProcessWebhookJob
     protected function customerIdFromSubscriptionId($id): ?string
     {
         /** @var Subscription $subscription */
-        $subscription = Subscription::find($id)->first();
+        $subscription = Subscription::find($id);
 
         if (! is_null($subscription)) {
             return $subscription->customer_id;
