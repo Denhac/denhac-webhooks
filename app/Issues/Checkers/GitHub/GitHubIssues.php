@@ -34,18 +34,14 @@ class GitHubIssues implements IssueCheck
         $gitHubMembers = $this->issueData->gitHubTeamMembers()->map(fn ($ghm) => $ghm['login']);
         $gitHubPendingMembers = $this->issueData->gitHubPendingTeamMembers()->map(fn ($ghm) => $ghm['login']);
         /** @var Collection<MemberData> $members */
-        $members = $this->issueData->members();
+        $members = $this->issueData->members()->whereNotNull('github_username');
 
         $progress = $this->issueData->apiProgress('Checking GitHub users');
         $progress->setProgress(0, $members->count());
         foreach ($members as $member) {
-
             $progress->step();
 
             /** @var MemberData $member */
-            if (is_null($member->githubUsername)) {
-                continue;
-            }
 
             $validUsername = $this->confirmValidGitHubUsername($member->githubUsername);
             if (is_null($validUsername)) {
