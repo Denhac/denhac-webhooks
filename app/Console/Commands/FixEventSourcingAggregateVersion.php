@@ -73,7 +73,7 @@ class FixEventSourcingAggregateVersion extends Command
 
                 $event->setAttribute('meta_data', $metaData);
                 $event->aggregate_version = null;
-                $event->save();
+                $event->saveQuietly();  // Saving force updates created_at timestamp and we don't want that
 
                 continue;
             }
@@ -102,10 +102,12 @@ class FixEventSourcingAggregateVersion extends Command
             $event->setAttribute('meta_data', $metaData);
 
             $event->aggregate_version = $aggregateVersion;
-            $event->save();
+            $event->saveQuietly();  // Saving force updates created_at timestamp and we don't want that
         }
 
         $bar->finish();
+        $this->newLine(2);
+
 
         foreach ($messages as $message) {
             $this->info($message);
