@@ -77,7 +77,6 @@ class CountdownTestModal implements ModalInterface
 
     public static function onBlockAction(SlackRequest $request)
     {
-        Log::info(print_r($request->payload(), true));
         $viewId = $request->payload()['view']['id'];
         app(CountdownModalLoop::class)
             ->onQueue()

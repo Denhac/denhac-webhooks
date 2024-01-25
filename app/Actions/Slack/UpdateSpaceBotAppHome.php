@@ -15,6 +15,8 @@ class UpdateSpaceBotAppHome
     use QueueableAction;
     use StaticAction;
 
+    public string $queue = 'slack-rate-limited';
+
     private SlackApi $slackApi;
 
     private AppHome $home;

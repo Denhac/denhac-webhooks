@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 use Spatie\SchemalessAttributes\SchemalessAttributes;
 
@@ -14,7 +13,7 @@ class FixEventSourcingAggregateVersion extends Command
      *
      * @var string
      */
-    protected $signature = 'event-sourcing:fix-aggregate-version';
+    protected $signature = 'event-sourcing:fix-aggregate-version {--dry-run}';
 
     /**
      * The console command description.
@@ -38,28 +37,43 @@ class FixEventSourcingAggregateVersion extends Command
      */
     public function handle(): void
     {
+        $isDryRun = $this->option('dry-run');
+        if ($isDryRun) {
+            $this->line('Dry run, will not actually update anything.');
+        }
+
         $uuidToVersion = collect();
 
         $numModels = EloquentStoredEvent::count();
         $bar = $this->output->createProgressBar($numModels);
 
+        $messages = collect();
+
         foreach (EloquentStoredEvent::orderBy('id')->lazy() as $event) {
             $bar->advance();
             /** @var EloquentStoredEvent $event */
             $aggregateUuid = $event->aggregate_uuid;
-            if (is_null($aggregateUuid)) {
+            if (empty($aggregateUuid)) {
                 // We clear the meta data just in case, but it's probably empty
                 /** @var SchemalessAttributes $metaData */
                 $metaData = $event->meta_data;
-                if (isset($metaData['aggregate-root-uuid'])) {
-                    $metaData->forget('aggregate-root-uuid');
+                $originalCount = $metaData->count();
+                $metaData->forget([
+                    'aggregate-root-uuid',
+                    'aggregate-root-version'
+                ]);
+                $newCount = $metaData->count();
+
+                if ($isDryRun) {
+                    if ($originalCount != $newCount) {
+                        $messages->add("Would remove aggregate uuid metadata for $event->id");
+                    }
+                    continue;
                 }
-                if (isset($metaData['aggregate-root-version'])) {
-                    $metaData->forget('aggregate-root-version');
-                }
-                $event->meta_data = $metaData;
+
+                $event->setAttribute('meta_data', $metaData);
                 $event->aggregate_version = null;
-                $event->save();
+                $event->saveQuietly();  // Saving force updates created_at timestamp and we don't want that
 
                 continue;
             }
@@ -70,23 +84,33 @@ class FixEventSourcingAggregateVersion extends Command
             }
 
             $aggregateVersion = $uuidToVersion->get($aggregateUuid) + 1;
+            $uuidToVersion->put($aggregateUuid, $aggregateVersion);
 
             if ($event->aggregate_version != $aggregateVersion) {
-                Log::info("Updating aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
+                if ($isDryRun) {
+                    $messages->add("Would update aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
+                    continue;
+                }
+
+                $messages->add("Updating aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
             }
 
             /** @var SchemalessAttributes $metaData */
             $metaData = $event->meta_data;
-            $metaData['aggregate-root-uuid'] = $aggregateUuid;
-            $metaData['aggregate-root-version'] = $aggregateVersion;
-            $event->meta_data = $metaData;
+            $metaData->set('aggregate-root-uuid', $aggregateUuid);
+            $metaData->set('aggregate-root-version', $aggregateVersion);
+            $event->setAttribute('meta_data', $metaData);
 
             $event->aggregate_version = $aggregateVersion;
-            $event->save();
-
-            $uuidToVersion->put($aggregateUuid, $aggregateVersion);
+            $event->saveQuietly();  // Saving force updates created_at timestamp and we don't want that
         }
 
         $bar->finish();
+        $this->newLine(2);
+
+
+        foreach ($messages as $message) {
+            $this->info($message);
+        }
     }
 }

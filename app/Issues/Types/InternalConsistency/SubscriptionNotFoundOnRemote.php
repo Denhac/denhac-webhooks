@@ -38,7 +38,7 @@ class SubscriptionNotFoundOnRemote extends IssueBase
         return $this->issueFixChoice()
             ->option('Delete local subscription', function () {
                 /** @var Subscription $subscription */
-                $subscription = Subscription::whereWooId($this->subscription_id)->first();
+                $subscription = Subscription::find($this->subscription_id);
 
                 MembershipAggregate::make($subscription->customer_id)
                     ->deleteSubscription(['id' => $subscription->id])

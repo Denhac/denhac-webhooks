@@ -7,6 +7,7 @@ use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
+use Illuminate\Support\Facades\Log;
 
 class ManageMembersCardsModal implements ModalInterface
 {
@@ -53,6 +54,11 @@ class ManageMembersCardsModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
+        if (!$request->customer()->canIDcheck()) {
+            Log::warning('ManageMembersCardsModal: Rejecting unauthorized submission from user '.$request->customer()->id);
+            throw new \Exception('Unauthorized');
+        }
+
         $cards = $request->payload()['view']['state']['values'][self::CARD_NUM][self::CARD_NUM]['value'];
 
         $errors = [];

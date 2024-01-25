@@ -33,7 +33,6 @@ use Illuminate\Support\Collection;
  * @property ?int id_was_checked_by_id
  * @property ?Customer idWasCheckedBy
  *
- * @method static Builder whereWooId($customerId)
  * @method static Builder whereSlackId($slackId)
  */
 class Customer extends Model

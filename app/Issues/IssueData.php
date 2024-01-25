@@ -254,7 +254,9 @@ class IssueData
     public function stripeCardHolders(): Collection
     {
         if (is_null($this->_stripeCardHolders)) {
-            $this->_stripeCardHolders = collect($this->stripeClient->issuing->cardholders->all()['data']);
+            # TODO Maybe add a pager that uses apiProgress here so user can see feedback
+            $iterator = $this->stripeClient->issuing->cardholders->all()->autoPagingIterator();
+            $this->_stripeCardHolders = collect($iterator);
         }
 
         return $this->_stripeCardHolders;

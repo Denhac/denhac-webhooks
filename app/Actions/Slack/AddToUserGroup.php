@@ -4,6 +4,7 @@ namespace App\Actions\Slack;
 
 use App\Actions\StaticAction;
 use App\External\Slack\SlackApi;
+use App\External\Slack\SlackRateLimit;
 use Spatie\QueueableAction\QueueableAction;
 
 class AddToUserGroup
@@ -11,6 +12,8 @@ class AddToUserGroup
     use QueueableAction;
     use StaticAction;
     use SlackActionTrait;
+
+    public string $queue = 'slack-rate-limited';
 
     private SlackApi $slackApi;
 
@@ -34,5 +37,13 @@ class AddToUserGroup
         $users->add($slackId);
 
         $this->slackApi->usergroups->users->update($id, $users);
+    }
+
+    public function middleware()
+    {
+        return [
+            SlackRateLimit::usergroups_list(),
+            SlackRateLimit::usergroups_update(),
+        ];
     }
 }
