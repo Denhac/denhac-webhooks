@@ -14,7 +14,7 @@ class FixEventSourcingAggregateVersion extends Command
      *
      * @var string
      */
-    protected $signature = 'event-sourcing:fix-aggregate-version';
+        protected $signature = 'event-sourcing:fix-aggregate-version {--dry-run}';
 
     /**
      * The console command description.
@@ -38,6 +38,11 @@ class FixEventSourcingAggregateVersion extends Command
      */
     public function handle(): void
     {
+        $isDryRun = $this->option('dry-run');
+        if ($isDryRun) {
+            $this->line('Dry run, will not actually update anything.');
+        }
+
         $uuidToVersion = collect();
 
         $numModels = EloquentStoredEvent::count();
@@ -48,6 +53,13 @@ class FixEventSourcingAggregateVersion extends Command
             /** @var EloquentStoredEvent $event */
             $aggregateUuid = $event->aggregate_uuid;
             if (empty($aggregateUuid)) {
+                // This state shouldn't really happen, but it's a corner case I wanted to protect from anyway
+
+                if($isDryRun) {
+                    Log::info("Would remove aggregate uuid metadata for $event->id");
+                    continue;
+                }
+
                 // We clear the meta data just in case, but it's probably empty
                 /** @var SchemalessAttributes $metaData */
                 $metaData = $event->meta_data;
@@ -70,8 +82,14 @@ class FixEventSourcingAggregateVersion extends Command
             }
 
             $aggregateVersion = $uuidToVersion->get($aggregateUuid) + 1;
+            $uuidToVersion->put($aggregateUuid, $aggregateVersion);
 
             if ($event->aggregate_version != $aggregateVersion) {
+                if($isDryRun) {
+                    Log::info("Would update aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
+                    continue;
+                }
+
                 Log::info("Updating aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
             }
 
@@ -83,8 +101,6 @@ class FixEventSourcingAggregateVersion extends Command
 
             $event->aggregate_version = $aggregateVersion;
             $event->save();
-
-            $uuidToVersion->put($aggregateUuid, $aggregateVersion);
         }
 
         $bar->finish();
