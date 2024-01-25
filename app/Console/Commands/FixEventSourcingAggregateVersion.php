@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 use Spatie\SchemalessAttributes\SchemalessAttributes;
 
@@ -14,7 +13,7 @@ class FixEventSourcingAggregateVersion extends Command
      *
      * @var string
      */
-        protected $signature = 'event-sourcing:fix-aggregate-version {--dry-run}';
+    protected $signature = 'event-sourcing:fix-aggregate-version {--dry-run}';
 
     /**
      * The console command description.
@@ -48,27 +47,30 @@ class FixEventSourcingAggregateVersion extends Command
         $numModels = EloquentStoredEvent::count();
         $bar = $this->output->createProgressBar($numModels);
 
+        $messages = collect();
+
         foreach (EloquentStoredEvent::orderBy('id')->lazy() as $event) {
             $bar->advance();
             /** @var EloquentStoredEvent $event */
             $aggregateUuid = $event->aggregate_uuid;
             if (empty($aggregateUuid)) {
-                // This state shouldn't really happen, but it's a corner case I wanted to protect from anyway
-
-                if($isDryRun) {
-                    Log::info("Would remove aggregate uuid metadata for $event->id");
-                    continue;
-                }
-
                 // We clear the meta data just in case, but it's probably empty
                 /** @var SchemalessAttributes $metaData */
                 $metaData = $event->meta_data;
-                if (isset($metaData['aggregate-root-uuid'])) {
-                    $metaData->forget('aggregate-root-uuid');
+                $originalCount = $metaData->count();
+                $metaData->forget([
+                    'aggregate-root-uuid',
+                    'aggregate-root-version'
+                ]);
+                $newCount = $metaData->count();
+
+                if ($isDryRun) {
+                    if ($originalCount != $newCount) {
+                        $messages->add("Would remove aggregate uuid metadata for $event->id");
+                    }
+                    continue;
                 }
-                if (isset($metaData['aggregate-root-version'])) {
-                    $metaData->forget('aggregate-root-version');
-                }
+
                 $event->setAttribute('meta_data', $metaData);
                 $event->aggregate_version = null;
                 $event->save();
@@ -85,12 +87,12 @@ class FixEventSourcingAggregateVersion extends Command
             $uuidToVersion->put($aggregateUuid, $aggregateVersion);
 
             if ($event->aggregate_version != $aggregateVersion) {
-                if($isDryRun) {
-                    Log::info("Would update aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
+                if ($isDryRun) {
+                    $messages->add("Would update aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
                     continue;
                 }
 
-                Log::info("Updating aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
+                $messages->add("Updating aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
             }
 
             /** @var SchemalessAttributes $metaData */
@@ -104,5 +106,9 @@ class FixEventSourcingAggregateVersion extends Command
         }
 
         $bar->finish();
+
+        foreach ($messages as $message) {
+            $this->info($message);
+        }
     }
 }
