@@ -6,6 +6,7 @@ namespace App\VolunteerGroupChannels;
 use App\Actions\Google\AddToGroup;
 use App\Actions\Google\RemoveFromGroup;
 use App\Models\Customer;
+use App\Models\VolunteerGroupChannel;
 
 class GoogleGroup implements ChannelInterface
 {
@@ -18,6 +19,11 @@ class GoogleGroup implements ChannelInterface
     function remove(Customer $customer, string $channelValue): void
     {
         RemoveFromGroup::queue()->execute($customer->email, $channelValue);
+    }
+
+    static function getTypeKey(): string
+    {
+        return VolunteerGroupChannel::GOOGLE_GROUP_EMAIL;
     }
 
     static function removeOnMembershipLost(): bool

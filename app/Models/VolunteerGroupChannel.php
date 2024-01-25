@@ -10,6 +10,7 @@ use App\VolunteerGroupChannels\SlackChannel;
 use App\VolunteerGroupChannels\SlackUserGroup;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use ReflectionClass;
 use YlsIdeas\FeatureFlags\Facades\Features;
 
 /**
@@ -31,10 +32,9 @@ class VolunteerGroupChannel extends Model
      * referring to it by name which can change in Slack's system. Once the field is used, the value cannot change since
      * that's what's used in the database. The const key can change, however.
      *
-     * Don't forget to make a class that implements ChannelInterface and add it as an entry in the `getChannel` match
-     * statement. Channels should be idempotent meaning calling add when someone is already added to a channel should
-     * not do anything. Channels are also required to queue any work they need to do, so really you should use a queued
-     * action and that action should be idempotent.
+     * Don't forget to make a class that implements ChannelInterface. Channels should be idempotent meaning calling add
+     * when someone is already in a channel or remove when they're not should not do anything. Channels are also
+     * required to queue add and remove
      */
     public const GITHUB_TEAM_NAME = 'github_team_name';
     public const GOOGLE_GROUP_EMAIL = 'google_group_email';
@@ -55,13 +55,17 @@ class VolunteerGroupChannel extends Model
     protected function getChannel(): ChannelInterface
     {
         if (is_null($this->channelInstance)) {
-            $this->channelInstance = match ($this->type) {
-                self::SLACK_CHANNEL_ID => app(SlackChannel::class),
-                self::SLACK_USER_GROUP_ID => app(SlackUserGroup::class),
-                self::GOOGLE_GROUP_EMAIL => app(GoogleGroup::class),
-                self::GITHUB_TEAM_NAME => app(GitHubTeam::class),
-                default => throw new \Exception("Unknown channel type: {$this->type}"),
-            };
+            $this->channelInstance = collect(get_declared_classes())
+                ->filter(fn($name) => str_starts_with($name, 'App\\VolunteerGroupChannels'))
+                ->map(fn($name) => new ReflectionClass($name))
+                ->filter(fn($reflect) => $reflect->implementsInterface(ChannelInterface::class))
+                ->filter(fn($reflect) => $reflect->getMethod('getTypeKey')->invoke(null) == $this->type)
+                ->map(fn($reflect) => $reflect->getName())
+                ->first();
+
+            if (is_null($this->channelInstance)) {
+                throw new \Exception("Unknown channel type: {$this->type}");
+            }
         }
 
         return $this->channelInstance;

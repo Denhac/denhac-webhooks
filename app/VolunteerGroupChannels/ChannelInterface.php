@@ -11,5 +11,7 @@ interface ChannelInterface
 
     function remove(Customer $customer, string $channelValue): void;
 
+    static function getTypeKey(): string;
+
     static function removeOnMembershipLost(): bool;
 }

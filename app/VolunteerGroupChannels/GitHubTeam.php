@@ -6,6 +6,7 @@ namespace App\VolunteerGroupChannels;
 use App\Actions\GitHub\AddToGitHubTeam;
 use App\Actions\GitHub\RemoveFromGitHubTeam;
 use App\Models\Customer;
+use App\Models\VolunteerGroupChannel;
 
 class GitHubTeam implements ChannelInterface
 {
@@ -26,6 +27,11 @@ class GitHubTeam implements ChannelInterface
         }
 
         RemoveFromGitHubTeam::queue()->execute($customer->github_username, $channelValue);
+    }
+
+    static function getTypeKey(): string
+    {
+        return VolunteerGroupChannel::GITHUB_TEAM_NAME;
     }
 
     static function removeOnMembershipLost(): bool
