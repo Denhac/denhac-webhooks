@@ -55,7 +55,7 @@ class VolunteerGroupChannel extends Model
     protected function getChannel(): ChannelInterface
     {
         if (is_null($this->channelInstance)) {
-            $this->channelInstance = collect(get_declared_classes())
+            $className = collect(get_declared_classes())
                 ->filter(fn($name) => str_starts_with($name, 'App\\VolunteerGroupChannels'))
                 ->map(fn($name) => new ReflectionClass($name))
                 ->filter(fn($reflect) => $reflect->implementsInterface(ChannelInterface::class))
@@ -63,9 +63,11 @@ class VolunteerGroupChannel extends Model
                 ->map(fn($reflect) => $reflect->getName())
                 ->first();
 
-            if (is_null($this->channelInstance)) {
+            if (is_null($className)) {
                 throw new \Exception("Unknown channel type: {$this->type}");
             }
+
+            $this->channelInstance = app($className);
         }
 
         return $this->channelInstance;
