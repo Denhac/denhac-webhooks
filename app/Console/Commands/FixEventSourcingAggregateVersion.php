@@ -47,7 +47,7 @@ class FixEventSourcingAggregateVersion extends Command
             $bar->advance();
             /** @var EloquentStoredEvent $event */
             $aggregateUuid = $event->aggregate_uuid;
-            if (is_null($aggregateUuid)) {
+            if (empty($aggregateUuid)) {
                 // We clear the meta data just in case, but it's probably empty
                 /** @var SchemalessAttributes $metaData */
                 $metaData = $event->meta_data;
@@ -57,7 +57,7 @@ class FixEventSourcingAggregateVersion extends Command
                 if (isset($metaData['aggregate-root-version'])) {
                     $metaData->forget('aggregate-root-version');
                 }
-                $event->meta_data = $metaData;
+                $event->setAttribute('meta_data', $metaData);
                 $event->aggregate_version = null;
                 $event->save();
 
@@ -77,9 +77,9 @@ class FixEventSourcingAggregateVersion extends Command
 
             /** @var SchemalessAttributes $metaData */
             $metaData = $event->meta_data;
-            $metaData['aggregate-root-uuid'] = $aggregateUuid;
-            $metaData['aggregate-root-version'] = $aggregateVersion;
-            $event->meta_data = $metaData;
+            $metaData->set('aggregate-root-uuid', $aggregateUuid);
+            $metaData->set('aggregate-root-version', $aggregateVersion);
+            $event->setAttribute('meta_data', $metaData);
 
             $event->aggregate_version = $aggregateVersion;
             $event->save();
