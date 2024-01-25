@@ -53,7 +53,7 @@ class ActiveCardIssues implements IssueCheck
 
                     if (array_key_exists('udf_id', $card_holder)) {
                         /** @var MemberData $member */
-                        $member = $members->filter(fn ($m) => $m->uuid == $card_holder['udf_id'])->first();
+                        $member = $members->filter(fn($m) => $m->uuid == $card_holder['udf_id'])->first();
 
                         if (! is_null($member)) {
                             if ($this->isCardNumUpdatedInLastDay($member->id, $card_holder['card_num'])) {
@@ -82,8 +82,8 @@ class ActiveCardIssues implements IssueCheck
                 /** @var MemberData $member */
                 $member = $membersWithCard->first();
 
-                if ($card_holder['first_name'] != $member->first_name ||
-                    $card_holder['last_name'] != $member->last_name) {
+                if (! $this->namesAreEqualEnough($card_holder['first_name'], $member->first_name) ||
+                    ! $this->namesAreEqualEnough($card_holder['last_name'], $member->last_name)) {
                     $this->issues->add(new CardHolderIncorrectName($member, $card_holder));
                 }
 
@@ -118,5 +118,26 @@ class ActiveCardIssues implements IssueCheck
         $card = Card::where('number', $cardNum)->where('customer_id', $memberId)->first();
 
         return ! is_null($card) && $card->updated_at >= Carbon::now()->subDay();
+    }
+
+    /**
+     * Compares two names, allowing slight differences like how tick marks are represented in the person's name.
+     * Sometimes the card access server handles ` and ' weirdly, for example. If that's the only difference in the two
+     * names, then we should consider everything fine.
+     *
+     * @param string $left One of the two names to check
+     * @param string $right One of the two names to check
+     * @return bool
+     */
+    protected function namesAreEqualEnough(string $left, string $right): bool
+    {
+        // $from and $to are index based. i.e. index 0 in $from is replaced with index 0 of $to.
+        $from = ['`'];
+        $to = ['\''];
+
+        $left = str_replace($from, $to, $left);
+        $right = str_replace($from, $to, $right);
+
+        return $left == $right;
     }
 }
