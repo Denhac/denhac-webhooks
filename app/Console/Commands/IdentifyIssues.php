@@ -39,7 +39,7 @@ class IdentifyIssues extends Command
         $this->info("There are {$allIssues->count()} total issues.");
         $this->newLine();
 
-        $issuesByNumber = $allIssues->groupBy(fn ($i) => $i->getIssueNumber());
+        $issuesByNumber = $allIssues->groupBy(fn($i) => $i->getIssueNumber());
         $sortedIssueNumbers = $issuesByNumber->keys()->sort();
 
         $fixableIssues = collect();
@@ -83,8 +83,12 @@ class IdentifyIssues extends Command
             /** @var IssueBase|ICanFixThem $issue */
             $this->info(sprintf('%d: %s', $issue::getIssueNumber(), $issue->getIssueText()));
             $issue->setOutput($this->output);
-            if ($issue->fix()) {
-                $numIssuesFixed++;
+            try {
+                if ($issue->fix()) {
+                    $numIssuesFixed++;
+                }
+            } catch (\Exception $exception) {
+                $this->getApplication()->renderThrowable($exception, $this->output->getOutput());
             }
             $this->newLine();
         }
