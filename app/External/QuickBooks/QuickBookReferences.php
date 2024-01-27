@@ -10,6 +10,11 @@ use QuickBooksOnline\API\Data\IPPReferenceType;
  * @property IPPReferenceType vendingAdjustmentAccountFrom
  * @property IPPReferenceType vendingAdjustmentAccountTo
  * @property IPPReferenceType vendingPoolClass
+ * @property IPPReferenceType budgetClassActive
+ * @property IPPReferenceType budgetClassInactive
+ * @property IPPReferenceType budgetClassApprovedReoccurring
+ * @property IPPReferenceType budgetClassManagersBudgets
+ * @property IPPReferenceType budgetClassSpecialInterestGroups
  */
 class QuickBookReferences
 {
@@ -33,6 +38,7 @@ class QuickBookReferences
     {
         $knownPrefixes = [
             'vending',
+            'budgetClass'
         ];
 
         foreach ($knownPrefixes as $prefix => $replacement) {
