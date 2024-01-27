@@ -235,7 +235,7 @@ class IssueData
     {
         if (is_null($this->_gitHubMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubMembers = $this->gitHubApi->denhac()->listMembers($this->apiProgress("Fetching members of GitHub team 'members'"));
+            $this->_gitHubMembers = $this->gitHubApi->denhac()->listMembers($this->apiProgress("Fetching members of 'denhac' GitHub organization"));
         }
 
         return $this->_gitHubMembers;
@@ -245,7 +245,7 @@ class IssueData
     {
         if (is_null($this->_gitHubPendingMembers)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubPendingMembers = $this->gitHubApi->denhac()->pendingInvitations($this->apiProgress("Fetching invites of GitHub team 'members'"));
+            $this->_gitHubPendingMembers = $this->gitHubApi->denhac()->pendingInvitations($this->apiProgress("Fetching invites of 'denhac' GitHub organization"));
         }
 
         return $this->_gitHubPendingMembers;
@@ -255,7 +255,7 @@ class IssueData
     {
         if (is_null($this->_gitHubFailedInvites)) {
             // TODO Deduplicate "members" here
-            $this->_gitHubFailedInvites = $this->gitHubApi->denhac()->failedInvitations($this->apiProgress("Fetching invites of GitHub team 'members'"));
+            $this->_gitHubFailedInvites = $this->gitHubApi->denhac()->failedInvitations($this->apiProgress("Fetching failed invites of 'denhac' GitHub organization"));
         }
 
         return $this->_gitHubFailedInvites;
