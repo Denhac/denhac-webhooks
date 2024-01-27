@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\External\QuickBooks\QuickBookReferences;
 use Illuminate\Console\Command;
-use QuickBooksOnline\API\Core\ServiceContext;
 use QuickBooksOnline\API\Data\IPPClass;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\ReportService\ReportName;
@@ -24,7 +23,7 @@ class PrintQuickBooksBudgets extends Command
         $references = app(QuickBookReferences::class);
         $classes = collect($dataService->FindAll('Class'));
 
-        $activeBudgets = $classes->filter(fn($class) => $class->ParentRef == $references->budgetClassActive);
+        $activeBudgets = $classes->filter(fn($class) => $class->ParentRef == $references->budgetClassActive->value);
 
         foreach ($activeBudgets as $budget) {
             /** @var IPPClass $budget */
