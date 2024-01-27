@@ -16,29 +16,19 @@ class PrintQuickBooksBudgets extends Command
 
     protected $description = 'This is just a test command to print QuickBooks budgets';
 
-    protected DataService $dataService;
-    protected ServiceContext $serviceContext;
-    private QuickBookReferences $references;
-
-    public function __construct(
-        DataService         $dataService,
-        QuickBookReferences $references
-    )
-    {
-        $this->dataService = $dataService;
-        $this->serviceContext = $dataService->getServiceContext();
-        $this->references = $references;
-    }
-
     public function handle()
     {
-        $classes = collect($this->dataService->FindAll('Class'));
+        /** @var DataService $dataService */
+        $dataService = app(DataService::class);
+        $serviceContext = $dataService->getServiceContext();
+        $references = app(QuickBookReferences::class);
+        $classes = collect($dataService->FindAll('Class'));
 
-        $activeBudgets = $classes->filter(fn($class) => $class->ParentRef == $this->references->budgetClassActive);
+        $activeBudgets = $classes->filter(fn($class) => $class->ParentRef == $references->budgetClassActive);
 
         foreach ($activeBudgets as $budget) {
             /** @var IPPClass $budget */
-            $reportService = new ReportService($this->serviceContext);
+            $reportService = new ReportService($serviceContext);
             $reportService->setStartDate("2019-01-01");
             $reportService->setEndDate("2024-01-25");
             $reportService->setClassid($budget->Id);
