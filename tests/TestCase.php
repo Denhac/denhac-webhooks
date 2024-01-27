@@ -13,6 +13,7 @@ use Tests\Helpers\WaiverForever\WaiverBuilder;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 use Tests\Helpers\Wordpress\SubscriptionBuilder;
 use Tests\Helpers\Wordpress\UserMembershipBuilder;
+use YlsIdeas\FeatureFlags\Facades\Features;
 
 /**
  * Class TestCase
@@ -74,7 +75,7 @@ abstract class TestCase extends BaseTestCase
         return new WaiverBuilder();
     }
 
-    public function subscriptionStatuses(): array
+    public static function subscriptionStatuses(): array
     {
         return [
             'Pending' => ['pending'],
@@ -89,14 +90,29 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function userMembershipStatuses(): array
+    public static function userMembershipStatuses(): array
+    {
+        return array_merge([
+            'Delayed' => ['delayed'],
+            'Complimentary' => ['complimentary'],
+        ],
+            self::activeUserMembershipStatuses(),
+            self::inactiveUserMembershipStatuses(),
+        );
+    }
+
+    public static function activeUserMembershipStatuses(): array
     {
         return [
             'Active' => ['active'],
             'Free Trial' => ['free_trial'],
-            'Delayed' => ['delayed'],
-            'Complimentary' => ['complimentary'],
             'Pending Cancellation' => ['pending'],
+        ];
+    }
+
+    public static function inactiveUserMembershipStatuses(): array
+    {
+        return [
             'Paused' => ['paused'],
             'Expired' => ['expired'],
             'Cancelled' => ['cancelled'],
@@ -153,5 +169,15 @@ abstract class TestCase extends BaseTestCase
             })
             ->reject(null)
             ->all();
+    }
+
+    protected function turnOn($featureFlag): void
+    {
+        Features::turnOn('database', $featureFlag);
+    }
+
+    protected function turnOff($featureFlag): void
+    {
+        Features::turnOff('database', $featureFlag);
     }
 }

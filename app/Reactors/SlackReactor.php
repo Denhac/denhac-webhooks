@@ -5,6 +5,7 @@ namespace App\Reactors;
 use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\SendMessage;
 use App\External\Slack\SlackProfileFields;
+use App\FeatureFlags;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
@@ -18,6 +19,7 @@ use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Illuminate\Support\Collection;
+use YlsIdeas\FeatureFlags\Facades\Features;
 use function ltrim;
 use SlackPhp\BlockKit\Surfaces\Message;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
@@ -56,26 +58,28 @@ final class SlackReactor extends Reactor
         $customerId = $event->membership['customer_id'];
         $plan_id = $event->membership['plan_id'];
 
-        /** @var Collection $userSlackIds */
-        $userSlackIds = TrainableEquipment::select('user_slack_id')
-            ->where('user_plan_id', $plan_id)
-            ->get()
-            ->map(fn ($row) => $row['user_slack_id']);
+        if(! Features::accessible(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS)) {
+            /** @var Collection $userSlackIds */
+            $userSlackIds = TrainableEquipment::select('user_slack_id')
+                ->where('user_plan_id', $plan_id)
+                ->get()
+                ->map(fn($row) => $row['user_slack_id']);
 
-        /** @var Collection $trainerSlackIds */
-        $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
-            ->where('trainer_plan_id', $plan_id)
-            ->get()
-            ->map(fn ($row) => $row['trainer_slack_id']);
+            /** @var Collection $trainerSlackIds */
+            $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
+                ->where('trainer_plan_id', $plan_id)
+                ->get()
+                ->map(fn($row) => $row['trainer_slack_id']);
 
-        $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
+            $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
 
-        foreach ($slackIds as $slackId) {
-            if (is_null($slackId)) {
-                continue;
+            foreach ($slackIds as $slackId) {
+                if (is_null($slackId)) {
+                    continue;
+                }
+
+                AddToChannel::queue()->execute($customerId, $slackId);
             }
-
-            AddToChannel::queue()->execute($customerId, $slackId);
         }
     }
 

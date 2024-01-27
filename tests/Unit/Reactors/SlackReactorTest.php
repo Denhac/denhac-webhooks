@@ -3,6 +3,7 @@
 namespace Tests\Unit\Reactors;
 
 use App\Actions\Slack\AddToChannel;
+use App\FeatureFlags;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
@@ -62,6 +63,8 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function being_added_to_trainable_equipment_as_user_adds_to_slack_channel(): void
     {
+        $this->turnOff(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS);
+
         $planId = 1234;
         $slackId = 'C1345348';
         $customerId = 27;
@@ -87,6 +90,8 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function being_added_to_trainable_equipment_as_trainer_adds_to_slack_channel(): void
     {
+        $this->turnOff(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS);
+
         $planId = 1234;
         $slackId = 'C1345348';
         $customerId = 27;
@@ -112,6 +117,8 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function being_added_to_trainable_equipment_as_user_does_not_add_to_slack_channel_with_null_channel(): void
     {
+        $this->turnOff(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS);
+
         $planId = 1234;
         $customerId = 27;
 
@@ -134,6 +141,8 @@ class SlackReactorTest extends TestCase
     /** @test */
     public function being_added_to_trainable_equipment_as_trainer_does_not_add_to_slack_channel_with_null_channel(): void
     {
+        $this->turnOff(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS);
+
         $planId = 1234;
         $customerId = 27;
 
@@ -141,6 +150,60 @@ class SlackReactorTest extends TestCase
             'name' => 'Test',
             'user_plan_id' => 5678,
             'trainer_plan_id' => $planId,
+        ]);
+
+        $userMembership = $this->userMembership()
+            ->customer($customerId)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
+
+        $this->assertAction(AddToChannel::class)->never();
+    }
+
+
+
+    /** @test */
+    public function ff_on_being_added_to_trainable_equipment_as_user_does_not_add_to_slack_channel(): void
+    {
+        $this->turnOn(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS);
+
+        $planId = 1234;
+        $slackId = 'C1345348';
+        $customerId = 27;
+
+        TrainableEquipment::create([
+            'name' => 'Test',
+            'user_plan_id' => $planId,
+            'user_slack_id' => $slackId,
+            'trainer_plan_id' => 5678,
+        ]);
+
+        $userMembership = $this->userMembership()
+            ->customer($customerId)
+            ->status('active')
+            ->plan($planId);
+
+        event(new UserMembershipCreated($userMembership));
+
+        $this->assertAction(AddToChannel::class)->never();
+    }
+
+    /** @test */
+    public function ff_on_being_added_to_trainable_equipment_as_trainer_does_not_add_to_slack_channel(): void
+    {
+        $this->turnOn(FeatureFlags::USE_VOLUNTEER_GROUPS_FOR_SLACK_CHANNELS);
+
+        $planId = 1234;
+        $slackId = 'C1345348';
+        $customerId = 27;
+
+        TrainableEquipment::create([
+            'name' => 'Test',
+            'user_plan_id' => 5678,
+            'trainer_plan_id' => $planId,
+            'trainer_slack_id' => $slackId,
         ]);
 
         $userMembership = $this->userMembership()

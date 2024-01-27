@@ -28,7 +28,7 @@ class AddToUserGroup
 
         throw_if(is_null($slackId), "Customer $customerId cannot be added to usergroup $userGroupHandle!");
 
-        $userGroup = $this->slackApi->usergroups->byName($userGroupHandle);
+        $userGroup = $this->slackApi->usergroups->byNameOrId($userGroupHandle);
 
         throw_if(is_null($userGroup), "Couldn't find usergroup for $userGroupHandle");
 

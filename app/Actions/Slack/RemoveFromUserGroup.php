@@ -28,7 +28,7 @@ class RemoveFromUserGroup
 
         throw_if(is_null($slackId), "Customer $customerId cannot be removed from usergroup $userGroupHandle!");
 
-        $usergroup = $this->slackApi->usergroups->byName($userGroupHandle);
+        $usergroup = $this->slackApi->usergroups->byNameOrId($userGroupHandle);
 
         throw_if(is_null($usergroup), "Couldn't find usergroup for $userGroupHandle");
 

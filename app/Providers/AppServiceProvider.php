@@ -4,8 +4,7 @@ namespace App\Providers;
 
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\Http\Requests\SlackRequest;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
+use App\VolunteerGroupChannels\ChannelInterface;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
@@ -27,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->resolving(SlackRequest::class, function ($request, $app) {
             return SlackRequest::createFrom($app['request'], $request);
+        });
+
+        // Only create one instance of each implementation per request cycle
+        $this->app->afterResolving(ChannelInterface::class, function ($resolved, $app) {
+            $app->instance(get_class($resolved), $resolved);
         });
 
         $this->app->bind(StripeClient::class, function () {
