@@ -45,8 +45,8 @@ class PrintQuickBooksBudgets extends Command
             });
 
             $totalColumn = $columns->search("total");
-            $value = floatval($netRevenueData[$totalColumn]);
-            $this->info("{$budget->Name} $value");
+            $value = -floatval($netRevenueData[$totalColumn]);
+            $this->info("{$budget->Name}\tSpent: $value");
         }
     }
 }
