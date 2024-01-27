@@ -66,7 +66,7 @@ class TeamApi
         error_log($response->getBody()->getContents());
     }
 
-    public function remove($username)
+    public function remove($username): void
     {
         $membershipUrl = "{$this->teamUrl}/memberships/$username";
 

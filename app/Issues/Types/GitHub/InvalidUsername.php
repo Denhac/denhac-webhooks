@@ -33,7 +33,7 @@ class InvalidUsername extends IssueBase
 
     public function getIssueText(): string
     {
-        return "{$this->member->first_name} {$this->member->last_name} has the invalid format GitHub username \"{$this->member->githubUsername}\". It may be \"{$this->correctedUsername}\"";
+        return "{$this->member->first_name} {$this->member->last_name} has the invalid format GitHub username \"{$this->member->githubUsername}\". It may be \"$this->correctedUsername\"";
     }
 
     public function fix(): bool

@@ -8,7 +8,7 @@ use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
-class UnknownGitHubUsernameInTeam extends IssueBase
+class UnknownGitHubUsernameOrganization extends IssueBase
 {
     use ICanFixThem;
 
@@ -26,12 +26,12 @@ class UnknownGitHubUsernameInTeam extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return 'GitHub: Unknown GitHub username in team';
+        return 'GitHub: Unknown GitHub username denhac organization';
     }
 
     public function getIssueText(): string
     {
-        return "$this->gitHubUsername is in the members team but I have no record of them";
+        return "$this->gitHubUsername is in the denhac organization but I have no record of them";
     }
 
     public function fix(): bool
@@ -46,7 +46,7 @@ class UnknownGitHubUsernameInTeam extends IssueBase
     {
         /** @var GitHubApi $gitHubApi */
         $gitHubApi = app(GitHubApi::class);
-        $gitHubApi->denhac()->team('members')->remove($this->gitHubUsername);
+        $gitHubApi->denhac()->remove($this->gitHubUsername);
 
         return true;
     }

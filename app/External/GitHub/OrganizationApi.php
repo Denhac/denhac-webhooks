@@ -70,4 +70,15 @@ class OrganizationApi
             ]);
         }, $progress);
     }
+
+    public function remove($username): void
+    {
+        $membershipUrl = "{$this->organizationUrl}/members/$username";
+
+        $this->client->delete($membershipUrl, [
+            RequestOptions::HEADERS => [
+                'Authorization' => "Bearer {$this->accessToken}",
+            ],
+        ]);
+    }
 }

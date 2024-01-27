@@ -8,10 +8,10 @@ use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\GitHub\InvalidUsername;
-use App\Issues\Types\GitHub\NonMemberInTeam;
-use App\Issues\Types\GitHub\UnknownGitHubUsernameInTeam;
+use App\Issues\Types\GitHub\NonMemberInOrganization;
+use App\Issues\Types\GitHub\UnknownGitHubUsernameOrganization;
 use App\Issues\Types\GitHub\UsernameDoesNotExist;
-use App\Issues\Types\GitHub\UsernameNotListedInMembersTeam;
+use App\Issues\Types\GitHub\UsernameNotListedInOrganization;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -69,9 +69,9 @@ class GitHubIssues implements IssueCheck
             if ($failedInvite) {
                 continue; // Nothing to do here. Failed invites should automatically be cleaned out.
             } elseif (! $invited && $member->isMember) {
-                $this->issues->add(new UsernameNotListedInMembersTeam($member));
+                $this->issues->add(new UsernameNotListedInOrganization($member));
             } elseif ($invited && ! $member->isMember) {
-                $this->issues->add(new NonMemberInTeam($member));
+                $this->issues->add(new NonMemberInOrganization($member));
             }
         }
 
@@ -84,7 +84,7 @@ class GitHubIssues implements IssueCheck
                 continue;  // We only care here if we COULDN'T find a matching member
             }
 
-            $this->issues->add(new UnknownGitHubUsernameInTeam($gitHubMember));
+            $this->issues->add(new UnknownGitHubUsernameOrganization($gitHubMember));
         }
     }
 
