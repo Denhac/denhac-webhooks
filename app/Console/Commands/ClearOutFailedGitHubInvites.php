@@ -8,6 +8,7 @@ use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Models\Customer;
 use App\Notifications\GitHubInviteExpired;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
@@ -18,9 +19,9 @@ class ClearOutFailedGitHubInvites extends Command
     protected $signature = 'denhac:clear-out-failed-git-hub-invites {--dry-run}';
 
     protected $description = 'Members can add their GitHub username to their profile, but they don\'t always accept the
-    invite and it expires after 7 days. GitHub keeps those and we can check against our customer\'s. If there\'s a
-    failed invite, we update their profile to remove the GitHub username (they can add it back) and email them if they
-    are a current member letting them know about the issue.';
+    invite and it expires after 7 days. GitHub keeps those and we can check against our customers. If there\'s a failed
+    invite, we update their profile to remove the GitHub username (they can add it back) and email them if they are a
+    current member letting them know about the issue.';
 
     private GitHubApi $gitHubApi;
     private WooCommerceApi $wooCommerceApi;
@@ -46,15 +47,16 @@ class ClearOutFailedGitHubInvites extends Command
             $this->line('Dry run, will not actually update anything.');
         }
 
-        $inOrganization = $this->gitHubApi->denhac()
-            ->list($this->apiProgress("GitHub in Organization"))
-            ->map(fn($ghm) => $ghm['login']);
-        $pendingInvitations = $this->gitHubApi->denhac()
-            ->list($this->apiProgress("GitHub pending invitation"))
-            ->map(fn($ghm) => $ghm['login']);
-        $failedInvites = $this->gitHubApi->denhac()
-            ->failed_invitations($this->apiProgress("GitHub failed invitations"))
-            ->map(fn($ghm) => $ghm['login']);
+        $progressBar = $this->apiProgress("GitHub members in Organization");
+        $inOrganization = $this->getUsernames($this->gitHubApi->denhac()->listMembers($progressBar));
+        $this->info("We have {$inOrganization->count()} people in our GitHub organization");
+
+        $progressBar = $this->apiProgress("GitHub pending invitations");
+        $pendingInvitations = $this->getUsernames($this->gitHubApi->denhac()->pendingInvitations($progressBar));
+        $this->info("We have {$pendingInvitations->count()} pending invitations that haven't been accepted");
+
+        $progressBar = $this->apiProgress("GitHub failed invitations");
+        $failedInvites = $this->getUsernames($this->gitHubApi->denhac()->failedInvitations($progressBar));
         $this->info("We have {$failedInvites->count()} failed invites");
 
         $customers = Customer::whereNotNull('github_username')->where('member', true)->get();
@@ -68,17 +70,18 @@ class ClearOutFailedGitHubInvites extends Command
             $isPending = $pendingInvitations
                 ->filter(fn($username) => Str::lower($username) == Str::lower($customer->github_username))
                 ->isNotEmpty();
-            $hasFailedInvite = $failedInvites
-                ->filter(fn($username) => Str::lower($username) == Str::lower($customer->github_username))
-                ->isNotEmpty();
 
-            if($isInOrganization || $isPending) {
+            if ($isInOrganization || $isPending) {
                 // If they're in the organization already or they're pending, we won't check any failed invites. Failed
                 // invites persist even if someone has been invited again.
                 continue;
             }
 
-            if (!$hasFailedInvite) {
+            $hasFailedInvite = $failedInvites
+                ->filter(fn($username) => Str::lower($username) == Str::lower($customer->github_username))
+                ->isNotEmpty();
+
+            if (! $hasFailedInvite) {
                 continue;  // This user is either in the GitHub organization or has been invited and that hasn't expired
             }
 
@@ -98,5 +101,10 @@ class ClearOutFailedGitHubInvites extends Command
                 Notification::route('mail', $customer->email)->notify(new GitHubInviteExpired());
             }
         }
+    }
+
+    protected function getUsernames(Collection $gitHubCollection): Collection
+    {
+        return $gitHubCollection->map(fn($gitHubUser) => $gitHubUser['login']);
     }
 }

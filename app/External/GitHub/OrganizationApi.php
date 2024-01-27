@@ -35,7 +35,7 @@ class OrganizationApi
         return new TeamApi($this->organizationName, $name, $this->accessToken);
     }
 
-    public function list(ApiProgress $progress = null): Collection
+    public function listMembers(ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->organizationUrl}/members", function ($url) {
             return $this->client->get($url, [
@@ -47,7 +47,7 @@ class OrganizationApi
         }, $progress);
     }
 
-    public function pending(ApiProgress $progress = null): Collection
+    public function pendingInvitations(ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->organizationUrl}/invitations", function ($url) {
             return $this->client->get($url, [
@@ -59,7 +59,7 @@ class OrganizationApi
         }, $progress);
     }
 
-    public function failed_invitations(ApiProgress $progress = null): Collection
+    public function failedInvitations(ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->organizationUrl}/failed_invitations", function ($url) {
             return $this->client->get($url, [
