@@ -35,7 +35,7 @@ class GitHubIssues implements IssueCheck
         $gitHubPendingMembers = $this->issueData->gitHubPendingMembers()->map(fn($ghm) => $ghm['login']);
         $gitHubFailedInvites = $this->issueData->gitHubFailedInvites()->map(fn($ghm) => $ghm['login']);
         /** @var Collection<MemberData> $members */
-        $members = $this->issueData->members()->whereNotNull('github_username');
+        $members = $this->issueData->members()->filter(fn($member) => ! is_null($member->gitHubUsername));
 
         $progress = $this->issueData->apiProgress('Checking GitHub users');
         $progress->setProgress(0, $members->count());
@@ -68,20 +68,19 @@ class GitHubIssues implements IssueCheck
 
             if ($failedInvite) {
                 continue; // Nothing to do here. Failed invites should automatically be cleaned out.
-            } elseif (!$invited && $member->isMember) {
+            } elseif (! $invited && $member->isMember) {
                 $this->issues->add(new UsernameNotListedInMembersTeam($member));
-            } elseif ($invited && !$member->isMember) {
+            } elseif ($invited && ! $member->isMember) {
                 $this->issues->add(new NonMemberInTeam($member));
             }
         }
 
         foreach ($gitHubMembers as $gitHubMember) {
             $member = $members
-                ->filter(fn($m) => !is_null($m->githubUsername))
                 ->filter(fn($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
                 ->first();
 
-            if (!is_null($member)) {
+            if (! is_null($member)) {
                 continue;  // We only care here if we COULDN'T find a matching member
             }
 
@@ -102,7 +101,7 @@ class GitHubIssues implements IssueCheck
         }
 
         $data = $this->gitHubApi->emailLookup($githubUsername);  // In case they put their email instead of username
-        if (!array_key_exists('total_count', $data)) {
+        if (! array_key_exists('total_count', $data)) {
             error_log(print_r($data, true));  // Probably rate limited
 
             return null;
