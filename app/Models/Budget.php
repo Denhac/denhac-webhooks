@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class Budget extends Model
 {
+    use HasFactory;
+
     public const TYPE_ONE_TIME = 'one-time';
     public const TYPE_RECURRING_MONTHLY = 'recurring-monthly';
     public const TYPE_RECURRING_YEARLY = 'recurring-yearly';
@@ -43,60 +45,6 @@ class Budget extends Model
     protected $appends = [
         'available_to_spend',
     ];
-
-    use HasFactory;
-
-    /**
-     * Sync the currently used amount down from QuickBooks
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function syncCurrentlyUsed(): void
-    {
-        $currentlyUsed = $this->currently_used;
-
-        /** @var GetAmountSpentByClass $getAmountSpentByClass */
-        $getAmountSpentByClass = app(GetAmountSpentByClass::class);
-
-        $today = Carbon::now();  // TODO I don't think there's a timezone bug here, but still need to check
-        switch ($this->type) {
-            case self::TYPE_ONE_TIME:
-            case self::TYPE_POOL:
-                // Date from before we were using quickbooks to catch everything until now
-                $startDate = Carbon::createFromDate(2019, 1, 1);
-                $endDate = $today;
-                break;
-            case self::TYPE_RECURRING_MONTHLY:
-                $startDate = $today->startOfMonth();
-                $endDate = $today->endOfMonth();
-                break;
-            case self::TYPE_RECURRING_YEARLY:
-                $startDate = $today->startOfYear();
-                $endDate = $today->endOfYear();
-                break;
-            default:
-                throw new \Exception("Unknown budget type $this->type");
-        }
-
-        $quickBooksCurrentlyUsed = $getAmountSpentByClass->execute($this->quickbooks_class_id, $startDate, $endDate);
-
-        if($this->type == self::TYPE_POOL) {
-            // For a pool, the "spend" we just fetched is the negative of the amount we have available to use. i.e if
-            // the "amount spent" retrieved above is -700.00 then that means our pool has $700.00 it can use. If our
-            // allocated amount is $1,000.00 we can consider that $300.00 used. To make the math easier almost
-            // everywhere else, we calculate how much we've "used" based on how much is allocated. The only other place
-            // we have to care about this is when updating the allocated_amount field.
-            $quickBooksCurrentlyUsed = $this->allocated_amount + $quickBooksCurrentlyUsed;
-        }
-
-        if (abs($quickBooksCurrentlyUsed - $currentlyUsed) < 0.01) {
-            $this->currently_used = $quickBooksCurrentlyUsed;
-            $this->save();
-            // TODO Trigger any "go update the cards" stuff here?
-        }
-    }
-
     protected function allocated_amount(): Attribute
     {
         return Attribute::make(
