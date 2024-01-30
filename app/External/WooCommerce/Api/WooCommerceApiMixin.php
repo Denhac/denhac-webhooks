@@ -37,6 +37,10 @@ trait WooCommerceApiMixin
             $options[RequestOptions::QUERY] = [];
         }
 
+        // If you don't order by id, the default is post_date which causes issues when two posts have the exact same timestamp.
+        // Forcing the order here isn't my favorite thing, but it can always be sorted later
+        $options[RequestOptions::QUERY]['orderby'] = 'id';
+
         if (! Arr::has($options[RequestOptions::QUERY], 'per_page')) {
             $options[RequestOptions::QUERY]['per_page'] = 100;
         }
