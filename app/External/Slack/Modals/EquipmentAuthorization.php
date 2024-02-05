@@ -2,6 +2,7 @@
 
 namespace App\External\Slack\Modals;
 
+use App\Exceptions\UnauthorizedTrainerException;
 use App\External\Slack\BlockActions\BlockActionInterface;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\External\Slack\SlackOptions;
@@ -79,34 +80,23 @@ class EquipmentAuthorization implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        if (!$request->customer()->isATrainer()) {
-            Log::warning('EquipmentAuthorization: Rejecting unauthorized submission from user '.$request->customer()->id);
-            throw new \Exception('Unauthorized');
-        }
-
         $state = self::getStateValues($request);
         $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
 
-        /** @var WooCommerceApi $api */
-        $api = app(WooCommerceApi::class);
-
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
-        
-        $actor = $request->customer();
+
+        $trainer = $request->customer();
 
         try {
-            app()->make(BatchAuthorizeEquipment::class)->execute($actor, $selectedMembers, $selectedEquipment, $makeTrainers);
-        } catch (\Exception $e) {
-            if ($e->getMessage() == 'NotAuthorized') {
-                return response()->json([
-                    'response_action' => 'errors',
-                    'errors' => [self::EQUIPMENT_DROPDOWN => "You don't have permission to authorize members for this equipment."]
-                ]);
-            }
+            app(BatchAuthorizeEquipment::class)->execute($trainer, $selectedMembers, $selectedEquipment, $makeTrainers);
+        } catch (UnauthorizedTrainerException) {
+            return response()->json([
+                'response_action' => 'errors',
+                'errors' => [self::EQUIPMENT_DROPDOWN => "You don't have permission to authorize members for this equipment."]
+            ]);
         }
 
-        // TODO actually check error before sending success
         return (new SuccessModal())->update();
     }
 
@@ -126,7 +116,7 @@ class EquipmentAuthorization implements ModalInterface
     public static function equipmentFromState($state): Collection
     {
         $equipmentIds = array_map(
-            fn($formValue) => str_replace('equipment-', '', $formValue), 
+            fn($formValue) => str_replace('equipment-', '', $formValue),
             $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? []
         );
         return TrainableEquipment::whereIn('id', $equipmentIds)->get();
@@ -176,7 +166,7 @@ class EquipmentAuthorization implements ModalInterface
 
         $selectedEquipment = self::equipmentFromState($state);
         $selectedMembers = self::peopleFromState($state);
-        
+
         if ($selectedEquipment->isNotEmpty() && $selectedMembers->isNotEmpty()) {
 
             $alreadyTrained = [];
@@ -184,7 +174,7 @@ class EquipmentAuthorization implements ModalInterface
 
             foreach($selectedMembers as $person) {
                 $traineeName = "{$person->first_name} {$person->last_name}";
-                
+
                 // Get names of equipment for which the member is already a user
                 $trainedEquipmentNames = $selectedEquipment
                     ->where(fn($e) => $person->hasMembership($e->user_plan_id))
