@@ -83,6 +83,15 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'slack-events' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/slack-events.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'permission' => 0644,
+            'days' => 14,
+            'replace_placeholders' => true,
+        ],
+
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),

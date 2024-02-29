@@ -12,8 +12,7 @@ class SlackEventController extends Controller
 {
     public function __invoke(SlackRequest $request): Response
     {
-        Log::info('Event!');
-        Log::info(print_r($request->json(), true));
+        Log::channel('slack-events')->info(json_encode($request->json()));
 
         $event_class = ClassFinder::getEvent($request->json('event.type'));
 
