@@ -59,7 +59,7 @@ class GroupApi
         if ($response->getStatusCode() == Response::HTTP_CONFLICT && $this->errorsHasDuplicate($response)) {
             // Not an issue, they've already been added
         } elseif ($response->getStatusCode() != Response::HTTP_OK) {
-            throw new \Exception('Google api add failed: '.$response->getBody());
+            throw new \Exception('Google api add failed: ' . $response->getBody());
         }
 
         // TODO Handle conflict/other errors
@@ -80,7 +80,7 @@ class GroupApi
         // TODO Handle conflict/other errors
     }
 
-    public function list(ApiProgress $apiProgress)
+    public function list(?ApiProgress $apiProgress = null)
     {
         $accessToken = $this->tokenManager->getAccessToken(self::GROUP_SCOPE);
 
@@ -94,6 +94,9 @@ class GroupApi
                 ],
             ]);
         }, $apiProgress)
+            ->filter(function($group) {
+                return $group['type'] != 'CUSTOMER';  // No email key for this entry type
+            })
             ->map(function ($group) {
                 return GmailEmailHelper::handleGmail($group['email']);
             });
