@@ -26,11 +26,11 @@ class Door
     public static function quickOpenHouse(): void
     {
         $doors = self::all()->filter(fn ($d) => $d->openDuringOpenHouseByDefault);
-        $elevenPM = now()->tz('America/Denver');
-        $elevenPM->hour = 23;
-        $elevenPM->minute = 00;
+        $tenPM = now()->tz('America/Denver');
+        $tenPM->hour = 22;
+        $tenPM->minute = 00;
 
-        event(new DoorControlUpdated($elevenPM, ...$doors->toArray()));
+        event(new DoorControlUpdated($tenPM, ...$doors->toArray()));
     }
 
     public static function quickDefaultDoors(): void
