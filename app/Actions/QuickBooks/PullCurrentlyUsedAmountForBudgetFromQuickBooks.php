@@ -23,16 +23,14 @@ class PullCurrentlyUsedAmountForBudgetFromQuickBooks
         /** @var GetAmountSpentByClass $getAmountSpentByClass */
         $getAmountSpentByClass = app(GetAmountSpentByClass::class);
 
-        // TODO I don't think there's a timezone bug here, but still need to check
-        // Some things suggest it's Pacific time and others suggest that it's local to the QBO install. We'd need a
-        // transaction that would be in one day if it was pacific and in another if it was local to test.
-        $today = Carbon::today();
+        // The QuickBooks API, when it does not use a date time offset, always uses PST as its time zone.
+        $today = Carbon::today('PST');
 
         switch ($budget->type) {
             case Budget::TYPE_ONE_TIME:
             case Budget::TYPE_POOL:
                 // Date from before we were using quickbooks to catch everything until now
-                $startDate = Carbon::create(2019);
+                $startDate = Carbon::create(2019, tz: 'PST');
                 $endDate = $today->copy()->endOfDay();
                 break;
             case Budget::TYPE_RECURRING_MONTHLY:

@@ -46,8 +46,8 @@ class PullCurrentlyUsedAmountForBudgetFromQuickBooksTest extends TestCase
             'last_name' => $this->faker->lastName(),
         ]);
 
-        $today = Carbon::today();
-        $this->startOfBudgetTracking = Carbon::create(2019);
+        $today = Carbon::today('PST');
+        $this->startOfBudgetTracking = Carbon::create(2019, tz: 'PST');
         $this->endOfToday = $today->copy()->endOfDay();
         $this->startOfMonth = $today->copy()->startOfMonth();
         $this->endOfMonth = $today->copy()->endOfMonth();
