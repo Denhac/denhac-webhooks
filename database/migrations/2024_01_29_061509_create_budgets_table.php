@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('owner_type');
             $table->string('owner_id');
 
-            $table->longText('notes');
+            $table->longText('notes')->default('');
         });
     }
 

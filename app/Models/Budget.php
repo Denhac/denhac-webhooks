@@ -45,6 +45,7 @@ class Budget extends Model
     protected $appends = [
         'available_to_spend',
     ];
+
     protected function allocated_amount(): Attribute
     {
         return Attribute::make(
@@ -75,7 +76,7 @@ class Budget extends Model
      */
     public function getAvailableToSpendAttribute(): float
     {
-        $canSpend = $this->allocated_amount - $this->available_to_spend;
+        $canSpend = $this->allocated_amount - $this->currently_used;
 
         // Less than a penny or already over budget? No spend for you!
         if($canSpend < 0.01) {

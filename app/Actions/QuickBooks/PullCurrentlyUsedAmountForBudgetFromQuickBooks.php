@@ -7,7 +7,10 @@ use App\Models\Budget;
 use Carbon\Carbon;
 
 /**
- *
+ * Runs a QuickBook report for a specific budget to determine if the internal model needs to be updated. This can be on
+ * notification that something has changed (via webhook) or just run at a set time every day against all budgets. If
+ * the currently used amount doesn't need to be updated, nothing further will be done. If it does need to be updated,
+ * we queue a job to update the spendable amounts for the affected cards.
  */
 class PullCurrentlyUsedAmountForBudgetFromQuickBooks
 {
@@ -20,21 +23,25 @@ class PullCurrentlyUsedAmountForBudgetFromQuickBooks
         /** @var GetAmountSpentByClass $getAmountSpentByClass */
         $getAmountSpentByClass = app(GetAmountSpentByClass::class);
 
-        $today = Carbon::now();  // TODO I don't think there's a timezone bug here, but still need to check
+        // TODO I don't think there's a timezone bug here, but still need to check
+        // Some things suggest it's Pacific time and others suggest that it's local to the QBO install. We'd need a
+        // transaction that would be in one day if it was pacific and in another if it was local to test.
+        $today = Carbon::today();
+
         switch ($budget->type) {
             case Budget::TYPE_ONE_TIME:
             case Budget::TYPE_POOL:
                 // Date from before we were using quickbooks to catch everything until now
-                $startDate = Carbon::createFromDate(2019, 1, 1);
-                $endDate = $today;
+                $startDate = Carbon::create(2019);
+                $endDate = $today->copy()->endOfDay();
                 break;
             case Budget::TYPE_RECURRING_MONTHLY:
-                $startDate = $today->startOfMonth();
-                $endDate = $today->endOfMonth();
+                $startDate = $today->copy()->startOfMonth();
+                $endDate = $today->copy()->endOfMonth();
                 break;
             case Budget::TYPE_RECURRING_YEARLY:
-                $startDate = $today->startOfYear();
-                $endDate = $today->endOfYear();
+                $startDate = $today->copy()->startOfYear();
+                $endDate = $today->copy()->endOfYear();
                 break;
             default:
                 throw new \Exception("Unknown budget type $budget->type");
@@ -49,12 +56,17 @@ class PullCurrentlyUsedAmountForBudgetFromQuickBooks
             // everywhere else, we calculate how much we've "used" based on how much is allocated. The only other place
             // we have to care about this is when updating the allocated_amount field.
             $quickBooksCurrentlyUsed = $budget->allocated_amount + $quickBooksCurrentlyUsed;
+
+            if($quickBooksCurrentlyUsed < 0) {
+                // This can happen if we end up collecting over our pool, but we haven't shifted the excess out of this
+                // budget class yet.
+                $quickBooksCurrentlyUsed = 0;
+            }
         }
 
-        if (abs($quickBooksCurrentlyUsed - $currentlyUsed) < 0.01) {
+        if (abs($quickBooksCurrentlyUsed - $currentlyUsed) > 0.01) {
             $budget->currently_used = $quickBooksCurrentlyUsed;
             $budget->save();
-            // TODO Trigger any "go update the cards" stuff here?
         }
     }
 }
