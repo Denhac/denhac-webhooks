@@ -7,7 +7,7 @@ use Spatie\QueueableAction\QueueableAction;
 use Stripe\Issuing\Card;
 use Stripe\StripeClient;
 
-class UpdateCardsFromSource
+class UpdateStripeCardsFromSource
 {
     use QueueableAction;
 
@@ -23,7 +23,6 @@ class UpdateCardsFromSource
         $cards = $this->stripeClient->issuing->cards->all()->autoPagingIterator();
 
         $stripeModels = StripeCard::all();
-        $seenCardIds = collect();
 
         foreach ($cards as $card) {
             /** @var Card $card */
@@ -40,8 +39,6 @@ class UpdateCardsFromSource
             $cardModel->status = $card->status;
 
             $cardModel->save();
-
-            $seenCardIds->push($card->id);
         }
     }
 }

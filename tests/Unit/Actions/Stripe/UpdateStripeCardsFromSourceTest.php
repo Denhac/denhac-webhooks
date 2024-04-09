@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Actions\Stripe;
 
-use App\Actions\Stripe\UpdateCardsFromSource;
+use App\Actions\Stripe\UpdateStripeCardsFromSource;
 use App\Models\StripeCard;
 use Mockery\MockInterface;
 use Stripe\Service\Issuing\CardService;
@@ -11,11 +11,11 @@ use Stripe\StripeClient;
 use Tests\Helpers\Stripe\StripeIssuing;
 use Tests\TestCase;
 
-class UpdateCardsFromSourceTest extends TestCase
+class UpdateStripeCardsFromSourceTest extends TestCase
 {
     use StripeIssuing;
 
-    private UpdateCardsFromSource $updateCardsFromSource;
+    private UpdateStripeCardsFromSource $updateCardsFromSource;
 
     private MockInterface|StripeClient $stripeClient;
     private MockInterface|IssuingServiceFactory $issuing;
@@ -32,14 +32,14 @@ class UpdateCardsFromSourceTest extends TestCase
         $this->cards = $this->mock(CardService::class);
         $this->issuing->cards = $this->cards;
 
-        $this->updateCardsFromSource = app(UpdateCardsFromSource::class);
+        $this->updateCardsFromSource = app(UpdateStripeCardsFromSource::class);
     }
 
     /** @test */
     public function polling_for_the_list_of_cards_creates_new_card_entries(): void
     {
         $newCard = $this->stripeIssuingCard();
-        $this->cards->expects('all')
+        $this->cards->allows('all')
             ->andReturns($this->stripeCollection($newCard));
 
         $this->assertEmpty(StripeCard::all());
@@ -60,7 +60,7 @@ class UpdateCardsFromSourceTest extends TestCase
     public function polling_for_the_list_of_cards_only_updates_the_fields_that_can_change(): void
     {
         $newCard = $this->stripeIssuingCard();
-        $this->cards->expects('all')
+        $this->cards->allows('all')
             ->andReturns($this->stripeCollection($newCard));
 
         $this->assertEmpty(StripeCard::all());
@@ -81,7 +81,7 @@ class UpdateCardsFromSourceTest extends TestCase
 
         $cardModel = $cardModels->first();
         $this->assertEquals($newCard->id, $cardModel->id);
-        $this->assertEquals($originalCardHolder, $cardModel->cardholder_id);
+        $this->assertEquals($originalCardHolder->id, $cardModel->cardholder_id);
         $this->assertEquals($newCard->type, $cardModel->type);
         $this->assertEquals($newCard->status, $cardModel->status);
     }

@@ -16,7 +16,7 @@ trait StripeIssuing
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',];
 
-    public function stripeId($prefix)
+    public function stripeId($prefix): string
     {
         return $prefix . '_' . implode('', $this->faker->randomElements(self::ID_CHARACTERS, 24, true));
     }
@@ -31,8 +31,10 @@ trait StripeIssuing
         return $card;
     }
 
-    public function stripeIssuingCardHolder(): Cardholder {
+    public function stripeIssuingCardHolder(): Cardholder
+    {
         $cardHolder = new Cardholder($this->stripeId('ich'));
+        $cardHolder->phone_number = $this->faker->phoneNumber();
 
         return $cardHolder;
     }
