@@ -17,20 +17,18 @@ class UpdateStripeCardsFromSourceTest extends TestCase
 
     private UpdateStripeCardsFromSource $updateCardsFromSource;
 
-    private MockInterface|StripeClient $stripeClient;
-    private MockInterface|IssuingServiceFactory $issuing;
     private MockInterface|CardService $cards;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->stripeClient = $this->mock(StripeClient::class);
-        $this->issuing = $this->mock(IssuingServiceFactory::class);
-        $this->stripeClient->issuing = $this->issuing;
+        $stripeClient = $this->mock(StripeClient::class);
+        $issuing = $this->mock(IssuingServiceFactory::class);
+        $stripeClient->issuing = $issuing;
 
         $this->cards = $this->mock(CardService::class);
-        $this->issuing->cards = $this->cards;
+        $issuing->cards = $this->cards;
 
         $this->updateCardsFromSource = app(UpdateStripeCardsFromSource::class);
     }
