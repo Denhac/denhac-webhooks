@@ -46,6 +46,15 @@ class BudgetFactory extends Factory
         });
     }
 
+    public function inactive(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'active' => false,
+            ];
+        });
+    }
+
     public function one_time(): static
     {
         return $this->state(function (array $attributes) {

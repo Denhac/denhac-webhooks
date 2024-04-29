@@ -17,6 +17,13 @@ class StripeCard extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public const TYPE_PHYSICAL = 'physical';
+    public const TYPE_VIRTUAL = 'virtual';
+
+    public const STATUS_INACTIVE = 'inactive';
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_CANCELED = 'canceled';
+
     protected $keyType = 'string';
     public $incrementing = false;
 
