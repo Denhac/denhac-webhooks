@@ -30,6 +30,8 @@ class Budget extends Model
     public const TYPE_RECURRING_YEARLY = 'recurring-yearly';
     public const TYPE_POOL = 'pool';
 
+    private const BUDGET_EXTRA_SETTINGS_KEY = 'budget.extra';
+
     protected $fillable = [
         'quickbooks_class_id',
         'name',
@@ -66,6 +68,18 @@ class Budget extends Model
         );
     }
 
+    public static function getExtraBufferAmount(): float
+    {
+        return setting(self::BUDGET_EXTRA_SETTINGS_KEY, 10);
+    }
+
+    public static function setExtraBufferAmount(float $bufferAmount): void
+    {
+        setting([
+            self::BUDGET_EXTRA_SETTINGS_KEY => $bufferAmount,
+        ])->save();
+    }
+
     /**
      * Returns the available amount that can be spent by the owner of this budget. If the budget is overdrawn, this will
      * return 0. Returning a negative number could potentially affect other budgets when performing a sum of available
@@ -83,12 +97,17 @@ class Budget extends Model
             return 0;
         }
 
-        // Pools can only spend up to their allocated amount and no more
-        if($this->type == self::TYPE_POOL && $canSpend > $this->allocated_amount) {
-            return $this->allocated_amount;
+        if($this->type == self::TYPE_POOL) {
+            // Pools can only spend up to their allocated amount and no more
+            if ($canSpend > $this->allocated_amount) {
+                return $this->allocated_amount;
+            }
+
+            // They also get no extra buffer amount
+            return $canSpend;
         }
 
-        return $canSpend;
+        return $canSpend + self::getExtraBufferAmount();
     }
 
     public function owner(): MorphTo

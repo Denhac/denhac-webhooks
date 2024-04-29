@@ -53,6 +53,8 @@ class PullCurrentlyUsedAmountForBudgetFromQuickBooksTest extends TestCase
         $this->endOfMonth = $today->copy()->endOfMonth();
         $this->startOfYear = $today->copy()->startOfYear();
         $this->endOfYear = $today->copy()->endOfYear();
+
+        Budget::setExtraBufferAmount(0);  // No buffer for these tests
     }
 
     /** @test */
