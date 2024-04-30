@@ -35,14 +35,14 @@ class AppServiceProvider extends ServiceProvider
             return new StripeClient(['api_key' => config('denhac.stripe.stripe_api_key')]);
         });
 
-        $this->app->bind(DataService::class, function () {
+        $this->app->scoped(DataService::class, function () {
             $dataService = DataService::Configure(QuickBooksAuthSettings::getDataServiceParameters());
             $dataService->setMinorVersion(53);  // So we can auto assign DocNumber's for journal entries
 
             return $dataService;
         });
 
-        $this->app->bind(OAuth2LoginHelper::class, function () {
+        $this->app->scoped(OAuth2LoginHelper::class, function () {
             /** @var DataService $dataService */
             $dataService = app(DataService::class);
 

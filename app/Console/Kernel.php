@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Actions\QuickBooks\GenerateVendingNetJournalEntry;
 use App\Actions\Stripe\SetIssuingBalanceToValue;
+use App\Actions\Stripe\UpdateStripeCardsFromSource;
 use App\Aggregates\CardNotifierAggregate;
 use App\Console\Commands\ClearOutFailedGitHubInvites;
 use App\Console\Commands\IdentifyIssues;
@@ -64,6 +65,8 @@ class Kernel extends ConsoleKernel
         $schedule->call(fn () => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
 
         $schedule->call(fn () => $this->topUpIssuingBalance())->daily();
+
+        $schedule->call(fn () => $this->syncCardsFromStripe())->hourly();  // hourly sync cards
     }
 
     protected function refreshQuickBooksAccessToken(): void
@@ -117,5 +120,12 @@ class Kernel extends ConsoleKernel
         app(SetIssuingBalanceToValue::class)
             ->onQueue()
             ->execute(100000, "Top-Up to $1,000 on {$today->toFormattedDayDateString()}");
+    }
+
+    private function syncCardsFromStripe(): void
+    {
+        app(UpdateStripeCardsFromSource::class)
+            ->onQueue()
+            ->execute();
     }
 }
