@@ -192,4 +192,31 @@ class UpdateAllStripeCardsFromBudgetsTest extends TestCase
         $this->assertAction(SetIssuingBalanceToValue::class)
             ->never();
     }
+
+    /** @test */
+    public function two_budgets_with_customer_owner(): void
+    {
+        /** @var Customer $customer */
+        $customer = Customer::factory()->member()->cardholder()->create();
+        /** @var StripeCard $stripeCard */
+        $stripeCard = StripeCard::factory()->cardholder($customer)->active()->create();
+        /** @var Budget $budgetA */
+        $budgetA = Budget::factory()->owner($customer)->create();
+        /** @var Budget $budgetB */
+        $budgetB = Budget::factory()->owner($customer)->create();
+
+
+        $this->actionUnderTest->execute();
+
+        $neededIssuingBalance = $budgetA->available_to_spend + $budgetB->available_to_spend;
+        $neededIssuingBalancePennies = round($neededIssuingBalance * 100);
+
+        $this->assertAction(UpdateSpendingLimitsOnCard::class)
+            ->with(fn(...$args) => $stripeCard->is($args[0]) && self::matchesAuth($args[1], $neededIssuingBalancePennies))
+            ->once();
+
+        $this->assertAction(SetIssuingBalanceToValue::class)
+            ->with(fn(...$args) => $args[0] == $neededIssuingBalancePennies)
+            ->once();
+    }
 }
