@@ -56,7 +56,7 @@ class BatchAuthorizeEquipment
         $planIds = $equipmentList->map(fn($e) => $e->user_plan_id);
 
         if ($makeTrainers) {
-            $planIds = $planIds->union($equipmentList->map(fn ($e) => $e->trainer_plan_id));
+            $planIds = $planIds->concat($equipmentList->map(fn ($e) => $e->trainer_plan_id)->all());
         }
 
         foreach($members->crossjoin($planIds) as [$member, $planId]){
