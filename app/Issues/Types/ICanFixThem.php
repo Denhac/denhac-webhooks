@@ -2,8 +2,8 @@
 
 namespace App\Issues\Types;
 
+use App\DataCache\MemberData;
 use App\Issues\ChoiceHelper;
-use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -2,7 +2,7 @@
 
 namespace App\Issues\Types\AccessCards;
 
-use App\Issues\Data\MemberData;
+use App\DataCache\MemberData;
 use App\Issues\Types\IssueBase;
 
 class UnknownActiveCardForMember extends IssueBase

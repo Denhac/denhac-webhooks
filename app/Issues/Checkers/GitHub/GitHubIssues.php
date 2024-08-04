@@ -2,10 +2,10 @@
 
 namespace App\Issues\Checkers\GitHub;
 
+use App\DataCache\MemberData;
 use App\External\GitHub\GitHubApi;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\GitHub\InvalidUsername;
 use App\Issues\Types\GitHub\NonMemberInOrganization;

@@ -2,7 +2,7 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
-use App\Issues\Data\MemberData;
+use App\DataCache\MemberData;
 use App\Issues\Types\IssueBase;
 
 class MemberCardIsNotActive extends IssueBase

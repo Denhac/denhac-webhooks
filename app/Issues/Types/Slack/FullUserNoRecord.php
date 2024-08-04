@@ -2,10 +2,10 @@
 
 namespace App\Issues\Types\Slack;
 
+use App\DataCache\MemberData;
 use App\External\Slack\Channels;
 use App\External\Slack\SlackApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 

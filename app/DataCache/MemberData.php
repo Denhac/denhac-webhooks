@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Issues\Data;
+namespace App\DataCache;
 
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
