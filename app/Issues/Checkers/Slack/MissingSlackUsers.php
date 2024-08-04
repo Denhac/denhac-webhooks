@@ -2,10 +2,10 @@
 
 namespace App\Issues\Checkers\Slack;
 
+use App\DataCache\MemberData;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Checkers\SlackMembershipHelper;
-use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\Slack\MemberDoesNotHaveASlackAccount;
 

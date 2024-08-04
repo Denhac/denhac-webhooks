@@ -3,7 +3,7 @@
 namespace App\Issues\Types\InternalConsistency;
 
 use App\Aggregates\MembershipAggregate;
-use App\Issues\Data\MemberData;
+use App\DataCache\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardRemoved;

@@ -2,9 +2,9 @@
 
 namespace App\Issues\Checkers\Stripe;
 
+use App\DataCache\MemberData;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\Data\MemberData;
 use App\Issues\IssueData;
 use App\Issues\Types\Stripe\MultipleMembersForCardHolder;
 use App\Issues\Types\Stripe\NoCardHolderFoundForId;

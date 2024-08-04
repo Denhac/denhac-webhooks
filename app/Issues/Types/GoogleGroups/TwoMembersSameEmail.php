@@ -2,8 +2,8 @@
 
 namespace App\Issues\Types\GoogleGroups;
 
+use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;

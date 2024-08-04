@@ -2,8 +2,8 @@
 
 namespace App\Issues\Types\Stripe;
 
+use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Data\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Stripe\Issuing\Cardholder;

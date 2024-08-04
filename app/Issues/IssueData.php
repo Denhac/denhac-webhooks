@@ -2,13 +2,13 @@
 
 namespace App\Issues;
 
+use App\DataCache\MemberData;
 use App\External\GitHub\GitHubApi;
 use App\External\Google\GmailEmailHelper;
 use App\External\Google\GoogleApi;
 use App\External\HasApiProgressBar;
 use App\External\Slack\SlackApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Data\MemberData;
 use App\Models\UserMembership;
 use App\Models\Waiver;
 use Illuminate\Support\Collection;
