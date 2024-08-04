@@ -28,6 +28,9 @@ class ChoiceHelper
         return $this;
     }
 
+    /**
+     * @return bool Whether the issue was fixed or not
+     */
     public function run(): bool
     {
         if (! $this->choices->has('Cancel')) {
@@ -43,6 +46,13 @@ class ChoiceHelper
             return false;
         }
 
-        return $this->choices->get($choiceResult)();
+        $runResult = $this->choices->get($choiceResult);
+        if(is_null($runResult)) {
+            return true;  // We assume a null just means it was run successfully as a lambda or something.
+        } else if(is_bool($runResult)) {
+            return $runResult;  // If the option run result was a boolean, we go with that option
+        }
+
+        return false;  // Anything else, we assume this wasn't fixed.
     }
 }
