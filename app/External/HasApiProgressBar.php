@@ -2,11 +2,14 @@
 
 namespace App\External;
 
+use Illuminate\Console\Concerns\InteractsWithIO;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
 trait HasApiProgressBar
 {
+    use InteractsWithIO;
+
     public function apiProgress($title): ApiProgress
     {
         if (property_exists($this, 'output') && ! is_null($this->output)) {

@@ -14,7 +14,6 @@ use App\Models\Waiver;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Stripe\StripeClient;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * This is a re-usable set of issue data that can be used with all of the issue checkers. Ideally all data returned
@@ -57,8 +56,6 @@ class IssueData
 
     private ?Collection $_stripeCardHolders = null;
 
-    private ?OutputInterface $output = null;
-
     public function __construct(
         WooCommerceApi $wooCommerceApi,
         SlackApi $slackApi,
@@ -71,11 +68,6 @@ class IssueData
         $this->googleApi = $googleApi;
         $this->gitHubApi = $gitHubApi;
         $this->stripeClient = $stripeClient;
-    }
-
-    public function setOutput(?OutputInterface $output): void
-    {
-        $this->output = $output;
     }
 
     public function wooCommerceCustomers(): Collection
