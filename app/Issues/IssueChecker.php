@@ -5,6 +5,7 @@ namespace App\Issues;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -18,7 +19,7 @@ class IssueChecker
 
     private IssueData $issueData;
 
-    private ?OutputInterface $output = null;
+    private ?OutputStyle $output = null;
 
     public function __construct()
     {
@@ -33,7 +34,7 @@ class IssueChecker
             ->map(fn ($name) => app($name));
     }
 
-    public function setOutput(OutputInterface $output): void
+    public function setOutput(OutputStyle $output): void
     {
         $this->output = $output;
         $this->issueData->setOutput($output);
@@ -52,7 +53,7 @@ class IssueChecker
                     $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
                     $this->output->writeln("Getting issues for: $shortName");
                 }
-                $this->issues = $this->issues->concat($checker->getIssues());
+                $this->issues = $this->issues->union($checker->getIssues());
             }
         }
 

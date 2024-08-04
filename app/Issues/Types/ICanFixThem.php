@@ -3,6 +3,7 @@
 namespace App\Issues\Types;
 
 use App\DataCache\MemberData;
+use App\External\HasApiProgressBar;
 use App\Issues\ChoiceHelper;
 use App\Issues\IssueData;
 use Illuminate\Console\Concerns\InteractsWithIO;
@@ -13,11 +14,6 @@ trait ICanFixThem
     use InteractsWithIO;
 
     abstract public function fix(): bool;
-
-    public function setOutput(?OutputInterface $output): void
-    {
-        $this->output = $output;
-    }
 
     protected function selectMember(): ?MemberData
     {
