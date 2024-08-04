@@ -49,10 +49,10 @@ class TwoMembersSameEmail extends IssueBase
                 $name = "$member->first_name $member->last_name";
                 if ($this->email == $member->primaryEmail) {
                     // We can't remove the primary email, only update it to something else
-                    $this->info("Update primary email for $name", fn () => $this->updatePrimaryEmail($member, $needToUpdate));
+                    $options->option("Update primary email for $name", fn () => $this->updatePrimaryEmail($member, $needToUpdate));
                 } else {
                     // We only offer to remove secondary emails
-                    $this->info("Remove secondary email for $name", fn () => $this->removeSecondaryEmail($member, $needToUpdate));
+                    $options->option("Remove secondary email for $name", fn () => $this->removeSecondaryEmail($member, $needToUpdate));
                 }
             }
 
