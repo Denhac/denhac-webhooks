@@ -36,7 +36,7 @@ class ManageOpenHouseModal implements ModalInterface
             ->close('Cancel');
 
         $timePicker = (new TimePicker())
-            ->initialTime('23:00')
+            ->initialTime('22:00')
             ->actionId(self::EXPIRES_TIME);
 
         $this->modalView->newSection()
