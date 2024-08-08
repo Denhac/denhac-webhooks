@@ -2,11 +2,12 @@
 
 namespace App\Issues\Checkers\Slack;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
+use App\DataCache\SlackUsers;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Checkers\SlackMembershipHelper;
-use App\Issues\IssueData;
 use App\Issues\Types\Slack\FullUserNoRecord;
 use App\Issues\Types\Slack\MemberHasRestrictedAccount;
 use App\Issues\Types\Slack\NonMemberHasFullAccount;
@@ -16,16 +17,16 @@ class ExtraSlackUsers implements IssueCheck
     use IssueCheckTrait;
     use SlackMembershipHelper;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData,
+        private readonly SlackUsers $slackUsers
+    )
     {
-        $this->issueData = $issueData;
     }
 
     public function generateIssues(): void
     {
-        $slackUsers = $this->issueData->slackUsers()
+        $slackUsers = $this->slackUsers->get()
             ->filter(function ($user) {
                 if (array_key_exists('is_bot', $user) && $user['is_bot']) {
                     return false;
@@ -41,7 +42,7 @@ class ExtraSlackUsers implements IssueCheck
                 return true;
             });
 
-        $members = $this->issueData->members();
+        $members = $this->aggregateCustomerData->get();
 
         $slackUsers
             ->each(function ($user) use ($members) {

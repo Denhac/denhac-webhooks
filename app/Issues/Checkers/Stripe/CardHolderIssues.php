@@ -2,10 +2,11 @@
 
 namespace App\Issues\Checkers\Stripe;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
+use App\DataCache\StripeCardHolders;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\Stripe\MultipleMembersForCardHolder;
 use App\Issues\Types\Stripe\NoCardHolderFoundForId;
 use App\Issues\Types\Stripe\NoMemberForCardHolder;
@@ -15,17 +16,17 @@ class CardHolderIssues implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData,
+        private readonly StripeCardHolders $stripeCardHolders
+    )
     {
-        $this->issueData = $issueData;
     }
 
     protected function generateIssues(): void
     {
-        $members = $this->issueData->members();
-        $cardHolders = $this->issueData->stripeCardHolders();
+        $members = $this->aggregateCustomerData->get();
+        $cardHolders = $this->stripeCardHolders->get();
 
         foreach ($cardHolders as $cardHolder) {
             /** @var Cardholder $cardHolder */

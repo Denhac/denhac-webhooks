@@ -2,10 +2,10 @@
 
 namespace App\Issues\Checkers\AccessCards;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\AccessCards\ActiveCardMultipleAccounts;
 use App\Issues\Types\AccessCards\ActiveCardNoRecord;
 use App\Issues\Types\AccessCards\CardHolderIncorrectName;
@@ -21,17 +21,16 @@ class ActiveCardIssues implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData,
+    )
     {
-        $this->issueData = $issueData;
     }
 
     public function generateIssues(): void
     {
         /** @var Collection<MemberData> $members */
-        $members = $this->issueData->members();
+        $members = $this->aggregateCustomerData->get();
 
         /** @var ActiveCardHolderUpdate $activeCardHolderUpdate */
         $activeCardHolderUpdate = ActiveCardHolderUpdate::latest()->first();

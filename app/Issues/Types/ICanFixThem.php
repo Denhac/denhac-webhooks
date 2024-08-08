@@ -2,12 +2,10 @@
 
 namespace App\Issues\Types;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
-use App\External\HasApiProgressBar;
 use App\Issues\ChoiceHelper;
-use App\Issues\IssueData;
 use Illuminate\Console\Concerns\InteractsWithIO;
-use Symfony\Component\Console\Output\OutputInterface;
 
 trait ICanFixThem
 {
@@ -17,10 +15,10 @@ trait ICanFixThem
 
     protected function selectMember(): ?MemberData
     {
-        /** @var IssueData $issueData */
-        $issueData = app(IssueData::class);
-        $memberNames = $issueData->members()
-            ->mapWithKeys(fn ($m) => ["$m->first_name $m->last_name" => $m]);  // TODO What happens when we have duplicate names
+        /** @var AggregateCustomerData $aggregateCustomerData */
+        $aggregateCustomerData = app(AggregateCustomerData::class);
+        $memberNames = $aggregateCustomerData->get()
+            ->mapWithKeys(fn ($m) => ["$m->first_name $m->last_name" => $m]);
 
         do {
             $choice = $this->anticipate('Select customer/member', function ($input) use ($memberNames) {
@@ -32,7 +30,7 @@ trait ICanFixThem
                  * The closer a member's name is to the input text, given the similar_text distance, the more likely we are
                  * to want to use it. Take the top 5 closest ones and return those as options to auto complete.
                  */
-                $values = $memberNames
+                return $memberNames
                     ->keys()
                     ->map(function ($n) use ($input) {
                         similar_text($input, $n, $percent);
@@ -43,8 +41,6 @@ trait ICanFixThem
                     ->take(5)
                     ->map(fn ($arr) => $arr[0])
                     ->toArray();
-                //                Log::info(print_r($values, true));
-                return $values;
             });
 
             if (empty($choice)) {
@@ -72,9 +68,9 @@ trait ICanFixThem
 
     protected function memberDataById($memberId): ?MemberData
     {
-        /** @var IssueData $issueData */
-        $issueData = app(IssueData::class);
+        /** @var AggregateCustomerData $aggregateCustomerData */
+        $aggregateCustomerData = app(AggregateCustomerData::class);
 
-        return $issueData->members()->filter(fn ($m) => $m->id == $memberId)->first();
+        return $aggregateCustomerData->get()->filter(fn ($m) => $m->id == $memberId)->first();
     }
 }

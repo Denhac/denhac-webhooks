@@ -5,17 +5,15 @@ namespace DummyNamespace;
 
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 
 class DummyClass implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
+    public function __construct(
 
-    public function __construct(IssueData $issueData)
+    )
     {
-        $this->issueData = $issueData;
     }
 
     protected function generateIssues(): void

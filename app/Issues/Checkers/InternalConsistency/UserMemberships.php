@@ -2,9 +2,9 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
+use App\DataCache\WooCommerceUserMemberships;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\UserMembershipDoesNotExistInOurLocalDatabase;
 use App\Issues\Types\InternalConsistency\UserMembershipNotFoundOnRemote;
 use App\Issues\Types\InternalConsistency\UserMembershipStatusDiffers;
@@ -14,16 +14,15 @@ class UserMemberships implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly WooCommerceUserMemberships $wooCommerceUserMemberships
+    )
     {
-        $this->issueData = $issueData;
     }
 
     protected function generateIssues(): void
     {
-        $userMembershipsApi = $this->issueData->wooCommerceUserMemberships();
+        $userMembershipsApi = $this->wooCommerceUserMemberships->get();
         $userMembershipsModels = UserMembership::all();
 
         foreach ($userMembershipsApi as $userMembershipApi) {

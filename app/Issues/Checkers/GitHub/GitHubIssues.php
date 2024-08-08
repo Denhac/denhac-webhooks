@@ -2,11 +2,15 @@
 
 namespace App\Issues\Checkers\GitHub;
 
+use App\DataCache\AggregateCustomerData;
+use App\DataCache\GitHubFailedInvites;
+use App\DataCache\GitHubMembers;
+use App\DataCache\GitHubPendingMembers;
 use App\DataCache\MemberData;
 use App\External\GitHub\GitHubApi;
+use App\External\HasApiProgressBar;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\GitHub\InvalidUsername;
 use App\Issues\Types\GitHub\NonMemberInOrganization;
 use App\Issues\Types\GitHub\UnknownGitHubUsernameOrganization;
@@ -18,26 +22,27 @@ use Illuminate\Support\Str;
 class GitHubIssues implements IssueCheck
 {
     use IssueCheckTrait;
+    use HasApiProgressBar;
 
-    private IssueData $issueData;
-
-    private GitHubApi $gitHubApi;
-
-    public function __construct(IssueData $issueData, GitHubApi $gitHubApi)
+    public function __construct(
+        private readonly GitHubApi $gitHubApi,
+        private readonly AggregateCustomerData $aggregateCustomerData,
+        private readonly GitHubMembers $gitHubMembers,
+        private readonly GitHubPendingMembers $gitHubPendingMembers,
+        private readonly GitHubFailedInvites $gitHubFailedInvites
+    )
     {
-        $this->issueData = $issueData;
-        $this->gitHubApi = $gitHubApi;
     }
 
     protected function generateIssues(): void
     {
-        $gitHubMembers = $this->issueData->gitHubMembers()->map(fn($ghm) => $ghm['login']);
-        $gitHubPendingMembers = $this->issueData->gitHubPendingMembers()->map(fn($ghm) => $ghm['login']);
-        $gitHubFailedInvites = $this->issueData->gitHubFailedInvites()->map(fn($ghm) => $ghm['login']);
+        $gitHubMembers = $this->gitHubMembers->get()->map(fn($ghm) => $ghm['login']);
+        $gitHubPendingMembers = $this->gitHubPendingMembers->get()->map(fn($ghm) => $ghm['login']);
+        $gitHubFailedInvites = $this->gitHubFailedInvites->get()->map(fn($ghm) => $ghm['login']);
         /** @var Collection<MemberData> $members */
-        $members = $this->issueData->members()->filter(fn($member) => ! is_null($member->githubUsername));
+        $members = $this->aggregateCustomerData->get()->filter(fn($member) => ! is_null($member->githubUsername));
 
-        $progress = $this->issueData->apiProgress('Checking GitHub users');
+        $progress = $this->apiProgress('Checking GitHub users');
         $progress->setProgress(0, $members->count());
         foreach ($members as $member) {
             $progress->step();

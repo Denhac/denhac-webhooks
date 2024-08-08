@@ -5,7 +5,6 @@ namespace App\Issues;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
-use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -17,27 +16,14 @@ class IssueChecker
 
     protected ?Collection $issues = null;
 
-    private IssueData $issueData;
-
-    private ?OutputStyle $output = null;
-
     public function __construct()
     {
-        $this->issueData = app(IssueData::class);
-        app()->instance(IssueData::class, $this->issueData);
-
         $this->checkers = collect(get_declared_classes())
             ->filter(fn ($name) => str_starts_with($name, 'App\\Issues\\Checkers'))
             ->map(fn ($name) => new ReflectionClass($name))
             ->filter(fn ($reflect) => $reflect->implementsInterface(IssueCheck::class))
             ->map(fn ($reflect) => $reflect->getName())
             ->map(fn ($name) => app($name));
-    }
-
-    public function setOutput(OutputStyle $output): void
-    {
-        $this->output = $output;
-        $this->issueData->setOutput($output);
     }
 
     /**
@@ -49,9 +35,10 @@ class IssueChecker
             $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
-                if (! is_null($this->output)) {
+                if (! app()->resolved(OutputInterface::class)) {
+                    $output = app(OutputInterface::class);
                     $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
-                    $this->output->writeln("Getting issues for: $shortName");
+                    $output->writeln("Getting issues for: $shortName");
                 }
                 $this->issues = $this->issues->union($checker->getIssues());
             }

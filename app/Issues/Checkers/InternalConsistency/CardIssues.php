@@ -2,10 +2,10 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\ActiveCardNotInCustomerProfile;
 use App\Issues\Types\InternalConsistency\CardInPossessionOfMultipleCustomers;
 use App\Issues\Types\InternalConsistency\CardIsActivateWhenItShouldNotBe;
@@ -19,11 +19,10 @@ class CardIssues implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData
+    )
     {
-        $this->issueData = $issueData;
     }
 
     public function generateIssues(): void
@@ -31,7 +30,7 @@ class CardIssues implements IssueCheck
         $cards = Card::all();
 
         /** @var Collection<MemberData> $members */
-        $members = $this->issueData->members();
+        $members = $this->aggregateCustomerData->get();
 
         $members->each(function ($member) use ($cards) {
             /** @var MemberData $member */

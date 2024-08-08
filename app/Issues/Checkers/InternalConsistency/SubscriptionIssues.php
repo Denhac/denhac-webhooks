@@ -2,9 +2,9 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
+use App\DataCache\WooCommerceSubscriptions;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\SubscriptionDoesNotExistInOurLocalDatabase;
 use App\Issues\Types\InternalConsistency\SubscriptionNotFoundOnRemote;
 use App\Issues\Types\InternalConsistency\SubscriptionStatusDiffers;
@@ -14,16 +14,15 @@ class SubscriptionIssues implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly WooCommerceSubscriptions $wooCommerceSubscriptions
+    )
     {
-        $this->issueData = $issueData;
     }
 
     public function generateIssues(): void
     {
-        $subscriptions_api = $this->issueData->wooCommerceSubscriptions();
+        $subscriptions_api = $this->wooCommerceSubscriptions->get();
         $subscriptions_models = Subscription::all();
 
         foreach ($subscriptions_api as $subscription_api) {
