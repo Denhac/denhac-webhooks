@@ -7,6 +7,8 @@ use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class IdentifyIssues extends Command
 {
@@ -33,7 +35,6 @@ class IdentifyIssues extends Command
 
         /** @var IssueChecker $issueChecker */
         $issueChecker = app(IssueChecker::class);
-        $issueChecker->setOutput($this->output);
 
         $allIssues = $issueChecker->getIssues();
         $this->info("There are {$allIssues->count()} total issues.");
@@ -96,5 +97,11 @@ class IdentifyIssues extends Command
         $fixedIssueOrIssues = Str::plural('issue', $numIssuesFixed);
         $this->newLine();
         $this->info("We fixed $numIssuesFixed $fixedIssueOrIssues out of $fixableIssueCount $issueOrIssues");
+    }
+
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        // Bind the output interface to our actual output so our data cache and issue checker can use it.
+        app()->instance(OutputInterface::class, $output);
     }
 }

@@ -2,11 +2,13 @@
 
 namespace App\Issues\Checkers\GoogleGroups;
 
+use App\DataCache\AggregateCustomerData;
+use App\DataCache\GoogleGroupMembers;
+use App\DataCache\GoogleGroups;
 use App\DataCache\MemberData;
 use App\External\Google\GmailEmailHelper;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\GoogleGroups\ActiveMemberNotInGroups;
 use App\Issues\Types\GoogleGroups\NoMemberFoundForEmail;
 use App\Issues\Types\GoogleGroups\NotActiveMemberButInGroups;
@@ -18,19 +20,20 @@ class GoogleGroupIssues implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData,
+        private readonly GoogleGroups $googleGroups,
+        private readonly GoogleGroupMembers $googleGroupMembers
+    )
     {
-        $this->issueData = $issueData;
     }
 
     protected function generateIssues(): void
     {
         /** @var Collection<MemberData> $members */
-        $members = $this->issueData->members();
+        $members = $this->aggregateCustomerData->get();
 
-        $groups = $this->issueData->googleGroups()
+        $groups = $this->googleGroups->get()
             ->filter(function ($group) {
                 // TODO handle excluded groups in a better way
                 return $group != 'denhac@denhac.org' &&
@@ -40,7 +43,7 @@ class GoogleGroupIssues implements IssueCheck
         $emailsToGroups = collect();
 
         $groups->each(function ($group) use (&$emailsToGroups) {
-            $membersInGroup = $this->issueData->googleGroupMembers($group);
+            $membersInGroup = $this->googleGroupMembers->get($group);
 
             $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
                 $groupMember = GmailEmailHelper::handleGmail(Str::lower($groupMember));
@@ -61,7 +64,6 @@ class GoogleGroupIssues implements IssueCheck
             $membersForEmail = $members
                 ->filter(function ($member) use ($email) {
                     /** @var MemberData $member */
-                    /** @var Collection $memberEmails */
                     $memberEmails = $member->emails;
 
                     return $memberEmails->contains(Str::lower($email));
@@ -89,7 +91,6 @@ class GoogleGroupIssues implements IssueCheck
 
         $members->each(function ($member) use ($emailsToGroups) {
             /** @var MemberData $member */
-            /** @var Collection $memberEmails */
             $memberEmails = $member->emails;
 
             if ($memberEmails->isEmpty()) {

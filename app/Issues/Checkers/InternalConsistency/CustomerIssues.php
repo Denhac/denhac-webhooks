@@ -2,10 +2,10 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\CannotFindCustomer;
 use App\Issues\Types\InternalConsistency\CustomerDataDiffers;
 use App\Models\Customer;
@@ -14,18 +14,17 @@ class CustomerIssues implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData
+    )
     {
-        $this->issueData = $issueData;
     }
 
     protected function generateIssues(): void
     {
         // We grab members here because it gives easy access to meta keys and will have everything we care about.
         // Plus, most other checkers need it so there's no extra cost to use it here.
-        $members = $this->issueData->members();
+        $members = $this->aggregateCustomerData->get();
         $customers = Customer::all();
 
         // MemberData -> Customer property

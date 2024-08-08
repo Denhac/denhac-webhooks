@@ -2,10 +2,10 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
-use App\Issues\IssueData;
 use App\Issues\Types\InternalConsistency\RemoteIsMemberButLocalIsNot;
 use App\Issues\Types\InternalConsistency\RemoteIsNotMemberButLocalIs;
 use App\Models\Customer;
@@ -14,16 +14,15 @@ class IsMemberIssues implements IssueCheck
 {
     use IssueCheckTrait;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData
+    )
     {
-        $this->issueData = $issueData;
     }
 
     protected function generateIssues(): void
     {
-        $members = $this->issueData->members();
+        $members = $this->aggregateCustomerData->get();
         $customers = Customer::all();
 
         foreach ($members as $member) {

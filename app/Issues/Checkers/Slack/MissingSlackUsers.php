@@ -2,11 +2,12 @@
 
 namespace App\Issues\Checkers\Slack;
 
+use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
+use App\DataCache\SlackUsers;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Checkers\SlackMembershipHelper;
-use App\Issues\IssueData;
 use App\Issues\Types\Slack\MemberDoesNotHaveASlackAccount;
 
 class MissingSlackUsers implements IssueCheck
@@ -14,17 +15,17 @@ class MissingSlackUsers implements IssueCheck
     use IssueCheckTrait;
     use SlackMembershipHelper;
 
-    private IssueData $issueData;
-
-    public function __construct(IssueData $issueData)
+    public function __construct(
+        private readonly AggregateCustomerData $aggregateCustomerData,
+        private readonly SlackUsers $slackUsers
+    )
     {
-        $this->issueData = $issueData;
     }
 
     public function generateIssues(): void
     {
-        $members = $this->issueData->members();
-        $slackUsers = $this->issueData->slackUsers();
+        $members = $this->aggregateCustomerData->get();
+        $slackUsers = $this->slackUsers->get();
 
         $members
             ->each(function ($member) use ($slackUsers) {

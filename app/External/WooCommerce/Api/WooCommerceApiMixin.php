@@ -42,7 +42,7 @@ trait WooCommerceApiMixin
         $options[RequestOptions::QUERY]['orderby'] = 'id';
 
         if (! Arr::has($options[RequestOptions::QUERY], 'per_page')) {
-            $options[RequestOptions::QUERY]['per_page'] = 100;
+            $options[RequestOptions::QUERY]['per_page'] = 50;
         }
 
         try {

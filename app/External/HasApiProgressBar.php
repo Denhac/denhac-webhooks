@@ -2,17 +2,22 @@
 
 namespace App\External;
 
-use Illuminate\Console\Concerns\InteractsWithIO;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
 trait HasApiProgressBar
 {
-    use InteractsWithIO;
+    protected $output;
 
     public function apiProgress($title): ApiProgress
     {
-        if (property_exists($this, 'output') && ! is_null($this->output)) {
+        // If we're in the console, the IdentifyIssues command will bind this interface to our output. This prevents us
+        // from having to pass this parameter around everywhere while also allowing us to run this not in console mode.
+        if (is_null($this->output) && app()->resolved(OutputInterface::class)) {
+            $this->output = app()->make(OutputInterface::class);
+        }
+
+        if (! is_null($this->output)) {
             return new class($this->output, $title) implements ApiProgress
             {
                 private OutputInterface $output;
