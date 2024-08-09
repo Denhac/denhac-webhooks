@@ -46,7 +46,8 @@ class ChoiceHelper
             return false;
         }
 
-        $runResult = $this->choices->get($choiceResult);
+        $callback = $this->choices->get($choiceResult);
+        $runResult = $callback();
         if(is_null($runResult)) {
             return true;  // We assume a null just means it was run successfully as a lambda or something.
         } else if(is_bool($runResult)) {
