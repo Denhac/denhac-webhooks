@@ -61,6 +61,8 @@ class IdentifyIssues extends Command
                 /** @var IssueBase $issue */
                 $this->info("\t{$issue->getIssueText()}");
                 if ($canFixThisIssueType) {
+                    /** @var ICanFixThem|IssueBase $issue */
+                    $issue->setOutput($this->output);
                     $fixableIssues->add($issue);
                 }
             }
