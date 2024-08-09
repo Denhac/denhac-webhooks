@@ -45,6 +45,10 @@ abstract class CachedData
             $key = '';
         }
 
-        return $this->cache->get($key, $fn);
+        if(! $this->cache->has($key)) {
+            $this->cache->put($key, $fn());
+        }
+
+        return $this->cache->get($key);
     }
 }
