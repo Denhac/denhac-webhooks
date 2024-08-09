@@ -5,7 +5,6 @@ namespace App\DataCache;
 use App\External\HasApiProgressBar;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Inherit from this class to automatically scope your instance to the current request lifecycle. It also provides an

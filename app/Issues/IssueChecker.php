@@ -35,7 +35,7 @@ class IssueChecker
             $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
-                if (! app()->resolved(OutputInterface::class)) {
+                if (app()->resolved(OutputInterface::class)) {
                     $output = app(OutputInterface::class);
                     $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
                     $output->writeln("Getting issues for: $shortName");

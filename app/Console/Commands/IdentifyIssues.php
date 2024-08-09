@@ -6,6 +6,7 @@ use App\Issues\IssueChecker;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Console\Command;
+use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -50,7 +51,9 @@ class IdentifyIssues extends Command
             /** @var IssueBase $firstIssue */
             $firstIssue = $myIssues->first();
             $issueTitle = $firstIssue->getIssueTitle();
-            $canFixThisIssueType = array_key_exists(ICanFixThem::class, (new \ReflectionClass($firstIssue))->getTraits());
+            $issueTraits = (new \ReflectionClass($firstIssue))->getTraits();
+            $canFixThisIssueType = array_key_exists(ICanFixThem::class, $issueTraits);
+            $needsOutputSet = array_key_exists(InteractsWithIO::class, $issueTraits);
 
             $this->info(sprintf('%d: %s (%d)', $issueNumber, $issueTitle, count($myIssues)));
             $this->info("URL: {$firstIssue->getIssueURL()}");
@@ -62,7 +65,9 @@ class IdentifyIssues extends Command
                 $this->info("\t{$issue->getIssueText()}");
                 if ($canFixThisIssueType) {
                     /** @var ICanFixThem|IssueBase $issue */
-                    $issue->setOutput($this->output);
+                    if($needsOutputSet) {
+                        $issue->setOutput($this->output);
+                    }
                     $fixableIssues->add($issue);
                 }
             }
@@ -85,7 +90,6 @@ class IdentifyIssues extends Command
         foreach ($fixableIssues as $issue) {
             /** @var IssueBase|ICanFixThem $issue */
             $this->info(sprintf('%d: %s', $issue::getIssueNumber(), $issue->getIssueText()));
-            $issue->setOutput($this->output);
             try {
                 if ($issue->fix()) {
                     $numIssuesFixed++;
