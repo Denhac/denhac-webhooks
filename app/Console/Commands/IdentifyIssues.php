@@ -53,7 +53,6 @@ class IdentifyIssues extends Command
             $issueTitle = $firstIssue->getIssueTitle();
             $issueTraits = (new \ReflectionClass($firstIssue))->getTraits();
             $canFixThisIssueType = array_key_exists(ICanFixThem::class, $issueTraits);
-            $needsOutputSet = array_key_exists(InteractsWithIO::class, $issueTraits);
 
             $this->info(sprintf('%d: %s (%d)', $issueNumber, $issueTitle, count($myIssues)));
             $this->info("URL: {$firstIssue->getIssueURL()}");
@@ -65,9 +64,7 @@ class IdentifyIssues extends Command
                 $this->info("\t{$issue->getIssueText()}");
                 if ($canFixThisIssueType) {
                     /** @var ICanFixThem|IssueBase $issue */
-                    if($needsOutputSet) {
-                        $issue->setOutput($this->output);
-                    }
+                    $issue->setOutput($this->output);
                     $fixableIssues->add($issue);
                 }
             }
