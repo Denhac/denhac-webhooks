@@ -3,6 +3,7 @@
 namespace App\Issues\Checkers\InternalConsistency;
 
 use App\DataCache\WooCommerceUserMemberships;
+use App\External\HasApiProgressBar;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Types\InternalConsistency\UserMembershipDoesNotExistInOurLocalDatabase;
@@ -13,6 +14,7 @@ use App\Models\UserMembership;
 class UserMemberships implements IssueCheck
 {
     use IssueCheckTrait;
+    use HasApiProgressBar;
 
     public function __construct(
         private readonly WooCommerceUserMemberships $wooCommerceUserMemberships
@@ -25,7 +27,11 @@ class UserMemberships implements IssueCheck
         $userMembershipsApi = $this->wooCommerceUserMemberships->get();
         $userMembershipsModels = UserMembership::all();
 
+        $apiProgress = $this->apiProgress('Checking User Memberships in API');
+        $apiProgress->setProgress(0, $userMembershipsApi->count());
         foreach ($userMembershipsApi as $userMembershipApi) {
+            $apiProgress->step();
+
             $um_id = $userMembershipApi['id'];
             $um_status = $userMembershipApi['status'];
 
@@ -42,7 +48,11 @@ class UserMemberships implements IssueCheck
             }
         }
 
+        $dbProgress = $this->apiProgress('Checking User Memberships in Database');
+        $dbProgress->setProgress(0, $userMembershipsApi->count());
         foreach ($userMembershipsModels as $userMembershipsModel) {
+            $dbProgress->step();
+
             /** @var UserMembership $userMembershipsModel */
             $um_id = $userMembershipsModel->id;
 
