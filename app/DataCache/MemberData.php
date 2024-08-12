@@ -8,6 +8,7 @@ use Spatie\LaravelData\Data;
 
 /**
  * @property string uuid
+ * @property string full_name
  */
 class MemberData extends Data
 {
@@ -32,6 +33,8 @@ class MemberData extends Data
     {
         if ($name == 'uuid') {
             return Uuid::uuid5(UUID::NAMESPACE_OID, $this->id);
+        } elseif ($name == 'full_name') {
+            return "$this->first_name $this->last_name";
         }
 
         return null;

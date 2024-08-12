@@ -3,6 +3,7 @@
 namespace App\DataCache;
 
 use App\External\WooCommerce\Api\WooCommerceApi;
+use Illuminate\Support\Collection;
 
 class WooCommerceSubscriptions extends CachedData
 {
@@ -13,7 +14,7 @@ class WooCommerceSubscriptions extends CachedData
         parent::__construct();
     }
 
-    public function get()
+    public function get(): Collection
     {
         return $this->cache(function () {
             return $this->wooCommerceApi->subscriptions->list($this->apiProgress('Fetching WooCommerce Subscriptions'));
