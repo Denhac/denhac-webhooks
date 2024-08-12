@@ -24,24 +24,26 @@ class UserMemberships implements IssueCheck
 
     protected function generateIssues(): void
     {
-        $userMembershipsApi = $this->wooCommerceUserMemberships->get();
-        $userMembershipsModels = UserMembership::all();
+        $userMembershipsApi = $this->wooCommerceUserMemberships->get()->groupBy(fn($um) => $um['id']);
+        $userMembershipsModels = UserMembership::all()->groupBy(fn($um) => $um->id);
 
         $apiProgress = $this->apiProgress('Checking User Memberships in API');
         $apiProgress->setProgress(0, $userMembershipsApi->count());
-        foreach ($userMembershipsApi as $userMembershipApi) {
+        foreach ($userMembershipsApi as $um_id => $userMembershipApiCollection) {
             $apiProgress->step();
 
-            $um_id = $userMembershipApi['id'];
+            $userMembershipApi = $userMembershipApiCollection->first();
             $um_status = $userMembershipApi['status'];
 
-            $model = $userMembershipsModels->where('id', $um_id)->first();
+            $userMembershipModelsCollections = $userMembershipsModels->get($um_id);
 
-            if (is_null($model)) {
+            if (is_null($userMembershipModelsCollections)) {
                 $this->issues->add(new UserMembershipDoesNotExistInOurLocalDatabase($um_id));
 
                 continue;
             }
+
+            $model = $userMembershipsModels->get($um_id)->first();
 
             if ($model->status != $um_status) {
                 $this->issues->add(new UserMembershipStatusDiffers($um_id, $um_status, $model->status));
@@ -50,13 +52,10 @@ class UserMemberships implements IssueCheck
 
         $dbProgress = $this->apiProgress('Checking User Memberships in Database');
         $dbProgress->setProgress(0, $userMembershipsApi->count());
-        foreach ($userMembershipsModels as $userMembershipsModel) {
+        foreach ($userMembershipsModels as $um_id => $_) {
             $dbProgress->step();
 
-            /** @var UserMembership $userMembershipsModel */
-            $um_id = $userMembershipsModel->id;
-
-            $api = $userMembershipsApi->where('id', $um_id)->first();
+            $api = $userMembershipsApi->get($um_id);
 
             if (is_null($api)) {
                 $this->issues->add(new UserMembershipNotFoundOnRemote($um_id));
