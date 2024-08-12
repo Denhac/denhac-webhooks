@@ -4,7 +4,6 @@ namespace App\DataCache;
 
 use App\External\Google\GmailEmailHelper;
 use App\External\WooCommerce\MetaData;
-use App\Models\UserMembership;
 use App\Models\Waiver;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -76,16 +75,10 @@ class AggregateCustomerData extends CachedData
                     }
                 }
 
-
                 $hasSignedWaiver = $waivers
                     ->where('customer_id', $customer['id'])
                     ->where('template_id', Waiver::getValidMembershipWaiverId())
                     ->isNotEmpty();
-
-                $githubUsername = $meta_data['github_username'];
-                if($githubUsername == "") {
-                    $githubUsername = null;
-                }
 
                 $progress->step();
 
@@ -101,7 +94,7 @@ class AggregateCustomerData extends CachedData
                     userMemberships: $customerUserMemberships,
                     cards: $cards,
                     slackId: $meta_data['access_slack_id'],
-                    githubUsername: $githubUsername,
+                    githubUsername: $meta_data['github_username'],
                     stripeCardHolderId: $meta_data['stripe_card_holder_id'],
                 );
             });

@@ -26,7 +26,8 @@ class MetaData implements \ArrayAccess
     public function offsetGet(mixed $offset): mixed
     {
         foreach ($this->sourceMetadata as $item) {
-            if ($item['key'] == $offset) {
+            // If we have the meta data key, it has a non-null and not empty value, we return it.
+            if ($item['key'] == $offset && ! empty($item['value'])) {
                 return $item['value'];
             }
         }
