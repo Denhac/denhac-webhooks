@@ -31,7 +31,7 @@ class MetaData implements \ArrayAccess
             }
         }
 
-        return false;
+        return null;
     }
 
     public function offsetSet(mixed $offset, mixed $value): void
@@ -58,6 +58,8 @@ class MetaData implements \ArrayAccess
             }
         }
 
-        unset($this->sourceMetadata[$itemToUnset]);
+        if(! is_null($itemToUnset)) {
+            unset($this->sourceMetadata[$itemToUnset]);
+        }
     }
 }

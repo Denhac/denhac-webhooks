@@ -58,8 +58,7 @@ class AggregateCustomerData extends CachedData
 
                 /** @var Collection $customerUserMemberships */
                 $customerUserMemberships = $userMembershipsMap->get($customer['id'], fn() => collect());
-                $fullMemberUserMembership = $customerUserMemberships
-                    ->get(UserMembership::MEMBERSHIP_FULL_MEMBER);
+                $fullMemberUserMembership = $customerUserMemberships->first(fn($um) => $um['plan_id'] == \App\Models\UserMembership::MEMBERSHIP_FULL_MEMBER);
 
                 if(is_null($fullMemberUserMembership)) {
                     $isMember = false;
@@ -83,6 +82,11 @@ class AggregateCustomerData extends CachedData
                     ->where('template_id', Waiver::getValidMembershipWaiverId())
                     ->isNotEmpty();
 
+                $githubUsername = $meta_data['github_username'];
+                if($githubUsername == "") {
+                    $githubUsername = null;
+                }
+
                 $progress->step();
 
                 return new MemberData(
@@ -97,7 +101,7 @@ class AggregateCustomerData extends CachedData
                     userMemberships: $customerUserMemberships,
                     cards: $cards,
                     slackId: $meta_data['access_slack_id'],
-                    githubUsername: $meta_data['github_username'],
+                    githubUsername: $githubUsername,
                     stripeCardHolderId: $meta_data['stripe_card_holder_id'],
                 );
             });
