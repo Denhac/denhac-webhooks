@@ -40,7 +40,7 @@ class IssueChecker
                     $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
                     $output->writeln("Getting issues for: $shortName");
                 }
-                $this->issues = $this->issues->union($checker->getIssues());
+                $this->issues = $this->issues->merge($checker->getIssues());
             }
         }
 
