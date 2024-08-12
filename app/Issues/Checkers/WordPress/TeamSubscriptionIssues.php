@@ -8,6 +8,7 @@ use App\DataCache\WooCommerceUserMemberships;
 use App\External\WooCommerce\MetaData;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
+use App\Issues\Types\WordPress\ActiveUserMembershipWithNoSubscription;
 use App\Issues\Types\WordPress\ActiveUserMembershipWithNoTeamId;
 use App\Issues\Types\WordPress\PausedMembershipWithNoTeamId;
 use App\Models\UserMembership;
@@ -47,7 +48,9 @@ class TeamSubscriptionIssues implements IssueCheck
                 $this->issues->add(new PausedMembershipWithNoTeamId($member, $fullMembership));
             }
 
-            // TODO Also check the subscription?
+            if (! isset($fullMembership['subscription_id']) && $activeStatus) {
+                $this->issues->add(new ActiveUserMembershipWithNoSubscription($member, $fullMembership));
+            }
         }
     }
 }
