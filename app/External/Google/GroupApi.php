@@ -95,6 +95,14 @@ class GroupApi
             ]);
         }, $apiProgress)
             ->filter(function($group) {
+                if(! is_array($group)) {  // Groups with no members come back as just a string?
+                    return false;
+                }
+
+                if(! array_key_exists('type', $group)) {
+                    return false;
+                }
+
                 return $group['type'] != 'CUSTOMER';  // No email key for this entry type
             })
             ->map(function ($group) {
