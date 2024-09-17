@@ -74,7 +74,7 @@ abstract class TestCase extends BaseTestCase
         return new WaiverBuilder();
     }
 
-    public function subscriptionStatuses(): array
+    public static function subscriptionStatuses(): array
     {
         return [
             'Pending' => ['pending'],
@@ -89,7 +89,7 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function userMembershipStatuses(): array
+    public static function userMembershipStatuses(): array
     {
         return [
             'Active' => ['active'],
