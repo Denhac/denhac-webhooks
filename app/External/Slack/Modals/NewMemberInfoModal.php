@@ -30,7 +30,7 @@ class NewMemberInfoModal implements ModalInterface
             ->clearOnClose(true)
             ->clearOnClose('Close');
 
-        foreach ($this->INFO as $info) {
+        foreach (self::INFO as $info) {
             $this->modalView->newSection()
                 ->mrkdwnText($info);
         }
