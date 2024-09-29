@@ -24,7 +24,7 @@ trait Cards
 
     public Collection $cardsSentForDeactivation;  // Cards that have been posted and need to be deactivated by the card access server.
 
-    public Collection $cardsEverActivated;  // Cards that have ever been activated. Cards are not removed on deactivation.
+    public bool $anyCardEverActivated = false;
 
     public function bootCards(): void
     {
@@ -32,7 +32,6 @@ trait Cards
         $this->cardsNeedingActivation = collect();
         $this->cardsSentForActivation = collect();
         $this->cardsSentForDeactivation = collect();
-        $this->cardsEverActivated = collect();
     }
 
     public function updateCardStatus(CardUpdateRequest $cardUpdateRequest, $status)
@@ -49,14 +48,9 @@ trait Cards
 
         if ($status == CardUpdateRequest::STATUS_SUCCESS) {
             if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
-                // We query this parameter here because the CardActivated field updates cardsEverActivated.
-                // Otherwise older code that didn't emit the CardActivatedForTheFirstTime event would emit it on
-                // re-activation, which would notify whomever did the ID check.
-                $cardHasEverBeenActivated = $this->cardsEverActivated->has($cardUpdateRequest->card);
-
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
 
-                if (! $cardHasEverBeenActivated) {
+                if (! $this->anyCardEverActivated) {
                     $this->recordThat(new CardActivatedForTheFirstTime($this->customerId, $cardUpdateRequest->card));
                 }
             } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
@@ -144,13 +138,11 @@ trait Cards
     protected function applyCardActivated(CardActivated $event): void
     {
         $this->cardsSentForActivation->forget($event->cardNumber);
-        $this->cardsEverActivated->put($event->cardNumber, null);
     }
 
     protected function applyCardRemoved(CardRemoved $event): void
     {
         $this->cardsOnAccount->forget($event->cardNumber);
-        $this->cardsEverActivated->forget($event->cardNumber);
     }
 
     protected function applyCardSentForDeactivation(CardSentForDeactivation $event): void
@@ -161,6 +153,11 @@ trait Cards
     protected function applyCardDeactivated(CardDeactivated $event): void
     {
         $this->cardsSentForDeactivation->forget($event->cardNumber);
+    }
+
+    protected function applyCardActivatedForTheFirstTime(CardActivatedForTheFirstTime $event): void
+    {
+        $this->anyCardEverActivated = true;
     }
 
     private function allCards()

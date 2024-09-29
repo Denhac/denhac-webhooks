@@ -333,6 +333,63 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
+    public function member_getting_a_new_card_does_not_get_activated_for_first_time_event(): void
+    {
+        $oldCard = '42424';
+        $newCard = '53535';
+        $customer = $this->customer()->access_card($oldCard);
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        $cardDeactivationRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
+            'card' => $oldCard,
+        ]);
+
+        $cardActivationRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'card' => $newCard,
+        ]);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $oldCard),
+                new IdWasChecked($customer->id),
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+                new CardSentForActivation($customer->id, $oldCard),
+                new CardActivated($customer->id, $oldCard),
+                new CardActivatedForTheFirstTime($customer->id, $oldCard),
+                new CustomerUpdated($customer->access_card($newCard)),
+                new CardAdded($customer->id, $newCard),
+                new CardSentForActivation($customer->id, $newCard),
+                new CardRemoved($customer->id, $oldCard),
+                new CardSentForDeactivation($customer->id, $oldCard),
+            ])
+            ->updateCardStatus($cardDeactivationRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->updateCardStatus($cardActivationRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new CardStatusUpdated(
+                    CardUpdateRequest::DEACTIVATION_TYPE,
+                    $customer->id,
+                    $oldCard
+                ),
+                new CardDeactivated($customer->id, $oldCard),
+                new CardStatusUpdated(
+                    CardUpdateRequest::ACTIVATION_TYPE,
+                    $customer->id,
+                    $newCard
+                ),
+                new CardActivated($customer->id, $newCard),
+            ])
+            ->assertNotRecorded(CardActivatedForTheFirstTime::class);
+    }
+
+    /** @test */
     public function updating_access_card_removes_old_cards_and_actives_new_ones(): void
     {
         $oldCard = '42424';
@@ -588,7 +645,6 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertTrue($agg->cardsEverActivated->isEmpty());
 
         $fakeAggregateRoot
             ->createCustomer($customer)
@@ -605,7 +661,6 @@ class AccessCardTest extends TestCase
 
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertTrue($agg->cardsEverActivated->isEmpty());
     }
 
     /** @test */
@@ -624,7 +679,6 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertTrue($agg->cardsEverActivated->isEmpty());
 
         $fakeAggregateRoot
             ->given([
@@ -648,7 +702,6 @@ class AccessCardTest extends TestCase
         $this->assertEquals(1, $agg->cardsSentForActivation->count());
         $this->assertTrue($agg->cardsSentForActivation->has($card));
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertTrue($agg->cardsEverActivated->isEmpty());
     }
 
     /** @test */
@@ -674,7 +727,6 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertTrue($agg->cardsEverActivated->isEmpty());
 
         $fakeAggregateRoot
             ->given([
@@ -702,8 +754,6 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertEquals(1, $agg->cardsEverActivated->count());
-        $this->assertTrue($agg->cardsEverActivated->has($card));
     }
 
     /** @test */
@@ -731,7 +781,6 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertTrue($agg->cardsEverActivated->isEmpty());
 
         $fakeAggregateRoot
             ->given([
@@ -762,8 +811,6 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertEquals(1, $agg->cardsSentForDeactivation->count());
         $this->assertTrue($agg->cardsSentForDeactivation->has($card));
-        $this->assertEquals(1, $agg->cardsEverActivated->count());
-        $this->assertTrue($agg->cardsEverActivated->has($card));
     }
 
     /** @test */
@@ -796,7 +843,6 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertTrue($agg->cardsEverActivated->isEmpty());
 
         $fakeAggregateRoot
             ->given([
@@ -829,7 +875,5 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsNeedingActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForActivation->isEmpty());
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
-        $this->assertEquals(1, $agg->cardsEverActivated->count());
-        $this->assertTrue($agg->cardsEverActivated->has($card));
     }
 }
