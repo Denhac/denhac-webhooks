@@ -12,9 +12,10 @@ use Tests\Helpers\BaseBuilder;
  * @property string username
  * @property string first_name
  * @property string last_name
- * @property string|null github_username
- * @property string|null slack_id
- * @property string|null birthday
+ * @property ?string github_username
+ * @property ?string slack_id
+ * @property ?string birthday
+ * @property ?string access_card_temporary_code
  */
 class CustomerBuilder extends BaseBuilder
 {
@@ -104,6 +105,11 @@ class CustomerBuilder extends BaseBuilder
         return $this->meta_data('account_birthday', $birthday);
     }
 
+    public function access_card_temporary_code($code): static
+    {
+        return $this->meta_data('access_card_temporary_code', $code);
+    }
+
     public function __set(string $name, $value): void
     {
         switch ($name) {
@@ -116,6 +122,8 @@ class CustomerBuilder extends BaseBuilder
             case 'birthday':
                 $this->birthday($value);
                 break;
+            case 'access_card_temporary_code':
+                $this->access_card_temporary_code($value);
             default:
                 parent::__set($name, $value);
         }
@@ -127,6 +135,7 @@ class CustomerBuilder extends BaseBuilder
             'github_username' => $this->get_meta_data($name),
             'slack_id' => $this->get_meta_data('access_slack_id'),
             'birthday' => $this->get_meta_data('account_birthday'),
+            'access_card_temporary_code' => $this->get_meta_data('access_card_temporary_code'),
             default => parent::__get($name),
         };
     }

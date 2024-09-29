@@ -32,6 +32,7 @@ use Illuminate\Support\Collection;
  * @property ?string stripe_card_holder_id
  * @property ?int id_was_checked_by_id
  * @property ?Customer idWasCheckedBy
+ * @property ?string access_card_temporary_code
  *
  * @method static Builder whereSlackId($slackId)
  */

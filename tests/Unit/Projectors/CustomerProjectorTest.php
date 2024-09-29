@@ -46,6 +46,7 @@ class CustomerProjectorTest extends TestCase
         $this->assertEquals($builder->github_username, $customer->github_username);
         $this->assertEquals($builder->slack_id, $customer->slack_id);
         $this->assertEquals($builder->birthday, $customer->birthday);
+        $this->assertEquals($builder->access_card_temporary_code, $customer->access_card_temporary_code);
         $this->assertFalse($customer->member);
     }
 
@@ -69,6 +70,7 @@ class CustomerProjectorTest extends TestCase
         $this->assertEquals($builder->github_username, $customer->github_username);
         $this->assertEquals($builder->slack_id, $customer->slack_id);
         $this->assertEquals($builder->birthday, $customer->birthday);
+        $this->assertEquals($builder->access_card_temporary_code, $customer->access_card_temporary_code);
         $this->assertFalse($customer->member);
     }
 
@@ -92,6 +94,7 @@ class CustomerProjectorTest extends TestCase
         $this->assertEquals($builder->github_username, $customer->github_username);
         $this->assertEquals($builder->slack_id, $customer->slack_id);
         $this->assertEquals($builder->birthday, $customer->birthday);
+        $this->assertEquals($builder->access_card_temporary_code, $customer->access_card_temporary_code);
         $this->assertFalse($customer->member);
     }
 
@@ -111,6 +114,7 @@ class CustomerProjectorTest extends TestCase
         $builder->github_username = $this->faker->userName();
         $builder->slack_id = 'U'.$this->faker->randomNumber();
         $builder->birthday = $this->faker->date();
+        $builder->access_card_temporary_code = strval($this->faker->randomNumber(6));
 
         event(new CustomerUpdated($builder->toArray()));
 
@@ -125,6 +129,7 @@ class CustomerProjectorTest extends TestCase
         $this->assertEquals($builder->github_username, $customer->github_username);
         $this->assertEquals($builder->slack_id, $customer->slack_id);
         $this->assertEquals($builder->birthday, $customer->birthday->toDateString());
+        $this->assertEquals($builder->access_card_temporary_code, $customer->access_card_temporary_code);
         $this->assertFalse($customer->member);
     }
 

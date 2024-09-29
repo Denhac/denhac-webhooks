@@ -120,13 +120,16 @@ final class CustomerProjector extends Projector
         $customerModel->stripe_card_holder_id = $this->getMetadataField($customer_json, 'stripe_card_holder_id');
         $idWasCheckedByField = $this->getMetadataField($customer_json, 'id_was_checked_by');
         $customerModel->id_was_checked_by_id = empty($idWasCheckedByField) ? null : intval($idWasCheckedByField);
+        $customerModel->access_card_temporary_code = $this->getMetadataField(
+            $customer_json, 'access_card_temporary_code'
+        );
         $customerModel->save();
 
         return $customerModel;
     }
 
     /**
-     * @param  string  $key The name of the metadata field to lookup
+     * @param string $key The name of the metadata field to lookup
      * @return mixed|null
      */
     private function getMetadataField(array $customer, string $key)
