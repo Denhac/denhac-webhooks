@@ -16,8 +16,6 @@ class MembershipOptionsModal implements ModalInterface
 
     private const MEMBERSHIP_OPTION = 'membership-option';
 
-    private const CANCEL_MEMBERSHIP_VALUE = 'value-cancel-membership';
-
     private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
 
     private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
@@ -92,9 +90,6 @@ class MembershipOptionsModal implements ModalInterface
                 Door::quickDefaultDoors();
 
                 return self::clearViewStack();
-            case self::CANCEL_MEMBERSHIP_VALUE:
-                $modal = new CancelMembershipConfirmationModal($request->customer());
-                break;
             case self::CREATE_TRAINABLE_EQUIPMENT_VALUE:
                 $modal = new CreateTrainableEquipment($request->customer());
                 break;
@@ -151,13 +146,6 @@ class MembershipOptionsModal implements ModalInterface
         if ($customer->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
             $options->option('Create Trainable Equipment', self::CREATE_TRAINABLE_EQUIPMENT_VALUE);
         }
-
-        $subscriptions = $customer->subscriptions;
-        $hasActiveMembership = $subscriptions->where('status', 'active')->count() > 0;
-
-        //        if ($hasActiveMembership) {
-        //            $options->option('Cancel My Membership', self::CANCEL_MEMBERSHIP_VALUE);
-        //        }
 
         return $options;
     }
