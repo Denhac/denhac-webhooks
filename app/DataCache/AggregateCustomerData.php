@@ -97,7 +97,7 @@ class AggregateCustomerData extends CachedData
                     slackId: $meta_data['access_slack_id'],
                     githubUsername: $meta_data['github_username'],
                     stripeCardHolderId: $meta_data['stripe_card_holder_id'],
-                    accessCardTemporaryCode: $meta_data['access_card_temporary_code'],
+                    accessCardTemporaryCode: $meta_data['_access_temporary_code'],
                 );
             });
         });

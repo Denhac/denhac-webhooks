@@ -107,7 +107,7 @@ class CustomerBuilder extends BaseBuilder
 
     public function access_card_temporary_code($code): static
     {
-        return $this->meta_data('access_card_temporary_code', $code);
+        return $this->meta_data('_access_temporary_code', $code);
     }
 
     public function __set(string $name, $value): void

@@ -121,7 +121,7 @@ final class CustomerProjector extends Projector
         $idWasCheckedByField = $this->getMetadataField($customer_json, 'id_was_checked_by');
         $customerModel->id_was_checked_by_id = empty($idWasCheckedByField) ? null : intval($idWasCheckedByField);
         $customerModel->access_card_temporary_code = $this->getMetadataField(
-            $customer_json, 'access_card_temporary_code'
+            $customer_json, '_access_temporary_code'
         );
         $customerModel->save();
 
