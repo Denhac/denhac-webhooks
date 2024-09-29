@@ -47,7 +47,7 @@ final class MembershipAggregate extends AggregateRoot
         $booted = [];
 
         foreach (class_uses_recursive($class) as $trait) {
-            $method = 'boot'.class_basename($trait);
+            $method = 'boot' . class_basename($trait);
 
             if (method_exists($class, $method) && ! in_array($method, $booted)) {
                 $this->$method();
@@ -233,6 +233,8 @@ final class MembershipAggregate extends AggregateRoot
         }
 
         $this->recordThat(new UserMembershipDeleted($membership));
+
+        $this->handleUserMembershipDeleted($membership['id']);
 
         return $this;
     }

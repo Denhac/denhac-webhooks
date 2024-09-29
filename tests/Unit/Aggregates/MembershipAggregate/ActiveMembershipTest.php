@@ -10,6 +10,7 @@ use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerUpdated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
+use App\StorableEvents\WooCommerce\UserMembershipDeleted;
 use App\StorableEvents\WooCommerce\UserMembershipUpdated;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
@@ -182,6 +183,52 @@ class ActiveMembershipTest extends TestCase
             ->assertRecorded([
                 new UserMembershipUpdated($newUserMembership),
                 new MembershipDeactivated($customer->id),
+            ]);
+    }
+
+    /** @test */
+    public function user_membership_deleted_deactivates_membership(): void
+    {
+        $customer = $this->customer();
+
+        $oldUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $deletedPayload = ['id' => $oldUserMembership->id];
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($oldUserMembership),
+                new MembershipActivated($customer->id),
+            ])
+            ->deleteUserMembership($deletedPayload)
+            ->assertRecorded([
+                new UserMembershipDeleted($deletedPayload),
+                new MembershipDeactivated($customer->id),
+            ]);
+    }
+
+    /** @test */
+    public function user_membership_deleted_does_not_deactivate_if_plan_is_not_membership_plan(): void
+    {
+        $customer = $this->customer();
+
+        $userMembershipMember = $this->userMembership()->id(5)->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+        $userMembership3DP = $this->userMembership()->id(6)->plan(UserMembership::MEMBERSHIP_3DP_USER)
+            ->status('active');
+        $deletedPayload = ['id' => $userMembership3DP->id];
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new UserMembershipCreated($userMembership3DP),
+                new UserMembershipCreated($userMembershipMember),
+                new MembershipActivated($customer->id),
+            ])
+            ->deleteUserMembership($deletedPayload)
+            ->assertRecorded([
+                new UserMembershipDeleted($deletedPayload),
             ]);
     }
 

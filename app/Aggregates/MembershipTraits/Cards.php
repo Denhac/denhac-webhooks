@@ -26,7 +26,7 @@ trait Cards
 
     public Collection $cardsEverActivated;  // Cards that have ever been activated. Cards are not removed on deactivation.
 
-    public function bootCards()
+    public function bootCards(): void
     {
         $this->cardsOnAccount = collect();
         $this->cardsNeedingActivation = collect();
