@@ -88,6 +88,7 @@ class AggregateCustomerData extends CachedData
                     last_name: $customer['last_name'],
                     primaryEmail: $primaryEmail,
                     emails: $emails,
+                    idChecked: $idWasChecked,
                     isMember: $isMember,
                     hasSignedWaiver: $hasSignedWaiver,
                     subscriptions: $subscriptionMap->get($customer['id'], fn() => collect()),

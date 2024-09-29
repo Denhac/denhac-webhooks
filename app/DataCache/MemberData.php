@@ -18,6 +18,7 @@ class MemberData extends Data
         public string $last_name,
         public string $primaryEmail,
         public Collection $emails,
+        public bool $idChecked,
         public bool $isMember,
         public bool $hasSignedWaiver,
         public Collection $subscriptions,
