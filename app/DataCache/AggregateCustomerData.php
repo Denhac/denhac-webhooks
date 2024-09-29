@@ -59,7 +59,7 @@ class AggregateCustomerData extends CachedData
                 $customerUserMemberships = $userMembershipsMap->get($customer['id'], fn() => collect());
                 $fullMemberUserMembership = $customerUserMemberships->first(fn($um) => $um['plan_id'] == \App\Models\UserMembership::MEMBERSHIP_FULL_MEMBER);
 
-                if(is_null($fullMemberUserMembership)) {
+                if (is_null($fullMemberUserMembership)) {
                     $isMember = false;
                 } else {
                     $fullMemberUserMembershipStatus = $fullMemberUserMembership['status'];
@@ -96,6 +96,7 @@ class AggregateCustomerData extends CachedData
                     slackId: $meta_data['access_slack_id'],
                     githubUsername: $meta_data['github_username'],
                     stripeCardHolderId: $meta_data['stripe_card_holder_id'],
+                    accessCardTemporaryCode: $meta_data['access_card_temporary_code'],
                 );
             });
         });

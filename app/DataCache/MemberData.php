@@ -26,6 +26,7 @@ class MemberData extends Data
         public ?string $slackId,
         public ?string $githubUsername,
         public ?string $stripeCardHolderId,
+        public ?string $accessCardTemporaryCode,
     ) {
     }
 

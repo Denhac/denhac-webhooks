@@ -39,6 +39,7 @@ class CustomerIssues implements IssueCheck
             'slackId' => 'slack_id',
             'githubUsername' => 'github_username',
             'stripeCardHolderId' => 'stripe_card_holder_id',
+            'accessCardTemporaryCode' => 'access_card_temporary_code',
         ];
 
         foreach ($members as $member) {
