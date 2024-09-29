@@ -36,9 +36,13 @@ class TemporaryCodeIssues implements IssueCheck
             $fullMemberUserMembership = $member->userMemberships
                 ->first(fn($um) => $um['plan_id'] == UserMembership::MEMBERSHIP_FULL_MEMBER);
 
+            // Some users may have a cancelled user membership before they ever got to the ID check stage.
+            $hasPausedUserMembership = ! is_null($fullMemberUserMembership) &&
+                $fullMemberUserMembership['status'] == 'paused';
+
             if (! $member->idChecked &&
                 is_null($member->accessCardTemporaryCode) &&
-                ! is_null($fullMemberUserMembership)) {
+                $hasPausedUserMembership) {
                 // This issue is important because they won't be able to get their card once their id is checked
                 $this->issues->add(new NoTemporaryCodeOnCustomerWithoutIdCheck($member));
             }
