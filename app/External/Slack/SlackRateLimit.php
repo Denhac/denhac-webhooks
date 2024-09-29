@@ -10,18 +10,20 @@ use Illuminate\Support\Facades\RateLimiter;
 /**
  * @method static SlackPostMessageRateLimit chat_postMessage()
  *
- * @method static RateLimited conversations_invite()
- * @method static RateLimited conversations_join()
- * @method static RateLimited conversations_kick()
- * @method static RateLimited conversations_list()
+ * @method static SlackRateLimited conversations_invite()
+ * @method static SlackRateLimited conversations_join()
+ * @method static SlackRateLimited conversations_kick()
+ * @method static SlackRateLimited conversations_list()
  *
- * @method static RateLimited usergroups_list()
- * @method static RateLimited usergroups_update()
+ * @method static SlackRateLimited usergroups_list()
+ * @method static SlackRateLimited usergroups_update()
  *
- * @method static RateLimited users_profile_get()
- * @method static RateLimited users_profile_set()
+ * @method static SlackRateLimited users_profile_get()
+ * @method static SlackRateLimited users_profile_set()
  *
- * @method static RateLimited views_publish()
+ * @method static SlackRateLimited views_open();
+ * @method static SlackRateLimited views_publish()
+ * @method static SlackRateLimited views_update()
  */
 class SlackRateLimit
 {
@@ -48,7 +50,9 @@ class SlackRateLimit
         'usergroups_update' => self::TIER_2,
         'users_profile_get' => self::TIER_4,
         'users_profile_set' => self::TIER_3,
+        'views_open' => self::TIER_4,
         'views_publish' => self::TIER_4,
+        'views_update' => self::TIER_4,
     ];
 
     public static function __callStatic(string $name, array $arguments)
@@ -70,7 +74,7 @@ class SlackRateLimit
         return self::limit($tier, $name);
     }
 
-    private static function limit($tier, $name)
+    private static function limit($tier, $name): SlackRateLimited
     {
         if (is_null($name)) {
             $limit_key = "slack-$tier";
@@ -85,6 +89,6 @@ class SlackRateLimit
             });
         }
 
-        return new RateLimited($limit_key);
+        return new SlackRateLimited($limit_key);
     }
 }

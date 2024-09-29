@@ -2,6 +2,7 @@
 
 namespace App\External\Slack\Api;
 
+use App\External\Slack\SlackRateLimit;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Log;
 
@@ -18,6 +19,8 @@ class ViewsApi
 
     public function open($trigger_id, $view)
     {
+        SlackRateLimit::views_open()->hit();
+
         return $this->clients->spaceBotApiClient
             ->post('https://denhac.slack.com/api/views.open', [
                 RequestOptions::JSON => [
@@ -29,6 +32,8 @@ class ViewsApi
 
     public function publish($user_id, $view)
     {
+        SlackRateLimit::views_publish()->hit();
+
         $this->clients->spaceBotApiClient
             ->post('https://denhac.slack.com/api/views.publish', [
                 RequestOptions::JSON => [
@@ -40,6 +45,8 @@ class ViewsApi
 
     public function update($view_id, $view, $hash = null)
     {
+        SlackRateLimit::views_update()->hit();
+
         $data = [
             'view_id' => $view_id,
             'view' => json_encode($view),

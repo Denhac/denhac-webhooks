@@ -3,6 +3,7 @@
 namespace App\External\Slack\Api;
 
 use App\External\Slack\SlackApi;
+use App\External\Slack\SlackRateLimit;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -58,6 +59,8 @@ class ConversationsApi
         $typeString = implode(',', $types);
 
         return $this->paginate('channels', function ($cursor) use ($typeString) {
+            SlackRateLimit::conversations_list()->hit();
+
             return $this->clients->managementApiClient
                 ->get('https://denhac.slack.com/api/conversations.list', [
                     RequestOptions::QUERY => [

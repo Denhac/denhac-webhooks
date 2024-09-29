@@ -2,6 +2,7 @@
 
 namespace App\External\Slack\Api;
 
+use App\External\Slack\SlackRateLimit;
 use GuzzleHttp\RequestOptions;
 
 class UsersProfileApi
@@ -17,6 +18,8 @@ class UsersProfileApi
 
     public function set($user_id, $profile)
     {
+        SlackRateLimit::users_profile_set()->hit();
+
         return $this->clients->adminClient
             ->post('https://denhac.slack.com/api/users.profile.set', [
                 RequestOptions::JSON => [
@@ -28,6 +31,8 @@ class UsersProfileApi
 
     public function get($user_id)
     {
+        SlackRateLimit::users_profile_get()->hit();
+
         $response = $this->clients->adminClient
             ->get('https://denhac.slack.com/api/users.profile.get', [
                 RequestOptions::QUERY => [
