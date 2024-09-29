@@ -358,6 +358,53 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
+    public function emptying_access_card_removes_old_cards_and_actives_new_ones(): void
+    {
+        $oldCard = '42424';
+        $customer = $this->customer()->access_card($oldCard);
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $oldCard),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+                new CardSentForActivation($customer->id, $oldCard),
+            ])
+            ->updateCustomer($customer->access_card(''))
+            ->assertRecorded([
+                new CustomerUpdated($customer),
+                new CardRemoved($customer->id, $oldCard),
+                new CardSentForDeactivation($customer->id, $oldCard),
+            ]);
+    }
+
+    /** @test */
+    public function removing_access_card_removes_old_cards_and_actives_new_ones(): void
+    {
+        $oldCard = '42424';
+        $customerNoCard = $this->customer();
+        $customer = clone $customerNoCard;
+        $customer->access_card($oldCard);
+
+
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new MembershipActivated($customer->id),
+                new CardAdded($customer->id, $oldCard),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+                new CardSentForActivation($customer->id, $oldCard),
+            ])
+            ->updateCustomer($customerNoCard)
+            ->assertRecorded([
+                new CustomerUpdated($customerNoCard),
+                new CardRemoved($customer->id, $oldCard),
+                new CardSentForDeactivation($customer->id, $oldCard),
+            ]);
+    }
+
+    /** @test */
     public function multiple_cards_can_be_used_in_comma_separated_fashion(): void
     {
         $cards = '42424,53535';

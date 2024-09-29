@@ -89,7 +89,7 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function userMembershipStatuses(): array
+    public static function userMembershipStatuses(): array
     {
         return [
             'Active' => ['active'],

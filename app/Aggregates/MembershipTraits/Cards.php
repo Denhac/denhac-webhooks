@@ -75,18 +75,20 @@ trait Cards
         return $this;
     }
 
-    private function handleCards($customer)
+    private function handleCards($customer): void
     {
         $metadata = collect($customer['meta_data']);
         $cardMetadata = $metadata->firstWhere('key', 'access_card_number');
 
         if ($cardMetadata == null) {
-            return;
+            // The access_card_number field might have been deleted. As far as we're concerned, it's the same as having
+            // no cards on your account.
+            $cardList = collect();
+        } else {
+            $cardField = $cardMetadata['value'];
+            $cardList = collect(explode(',', $cardField));
         }
 
-        $cardField = $cardMetadata['value'];
-
-        $cardList = collect(explode(',', $cardField));
         foreach ($cardList as $card) {
             if (is_null($card) || $card === '') {
                 continue;
