@@ -135,7 +135,7 @@ class CustomerBuilder extends BaseBuilder
             'github_username' => $this->get_meta_data($name),
             'slack_id' => $this->get_meta_data('access_slack_id'),
             'birthday' => $this->get_meta_data('account_birthday'),
-            'access_card_temporary_code' => $this->get_meta_data('access_card_temporary_code'),
+            'access_card_temporary_code' => $this->get_meta_data('_access_temporary_code'),
             default => parent::__get($name),
         };
     }
