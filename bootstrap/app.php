@@ -14,7 +14,26 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->redirectGuestsTo(fn () => route('login'));
+        $middleware->redirectUsersTo(RouteServiceProvider::HOME);
+
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/denhac-org',
+            'webhooks/octoprint',
+            'webhooks/waiver',
+            'horizon/*',
+        ]);
+
+        $middleware->throttleApi('600,1');
+
+        $middleware->replace(\Illuminate\Http\Middleware\TrustProxies::class, \App\Http\Middleware\TrustProxies::class);
+
+        $middleware->alias([
+            'feature' => \YlsIdeas\FeatureFlags\Middleware\FeatureFlagState::class,
+            'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
+            'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
+            'slack' => \App\Http\Middleware\AuthorizeSlackRequest::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
