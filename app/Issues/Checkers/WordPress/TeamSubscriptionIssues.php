@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\WordPress;
 
-
 use App\DataCache\AggregateCustomerData;
 use App\DataCache\WooCommerceUserMemberships;
 use App\External\WooCommerce\MetaData;
@@ -18,20 +17,18 @@ class TeamSubscriptionIssues implements IssueCheck
     use IssueCheckTrait;
 
     public function __construct(
-        private readonly AggregateCustomerData      $aggregateCustomerData,
+        private readonly AggregateCustomerData $aggregateCustomerData,
         private readonly WooCommerceUserMemberships $wooCommerceUserMemberships,
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {
         $members = $this->aggregateCustomerData->get();
         $fullMemberships = $this->wooCommerceUserMemberships->get()
-            ->filter(fn($um) => $um['plan_id'] == UserMembership::MEMBERSHIP_FULL_MEMBER);
+            ->filter(fn ($um) => $um['plan_id'] == UserMembership::MEMBERSHIP_FULL_MEMBER);
 
         foreach ($fullMemberships as $fullMembership) {
-            $member = $members->filter(fn($m) => $m->id == $fullMembership['customer_id'])->first();
+            $member = $members->filter(fn ($m) => $m->id == $fullMembership['customer_id'])->first();
             $meta_data = new MetaData($fullMembership['meta_data']);
 
             $activeStatus = in_array($fullMembership['status'], ['active', 'pending']);

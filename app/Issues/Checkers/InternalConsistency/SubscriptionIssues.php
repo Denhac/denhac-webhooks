@@ -16,9 +16,7 @@ class SubscriptionIssues implements IssueCheck
 
     public function __construct(
         private readonly WooCommerceSubscriptions $wooCommerceSubscriptions
-    )
-    {
-    }
+    ) {}
 
     public function generateIssues(): void
     {

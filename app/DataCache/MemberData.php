@@ -28,8 +28,7 @@ class MemberData extends Data
         public ?string $githubUsername,
         public ?string $stripeCardHolderId,
         public ?string $accessCardTemporaryCode,
-    ) {
-    }
+    ) {}
 
     public function __get(string $name)
     {

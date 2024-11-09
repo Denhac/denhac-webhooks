@@ -29,7 +29,7 @@ class TokenManager
         $this->serviceAccount = config('denhac.google.service_account');
         $this->authAs = config('denhac.google.auth_as');
 
-        $this->client = new Client();
+        $this->client = new Client;
         $this->propertiesBound = true;
     }
 

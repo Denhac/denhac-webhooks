@@ -10,8 +10,8 @@ use Spatie\QueueableAction\QueueableAction;
 class AddToUserGroup
 {
     use QueueableAction;
-    use StaticAction;
     use SlackActionTrait;
+    use StaticAction;
 
     public string $queue = 'slack-rate-limited';
 

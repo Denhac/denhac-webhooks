@@ -11,8 +11,8 @@ use Throwable;
 class AddToChannel
 {
     use QueueableAction;
-    use StaticAction;
     use SlackActionTrait;
+    use StaticAction;
 
     public string $queue = 'slack-rate-limited';
 
@@ -29,7 +29,7 @@ class AddToChannel
     /**
      * Execute the action.
      *
-     * @param string $userId The woo customer id or the slack id
+     * @param  string  $userId  The woo customer id or the slack id
      *
      * @throws Throwable
      */
@@ -52,10 +52,11 @@ class AddToChannel
             $this->slackApi->conversations->join($channelId);
             // Now that we're in the channel, we can safely re-queue the job and invite someone else
             AddToChannel::queue()->execute($userId, $channelId);
+
             return;
         }
 
-        throw new \Exception("Invite of $userId to $channel failed: " . print_r($response, true));
+        throw new \Exception("Invite of $userId to $channel failed: ".print_r($response, true));
     }
 
     public function middleware()

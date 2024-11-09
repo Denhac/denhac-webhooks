@@ -24,9 +24,7 @@ class GoogleGroupIssues implements IssueCheck
         private readonly AggregateCustomerData $aggregateCustomerData,
         private readonly GoogleGroups $googleGroups,
         private readonly GoogleGroupMembers $googleGroupMembers
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {

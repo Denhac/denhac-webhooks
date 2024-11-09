@@ -6,10 +6,10 @@ use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
+use App\Models\UserMembership;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
-use App\Models\UserMembership;
 
 class CreateTrainableEquipment implements ModalInterface
 {
@@ -110,7 +110,7 @@ class CreateTrainableEquipment implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        if (!$request->customer()->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
+        if (! $request->customer()->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
             Log::warning('CreateTrainableEquipment: Rejecting unauthorized submission from user '.$request->customer()->id);
             throw new \Exception('Unauthorized');
         }

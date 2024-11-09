@@ -67,7 +67,7 @@ class CardNotificationEmail extends Mailable
             }
         });
 
-        $date = (new \DateTime())->format('m/d/Y');
+        $date = (new \DateTime)->format('m/d/Y');
 
         $to_emails = $this->getEmails(config('denhac.notifications.card_notification.to'));
 

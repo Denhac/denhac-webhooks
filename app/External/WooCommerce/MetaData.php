@@ -8,9 +8,7 @@ class MetaData implements \ArrayAccess
 {
     public function __construct(
         private Collection|array $sourceMetadata
-    )
-    {
-    }
+    ) {}
 
     public function offsetExists(mixed $offset): bool
     {
@@ -59,7 +57,7 @@ class MetaData implements \ArrayAccess
             }
         }
 
-        if(! is_null($itemToUnset)) {
+        if (! is_null($itemToUnset)) {
             unset($this->sourceMetadata[$itemToUnset]);
         }
     }

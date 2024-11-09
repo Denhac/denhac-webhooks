@@ -9,8 +9,7 @@ class WooCommerceSubscriptions extends CachedData
 {
     public function __construct(
         private readonly WooCommerceApi $wooCommerceApi
-    )
-    {
+    ) {
         parent::__construct();
     }
 

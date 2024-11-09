@@ -27,7 +27,7 @@ class TokenManager
         $this->appId = config('denhac.github.app_id');
         $this->installationId = config('denhac.github.installation_id');
 
-        $this->client = new Client();
+        $this->client = new Client;
         $this->propertiesBound = true;
     }
 

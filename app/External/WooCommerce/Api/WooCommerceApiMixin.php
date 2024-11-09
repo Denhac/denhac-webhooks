@@ -31,7 +31,7 @@ trait WooCommerceApiMixin
     /**
      * @throws ApiCallFailed
      */
-    private function getWithPaging($url, array $options = [], ApiProgress $progress = null): Collection
+    private function getWithPaging($url, array $options = [], ?ApiProgress $progress = null): Collection
     {
         if (! Arr::has($options, RequestOptions::QUERY)) {
             $options[RequestOptions::QUERY] = [];

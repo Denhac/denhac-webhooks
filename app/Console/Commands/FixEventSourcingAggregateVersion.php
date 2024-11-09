@@ -60,7 +60,7 @@ class FixEventSourcingAggregateVersion extends Command
                 $originalCount = $metaData->count();
                 $metaData->forget([
                     'aggregate-root-uuid',
-                    'aggregate-root-version'
+                    'aggregate-root-version',
                 ]);
                 $newCount = $metaData->count();
 
@@ -68,6 +68,7 @@ class FixEventSourcingAggregateVersion extends Command
                     if ($originalCount != $newCount) {
                         $messages->add("Would remove aggregate uuid metadata for $event->id");
                     }
+
                     continue;
                 }
 
@@ -89,6 +90,7 @@ class FixEventSourcingAggregateVersion extends Command
             if ($event->aggregate_version != $aggregateVersion) {
                 if ($isDryRun) {
                     $messages->add("Would update aggregate version for event $event->id, uuid {$aggregateUuid} to $aggregateVersion");
+
                     continue;
                 }
 
@@ -107,7 +109,6 @@ class FixEventSourcingAggregateVersion extends Command
 
         $bar->finish();
         $this->newLine(2);
-
 
         foreach ($messages as $message) {
             $this->info($message);

@@ -34,7 +34,7 @@ class SlackApi
     #[Pure]
     public function __construct()
     {
-        $this->clients = new SlackClients();
+        $this->clients = new SlackClients;
     }
 
     #[Pure]

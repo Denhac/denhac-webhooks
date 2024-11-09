@@ -4,10 +4,8 @@ namespace App\Providers;
 
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\Http\Requests\SlackRequest;
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 use QuickBooksOnline\API\DataService\DataService;
@@ -18,9 +16,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
-    }
+    public function register(): void {}
 
     /**
      * Bootstrap any application services.
@@ -50,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Queue::after(function (JobProcessed $event) {
-            # This is bound via singleton instead of scoped, so we need to forget it to get updated settings each job
+            // This is bound via singleton instead of scoped, so we need to forget it to get updated settings each job
             app()->forgetInstance('anlutro\LaravelSettings\SettingsManager');
         });
     }

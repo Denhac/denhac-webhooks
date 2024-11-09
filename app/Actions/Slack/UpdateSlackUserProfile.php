@@ -31,7 +31,7 @@ class UpdateSlackUserProfile
      */
     public function execute(string $slackId, array $fields)
     {
-        $updateTimeCacheKey = self::LAST_UPDATE_TIME_CACHE_KEY_PREFIX . $slackId;
+        $updateTimeCacheKey = self::LAST_UPDATE_TIME_CACHE_KEY_PREFIX.$slackId;
         if (Cache::has($updateTimeCacheKey)) {
             $lastUpdateTime = Cache::get($updateTimeCacheKey);
             if ($lastUpdateTime >= Carbon::now()->subMinute()) {
@@ -40,7 +40,7 @@ class UpdateSlackUserProfile
         }
         Cache::forever($updateTimeCacheKey, Carbon::now());
 
-        Log::info("Updating fields for {$slackId}: " . print_r($fields, true));
+        Log::info("Updating fields for {$slackId}: ".print_r($fields, true));
         $response = $this->slackApi->users->profile->set($slackId, [
             'fields' => $fields,
         ]);

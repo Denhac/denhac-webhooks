@@ -16,6 +16,7 @@ class OrganizationApi
     private Client $client;
 
     private string $organizationName;
+
     private string $organizationUrl;
 
     /**
@@ -27,7 +28,7 @@ class OrganizationApi
         $this->accessToken = $accessToken;
 
         $this->organizationUrl = "https://api.github.com/orgs/$name";
-        $this->client = new Client();
+        $this->client = new Client;
     }
 
     public function team($name): TeamApi
@@ -35,7 +36,7 @@ class OrganizationApi
         return new TeamApi($this->organizationName, $name, $this->accessToken);
     }
 
-    public function listMembers(ApiProgress $progress = null): Collection
+    public function listMembers(?ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->organizationUrl}/members", function ($url) {
             return $this->client->get($url, [
@@ -47,7 +48,7 @@ class OrganizationApi
         }, $progress);
     }
 
-    public function pendingInvitations(ApiProgress $progress = null): Collection
+    public function pendingInvitations(?ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->organizationUrl}/invitations", function ($url) {
             return $this->client->get($url, [
@@ -59,7 +60,7 @@ class OrganizationApi
         }, $progress);
     }
 
-    public function failedInvitations(ApiProgress $progress = null): Collection
+    public function failedInvitations(?ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->organizationUrl}/failed_invitations", function ($url) {
             return $this->client->get($url, [

@@ -18,9 +18,7 @@ class MissingSlackUsers implements IssueCheck
     public function __construct(
         private readonly AggregateCustomerData $aggregateCustomerData,
         private readonly SlackUsers $slackUsers
-    )
-    {
-    }
+    ) {}
 
     public function generateIssues(): void
     {

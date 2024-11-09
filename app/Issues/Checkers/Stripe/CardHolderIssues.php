@@ -19,9 +19,7 @@ class CardHolderIssues implements IssueCheck
     public function __construct(
         private readonly AggregateCustomerData $aggregateCustomerData,
         private readonly StripeCardHolders $stripeCardHolders
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {
