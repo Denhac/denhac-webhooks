@@ -94,6 +94,5 @@ class AppServiceProvider extends ServiceProvider
 
         Route::model('card_update_request', CardUpdateRequest::class);
 
-
     }
 }
