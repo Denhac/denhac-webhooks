@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Builder;
@@ -69,7 +72,7 @@ class Customer extends Model
         ];
     }
 
-    public function memberships()
+    public function memberships(): HasMany
     {
         return $this->hasMany(UserMembership::class);
     }
@@ -79,17 +82,17 @@ class Customer extends Model
         return $this->memberships->where('plan_id', $planId)->count() > 0;  // TODO Where status is active
     }
 
-    public function subscriptions()
+    public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
     }
 
-    public function cards()
+    public function cards(): HasMany
     {
         return $this->hasMany(Card::class);
     }
 
-    public function idWasCheckedBy()
+    public function idWasCheckedBy(): HasOne
     {
         return $this->hasOne(Customer::class, 'id', 'id_was_checked_by_id');
     }
@@ -115,7 +118,7 @@ class Customer extends Model
             $this->isABoardMember();
     }
 
-    public function equipmentTrainer()
+    public function equipmentTrainer(): HasManyThrough
     {
         return $this->hasManyThrough(
             TrainableEquipment::class,
@@ -150,7 +153,7 @@ class Customer extends Model
         return $hashids->encode($this->id);
     }
 
-    public function waivers()
+    public function waivers(): HasMany
     {
         return $this->hasMany(Waiver::class);
     }
