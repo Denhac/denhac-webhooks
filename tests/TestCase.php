@@ -21,7 +21,6 @@ use Tests\Helpers\Wordpress\UserMembershipBuilder;
  */
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
     use RefreshDatabase;
     use WithFaker;
 
