@@ -9,10 +9,9 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
-
 Schedule::call(function () {
-        CardNotifierAggregate::make()->sendNotificationEmail()->persist();
-    })
+    CardNotifierAggregate::make()->sendNotificationEmail()->persist();
+})
     ->weeklyOn(Schedule::SATURDAY, '13:00');
 
 Schedule::command('denhac:slack-profile-fields-update')->daily();
