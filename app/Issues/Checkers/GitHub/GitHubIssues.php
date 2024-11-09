@@ -21,8 +21,8 @@ use Illuminate\Support\Str;
 
 class GitHubIssues implements IssueCheck
 {
-    use IssueCheckTrait;
     use HasApiProgressBar;
+    use IssueCheckTrait;
 
     public function __construct(
         private readonly GitHubApi $gitHubApi,
@@ -30,17 +30,15 @@ class GitHubIssues implements IssueCheck
         private readonly GitHubMembers $gitHubMembers,
         private readonly GitHubPendingMembers $gitHubPendingMembers,
         private readonly GitHubFailedInvites $gitHubFailedInvites
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {
-        $gitHubMembers = $this->gitHubMembers->get()->map(fn($ghm) => $ghm['login']);
-        $gitHubPendingMembers = $this->gitHubPendingMembers->get()->map(fn($ghm) => $ghm['login']);
-        $gitHubFailedInvites = $this->gitHubFailedInvites->get()->map(fn($ghm) => $ghm['login']);
+        $gitHubMembers = $this->gitHubMembers->get()->map(fn ($ghm) => $ghm['login']);
+        $gitHubPendingMembers = $this->gitHubPendingMembers->get()->map(fn ($ghm) => $ghm['login']);
+        $gitHubFailedInvites = $this->gitHubFailedInvites->get()->map(fn ($ghm) => $ghm['login']);
         /** @var Collection<MemberData> $members */
-        $members = $this->aggregateCustomerData->get()->filter(fn($member) => ! is_null($member->githubUsername));
+        $members = $this->aggregateCustomerData->get()->filter(fn ($member) => ! is_null($member->githubUsername));
 
         $progress = $this->apiProgress('Checking GitHub users');
         $progress->setProgress(0, $members->count());
@@ -48,7 +46,6 @@ class GitHubIssues implements IssueCheck
             $progress->step();
 
             /** @var MemberData $member */
-
             $validUsername = $this->confirmValidGitHubUsername($member->githubUsername);
             if (is_null($validUsername)) {
                 $this->issues->add(new UsernameDoesNotExist($member));
@@ -61,13 +58,13 @@ class GitHubIssues implements IssueCheck
             }
 
             $partOfTheTeam = $gitHubMembers
-                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->filter(fn ($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
             $pendingOnTheTeam = $gitHubPendingMembers
-                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->filter(fn ($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
             $failedInvite = $gitHubFailedInvites
-                ->filter(fn($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
+                ->filter(fn ($ghm) => Str::lower($ghm) == Str::lower($member->githubUsername))
                 ->isNotEmpty();
             $invited = $partOfTheTeam || $pendingOnTheTeam;
 
@@ -82,7 +79,7 @@ class GitHubIssues implements IssueCheck
 
         foreach ($gitHubMembers as $gitHubMember) {
             $member = $members
-                ->filter(fn($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
+                ->filter(fn ($m) => Str::lower($gitHubMember) == Str::lower($m->githubUsername))
                 ->first();
 
             if (! is_null($member)) {
@@ -96,7 +93,7 @@ class GitHubIssues implements IssueCheck
     private function confirmValidGitHubUsername(?string $githubUsername): ?string
     {
         $matches = [];
-        if (1 === preg_match(";(http(s)?)?://github.com/(?P<username>[\w-]+);", $githubUsername, $matches)) {
+        if (preg_match(";(http(s)?)?://github.com/(?P<username>[\w-]+);", $githubUsername, $matches) === 1) {
             $githubUsername = $matches['username'];
         }
 

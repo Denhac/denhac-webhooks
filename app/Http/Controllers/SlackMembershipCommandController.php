@@ -17,7 +17,7 @@ class SlackMembershipCommandController extends Controller
             return Kit::newMessage()->text(CommonResponses::unrecognizedUser());
         }
 
-        $modal = new MembershipOptionsModal();
+        $modal = new MembershipOptionsModal;
         $modal->open($request->get('trigger_id'));
 
         return response('');

@@ -19,7 +19,7 @@ class OrdersApi
     /**
      * @throws ApiCallFailed
      */
-    public function list(array $query = [], ApiProgress $progress = null): Collection
+    public function list(array $query = [], ?ApiProgress $progress = null): Collection
     {
         return $this->getWithPaging('/wp-json/wc/v3/orders', [
             RequestOptions::QUERY => array_merge_recursive($query, [

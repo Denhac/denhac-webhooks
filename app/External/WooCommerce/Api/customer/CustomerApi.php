@@ -21,7 +21,7 @@ class CustomerApi
     /**
      * @throws ApiCallFailed
      */
-    public function list(ApiProgress $progress = null): Collection
+    public function list(?ApiProgress $progress = null): Collection
     {
         return $this->getWithPaging('/wp-json/wc/v3/customers', [
             RequestOptions::QUERY => [

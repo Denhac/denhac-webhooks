@@ -6,9 +6,9 @@ use App\External\Slack\SlackOptions;
 use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
 use App\Models\UserMembership;
+use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
-use Illuminate\Support\Facades\Log;
 
 class MembershipOptionsModal implements ModalInterface
 {
@@ -66,16 +66,16 @@ class MembershipOptionsModal implements ModalInterface
 
         switch ($selectedOption) {
             case self::SIGN_UP_NEW_MEMBER_VALUE:
-                $modal = new NeedIdCheckModal();
+                $modal = new NeedIdCheckModal;
                 break;
             case self::MANAGE_MEMBERS_CARDS_VALUE:
                 $modal = new SelectAMemberModal(ManageMembersCardsModal::class);
                 break;
             case self::MANAGE_OPEN_HOUSE_VALUE:
-                $modal = new ManageOpenHouseModal();
+                $modal = new ManageOpenHouseModal;
                 break;
             case self::QUICK_OPEN_HOUSE_VALUE:
-                if (!$request->customer()->canIDcheck()) {
+                if (! $request->customer()->canIDcheck()) {
                     Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
                     throw new \Exception('Unauthorized');
                 }
@@ -83,7 +83,7 @@ class MembershipOptionsModal implements ModalInterface
 
                 return self::clearViewStack();
             case self::ALL_DOORS_DEFAULT_VALUE:
-                if (!$request->customer()->canIDcheck()) {
+                if (! $request->customer()->canIDcheck()) {
                     Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
                     throw new \Exception('Unauthorized');
                 }
@@ -94,13 +94,13 @@ class MembershipOptionsModal implements ModalInterface
                 $modal = new CreateTrainableEquipment($request->customer());
                 break;
             case self::EQUIPMENT_AUTHORIZATION_VALUE:
-                $modal = new EquipmentAuthorization();
+                $modal = new EquipmentAuthorization;
                 break;
             case self::COUNTDOWN_TEST_VALUE:
                 $modal = new CountdownTestModal(null);
                 break;
             case self::MANAGE_VOLUNTEER_GROUPS:
-                $modal = new ManageVolunteerGroups();
+                $modal = new ManageVolunteerGroups;
                 $modal->initialView();
                 break;
             default:

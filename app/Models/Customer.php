@@ -38,8 +38,8 @@ use Illuminate\Support\Collection;
  */
 class Customer extends Model
 {
-    use SoftDeletes;
     use Notifiable;
+    use SoftDeletes;
 
     public $incrementing = false;
 

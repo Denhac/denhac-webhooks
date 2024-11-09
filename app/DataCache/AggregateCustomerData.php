@@ -11,11 +11,10 @@ use Illuminate\Support\Str;
 class AggregateCustomerData extends CachedData
 {
     public function __construct(
-        private readonly WooCommerceCustomers       $wooCommerceCustomers,
-        private readonly WooCommerceSubscriptions   $wooCommerceSubscriptions,
+        private readonly WooCommerceCustomers $wooCommerceCustomers,
+        private readonly WooCommerceSubscriptions $wooCommerceSubscriptions,
         private readonly WooCommerceUserMemberships $wooCommerceUserMemberships
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -28,8 +27,8 @@ class AggregateCustomerData extends CachedData
 
             $customers = $this->wooCommerceCustomers->get();
 
-            $subscriptionMap = $subscriptions->groupBy(fn($sub) => $sub['customer_id']);
-            $userMembershipsMap = $userMemberships->groupBy(fn($um) => $um['customer_id']);
+            $subscriptionMap = $subscriptions->groupBy(fn ($sub) => $sub['customer_id']);
+            $userMembershipsMap = $userMemberships->groupBy(fn ($um) => $um['customer_id']);
 
             $progress = $this->apiProgress('Compiling WooCommerce members list');
             $progress->setProgress(0, $customers->count());
@@ -56,8 +55,8 @@ class AggregateCustomerData extends CachedData
                 $idWasChecked = ! is_null($meta_data['id_was_checked']);
 
                 /** @var Collection $customerUserMemberships */
-                $customerUserMemberships = $userMembershipsMap->get($customer['id'], fn() => collect());
-                $fullMemberUserMembership = $customerUserMemberships->first(fn($um) => $um['plan_id'] == \App\Models\UserMembership::MEMBERSHIP_FULL_MEMBER);
+                $customerUserMemberships = $userMembershipsMap->get($customer['id'], fn () => collect());
+                $fullMemberUserMembership = $customerUserMemberships->first(fn ($um) => $um['plan_id'] == \App\Models\UserMembership::MEMBERSHIP_FULL_MEMBER);
 
                 if (is_null($fullMemberUserMembership)) {
                     $isMember = false;
@@ -91,7 +90,7 @@ class AggregateCustomerData extends CachedData
                     idChecked: $idWasChecked,
                     isMember: $isMember,
                     hasSignedWaiver: $hasSignedWaiver,
-                    subscriptions: $subscriptionMap->get($customer['id'], fn() => collect()),
+                    subscriptions: $subscriptionMap->get($customer['id'], fn () => collect()),
                     userMemberships: $customerUserMemberships,
                     cards: $cards,
                     slackId: $meta_data['access_slack_id'],

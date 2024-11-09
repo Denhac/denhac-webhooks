@@ -64,15 +64,11 @@ trait HasApiProgressBar
         }
 
         // No output, nothing to do
-        return new class() implements ApiProgress
+        return new class implements ApiProgress
         {
-            public function setProgress($current, $max): void
-            {
-            }
+            public function setProgress($current, $max): void {}
 
-            public function step(): void
-            {
-            }
+            public function step(): void {}
         };
     }
 }

@@ -23,28 +23,28 @@ class PrintQuickBooksBudgets extends Command
         $references = app(QuickBookReferences::class);
         $classes = collect($dataService->FindAll('Class'));
 
-        $activeBudgets = $classes->filter(fn($class) => $class->ParentRef == $references->budgetClassActive->value);
+        $activeBudgets = $classes->filter(fn ($class) => $class->ParentRef == $references->budgetClassActive->value);
 
         foreach ($activeBudgets as $budget) {
             /** @var IPPClass $budget */
             $reportService = new ReportService($serviceContext);
-            $reportService->setStartDate("2019-01-01");
-            $reportService->setEndDate("2024-01-25");
+            $reportService->setStartDate('2019-01-01');
+            $reportService->setEndDate('2024-01-25');
             $reportService->setClassid($budget->Id);
-            $reportService->setAccountingMethod("Accrual");
+            $reportService->setAccountingMethod('Accrual');
             /** @var \stdClass $profitAndLossReport */
             $profitAndLossReport = $reportService->executeReport(ReportName::PROFITANDLOSS);
             $columns = collect($profitAndLossReport->Columns->Column)->map(function ($column) {
                 return $column->MetaData[0]->Value;
             })->values();
             $netRevenueSection = collect($profitAndLossReport->Rows->Row)->first(function ($row) {
-                return $row->group == "NetIncome";
+                return $row->group == 'NetIncome';
             });
             $netRevenueData = collect($netRevenueSection->Summary->ColData)->map(function ($colData) {
                 return $colData->value;
             });
 
-            $totalColumn = $columns->search("total");
+            $totalColumn = $columns->search('total');
             $value = -floatval($netRevenueData[$totalColumn]);
             $this->info("{$budget->Name}\tSpent: $value");
         }

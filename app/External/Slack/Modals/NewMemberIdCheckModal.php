@@ -159,7 +159,7 @@ class NewMemberIdCheckModal implements ModalInterface
             // TODO Pop something up so id checker can match the waiver
         }
 
-        return (new NewMemberInfoModal())->update();
+        return (new NewMemberInfoModal)->update();
     }
 
     public static function getOptions(SlackRequest $request)

@@ -8,12 +8,12 @@ class SlackUsers extends CachedData
 {
     public function __construct(
         private readonly SlackApi $slackApi
-    )
-    {
+    ) {
         parent::__construct();
     }
 
-    public function get() {
+    public function get()
+    {
         return $this->cache(function () {
             return $this->slackApi->users->list($this->apiProgress('Fetching Slack users'));
         });

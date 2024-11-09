@@ -8,7 +8,7 @@ use JetBrains\PhpStorm\ArrayShape;
 
 trait SlackApiTrait
 {
-    protected function paginate($key, $request, ApiProgress $progress = null): Collection
+    protected function paginate($key, $request, ?ApiProgress $progress = null): Collection
     {
         $cursor = '';
         $collection = collect();

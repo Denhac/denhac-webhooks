@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\AccessCards;
 
-
 use App\DataCache\AggregateCustomerData;
 use App\DataCache\MemberData;
 use App\Issues\Checkers\IssueCheck;
@@ -18,9 +17,7 @@ class TemporaryCodeIssues implements IssueCheck
 
     public function __construct(
         private readonly AggregateCustomerData $aggregateCustomerData,
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {
@@ -34,7 +31,7 @@ class TemporaryCodeIssues implements IssueCheck
             }
 
             $fullMemberUserMembership = $member->userMemberships
-                ->first(fn($um) => $um['plan_id'] == UserMembership::MEMBERSHIP_FULL_MEMBER);
+                ->first(fn ($um) => $um['plan_id'] == UserMembership::MEMBERSHIP_FULL_MEMBER);
 
             // Some users may have a cancelled user membership before they ever got to the ID check stage.
             $hasPausedUserMembership = ! is_null($fullMemberUserMembership) &&

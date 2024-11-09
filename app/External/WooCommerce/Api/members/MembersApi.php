@@ -22,7 +22,7 @@ class MembersApi
     /**
      * @throws ApiCallFailed
      */
-    public function list(ApiProgress $progress = null): Collection
+    public function list(?ApiProgress $progress = null): Collection
     {
         return $this->getWithPaging('/wp-json/wc/v3/memberships/members', [
             RequestOptions::QUERY => [
@@ -33,6 +33,7 @@ class MembersApi
 
     /**
      * @throws ApiCallFailed
+     *
      * @returns true if adding the membership succeeded
      */
     public function addMembership($woo_id, $plan_id): bool

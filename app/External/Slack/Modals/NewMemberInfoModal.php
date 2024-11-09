@@ -12,7 +12,7 @@ class NewMemberInfoModal implements ModalInterface
 
     private Modal $modalView;
 
-    private const INFO = array(
+    private const INFO = [
         "This is a community. You are a member, not a customer. This organization runs on the contributions of its members.",
         "We're a drug and alcohol free space. There is hazardous equipment here, always keep everyone's safety in mind.",
         "Don't live or sleep at the space. That includes in the parking lot. Don't leave your car in the lot overnight.",
@@ -22,7 +22,7 @@ class NewMemberInfoModal implements ModalInterface
         "No Harassment or Bullying: This includes, but is not limited to, attention that comes after a request to stop. Recognize and respect everyone's differences. Treat all members with kindness and respect. Our anti-harassment policy is part of the member agreement you've agreed to - please read it.",
         "The last Saturday of the month is Hack denhac Day. The space is closed for personal project work. Come help us work on the space.",
         "Leave the space better than you found it. Take out the trash. Communicate any issues through Slack.",
-    );
+    ];
 
     public function __construct()
     {
@@ -48,9 +48,7 @@ class NewMemberInfoModal implements ModalInterface
         return self::clearViewStack();
     }
 
-    public static function getOptions(SlackRequest $request)
-    {
-    }
+    public static function getOptions(SlackRequest $request) {}
 
     public function jsonSerialize()
     {
