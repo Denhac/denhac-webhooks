@@ -56,22 +56,22 @@ abstract class TestCase extends BaseTestCase
 
     public function customer(): CustomerBuilder
     {
-        return new CustomerBuilder();
+        return new CustomerBuilder;
     }
 
     public function subscription(): SubscriptionBuilder
     {
-        return new SubscriptionBuilder();
+        return new SubscriptionBuilder;
     }
 
     public function userMembership(): UserMembershipBuilder
     {
-        return new UserMembershipBuilder();
+        return new UserMembershipBuilder;
     }
 
     public function waiver(): WaiverBuilder
     {
-        return new WaiverBuilder();
+        return new WaiverBuilder;
     }
 
     public function subscriptionStatuses(): array
@@ -105,7 +105,7 @@ abstract class TestCase extends BaseTestCase
 
     public function octoPrintUpdate(): OctoPrintUpdateBuilder
     {
-        return new OctoPrintUpdateBuilder();
+        return new OctoPrintUpdateBuilder;
     }
 
     public function withOnlyEventHandlerType($cls)

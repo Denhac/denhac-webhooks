@@ -2,20 +2,18 @@
 
 namespace App\External\Slack\Modals;
 
+use App\Actions\WordPress\BatchAuthorizeEquipment;
 use App\Exceptions\UnauthorizedTrainerException;
 use App\External\Slack\BlockActions\BlockActionInterface;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\External\Slack\SlackOptions;
-use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Collection;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
-use Illuminate\Support\Collection;
-use App\Actions\WordPress\BatchAuthorizeEquipment;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -93,11 +91,11 @@ class EquipmentAuthorization implements ModalInterface
         } catch (UnauthorizedTrainerException) {
             return response()->json([
                 'response_action' => 'errors',
-                'errors' => [self::EQUIPMENT_DROPDOWN => "You don't have permission to authorize members for this equipment."]
+                'errors' => [self::EQUIPMENT_DROPDOWN => "You don't have permission to authorize members for this equipment."],
             ]);
         }
 
-        return (new SuccessModal())->update();
+        return (new SuccessModal)->update();
     }
 
     /**
@@ -116,18 +114,20 @@ class EquipmentAuthorization implements ModalInterface
     public static function equipmentFromState($state): Collection
     {
         $equipmentIds = array_map(
-            fn($formValue) => str_replace('equipment-', '', $formValue),
+            fn ($formValue) => str_replace('equipment-', '', $formValue),
             $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? []
         );
+
         return TrainableEquipment::whereIn('id', $equipmentIds)->get();
     }
 
     public static function peopleFromState($state): Collection
     {
         $customerIds = array_map(
-            fn($formValue) => str_replace('customer-', '', $formValue),
+            fn ($formValue) => str_replace('customer-', '', $formValue),
             $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? []
         );
+
         return Customer::with('memberships')->whereIn('id', $customerIds)->get();
     }
 
@@ -160,7 +160,7 @@ class EquipmentAuthorization implements ModalInterface
     public static function onBlockAction(SlackRequest $request)
     {
         // Rerender view to display information about any permissions that the users already have for this equipment.
-        $modal = new EquipmentAuthorization();
+        $modal = new EquipmentAuthorization;
 
         $state = self::getStateValues($request);
 
@@ -172,21 +172,21 @@ class EquipmentAuthorization implements ModalInterface
             $alreadyTrained = [];
             $alreadyTrainers = [];
 
-            foreach($selectedMembers as $person) {
+            foreach ($selectedMembers as $person) {
                 $traineeName = "{$person->first_name} {$person->last_name}";
 
                 // Get names of equipment for which the member is already a user
                 $trainedEquipmentNames = $selectedEquipment
-                    ->where(fn($e) => $person->hasMembership($e->user_plan_id))
-                    ->map(fn($e) => $e->name);
+                    ->where(fn ($e) => $person->hasMembership($e->user_plan_id))
+                    ->map(fn ($e) => $e->name);
                 if ($trainedEquipmentNames->isNotEmpty()) {
                     $alreadyTrained[$traineeName] = $trainedEquipmentNames;
                 }
 
                 // Get names of equipment for which the member is already a trainer
                 $trainerForEquipmentNames = $selectedEquipment
-                    ->where(fn($e) => $person->hasMembership($e->trainer_plan_id))
-                    ->map(fn($e) => $e->name);
+                    ->where(fn ($e) => $person->hasMembership($e->trainer_plan_id))
+                    ->map(fn ($e) => $e->name);
                 if ($trainerForEquipmentNames->isNotEmpty()) {
                     $alreadyTrainers[$traineeName] = $trainerForEquipmentNames;
                 }
@@ -194,15 +194,15 @@ class EquipmentAuthorization implements ModalInterface
 
             // NOTE: $alreadyTrained and $alreadyTrainers are arrays, where as most other iterables in this function are Collections.
             // Use `empty` on arrays, and `Collection->isEmpty` on Collections.
-            if (!empty($alreadyTrained) || !empty($alreadyTrainers)) {
+            if (! empty($alreadyTrained) || ! empty($alreadyTrainers)) {
                 // Render an information section which displays existing permissions
-                $modal->modalView->newSection()->mrkdwnText(":information_source:");
+                $modal->modalView->newSection()->mrkdwnText(':information_source:');
 
-                foreach($alreadyTrained as $trainee => $equipmentNames) {
+                foreach ($alreadyTrained as $trainee => $equipmentNames) {
                     $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.$equipmentNames->join(', '));
                 }
 
-                foreach($alreadyTrainers as $trainer => $equipmentNames) {
+                foreach ($alreadyTrainers as $trainer => $equipmentNames) {
                     $modal->modalView->newContext()->mrkdwnText($trainer.' is already a trainer for '.$equipmentNames->join(', '));
                 }
             }

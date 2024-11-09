@@ -4,7 +4,7 @@ namespace Tests\Helpers;
 
 use Illuminate\Contracts\Support\Arrayable;
 
-abstract class BaseBuilder implements \JsonSerializable, Arrayable, \ArrayAccess
+abstract class BaseBuilder implements \ArrayAccess, \JsonSerializable, Arrayable
 {
     protected array $data;
 

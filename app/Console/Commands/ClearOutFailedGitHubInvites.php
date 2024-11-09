@@ -24,13 +24,13 @@ class ClearOutFailedGitHubInvites extends Command
     current member letting them know about the issue.';
 
     private GitHubApi $gitHubApi;
+
     private WooCommerceApi $wooCommerceApi;
 
     public function __construct(
-        GitHubApi      $gitHubApi,
+        GitHubApi $gitHubApi,
         WooCommerceApi $wooCommerceApi
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->gitHubApi = $gitHubApi;
@@ -47,15 +47,15 @@ class ClearOutFailedGitHubInvites extends Command
             $this->line('Dry run, will not actually update anything.');
         }
 
-        $progressBar = $this->apiProgress("GitHub members in Organization");
+        $progressBar = $this->apiProgress('GitHub members in Organization');
         $inOrganization = $this->getUsernames($this->gitHubApi->denhac()->listMembers($progressBar));
         $this->info("We have {$inOrganization->count()} people in our GitHub organization");
 
-        $progressBar = $this->apiProgress("GitHub pending invitations");
+        $progressBar = $this->apiProgress('GitHub pending invitations');
         $pendingInvitations = $this->getUsernames($this->gitHubApi->denhac()->pendingInvitations($progressBar));
         $this->info("We have {$pendingInvitations->count()} pending invitations that haven't been accepted");
 
-        $progressBar = $this->apiProgress("GitHub failed invitations");
+        $progressBar = $this->apiProgress('GitHub failed invitations');
         $failedInvites = $this->getUsernames($this->gitHubApi->denhac()->failedInvitations($progressBar));
         $this->info("We have {$failedInvites->count()} failed invites");
 
@@ -65,10 +65,10 @@ class ClearOutFailedGitHubInvites extends Command
         foreach ($customers as $customer) {
             /** @var Customer $customer */
             $isInOrganization = $inOrganization
-                ->filter(fn($username) => Str::lower($username) == Str::lower($customer->github_username))
+                ->filter(fn ($username) => Str::lower($username) == Str::lower($customer->github_username))
                 ->isNotEmpty();
             $isPending = $pendingInvitations
-                ->filter(fn($username) => Str::lower($username) == Str::lower($customer->github_username))
+                ->filter(fn ($username) => Str::lower($username) == Str::lower($customer->github_username))
                 ->isNotEmpty();
 
             if ($isInOrganization || $isPending) {
@@ -78,7 +78,7 @@ class ClearOutFailedGitHubInvites extends Command
             }
 
             $hasFailedInvite = $failedInvites
-                ->filter(fn($username) => Str::lower($username) == Str::lower($customer->github_username))
+                ->filter(fn ($username) => Str::lower($username) == Str::lower($customer->github_username))
                 ->isNotEmpty();
 
             if (! $hasFailedInvite) {
@@ -98,13 +98,13 @@ class ClearOutFailedGitHubInvites extends Command
                         ],
                     ]);
 
-                Notification::route('mail', $customer->email)->notify(new GitHubInviteExpired());
+                Notification::route('mail', $customer->email)->notify(new GitHubInviteExpired);
             }
         }
     }
 
     protected function getUsernames(Collection $gitHubCollection): Collection
     {
-        return $gitHubCollection->map(fn($gitHubUser) => $gitHubUser['login']);
+        return $gitHubCollection->map(fn ($gitHubUser) => $gitHubUser['login']);
     }
 }

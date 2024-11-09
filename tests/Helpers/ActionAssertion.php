@@ -8,6 +8,7 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Constraint\IsIdentical;
 use Spatie\QueueableAction\ActionJob;
+
 use function Spatie\SslCertificate\starts_with;
 
 class ActionAssertion

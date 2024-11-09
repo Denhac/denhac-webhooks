@@ -12,7 +12,7 @@ class SlackOptions extends Element
 
     public static function new(): SlackOptions
     {
-        return new self();
+        return new self;
     }
 
     public function jsonSerialize()

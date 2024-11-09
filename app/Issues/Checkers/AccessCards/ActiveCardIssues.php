@@ -23,9 +23,7 @@ class ActiveCardIssues implements IssueCheck
 
     public function __construct(
         private readonly AggregateCustomerData $aggregateCustomerData,
-    )
-    {
-    }
+    ) {}
 
     public function generateIssues(): void
     {
@@ -52,7 +50,7 @@ class ActiveCardIssues implements IssueCheck
 
                     if (array_key_exists('udf_id', $card_holder)) {
                         /** @var MemberData $member */
-                        $member = $members->filter(fn($m) => $m->uuid == $card_holder['udf_id'])->first();
+                        $member = $members->filter(fn ($m) => $m->uuid == $card_holder['udf_id'])->first();
 
                         if (! is_null($member)) {
                             if ($this->isCardNumUpdatedInLastDay($member->id, $card_holder['card_num'])) {
@@ -124,9 +122,8 @@ class ActiveCardIssues implements IssueCheck
      * Sometimes the card access server handles ` and ' weirdly, for example. If that's the only difference in the two
      * names, then we should consider everything fine.
      *
-     * @param string $left One of the two names to check
-     * @param string $right One of the two names to check
-     * @return bool
+     * @param  string  $left  One of the two names to check
+     * @param  string  $right  One of the two names to check
      */
     protected function namesAreEqualEnough(string $left, string $right): bool
     {

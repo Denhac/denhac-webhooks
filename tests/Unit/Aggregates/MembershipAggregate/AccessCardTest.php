@@ -444,7 +444,6 @@ class AccessCardTest extends TestCase
         $customer = clone $customerNoCard;
         $customer->access_card($oldCard);
 
-
         MembershipAggregate::fakeCustomer($customer)
             ->given([
                 new CustomerCreated($customer),

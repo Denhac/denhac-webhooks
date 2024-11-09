@@ -29,7 +29,7 @@ class GoogleApi
 
         $accessToken = $this->tokenManager->getAccessToken($groupScope);
 
-        $client = new Client();
+        $client = new Client;
 
         $response = $client->get('https://www.googleapis.com/admin/directory/v1/groups', [
             RequestOptions::HEADERS => [
@@ -58,7 +58,7 @@ class GoogleApi
 
         $accessToken = $this->tokenManager->getAccessToken($groupScope);
 
-        $client = new Client();
+        $client = new Client;
 
         $response = $client->get('https://www.googleapis.com/admin/directory/v1/groups', [
             RequestOptions::HEADERS => [

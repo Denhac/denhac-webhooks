@@ -35,7 +35,7 @@ class CardUpdateRequestsController extends Controller
     public function updateActiveCardHolders(Request $request): JsonResponse
     {
         // TODO Make this a validation requestad
-        if (!$request->has('card_holders')) {
+        if (! $request->has('card_holders')) {
             return response(status: StatusCodeInterface::STATUS_BAD_REQUEST)->json([
                 'error' => 'Missing argument card_holders',
             ]);

@@ -9,6 +9,7 @@ use App\StorableEvents\WooCommerce\UserMembershipUpdated;
 trait UserMembership
 {
     public bool $activeFullMemberPlan = false;
+
     public array $userMembershipIdToPlanId;
 
     public function bootUserMembership(): void

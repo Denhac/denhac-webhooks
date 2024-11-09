@@ -48,9 +48,9 @@ class ChoiceHelper
 
         $callback = $this->choices->get($choiceResult);
         $runResult = $callback();
-        if(is_null($runResult)) {
+        if (is_null($runResult)) {
             return true;  // We assume a null just means it was run successfully as a lambda or something.
-        } else if(is_bool($runResult)) {
+        } elseif (is_bool($runResult)) {
             return $runResult;  // If the option run result was a boolean, we go with that option
         }
 

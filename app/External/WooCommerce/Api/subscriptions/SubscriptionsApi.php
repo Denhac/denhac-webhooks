@@ -21,7 +21,7 @@ class SubscriptionsApi
     /**
      * @throws ApiCallFailed
      */
-    public function list(ApiProgress $progress = null): Collection
+    public function list(?ApiProgress $progress = null): Collection
     {
         return $this->getWithPaging('/wp-json/wc/v1/subscriptions', [], $progress);
     }

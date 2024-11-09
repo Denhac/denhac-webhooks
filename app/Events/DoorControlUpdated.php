@@ -27,8 +27,8 @@ class DoorControlUpdated implements ShouldBroadcast
      * that event takes 1 second to get to our Pi and the clocks are enough by 3 seconds, the door will only open for 1
      * second. This has the tradeoff that Carbon times like "close at 11:00 PM" might be a few seconds off.
      *
-     * @param  Carbon|int  $expires When does this update expire. Either as a date or in seconds.
-     * @param  Door  ...$doors The list of door objects that we want to update.
+     * @param  Carbon|int  $expires  When does this update expire. Either as a date or in seconds.
+     * @param  Door  ...$doors  The list of door objects that we want to update.
      */
     public function __construct(Carbon|int $expires, Door ...$doors)
     {
