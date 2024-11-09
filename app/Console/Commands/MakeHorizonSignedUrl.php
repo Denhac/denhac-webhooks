@@ -11,7 +11,7 @@ class MakeHorizonSignedUrl extends Command
 
     protected $description = 'Create a signed URL to populate the secret cookie and get access to horizon';
 
-    public function handle()
+    public function handle(): void
     {
         $url = URL::temporarySignedRoute('horizon-signed-url', now()->addMinutes(5));
         $this->info($url);

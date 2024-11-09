@@ -15,7 +15,7 @@ class PrintQuickBooksBudgets extends Command
 
     protected $description = 'This is just a test command to print QuickBooks budgets';
 
-    public function handle()
+    public function handle(): int
     {
         /** @var DataService $dataService */
         $dataService = app(DataService::class);
