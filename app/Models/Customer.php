@@ -60,11 +60,14 @@ class Customer extends Model
         'member_code',
     ];
 
-    protected $casts = [
-        'birthday' => 'datetime',
-        'member' => 'boolean',
-        'id_checked' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'birthday' => 'datetime',
+            'member' => 'boolean',
+            'id_checked' => 'boolean',
+        ];
+    }
 
     public function memberships()
     {

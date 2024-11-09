@@ -15,7 +15,10 @@ class ActiveCardHolderUpdate extends Model
         'card_holders',
     ];
 
-    protected $casts = [
-        'card_holders' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'card_holders' => 'array',
+        ];
+    }
 }
