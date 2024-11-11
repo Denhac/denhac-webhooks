@@ -21,11 +21,11 @@ Schedule::command('passport:purge')->hourly();
 Schedule::command('denhac:clear-out-failed-git-hub-invites')->daily();
 
 // QuickBooks tokens expire every hour. Every half should prevent any issues with a job running right as a token expires.
-Schedule::call(fn () => $this->refreshQuickBooksAccessToken())->everyThirtyMinutes();
+Schedule::command('quickbooks:refresh-access-token')->everyThirtyMinutes();
 
 // daily at noon because the cron is in UTC but I grab Denver timezone minus one day. This makes the date string
 // for searching orders as well as the date used for the QuickBooks entry correct regardless of if it's daylight
 //savings time or not.
-Schedule::call(fn () => $this->generateVendingNetJournalEntry())->dailyAt('12:00');
+Schedule::command('quickbooks:generate-vending-net-journal-entry')->dailyAt('12:00');
 
-Schedule::call(fn () => $this->topUpIssuingBalance())->daily();
+Schedule::command('stripe:top-up-issuing-balance')->daily();
