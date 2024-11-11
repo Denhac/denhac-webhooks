@@ -46,7 +46,7 @@ class SendMessage
     {
         return [
             // TODO Getting a "Serialization of 'Closure' is not allowed" exception and I think it might be coming from here. Commenting it out while figuring it out.
-//            SlackRateLimit::chat_postMessage(),
+            //            SlackRateLimit::chat_postMessage(),
         ];
     }
 }

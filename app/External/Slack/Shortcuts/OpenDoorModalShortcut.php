@@ -22,7 +22,7 @@ class OpenDoorModalShortcut implements ShortcutInterface
             return Kit::newMessage()->text(CommonResponses::unrecognizedUser());
         }
 
-        $modal = new OpenDoorModal();
+        $modal = new OpenDoorModal;
         $trigger_id = $request->payload()['trigger_id'];
 
         $modal->open($trigger_id);

@@ -36,7 +36,7 @@ class GroupApi
 
         $encodedGroupName = urlencode($group);
         $this->membersUrl = "https://www.googleapis.com/admin/directory/v1/groups/{$encodedGroupName}/members";
-        $this->client = new Client();
+        $this->client = new Client;
     }
 
     public function add(string $email)
@@ -59,7 +59,7 @@ class GroupApi
         if ($response->getStatusCode() == Response::HTTP_CONFLICT && $this->errorsHasDuplicate($response)) {
             // Not an issue, they've already been added
         } elseif ($response->getStatusCode() != Response::HTTP_OK) {
-            throw new \Exception('Google api add failed: ' . $response->getBody());
+            throw new \Exception('Google api add failed: '.$response->getBody());
         }
 
         // TODO Handle conflict/other errors
@@ -94,12 +94,12 @@ class GroupApi
                 ],
             ]);
         }, $apiProgress)
-            ->filter(function($group) {
-                if(! is_array($group)) {  // Groups with no members come back as just a string?
+            ->filter(function ($group) {
+                if (! is_array($group)) {  // Groups with no members come back as just a string?
                     return false;
                 }
 
-                if(! array_key_exists('type', $group)) {
+                if (! array_key_exists('type', $group)) {
                     return false;
                 }
 
@@ -111,7 +111,7 @@ class GroupApi
     }
 
     /**
-     * @param $response ResponseInterface
+     * @param  $response  ResponseInterface
      */
     private function errorsHasDuplicate($response): bool
     {

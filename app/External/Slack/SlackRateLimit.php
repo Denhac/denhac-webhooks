@@ -4,23 +4,18 @@ namespace App\External\Slack;
 
 use App\Http\Middleware\SlackPostMessageRateLimit;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
  * @method static SlackPostMessageRateLimit chat_postMessage()
- *
  * @method static SlackRateLimited conversations_invite()
  * @method static SlackRateLimited conversations_join()
  * @method static SlackRateLimited conversations_kick()
  * @method static SlackRateLimited conversations_list()
- *
  * @method static SlackRateLimited usergroups_list()
  * @method static SlackRateLimited usergroups_update()
- *
  * @method static SlackRateLimited users_profile_get()
  * @method static SlackRateLimited users_profile_set()
- *
  * @method static SlackRateLimited views_open();
  * @method static SlackRateLimited views_publish()
  * @method static SlackRateLimited views_update()
@@ -28,9 +23,13 @@ use Illuminate\Support\Facades\RateLimiter;
 class SlackRateLimit
 {
     protected const POSTING = 'posting';
+
     protected const TIER_1 = 'tier-1';
+
     protected const TIER_2 = 'tier-2';
+
     protected const TIER_3 = 'tier-3';
+
     protected const TIER_4 = 'tier-4';
 
     protected static array $tierPerMinute = [
@@ -57,7 +56,7 @@ class SlackRateLimit
 
     public static function __callStatic(string $name, array $arguments)
     {
-        if (!array_key_exists($name, self::$apiCall)) {
+        if (! array_key_exists($name, self::$apiCall)) {
             throw new \Exception("Unknown api call $name");
         }
 
@@ -67,7 +66,7 @@ class SlackRateLimit
             return app(SlackPostMessageRateLimit::class);
         }
 
-        if (!array_key_exists($tier, self::$tierPerMinute)) {
+        if (! array_key_exists($tier, self::$tierPerMinute)) {
             throw new \Exception("Unknown tier level $tier for api method $name");
         }
 

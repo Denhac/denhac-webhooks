@@ -5,7 +5,6 @@ namespace App\External\Slack\Modals;
 use App\Actions\CountdownModalLoop;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\Http\Requests\SlackRequest;
-use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -59,9 +58,7 @@ class CountdownTestModal implements ModalInterface
         return self::clearViewStack();
     }
 
-    public static function getOptions(SlackRequest $request)
-    {
-    }
+    public static function getOptions(SlackRequest $request) {}
 
     public function jsonSerialize()
     {

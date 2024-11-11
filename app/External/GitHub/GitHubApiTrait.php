@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 trait GitHubApiTrait
 {
-    protected function paginate($firstUrl, $request, ApiProgress $progress = null): Collection
+    protected function paginate($firstUrl, $request, ?ApiProgress $progress = null): Collection
     {
         $url = $firstUrl;
         $collection = collect();
@@ -30,7 +30,7 @@ trait GitHubApiTrait
             $url = null;
             foreach ($individualLink as $link) {
                 $matches = [];
-                if (1 !== preg_match("/<(?P<link>.*)>; rel=\"(?P<name>\w+)\"/", $link, $matches)) {
+                if (preg_match("/<(?P<link>.*)>; rel=\"(?P<name>\w+)\"/", $link, $matches) !== 1) {
                     continue;  // We couldn't match anything. Might be an error to report.
                 }
                 if ($matches['name'] != 'next') {

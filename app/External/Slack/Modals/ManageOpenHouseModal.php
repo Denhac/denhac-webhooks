@@ -35,7 +35,7 @@ class ManageOpenHouseModal implements ModalInterface
             ->submit('Update')
             ->close('Cancel');
 
-        $timePicker = (new TimePicker())
+        $timePicker = (new TimePicker)
             ->initialTime('22:00')
             ->actionId(self::EXPIRES_TIME);
 
@@ -65,7 +65,7 @@ class ManageOpenHouseModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        if (!$request->customer()->canIDcheck()) {
+        if (! $request->customer()->canIDcheck()) {
             Log::warning('ManageOpenHouseModal: Rejecting unauthorized submission from user '.$request->customer()->id);
             throw new \Exception('Unauthorized');
         }

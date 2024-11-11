@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
@@ -38,8 +41,8 @@ use Illuminate\Support\Collection;
  */
 class Customer extends Model
 {
-    use SoftDeletes;
     use Notifiable;
+    use SoftDeletes;
 
     public $incrementing = false;
 
@@ -60,13 +63,16 @@ class Customer extends Model
         'member_code',
     ];
 
-    protected $casts = [
-        'birthday' => 'datetime',
-        'member' => 'boolean',
-        'id_checked' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'birthday' => 'datetime',
+            'member' => 'boolean',
+            'id_checked' => 'boolean',
+        ];
+    }
 
-    public function memberships()
+    public function memberships(): HasMany
     {
         return $this->hasMany(UserMembership::class);
     }
@@ -76,17 +82,17 @@ class Customer extends Model
         return $this->memberships->where('plan_id', $planId)->count() > 0;  // TODO Where status is active
     }
 
-    public function subscriptions()
+    public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
     }
 
-    public function cards()
+    public function cards(): HasMany
     {
         return $this->hasMany(Card::class);
     }
 
-    public function idWasCheckedBy()
+    public function idWasCheckedBy(): HasOne
     {
         return $this->hasOne(Customer::class, 'id', 'id_was_checked_by_id');
     }
@@ -112,7 +118,7 @@ class Customer extends Model
             $this->isABoardMember();
     }
 
-    public function equipmentTrainer()
+    public function equipmentTrainer(): HasManyThrough
     {
         return $this->hasManyThrough(
             TrainableEquipment::class,
@@ -147,7 +153,7 @@ class Customer extends Model
         return $hashids->encode($this->id);
     }
 
-    public function waivers()
+    public function waivers(): HasMany
     {
         return $this->hasMany(Waiver::class);
     }

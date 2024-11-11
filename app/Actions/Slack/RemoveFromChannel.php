@@ -10,8 +10,8 @@ use Spatie\QueueableAction\QueueableAction;
 class RemoveFromChannel
 {
     use QueueableAction;
-    use StaticAction;
     use SlackActionTrait;
+    use StaticAction;
 
     public string $queue = 'slack-rate-limited';
 

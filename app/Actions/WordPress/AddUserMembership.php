@@ -3,8 +3,8 @@
 namespace App\Actions\WordPress;
 
 use App\External\WooCommerce\Api\WooCommerceApi;
-use Spatie\QueueableAction\QueueableAction;
 use Illuminate\Support\Facades\Log;
+use Spatie\QueueableAction\QueueableAction;
 
 class AddUserMembership
 {

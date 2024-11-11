@@ -129,7 +129,7 @@ final class CustomerProjector extends Projector
     }
 
     /**
-     * @param string $key The name of the metadata field to lookup
+     * @param  string  $key  The name of the metadata field to lookup
      * @return mixed|null
      */
     private function getMetadataField(array $customer, string $key)

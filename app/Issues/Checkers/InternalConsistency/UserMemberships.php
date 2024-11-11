@@ -13,19 +13,17 @@ use App\Models\UserMembership;
 
 class UserMemberships implements IssueCheck
 {
-    use IssueCheckTrait;
     use HasApiProgressBar;
+    use IssueCheckTrait;
 
     public function __construct(
         private readonly WooCommerceUserMemberships $wooCommerceUserMemberships
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {
-        $userMembershipsApi = $this->wooCommerceUserMemberships->get()->groupBy(fn($um) => $um['id']);
-        $userMembershipsModels = UserMembership::all()->groupBy(fn($um) => $um->id);
+        $userMembershipsApi = $this->wooCommerceUserMemberships->get()->groupBy(fn ($um) => $um['id']);
+        $userMembershipsModels = UserMembership::all()->groupBy(fn ($um) => $um->id);
 
         $apiProgress = $this->apiProgress('Checking User Memberships in API');
         $apiProgress->setProgress(0, $userMembershipsApi->count());

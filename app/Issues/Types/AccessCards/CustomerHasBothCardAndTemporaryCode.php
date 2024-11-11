@@ -9,9 +9,7 @@ class CustomerHasBothCardAndTemporaryCode extends IssueBase
 {
     public function __construct(
         private readonly MemberData $member
-    )
-    {
-    }
+    ) {}
 
     public static function getIssueNumber(): int
     {
@@ -20,7 +18,7 @@ class CustomerHasBothCardAndTemporaryCode extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: Customer has both card and temporary code";
+        return 'Access Cards: Customer has both card and temporary code';
     }
 
     public function getIssueText(): string

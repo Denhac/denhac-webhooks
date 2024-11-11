@@ -6,7 +6,6 @@ use App\Issues\IssueChecker;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Console\Command;
-use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,7 +40,7 @@ class IdentifyIssues extends Command
         $this->info("There are {$allIssues->count()} total issues.");
         $this->newLine();
 
-        $issuesByNumber = $allIssues->groupBy(fn($i) => $i->getIssueNumber());
+        $issuesByNumber = $allIssues->groupBy(fn ($i) => $i->getIssueNumber());
         $sortedIssueNumbers = $issuesByNumber->keys()->sort();
 
         $fixableIssues = collect();

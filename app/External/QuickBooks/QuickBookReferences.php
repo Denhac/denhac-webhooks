@@ -31,14 +31,14 @@ class QuickBookReferences
      * updating the knownPrefixes array bellow. You can use either a single value or you can use a key => value to
      * customize what the replacement looks like.
      *
-     * @param  string  $name The property name to read or write
+     * @param  string  $name  The property name to read or write
      * @return string the setting we're going to access
      */
     public function getSettingKey(string $name): string
     {
         $knownPrefixes = [
             'vending',
-            'budgetClass'
+            'budgetClass',
         ];
 
         foreach ($knownPrefixes as $prefix => $replacement) {

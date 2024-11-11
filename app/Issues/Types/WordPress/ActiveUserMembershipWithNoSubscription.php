@@ -9,10 +9,8 @@ class ActiveUserMembershipWithNoSubscription extends IssueBase
 {
     public function __construct(
         private readonly MemberData $memberData,
-        private readonly array      $userMembership
-    )
-    {
-    }
+        private readonly array $userMembership
+    ) {}
 
     public static function getIssueNumber(): int
     {
@@ -21,13 +19,13 @@ class ActiveUserMembershipWithNoSubscription extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Word Press: Active user membership with no subscription";
+        return 'Word Press: Active user membership with no subscription';
     }
 
     public function getIssueText(): string
     {
 
         return "{$this->memberData->full_name} ({$this->memberData->id}) has user membership ({$this->userMembership['id']}) with status "
-            . "\"{$this->userMembership['status']}\" with no linked subscription";
+            ."\"{$this->userMembership['status']}\" with no linked subscription";
     }
 }

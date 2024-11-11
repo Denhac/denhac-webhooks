@@ -30,12 +30,12 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 final class MembershipAggregate extends AggregateRoot
 {
-    use CustomerBasedAggregate;
     use Cards;
+    use CustomerBasedAggregate;
     use Github;
+    use IdWasCheckedTrait;
     use Subscription;
     use UserMembership;
-    use IdWasCheckedTrait;
     use WaiverTrait;
 
     public bool $currentlyAMember = false;
@@ -47,7 +47,7 @@ final class MembershipAggregate extends AggregateRoot
         $booted = [];
 
         foreach (class_uses_recursive($class) as $trait) {
-            $method = 'boot' . class_basename($trait);
+            $method = 'boot'.class_basename($trait);
 
             if (method_exists($class, $method) && ! in_array($method, $booted)) {
                 $this->$method();

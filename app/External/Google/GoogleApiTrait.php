@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 trait GoogleApiTrait
 {
-    protected function paginate($key, $request, ApiProgress $progress = null): Collection
+    protected function paginate($key, $request, ?ApiProgress $progress = null): Collection
     {
         $nextPageToken = '';
         $collection = collect();

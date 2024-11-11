@@ -44,7 +44,7 @@ abstract class CachedData
             $key = '';
         }
 
-        if(! $this->cache->has($key)) {
+        if (! $this->cache->has($key)) {
             $this->cache->put($key, $fn());
         }
 

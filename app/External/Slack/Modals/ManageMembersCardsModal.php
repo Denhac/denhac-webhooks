@@ -5,9 +5,9 @@ namespace App\External\Slack\Modals;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
-use Illuminate\Support\Facades\Log;
 
 class ManageMembersCardsModal implements ModalInterface
 {
@@ -18,7 +18,7 @@ class ManageMembersCardsModal implements ModalInterface
     private Modal $modalView;
 
     /**
-     * @param  int  $customerId The customer's Woo Commerce ID
+     * @param  int  $customerId  The customer's Woo Commerce ID
      */
     public function __construct(int $customerId)
     {
@@ -54,7 +54,7 @@ class ManageMembersCardsModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        if (!$request->customer()->canIDcheck()) {
+        if (! $request->customer()->canIDcheck()) {
             Log::warning('ManageMembersCardsModal: Rejecting unauthorized submission from user '.$request->customer()->id);
             throw new \Exception('Unauthorized');
         }

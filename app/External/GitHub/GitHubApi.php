@@ -31,12 +31,10 @@ class GitHubApi
 
     /**
      * Convenience function since we most often need to access the denhac organization.
-     *
-     * @return OrganizationApi
      */
     public function denhac(): OrganizationApi
     {
-        return $this->organizations("denhac");
+        return $this->organizations('denhac');
     }
 
     public function userLookup($username)
