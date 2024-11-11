@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Exceptions\Handler;
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\Http\Requests\SlackRequest;
 use App\Models\CardUpdateRequest;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Broadcast;
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app->bind(ExceptionHandler::class, Handler::class);
+
         $this->app->resolving(SlackRequest::class, function ($request, $app) {
             return SlackRequest::createFrom($app['request'], $request);
         });

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\QuickBooks;
 
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use Illuminate\Console\Command;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper;
 
-class LinkQuickbooks extends Command
+class Link extends Command
 {
-    protected $signature = 'denhac:link-quickbooks';
+    protected $signature = 'quickbooks:link';
 
     /**
      * The console command description.
