@@ -12,7 +12,7 @@ Artisan::command('inspire', function () {
 Schedule::call(function () {
     CardNotifierAggregate::make()->sendNotificationEmail()->persist();
 })
-    ->weeklyOn(Schedule::SATURDAY, '13:00');
+    ->weeklyOn(6, '13:00');  // Saturday
 
 Schedule::command('denhac:slack-profile-fields-update')->daily();
 
