@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\QuickBooks;
 
 use App\External\QuickBooks\QuickBookReferences;
 use Illuminate\Console\Command;
@@ -9,13 +9,13 @@ use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\ReportService\ReportName;
 use QuickBooksOnline\API\ReportService\ReportService;
 
-class PrintQuickBooksBudgets extends Command
+class PrintBudgets extends Command
 {
-    protected $signature = 'denhac:print-quick-books-budgets';
+    protected $signature = 'quickbooks:print-budgets';
 
     protected $description = 'This is just a test command to print QuickBooks budgets';
 
-    public function handle(): int
+    public function handle(): void
     {
         /** @var DataService $dataService */
         $dataService = app(DataService::class);
