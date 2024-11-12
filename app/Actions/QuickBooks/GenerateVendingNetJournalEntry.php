@@ -46,7 +46,7 @@ class GenerateVendingNetJournalEntry
             // something.
         }
 
-        $begin = Carbon::create(year: $date->year, month: $date->month, day: $date->day, tz: $date->timezone);
+        $begin = Carbon::create(year: $date->year, month: $date->month, day: $date->day, timezone: $date->timezone);
         $end = Carbon::make($begin)->addDay()->subSecond();
 
         $wooCommerceOrders = $this->wooCommerceApi->orders->list([

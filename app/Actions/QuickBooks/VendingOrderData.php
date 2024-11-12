@@ -76,12 +76,9 @@ class VendingOrderData extends Data
         }
 
         $paymentIntent = $stripeClient->paymentIntents->retrieve($this->stripeIntentId);
-        if ($paymentIntent->charges->count() != 1) {
-            throw new \Exception("More than one charge for $this->stripeIntentId, only testing the first one");
-        }
 
         /** @var Charge $charge */
-        $charge = $paymentIntent->charges->data[0];
+        $charge = $paymentIntent->latest_charge;
         if (! $charge->paid) {
             throw new \Exception("Charge for $this->stripeIntentId is not paid");
         }
