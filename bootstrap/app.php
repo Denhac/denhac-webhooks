@@ -29,7 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->throttleApi('600,1');
 
         $middleware->alias([
-            'feature' => \YlsIdeas\FeatureFlags\Middleware\FeatureFlagState::class,
             'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
             'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
             'slack' => \App\Http\Middleware\AuthorizeSlackRequest::class,
