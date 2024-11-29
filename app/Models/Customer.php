@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
@@ -40,6 +41,7 @@ class Customer extends Model
 {
     use SoftDeletes;
     use Notifiable;
+    use HasFactory;
 
     public $incrementing = false;
 

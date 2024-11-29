@@ -52,15 +52,20 @@ class ActionAssertion
         }
 
         $matchingJobs = $this->jobs
-            ->map(fn ($actionJob) => $actionJob['job'])
-            ->filter(fn ($actionJob) => $actionJob->displayName() == $this->cls)
+            ->map(fn($actionJob) => $actionJob['job'])
+            ->filter(fn($actionJob) => $actionJob->displayName() == $this->cls)
             ->filter(function ($job) use ($args) {
                 /** @var ActionJob $job */
-                if (is_null($args)) { // Anything goes
+                if (is_null($args) || count($args) == 0) { // Anything goes
                     return true;
                 }
 
                 $parameters = $job->parameters();
+
+                if (count($args) == 1 && is_callable($args[0])) {
+                    $callback = $args[0];
+                    return $callback(...$parameters);
+                }
 
                 $identical = new IsIdentical($args);
 
@@ -78,15 +83,15 @@ class ActionAssertion
         try {
             if ($timeType == self::TIMES_EXACTLY) {
                 $failureMessage = "Expected action to be queued exactly $timeValue $timePluralValue, "
-                    ."but it was queued $queueCount $timePluralQueueCount.";
+                    . "but it was queued $queueCount $timePluralQueueCount.";
                 Assert::assertEquals($timeValue, $queueCount, $failureMessage);
             } elseif ($timeType == self::TIMES_AT_LEAST) {
                 $failureMessage = "Expected action to be queued at least $timeValue $timePluralValue, "
-                    ."but it was queued $queueCount $timePluralQueueCount.";
+                    . "but it was queued $queueCount $timePluralQueueCount.";
                 Assert::assertGreaterThanOrEqual($timeValue, $queueCount, $failureMessage);
             } elseif ($timeType == self::TIMES_AT_MOST) {
                 $failureMessage = "Expected action to be queued at most $timeValue $timePluralValue, "
-                    ."but it was queued $queueCount $timePluralQueueCount.";
+                    . "but it was queued $queueCount $timePluralQueueCount.";
                 Assert::assertLessThanOrEqual($timeValue, $queueCount, $failureMessage);
             }
         } catch (AssertionFailedError $exception) {
@@ -97,7 +102,7 @@ class ActionAssertion
 
     private function printBacktrace()
     {
-        echo 'Assertion stacktrace:'.PHP_EOL;
+        echo 'Assertion stacktrace:' . PHP_EOL;
         $rootDir = dirname(app_path());
         foreach ($this->backtrace as $trace) {
             $filePath = $trace['file'];
@@ -106,7 +111,7 @@ class ActionAssertion
                 break;
             }
 
-            echo ' file://'.$filePath.':'.$trace['line'].PHP_EOL;
+            echo ' file://' . $filePath . ':' . $trace['line'] . PHP_EOL;
         }
     }
 
