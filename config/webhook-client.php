@@ -30,5 +30,14 @@ return [
             'webhook_model' => \Spatie\WebhookClient\Models\WebhookCall::class,
             'process_webhook_job' => \App\External\QuickBooks\Webhooks\ProcessWebhookJob::class,
         ],
+        [
+            'name' => 'Stripe',
+            'signing_secret' => env('STRIPE_SECRET'),
+            'signature_header_name' => 'Stripe-Signature',
+            'signature_validator' => \App\External\Stripe\SignatureValidator::class,
+            'webhook_profile' => \Spatie\WebhookClient\WebhookProfile\ProcessEverythingWebhookProfile::class,
+            'webhook_model' => \Spatie\WebhookClient\Models\WebhookCall::class,
+            'process_webhook_job' => \App\External\Stripe\ProcessWebhookJob::class,
+        ],
     ],
 ];
