@@ -19,7 +19,7 @@ class NewMemberInfoModal implements ModalInterface
         "There are other tenants in the building. Don't go upstairs except for the gender neutral bathroom since there's not one on the first floor. Close denhac doors if no one else is in the room. The exterior doors are unlocked randomly throughout the day.",
         "Slack has many channels you can join. Channels prefixed with help- are a good place to start to ask for training on equipment. Channels prefixed with sig- are a good place to start volunteering and get involved. Reply in threads to make channels easier to follow.",
         "Read all signs everywhere and abide by them. Also read the wiki. If something isn't in the wiki, add it. Check out the How To page on our website, it provides some information on 'How to be a denhac member' essentially.",
-        "No Harassment or Bullying: This includes, but is not limited to, attention that comes after a request to stop. Recognize and respect everyone's differences. Treat all members with kindness and respect. Our anti-harassment policy is part of our member agreement - please read it."
+        "No Harassment or Bullying: This includes, but is not limited to, attention that comes after a request to stop. Recognize and respect everyone's differences. Treat all members with kindness and respect. Our anti-harassment policy is part of our member agreement - please read it.",
         "The last Saturday of the month is Hack denhac Day. The space is closed for personal project work. Come help us work on the space.",
         "Leave the space better than you found it. Take out the trash. Communicate any issues through Slack.",
     );
