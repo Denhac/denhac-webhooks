@@ -24,7 +24,7 @@ class UpdateSpaceBotAppHome
     public function __construct(SlackApi $slackApi)
     {
         $this->slackApi = $slackApi;
-        $this->home = Kit::newAppHome();
+        $this->home = Kit::appHome();
     }
 
     /**
@@ -36,18 +36,25 @@ class UpdateSpaceBotAppHome
         $member = Customer::whereSlackId($slack_id)->first();
 
         if (is_null($member)) {
-            $this->home->text(CommonResponses::unrecognizedUser());
+            $this->home->blocks(
+                Kit::section(
+                    text: Kit::plainText(CommonResponses::unrecognizedUser()),
+                ),
+            );
         } elseif (! $member->member) {
-            $this->home->text(CommonResponses::notAMemberInGoodStanding());
+            $this->home->blocks(
+                Kit::section(
+                    text: Kit::plainText(CommonResponses::notAMemberInGoodStanding()),
+                ),
+            );
         } else {
-            $this->activeMember($member);
+            $this->home->blocks(
+                Kit::section(
+                    text: Kit::plainText("You're an active member! Thank you for being part of denhac!"),
+                ),
+            );
         }
 
         $this->slackApi->views->publish($slack_id, $this->home);
-    }
-
-    private function activeMember(Customer $member)
-    {
-        $this->home->text("You're an active member! Thank you for being part of denhac!");
     }
 }

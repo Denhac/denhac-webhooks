@@ -2,7 +2,6 @@
 
 namespace App\External\Slack\Modals;
 
-use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
 use App\Models\VolunteerGroup;
 use SlackPhp\BlockKit\Kit;
@@ -20,30 +19,47 @@ class ManageVolunteerGroups implements ModalInterface
 
     public function __construct()
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('Manage Volunteer Groups')
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit');
+        $this->modalView = Kit::modal(
+            title: 'Manage Volunteer Groups',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+        );
     }
 
-    public function initialView()
+    public function initialView(): void
     {
-        $this->modalView->newInput()
-            ->blockId(self::GROUP)
-            ->label('Group')
-            ->newSelectMenu(self::GROUP)
-            ->forExternalOptions()
-            ->placeholder('Select Volunteer Group');
+        $volunteerGroups = Kit::optionSet();
 
-        $this->modalView->divider();
+        /** @var VolunteerGroup $volunteerGroup */
+        foreach (VolunteerGroup::all() as $volunteerGroup) {
+            $volunteerGroups->append(Kit::option(
+                text: $volunteerGroup->name,
+                value: $volunteerGroup->id,
+            ));
+        }
 
-        $this->modalView->newSection()
-            ->blockId(self::CREATE_NEW)
-            ->mrkdwnText('Or, create a new volunteer group:')
-            ->newButtonAccessory(self::CREATE_NEW)
-            ->text('Create New');
+        $this->modalView->blocks(
+            Kit::input(
+                label: 'Group',
+                blockId: self::GROUP,
+                element: Kit::staticSelectMenu(
+                    actionId: self::GROUP,
+                    placeholder: 'Select Volunteer Group',
+                    options: $volunteerGroups,
+                ),
+            ),
+            Kit::divider(),
+            Kit::section(
+                text: 'Or, create a new volunteer group:',
+                blockId: self::CREATE_NEW,
+                accessory: Kit::button(
+                    text: 'Create new',
+                    actionId: self::CREATE_NEW,
+                ),
+            ),
+        );
     }
 
     public static function callbackId(): string
@@ -58,17 +74,10 @@ class ManageVolunteerGroups implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
-        $options = SlackOptions::new();
-
-        /** @var VolunteerGroup $volunteerGroup */
-        foreach (VolunteerGroup::all() as $volunteerGroup) {
-            $options[$volunteerGroup->id] = $volunteerGroup->name;
-        }
-
-        return $options;
+        return [];
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }

@@ -2,11 +2,12 @@
 
 namespace App\External\Slack\Modals;
 
-use App\External\Slack\SlackOptions;
 use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
+use App\Models\Customer;
 use App\Models\UserMembership;
 use Illuminate\Support\Facades\Log;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -36,23 +37,29 @@ class MembershipOptionsModal implements ModalInterface
 
     private Modal $modalView;
 
-    public function __construct()
+    public function __construct(?Customer $customer)
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('What do you want to do?')
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit');
+        $membershipOptions = self::getMembershipOptions(null, $customer);
 
-        $this->modalView->newInput()
-            ->label('Membership Option')
-            ->blockId(self::MEMBERSHIP_OPTION)
-            ->newSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::MEMBERSHIP_OPTION)
-            ->placeholder('Select an Item')
-            ->minQueryLength(0);
+        $this->modalView = Kit::modal(
+            title: 'What do you want to do?',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+            blocks: [
+                Kit::input(
+                    label: 'Membership Option',
+                    blockId: self::MEMBERSHIP_OPTION,
+                    element: Kit::staticSelectMenu(
+                        actionId: self::MEMBERSHIP_OPTION,
+                        placeholder: 'Select an item',
+                        options: $membershipOptions,
+                    ),
+                )
+            ]
+        );
+
     }
 
     public static function callbackId()
@@ -76,7 +83,7 @@ class MembershipOptionsModal implements ModalInterface
                 break;
             case self::QUICK_OPEN_HOUSE_VALUE:
                 if (! $request->customer()->canIDcheck()) {
-                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
+                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user ' . $request->customer()->id);
                     throw new \Exception('Unauthorized');
                 }
                 Door::quickOpenHouse();
@@ -84,7 +91,7 @@ class MembershipOptionsModal implements ModalInterface
                 return self::clearViewStack();
             case self::ALL_DOORS_DEFAULT_VALUE:
                 if (! $request->customer()->canIDcheck()) {
-                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
+                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user ' . $request->customer()->id);
                     throw new \Exception('Unauthorized');
                 }
                 Door::quickDefaultDoors();
@@ -94,7 +101,7 @@ class MembershipOptionsModal implements ModalInterface
                 $modal = new CreateTrainableEquipment($request->customer());
                 break;
             case self::EQUIPMENT_AUTHORIZATION_VALUE:
-                $modal = new EquipmentAuthorization;
+                $modal = new EquipmentAuthorization($request->customer());
                 break;
             case self::COUNTDOWN_TEST_VALUE:
                 $modal = new CountdownTestModal(null);
@@ -110,43 +117,47 @@ class MembershipOptionsModal implements ModalInterface
         return $modal->update();
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }
 
     public static function getOptions(SlackRequest $request)
     {
-        $options = SlackOptions::new();
+        return [];
+    }
 
-        $customer = $request->customer()
-            ->load(['subscriptions', 'memberships']);
+    private static function getMembershipOptions(?Customer $customer): OptionSet
+    {
+        $optionSet = Kit::optionSet();
 
         if (is_null($customer)) {
-            return $options;
+            return $optionSet;
         }
 
-        if ($customer->canIDCheck()) {
-            $options->option('Sign up new member', self::SIGN_UP_NEW_MEMBER_VALUE);
-            $options->option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE);
+        $customer->load(['subscriptions', 'memberships']);
 
-            $options->option('Quick Open House', self::QUICK_OPEN_HOUSE_VALUE);
-            $options->option('All doors to default state', self::ALL_DOORS_DEFAULT_VALUE);
-            $options->option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE);
+        if ($customer->canIDCheck()) {
+            $optionSet->append(Kit::option('Sign up new member', self::SIGN_UP_NEW_MEMBER_VALUE));
+            $optionSet->append(Kit::option('Manage a member\'s access cards', self::MANAGE_MEMBERS_CARDS_VALUE));
+
+            $optionSet->append(Kit::option('Quick Open House', self::QUICK_OPEN_HOUSE_VALUE));
+            $optionSet->append(Kit::option('All doors to default state', self::ALL_DOORS_DEFAULT_VALUE));
+            $optionSet->append(Kit::option('Manage Open House doors', self::MANAGE_OPEN_HOUSE_VALUE));
         }
 
         if ($customer->isABoardMember() || $customer->isAManager()) {
-            $options->option('Manage Volunteer Group', self::MANAGE_VOLUNTEER_GROUPS);
+            $optionSet->append(Kit::option('Manage Volunteer Group', self::MANAGE_VOLUNTEER_GROUPS));
         }
 
         if ($customer->isATrainer()) {
-            $options->option('Equipment Authorization', self::EQUIPMENT_AUTHORIZATION_VALUE);
+            $optionSet->append(Kit::option('Equipment Authorization', self::EQUIPMENT_AUTHORIZATION_VALUE));
         }
 
         if ($customer->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
-            $options->option('Create Trainable Equipment', self::CREATE_TRAINABLE_EQUIPMENT_VALUE);
+            $optionSet->append(Kit::option('Create Trainable Equipment', self::CREATE_TRAINABLE_EQUIPMENT_VALUE));
         }
 
-        return $options;
+        return $optionSet;
     }
 }

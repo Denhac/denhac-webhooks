@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1ef849feceee2031eaf447d28db9b10a",
+    "content-hash": "44dd761b1b72789533fac2bbf6e88e9c",
     "packages": [
         {
             "name": "amphp/amp",
@@ -6365,26 +6365,27 @@
         },
         {
             "name": "slack-php/slack-block-kit",
-            "version": "0.19.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slack-php/slack-php-block-kit.git",
-                "reference": "814d09010be4ad16376d8b4baf4474bf539a0b2e"
+                "reference": "8fc2cc680e0ed1f24ae88e41de94c090465e5adf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slack-php/slack-php-block-kit/zipball/814d09010be4ad16376d8b4baf4474bf539a0b2e",
-                "reference": "814d09010be4ad16376d8b4baf4474bf539a0b2e",
+                "url": "https://api.github.com/repos/slack-php/slack-php-block-kit/zipball/8fc2cc680e0ed1f24ae88e41de94c090465e5adf",
+                "reference": "8fc2cc680e0ed1f24ae88e41de94c090465e5adf",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": ">=7.3"
+                "php": ">=8.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.0",
-                "phpunit/phpunit": "^9.0",
-                "squizlabs/php_codesniffer": "^3.5"
+                "ext-mbstring": "*",
+                "friendsofphp/php-cs-fixer": "^3.6",
+                "phpstan/phpstan": "^1.4",
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -6399,9 +6400,15 @@
             "description": "OOP interface for writing Slack Block Kit messages and modals",
             "support": {
                 "issues": "https://github.com/slack-php/slack-php-block-kit/issues",
-                "source": "https://github.com/slack-php/slack-php-block-kit/tree/0.19.0"
+                "source": "https://github.com/slack-php/slack-php-block-kit/tree/2.1.0"
             },
-            "time": "2021-06-18T20:14:24+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/jeremeamia",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-12-19T19:08:32+00:00"
         },
         {
             "name": "spatie/better-types",

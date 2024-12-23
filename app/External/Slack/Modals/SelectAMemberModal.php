@@ -3,7 +3,6 @@
 namespace App\External\Slack\Modals;
 
 use App\External\Slack\ClassFinder;
-use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use SlackPhp\BlockKit\Kit;
@@ -24,22 +23,25 @@ class SelectAMemberModal implements ModalInterface
             $callbackId = $callbackOrModalClass::callbackId();
         }
 
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('Select A Member')
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit')
-            ->privateMetadata($callbackId);
-
-        $this->modalView->newInput()
-            ->label('Member')
-            ->blockId(self::SELECT_A_MEMBER)
-            ->newSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::SELECT_A_MEMBER)
-            ->placeholder('Select a Member')
-            ->minQueryLength(2);
+        $this->modalView = Kit::modal(
+            title: 'Select A Member',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+            privateMetadata: $callbackId,
+            blocks: [
+                Kit::input(
+                    label: 'Member',
+                    blockId: self::SELECT_A_MEMBER,
+                    element: Kit::externalSelectMenu(
+                        actionId: self::SELECT_A_MEMBER,
+                        placeholder: 'Select a Member',
+                        minQueryLength: 0
+                    ),
+                ),
+            ],
+        );
     }
 
     public static function callbackId(): string
@@ -70,7 +72,7 @@ class SelectAMemberModal implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
-        $options = SlackOptions::new();
+        $optionSet = Kit::optionSet();
 
         $customers = Customer::all();
 
@@ -86,13 +88,16 @@ class SelectAMemberModal implements ModalInterface
 
             $value = "customer-{$customer->id}";
 
-            $options->option($text, $value);
+            $optionSet->append(Kit::option(
+                text: $text,
+                value: $value,
+            ));
         }
 
-        return $options;
+        return $optionSet;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }

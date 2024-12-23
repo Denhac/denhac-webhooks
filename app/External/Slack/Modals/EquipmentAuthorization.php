@@ -6,13 +6,11 @@ use App\Actions\WordPress\BatchAuthorizeEquipment;
 use App\Exceptions\UnauthorizedTrainerException;
 use App\External\Slack\BlockActions\BlockActionInterface;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
-use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
 use Illuminate\Support\Collection;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Partials\Option;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
 class EquipmentAuthorization implements ModalInterface
@@ -30,45 +28,72 @@ class EquipmentAuthorization implements ModalInterface
 
     private Modal $modalView;
 
-    public function __construct()
+    public function __construct(?Customer $user)
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('Equipment Authorization')
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit');
+        $equipmentOptions = Kit::optionSet();
+        if ($user != null) {
+            $trainingList = $user->equipmentTrainer;
 
-        $this->modalView->newInput()
-            ->dispatchAction()
-            ->blockId(self::PERSON_DROPDOWN)
-            ->label('Member(s)')
-            ->newMultiSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::PERSON_DROPDOWN)
-            ->placeholder('Select a member')
-            ->minQueryLength(2);
+            foreach ($trainingList as $equipment) {
+                /** @var TrainableEquipment $equipment */
+                $equipmentOptions->append(
+                    Kit::option(
+                        text: $equipment->name,
+                        value: "equipment-$equipment->id"
+                    )
+                );
+            }
+        }
 
-        $this->modalView->newInput()
-            ->dispatchAction()
-            ->blockId(self::EQUIPMENT_DROPDOWN)
-            ->label('Equipment')
-            ->newMultiSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::EQUIPMENT_DROPDOWN)
-            ->placeholder('Select equipment')
-            ->minQueryLength(0);
-
-        $this->modalView->newSection()->mrkdwnText(':heavy_check_mark: The listed member(s) will be authorized to use this equipment.');
-
-        $option = Option::new('Make Trainer(s)')
-            ->description('Also make these members trainers for this equipment.')
-            ->value('true');
-        $this->modalView->newActions()
-            ->blockId(self::TRAINER_CHECK)
-            ->newCheckboxes()
-            ->actionId(self::TRAINER_CHECK)
-            ->addOption($option, false);
+        $this->modalView = Kit::modal(
+            title: 'Equipment Authorization',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+            blocks: [
+                Kit::input(
+                    label: 'Member(s)',
+                    blockId: self::PERSON_DROPDOWN,
+                    dispatchAction: true,
+                    element: Kit::multiExternalSelectMenu(
+                        actionId: self::PERSON_DROPDOWN,
+                        placeholder: 'Select a member',
+                        minQueryLength: 2
+                    ),
+                ),
+                Kit::input(
+                    label: 'Equipment',
+                    blockId: self::EQUIPMENT_DROPDOWN,
+                    dispatchAction: true,
+                    element: Kit::multiStaticSelectMenu(
+                        actionId: self::EQUIPMENT_DROPDOWN,
+                        placeholder: 'Select equipment',
+                        options: $equipmentOptions,
+                    ),
+                ),
+                Kit::section()
+                    ->text(
+                        Kit::mrkdwnText(
+                            ':heavy_check_mark: The listed member(s) will be authorized to use this equipment.'
+                        )
+                    ),
+                Kit::input(
+                    blockId: self::TRAINER_CHECK,
+                    dispatchAction: true,
+                    element: Kit::checkboxes(
+                        actionId: self::TRAINER_CHECK,
+                        options: Kit::optionSet([
+                            Kit::option(
+                                text: 'Make Trainer(s)',
+                                value: true,
+                                description: 'Also make these members trainers for this equipment.',
+                            ),
+                        ]),
+                    ),
+                ),
+            ],
+        );
     }
 
     public static function callbackId(): string
@@ -114,7 +139,7 @@ class EquipmentAuthorization implements ModalInterface
     public static function equipmentFromState($state): Collection
     {
         $equipmentIds = array_map(
-            fn ($formValue) => str_replace('equipment-', '', $formValue),
+            fn($formValue) => str_replace('equipment-', '', $formValue),
             $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? []
         );
 
@@ -124,7 +149,7 @@ class EquipmentAuthorization implements ModalInterface
     public static function peopleFromState($state): Collection
     {
         $customerIds = array_map(
-            fn ($formValue) => str_replace('customer-', '', $formValue),
+            fn($formValue) => str_replace('customer-', '', $formValue),
             $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? []
         );
 
@@ -135,24 +160,14 @@ class EquipmentAuthorization implements ModalInterface
     {
         $blockId = $request->payload()['block_id'];
 
-        if ($blockId == self::EQUIPMENT_DROPDOWN) {
-            $options = SlackOptions::new();
-            $trainingList = $request->customer()->equipmentTrainer;
-
-            foreach ($trainingList as $equipment) {
-                /** @var TrainableEquipment $equipment */
-                $options->option($equipment->name, "equipment-{$equipment->id}");
-            }
-
-            return $options;
-        } elseif ($blockId == self::PERSON_DROPDOWN) {
+        if ($blockId == self::PERSON_DROPDOWN) {
             return SelectAMemberModal::getOptions($request);
         }
 
         return [];
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }
@@ -160,7 +175,7 @@ class EquipmentAuthorization implements ModalInterface
     public static function onBlockAction(SlackRequest $request)
     {
         // Rerender view to display information about any permissions that the users already have for this equipment.
-        $modal = new EquipmentAuthorization;
+        $modal = new EquipmentAuthorization($request->customer());
 
         $state = self::getStateValues($request);
 
@@ -177,16 +192,16 @@ class EquipmentAuthorization implements ModalInterface
 
                 // Get names of equipment for which the member is already a user
                 $trainedEquipmentNames = $selectedEquipment
-                    ->where(fn ($e) => $person->hasMembership($e->user_plan_id))
-                    ->map(fn ($e) => $e->name);
+                    ->where(fn($e) => $person->hasMembership($e->user_plan_id))
+                    ->map(fn($e) => $e->name);
                 if ($trainedEquipmentNames->isNotEmpty()) {
                     $alreadyTrained[$traineeName] = $trainedEquipmentNames;
                 }
 
                 // Get names of equipment for which the member is already a trainer
                 $trainerForEquipmentNames = $selectedEquipment
-                    ->where(fn ($e) => $person->hasMembership($e->trainer_plan_id))
-                    ->map(fn ($e) => $e->name);
+                    ->where(fn($e) => $person->hasMembership($e->trainer_plan_id))
+                    ->map(fn($e) => $e->name);
                 if ($trainerForEquipmentNames->isNotEmpty()) {
                     $alreadyTrainers[$traineeName] = $trainerForEquipmentNames;
                 }
@@ -196,14 +211,30 @@ class EquipmentAuthorization implements ModalInterface
             // Use `empty` on arrays, and `Collection->isEmpty` on Collections.
             if (! empty($alreadyTrained) || ! empty($alreadyTrainers)) {
                 // Render an information section which displays existing permissions
-                $modal->modalView->newSection()->mrkdwnText(':information_source:');
+                $modal->modalView->blocks(
+                    Kit::section(
+                        text: Kit::mrkdwnText(':information_source:'),
+                    ),
+                );
 
                 foreach ($alreadyTrained as $trainee => $equipmentNames) {
-                    $modal->modalView->newContext()->mrkdwnText($trainee.' is already trained on '.$equipmentNames->join(', '));
+                    $modal->modalView->blocks(
+                        Kit::context(
+                            elements: [
+                                Kit::mrkdwnText($trainee . ' is already trained on ' . $equipmentNames->join(', ')),
+                            ],
+                        ),
+                    );
                 }
 
                 foreach ($alreadyTrainers as $trainer => $equipmentNames) {
-                    $modal->modalView->newContext()->mrkdwnText($trainer.' is already a trainer for '.$equipmentNames->join(', '));
+                    $modal->modalView->blocks(
+                        Kit::context(
+                            elements: [
+                                Kit::mrkdwnText($trainer . ' is already a trainer for ' . $equipmentNames->join(', ')),
+                            ],
+                        ),
+                    );
                 }
             }
         }

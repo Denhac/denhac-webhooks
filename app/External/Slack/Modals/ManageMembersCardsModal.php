@@ -22,29 +22,32 @@ class ManageMembersCardsModal implements ModalInterface
      */
     public function __construct(int $customerId)
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title("Manage a member's cards")
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit')
-            ->privateMetadata($customerId);
-
         /** @var Customer $customer */
         $customer = Customer::find($customerId);
-
-        $cardsInput = $this->modalView->newInput()
-            ->blockId(self::CARD_NUM)
-            ->label('Card Number (comma separated)')
-            ->newTextInput(self::CARD_NUM)
-            ->placeholder('Enter Card Number');
 
         $cardString = $customer->cards
             ->where('member_has_card', true)
             ->implode('number', ',');
-        if (! empty($cardString)) {
-            $cardsInput->initialValue($cardString);
-        }
+
+        $this->modalView = Kit::modal(
+            title: "Manage a member's cards",
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+            privateMetadata: $customerId,
+            blocks: [
+                Kit::input(
+                    label: 'Card Number (comma separated)',
+                    blockId: self::CARD_NUM,
+                    element: Kit::plainTextInput(
+                        actionId: self::CARD_NUM,
+                        placeholder: 'Enter Card Number',
+                        initialValue: $cardString
+                    ),
+                ),
+            ],
+        );
     }
 
     public static function callbackId()
@@ -98,7 +101,7 @@ class ManageMembersCardsModal implements ModalInterface
         return [];
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }

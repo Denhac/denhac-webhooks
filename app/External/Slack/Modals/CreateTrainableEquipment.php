@@ -31,76 +31,88 @@ class CreateTrainableEquipment implements ModalInterface
 
     public function __construct(?Customer $user)
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('New Trainable Equipment')
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit');
-
-        $this->modalView->newInput()
-            ->label('Equipment Name')
-            ->blockId(self::EQUIPMENT_NAME)
-            ->newTextInput()
-            ->actionId(self::EQUIPMENT_NAME)
-            ->placeholder('Name');
-
-        $trainerInput = $this->modalView->newInput()
-            ->label('Initial Trainer')
-            ->blockId(self::INITIAL_TRAINER)
-            ->newSelectMenu()
-            ->forExternalOptions()
-            ->actionId(self::INITIAL_TRAINER)
-            ->placeholder('Select a customer')
-            ->minQueryLength(0);
-
         if (! is_null($user)) {
             $name = "{$user->first_name} {$user->last_name}";
-            $trainerInput->initialOption($name, "customer-{$user->id}");
+            $initialTrainerOption = Kit::option(
+                text: $name,
+                value: "customer-{$user->id}"
+            );
+        } else {
+            $initialTrainerOption = null;
         }
 
-        $this->modalView->divider();
-
-        $this->modalView->header('Slack Channels & Email Groups');
-
-        $this->modalView->newContext()
-            ->mrkdwnText(
-                'Users/trainers will be automatically added to these channels/emails. All are optional. '.
-                "Email must be an existing group, for now. Please ask in #general and we'll help make one ".
-                'if needed.'
-            );
-
-        $this->modalView->newInput()
-            ->label('User slack channel')
-            ->blockId(self::USER_SLACK_CHANNEL)
-            ->optional(true)
-            ->newSelectMenu()
-            ->forChannels()
-            ->placeholder('Select a channel')
-            ->actionId(self::USER_SLACK_CHANNEL);
-
-        $this->modalView->newInput()
-            ->label('User email')
-            ->blockId(self::USER_EMAIL)
-            ->optional(true)
-            ->newTextInput()
-            ->actionId(self::USER_EMAIL);
-
-        $this->modalView->newInput()
-            ->label('Trainer slack channel')
-            ->blockId(self::TRAINER_SLACK_CHANNEL)
-            ->optional(true)
-            ->newSelectMenu()
-            ->forChannels()
-            ->placeholder('Select a channel')
-            ->actionId(self::TRAINER_SLACK_CHANNEL);
-
-        $this->modalView->newInput()
-            ->label('Trainer email')
-            ->blockId(self::TRAINER_EMAIL)
-            ->optional(true)
-            ->newTextInput()
-            ->actionId(self::TRAINER_EMAIL);
+        $this->modalView = Kit::modal(
+            title: 'New Trainable Equipment',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Close',
+            submit: 'Submit',
+            blocks: [
+                Kit::input(
+                    label: 'Equipment Name',
+                    blockId: self::EQUIPMENT_NAME,
+                    element: Kit::plainTextInput(
+                        actionId: self::EQUIPMENT_NAME,
+                        placeholder: 'Name',
+                    ),
+                ),
+                Kit::input(
+                    label: 'Initial Trainer',
+                    blockId: self::INITIAL_TRAINER,
+                    element: Kit::externalSelectMenu(
+                        actionId: self::INITIAL_TRAINER,
+                        placeholder: 'Select a customer',
+                        initialOption: $initialTrainerOption,
+                        minQueryLength: 0,
+                    ),
+                ),
+                Kit::divider(),
+                Kit::header('Slack Channels & Email Groups'),
+                Kit::context(
+                    elements: [
+                        Kit::plainText(
+                            text: 'Users/trainers will be automatically added to these channels/emails. All are ' .
+                            'optional. Email must be an existing group, for now. Please ask in #general and we\'ll ' .
+                            'help make one if needed.'
+                        ),
+                    ],
+                ),
+                Kit::input(
+                    label: 'User slack channel',
+                    blockId: self::USER_SLACK_CHANNEL,
+                    optional: true,
+                    element: Kit::channelSelectMenu(
+                        actionId: self::USER_SLACK_CHANNEL,
+                        placeholder: 'Select a channel',
+                    ),
+                ),
+                Kit::input(
+                    label: 'User email',
+                    blockId: self::USER_EMAIL,
+                    optional: true,
+                    element: Kit::plainTextInput(
+                        actionId: self::USER_EMAIL,
+                    ),
+                ),
+                Kit::input(
+                    label: 'Trainer slack channel',
+                    blockId: self::TRAINER_SLACK_CHANNEL,
+                    optional: true,
+                    element: Kit::channelSelectMenu(
+                        actionId: self::TRAINER_SLACK_CHANNEL,
+                        placeholder: 'Select a channel',
+                    ),
+                ),
+                Kit::input(
+                    label: 'Trainer email',
+                    blockId: self::TRAINER_EMAIL,
+                    optional: true,
+                    element: Kit::plainTextInput(
+                        actionId: self::TRAINER_EMAIL,
+                    ),
+                ),
+            ],
+        );
     }
 
     public static function callbackId(): string
@@ -111,7 +123,7 @@ class CreateTrainableEquipment implements ModalInterface
     public static function handle(SlackRequest $request)
     {
         if (! $request->customer()->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
-            Log::warning('CreateTrainableEquipment: Rejecting unauthorized submission from user '.$request->customer()->id);
+            Log::warning('CreateTrainableEquipment: Rejecting unauthorized submission from user ' . $request->customer()->id);
             throw new \Exception('Unauthorized');
         }
 
@@ -176,7 +188,7 @@ class CreateTrainableEquipment implements ModalInterface
         return SelectAMemberModal::getOptions($request);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }

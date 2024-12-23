@@ -26,15 +26,19 @@ class NewMemberInfoModal implements ModalInterface
 
     public function __construct()
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('New Member Info')
-            ->clearOnClose(true)
-            ->clearOnClose('Close');
+        $this->modalView = Kit::modal(
+            title: 'New Member Info',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Close',
+        );
 
         foreach (self::INFO as $info) {
-            $this->modalView->newSection()
-                ->mrkdwnText($info);
+            $this->modalView->blocks(
+                Kit::section(
+                    text: Kit::mrkdwnText($info),
+                ),
+            );
         }
     }
 
@@ -48,9 +52,11 @@ class NewMemberInfoModal implements ModalInterface
         return self::clearViewStack();
     }
 
-    public static function getOptions(SlackRequest $request) {}
+    public static function getOptions(SlackRequest $request)
+    {
+    }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }

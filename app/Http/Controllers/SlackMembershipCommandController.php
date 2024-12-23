@@ -14,10 +14,12 @@ class SlackMembershipCommandController extends Controller
         $customer = $request->customer();
 
         if ($customer === null) {
-            return Kit::newMessage()->text(CommonResponses::unrecognizedUser());
+            return Kit::message(
+                text: CommonResponses::unrecognizedUser(),
+            );
         }
 
-        $modal = new MembershipOptionsModal;
+        $modal = new MembershipOptionsModal($customer);
         $modal->open($request->get('trigger_id'));
 
         return response('');
