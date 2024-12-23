@@ -35,7 +35,7 @@ class UsersApi
         return null;
     }
 
-    public function list(ApiProgress $progress = null): Collection
+    public function list(?ApiProgress $progress = null): Collection
     {
         return $this->paginate('members', function ($cursor) {
             return $this->clients->managementApiClient

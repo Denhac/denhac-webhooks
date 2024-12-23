@@ -25,9 +25,12 @@ class TempBan extends Model
         'banned_by_id',
     ];
 
-    protected $casts = [
-        'expires_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+        ];
+    }
 
     public static function isBanned($userId, $channelId): bool
     {

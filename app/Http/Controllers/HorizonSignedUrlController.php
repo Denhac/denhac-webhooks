@@ -13,7 +13,7 @@ class HorizonSignedUrlController extends Controller
             abort(401);
         }
 
-        return response("success")->cookie(Cookie::create(
+        return response('success')->cookie(Cookie::create(
             'horizon',
             setting('horizon.password'),
             now()->addYears(5)  // It's annoying to generate again when you need it. Access is revoked for everyone by changing the password.

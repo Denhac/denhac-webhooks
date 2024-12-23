@@ -5,9 +5,9 @@ namespace App\External\Slack\Modals;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
-use Illuminate\Support\Facades\Log;
 
 class ManageMembersCardsModal implements ModalInterface
 {
@@ -18,33 +18,36 @@ class ManageMembersCardsModal implements ModalInterface
     private Modal $modalView;
 
     /**
-     * @param  int  $customerId The customer's Woo Commerce ID
+     * @param  int  $customerId  The customer's Woo Commerce ID
      */
     public function __construct(int $customerId)
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title("Manage a member's cards")
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit')
-            ->privateMetadata($customerId);
-
         /** @var Customer $customer */
         $customer = Customer::find($customerId);
-
-        $cardsInput = $this->modalView->newInput()
-            ->blockId(self::CARD_NUM)
-            ->label('Card Number (comma separated)')
-            ->newTextInput(self::CARD_NUM)
-            ->placeholder('Enter Card Number');
 
         $cardString = $customer->cards
             ->where('member_has_card', true)
             ->implode('number', ',');
-        if (! empty($cardString)) {
-            $cardsInput->initialValue($cardString);
-        }
+
+        $this->modalView = Kit::modal(
+            title: "Manage a member's cards",
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+            privateMetadata: $customerId,
+            blocks: [
+                Kit::input(
+                    label: 'Card Number (comma separated)',
+                    blockId: self::CARD_NUM,
+                    element: Kit::plainTextInput(
+                        actionId: self::CARD_NUM,
+                        placeholder: 'Enter Card Number',
+                        initialValue: $cardString
+                    ),
+                ),
+            ],
+        );
     }
 
     public static function callbackId()
@@ -54,7 +57,7 @@ class ManageMembersCardsModal implements ModalInterface
 
     public static function handle(SlackRequest $request)
     {
-        if (!$request->customer()->canIDcheck()) {
+        if (! $request->customer()->canIDcheck()) {
             Log::warning('ManageMembersCardsModal: Rejecting unauthorized submission from user '.$request->customer()->id);
             throw new \Exception('Unauthorized');
         }
@@ -98,7 +101,7 @@ class ManageMembersCardsModal implements ModalInterface
         return [];
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }

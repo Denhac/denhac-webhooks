@@ -18,7 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SlackPostMessageRateLimit
 {
-    private static string $cacheKey = "slack-post-message-rate-limit";
+    private static string $cacheKey = 'slack-post-message-rate-limit';
+
     protected Cache $cache;
 
     public function __construct(Cache $cache)
@@ -27,17 +28,18 @@ class SlackPostMessageRateLimit
     }
 
     /**
-     * @param InteractsWithQueue $job
+     * @param  InteractsWithQueue  $job
+     *
      * @throws InvalidArgumentException
      */
     public function handle(mixed $job, Closure $next): Response
     {
-        if($this->cache->has(self::$cacheKey)) {
+        if ($this->cache->has(self::$cacheKey)) {
             $job->release(1);  // Try again in one second
         }
 
         $added = $this->cache->add(self::$cacheKey, 0, 1);
-        if(! $added) {
+        if (! $added) {
             // Concurrent job must have added it and we were second. Relies on cache to handle race condition
             $job->release(1);
         }
@@ -49,6 +51,7 @@ class SlackPostMessageRateLimit
      * After deserialization, we need our cache again.
      *
      * @return void
+     *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function __wakeup()

@@ -4,7 +4,6 @@ namespace App\External\Slack\Api;
 
 use App\External\Slack\SlackRateLimit;
 use GuzzleHttp\RequestOptions;
-use Illuminate\Support\Facades\Log;
 
 class ViewsApi
 {

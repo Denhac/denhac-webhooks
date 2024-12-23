@@ -25,10 +25,10 @@ class TeamApi
         $this->accessToken = $accessToken;
 
         $this->teamUrl = "https://api.github.com/orgs/$orgName/teams/$name";
-        $this->client = new Client();
+        $this->client = new Client;
     }
 
-    public function list(ApiProgress $progress = null): Collection
+    public function list(?ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->teamUrl}/members", function ($url) {
             return $this->client->get($url, [
@@ -40,7 +40,7 @@ class TeamApi
         }, $progress);
     }
 
-    public function pending(ApiProgress $progress = null): Collection
+    public function pending(?ApiProgress $progress = null): Collection
     {
         return $this->paginate("{$this->teamUrl}/invitations", function ($url) {
             return $this->client->get($url, [

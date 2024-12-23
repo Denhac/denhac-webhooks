@@ -9,10 +9,8 @@ class ActiveUserMembershipWithNoTeamId extends IssueBase
 {
     public function __construct(
         private readonly MemberData $memberData,
-        private readonly array      $userMembership
-    )
-    {
-    }
+        private readonly array $userMembership
+    ) {}
 
     public static function getIssueNumber(): int
     {
@@ -21,12 +19,12 @@ class ActiveUserMembershipWithNoTeamId extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Word Press: Active user membership with no team id";
+        return 'Word Press: Active user membership with no team id';
     }
 
     public function getIssueText(): string
     {
         return "{$this->memberData->full_name} ({$this->memberData->id}) has user membership ({$this->userMembership['id']}) with status "
-            . "\"{$this->userMembership['status']}\" with no team id";
+            ."\"{$this->userMembership['status']}\" with no team id";
     }
 }

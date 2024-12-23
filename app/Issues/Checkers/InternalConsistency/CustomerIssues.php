@@ -16,9 +16,7 @@ class CustomerIssues implements IssueCheck
 
     public function __construct(
         private readonly AggregateCustomerData $aggregateCustomerData
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {

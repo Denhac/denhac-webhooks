@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\External\Slack\ClassFinder;
-use App\External\Slack\SlackOptions;
 use App\Http\Requests\SlackRequest;
 
 class SlackOptionsController extends Controller
@@ -31,11 +30,6 @@ class SlackOptionsController extends Controller
         }
 
         $options = $modalClass::getOptions($request);
-
-        if (is_a($options, SlackOptions::class)) {
-            $value = $request->payload()['value'] ?? null;
-            $options->filterByValue($value);
-        }
 
         return $options;
     }

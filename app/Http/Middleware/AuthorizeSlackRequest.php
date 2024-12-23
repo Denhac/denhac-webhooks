@@ -24,12 +24,12 @@ class AuthorizeSlackRequest
             ]);
         }
 
-//        if (! $this->isCertificateValid($request)) {
-//            return response()->json([
-//                'response_type' => 'ephemeral',
-//                'text' => "The certificate from slack didn't match the computed value. Did the certificate expire?",
-//            ]);
-//        }
+        //        if (! $this->isCertificateValid($request)) {
+        //            return response()->json([
+        //                'response_type' => 'ephemeral',
+        //                'text' => "The certificate from slack didn't match the computed value. Did the certificate expire?",
+        //            ]);
+        //        }
 
         $type = $request->get('type');
 

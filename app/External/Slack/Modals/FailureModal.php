@@ -14,13 +14,17 @@ class FailureModal implements ModalInterface
 
     public function __construct($message)
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('Failure! :(')
-            ->clearOnClose(true)
-            ->close('Close');
-
-        $this->modalView->text($message);
+        $this->modalView = Kit::modal(
+            title: 'Failure! :(',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Close',
+            blocks: [
+                Kit::section(
+                    text: $message,
+                ),
+            ],
+        );
     }
 
     public static function callbackId(): string
@@ -38,7 +42,7 @@ class FailureModal implements ModalInterface
         return [];
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }

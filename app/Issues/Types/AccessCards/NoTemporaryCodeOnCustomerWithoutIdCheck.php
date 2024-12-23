@@ -9,9 +9,7 @@ class NoTemporaryCodeOnCustomerWithoutIdCheck extends IssueBase
 {
     public function __construct(
         private readonly MemberData $member
-    )
-    {
-    }
+    ) {}
 
     public static function getIssueNumber(): int
     {
@@ -20,7 +18,7 @@ class NoTemporaryCodeOnCustomerWithoutIdCheck extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Access Cards: No temporary code on customer without id check";
+        return 'Access Cards: No temporary code on customer without id check';
     }
 
     public function getIssueText(): string

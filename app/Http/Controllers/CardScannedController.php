@@ -65,6 +65,7 @@ class CardScannedController extends Controller
 
                 if (is_null($door)) {
                     Log::info("We don't know about this door {$device}");
+
                     // We don't know about this door. Do nothing
                     return;
                 } elseif ($door->membersCanBadgeIn) {
@@ -99,7 +100,7 @@ class CardScannedController extends Controller
                     Notification::route('mail', $customer->email)
                         ->notify($notification);
                 } else {
-                    $notification = new CardAccessDeniedBadDoor();
+                    $notification = new CardAccessDeniedBadDoor;
 
                     Notification::route('mail', $customer->email)
                         ->notify($notification);
@@ -117,7 +118,7 @@ class CardScannedController extends Controller
                 Notification::route('mail', config('denhac.access_email'))
                     ->notify($notification);
             } else {
-                $notification = new CardAccessDeniedBecauseNotAMember();
+                $notification = new CardAccessDeniedBecauseNotAMember;
 
                 Notification::route('mail', $customer->email)
                     ->notify($notification);

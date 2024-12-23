@@ -14,13 +14,12 @@ class SuccessModal implements ModalInterface
 
     public function __construct()
     {
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('Success!')
-            ->clearOnClose(true)
-            ->close('Close');
-
-        $this->modalView->text(' ');
+        $this->modalView = Kit::modal(
+            title: 'Success!',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Close',
+        );
     }
 
     public static function callbackId(): string
@@ -38,7 +37,7 @@ class SuccessModal implements ModalInterface
         return [];
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }
