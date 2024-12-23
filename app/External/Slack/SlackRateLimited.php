@@ -14,7 +14,7 @@ class SlackRateLimited extends RateLimited
         $limiter = app()->make(RateLimiter::class);
         /** @var Limit $limit */
         $limit = $limiter->limiter($this->limiterName)();
-        $decayMinutes = $limit->decayMinutes;
+        $decayMinutes = $limit->decaySeconds * 60;
         $limiter->hit($this->limiterName, $decayMinutes);
     }
 }

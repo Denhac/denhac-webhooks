@@ -2,11 +2,9 @@
 
 namespace App\External\Slack\Modals;
 
-use App\External\Slack\SlackOptions;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
-use App\Models\Waiver;
 use App\Notifications\IdCheckedWithNoWaiver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Notification;
@@ -25,8 +23,6 @@ class NewMemberIdCheckModal implements ModalInterface
 
     private const CARD_NUM = 'card-num';
 
-    private const WAIVER_ID = 'waiver-id';
-
     private Modal $modalView;
 
     public function __construct($customer_id)
@@ -34,57 +30,69 @@ class NewMemberIdCheckModal implements ModalInterface
         /** @var Customer $customer */
         $customer = Customer::find($customer_id);
 
-        $this->modalView = Kit::newModal()
-            ->callbackId(self::callbackId())
-            ->title('New Member Signup')
-            ->clearOnClose(true)
-            ->close('Cancel')
-            ->submit('Submit')
-            ->privateMetadata($customer->id);
-
         if ($customer->hasSignedMembershipWaiver()) {
-            $this->modalView->newSection()
-                ->mrkdwnText(':white_check_mark: Waiver found');
+            $membershipWaiverSection = Kit::section(
+                text: Kit::mrkdwnText(':white_check_mark: Waiver found'),
+            );
         } else {
-            $this->modalView->newSection()
-                ->plainText(':x: No waiver found, see next page after ID check');
+            $membershipWaiverSection = Kit::section(
+                text: Kit::mrkdwnText(':x: No waiver found.'),  # TODO see next page after ID check
+            );
         }
 
-        $this->modalView->newInput()
-            ->blockId(self::FIRST_NAME)
-            ->label('First Name')
-            ->newTextInput(self::FIRST_NAME)
-            ->initialValue($customer->first_name);
+        $initialBirthday = $customer->birthday?->format('Y-m-d');
+        $initialCardString = $customer->cards?->implode('number', ',');
 
-        $this->modalView->newInput()
-            ->blockId(self::LAST_NAME)
-            ->label('Last Name')
-            ->newTextInput(self::LAST_NAME)
-            ->initialValue($customer->last_name);
-
-        $birthdayInput = $this->modalView->newInput()
-            ->blockId(self::BIRTHDAY)
-            ->label('Birthday')
-            ->newDatePicker(self::BIRTHDAY);
-
-        if (! is_null($customer->birthday)) {
-            $birthdayInput->initialDate($customer->birthday->format('Y-m-d'));
-        }
-
-        $cardsInput = $this->modalView->newInput()
-            ->blockId(self::CARD_NUM)
-            ->label('Card Number')
-            ->newTextInput(self::CARD_NUM)
-            ->placeholder('Enter Card Number');
-
-        $this->modalView->newSection()
-            ->plainText('The numbers on the card will look like either "12345 3300687-1" or "175-012345" and '.
-                'you should enter "12345" in this field.');
-
-        $cardString = $customer->cards->implode('number', ',');
-        if (! empty($cardString)) {
-            $cardsInput->initialValue($cardString);
-        }
+        $this->modalView = Kit::modal(
+            title: 'New Member Signup',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+            privateMetadata: $customer->id,
+            blocks: [
+                $membershipWaiverSection,
+                Kit::input(
+                    label: 'First Name',
+                    blockId: self::FIRST_NAME,
+                    element: Kit::plainTextInput(
+                        actionId: self::FIRST_NAME,
+                        initialValue: $customer->first_name,
+                    ),
+                ),
+                Kit::input(
+                    label: 'Last Name',
+                    blockId: self::LAST_NAME,
+                    element: Kit::plainTextInput(
+                        actionId: self::LAST_NAME,
+                        initialValue: $customer->last_name,
+                    ),
+                ),
+                Kit::input(
+                    label: 'Birthday',
+                    blockId: self::BIRTHDAY,
+                    element: Kit::datePicker(
+                        actionId: self::BIRTHDAY,
+                        initialDate: $initialBirthday,
+                    ),
+                ),
+                Kit::input(
+                    label: 'Card Number',
+                    blockId: self::CARD_NUM,
+                    element: Kit::plainTextInput(
+                        actionId: self::CARD_NUM,
+                        placeholder: 'Enter Card Number',
+                        initialValue: $initialCardString,
+                    ),
+                ),
+                Kit::section(
+                    text: Kit::plainText(
+                        'The numbers on the card will look like either "12345 3300687-1" or "175-012345" and ' .
+                        'you should enter "12345" in this field.',
+                    ),
+                ),
+            ],
+        );
     }
 
     public static function callbackId(): string
@@ -164,25 +172,10 @@ class NewMemberIdCheckModal implements ModalInterface
 
     public static function getOptions(SlackRequest $request)
     {
-        $blockId = $request->payload()['block_id'];
-        if ($blockId == self::WAIVER_ID) {
-            $options = SlackOptions::new();
-
-            $unassignedWaivers = Waiver::where('customer_id', null)->all();
-
-            /** @var Waiver $waiver */
-            foreach ($unassignedWaivers as $waiver) {
-                $optionText = "$waiver->first_name $waiver->last_name $waiver->email";
-                $options->option($waiver->waiver_id, $optionText);
-            }
-
-            return $options;
-        }
-
         return [];
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->modalView->jsonSerialize();
     }
