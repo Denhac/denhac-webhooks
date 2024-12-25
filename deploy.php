@@ -26,4 +26,4 @@ task('artisan:horizon:terminate', artisan('horizon:terminate'));
 
 after('deploy:failed', 'deploy:unlock');
 after('deploy:symlink', 'artisan:horizon:terminate');
-after('deploy:symlink', 'artisan:websockets:restart');
+//after('deploy:symlink', 'artisan:websockets:restart');
