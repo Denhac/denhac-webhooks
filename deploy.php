@@ -20,10 +20,10 @@ host('webhooks.denhac.org')
 
 // Custom tasks
 task('artisan:horizon:terminate', artisan('horizon:terminate'));
-//task('artisan:websockets:restart', artisan('websockets:restart'));
+task('artisan:reverb:restart', artisan('reverb:restart'));
 
 // Hooks
 
 after('deploy:failed', 'deploy:unlock');
 after('deploy:symlink', 'artisan:horizon:terminate');
-//after('deploy:symlink', 'artisan:websockets:restart');
+after('deploy:symlink', 'artisan:reverb:restart');
