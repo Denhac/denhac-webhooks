@@ -2,11 +2,12 @@
 
 namespace App\Console\Commands\QuickBooks;
 
+use App\Actions\QuickBooks\GenerateVendingNetJournalEntry;
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class GenerateVendingNetJournalEntry extends Command
+class GenerateVendingNetJournalEntryCommand extends Command
 {
     /**
      * The name and signature of the console command.
