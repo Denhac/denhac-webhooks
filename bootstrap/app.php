@@ -20,10 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(AppServiceProvider::HOME);
 
         $middleware->validateCsrfTokens(except: [
-            'webhooks/denhac-org',
-            'webhooks/octoprint',
-            'webhooks/waiver',
-            'horizon/*',
+            'webhooks/*',
+            'slack/*',
         ]);
 
         $middleware->throttleApi('600,1');
