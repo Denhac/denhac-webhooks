@@ -39,7 +39,7 @@ class MembershipOptionsModal implements ModalInterface
 
     public function __construct(?Customer $customer)
     {
-        $membershipOptions = self::getMembershipOptions(null, $customer);
+        $membershipOptions = self::getMembershipOptions($customer);
 
         $this->modalView = Kit::modal(
             title: 'What do you want to do?',
