@@ -5,13 +5,10 @@ namespace App\External\Slack\Modals;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class NewMemberInfoModal implements ModalInterface
 {
     use ModalTrait;
-
-    private Modal $modalView;
 
     private const INFO = [
         "This is a community. You are a member, not a customer. This organization runs on the contributions of its members.",
@@ -51,12 +48,5 @@ class NewMemberInfoModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         return self::clearViewStack();
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 }

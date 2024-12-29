@@ -9,17 +9,13 @@ use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class OpenDoorModal implements ModalInterface
 {
     use ModalTrait;
 
     private const DOORS = 'doors';
-
-    private Modal $modalView;
 
     public function __construct()
     {
@@ -95,12 +91,5 @@ class OpenDoorModal implements ModalInterface
         }
 
         return self::clearViewStack();
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 }

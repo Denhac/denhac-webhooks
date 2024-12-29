@@ -10,7 +10,6 @@ use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class ManageOpenHouseModal implements ModalInterface
 {
@@ -22,8 +21,6 @@ class ManageOpenHouseModal implements ModalInterface
     private const DOORS = 'doors';
 
     private const CLOSE_ALL_DOORS = 'close-all-doors';
-
-    private Modal $modalView;
 
     public function __construct()
     {
@@ -119,13 +116,6 @@ class ManageOpenHouseModal implements ModalInterface
         return [
             self::blockActionUpdate(self::EXPIRES_TIME),
         ];
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 
     public static function onBlockAction(SlackRequest $request)

@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class MembershipOptionsModal implements ModalInterface
 {
@@ -35,8 +34,6 @@ class MembershipOptionsModal implements ModalInterface
     private const MANAGE_VOLUNTEER_GROUPS = 'value-manage-volunteer-groups';
 
     private const COUNTDOWN_TEST_VALUE = 'value-countdown-test';
-
-    private Modal $modalView;
 
     public function __construct(?Customer $customer)
     {
@@ -116,13 +113,6 @@ class MembershipOptionsModal implements ModalInterface
         }
 
         return $modal->update();
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 
     private static function getMembershipOptions(?Customer $customer): OptionSet

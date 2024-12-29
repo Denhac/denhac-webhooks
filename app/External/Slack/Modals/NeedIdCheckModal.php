@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class NeedIdCheckModal implements ModalInterface
 {
@@ -17,8 +16,6 @@ class NeedIdCheckModal implements ModalInterface
     use HasExternalOptions;
 
     private const NEW_MEMBER = 'new-member';
-
-    private Modal $modalView;
 
     public function __construct()
     {
@@ -98,12 +95,5 @@ class NeedIdCheckModal implements ModalInterface
         }
 
         return $optionSet;
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 }

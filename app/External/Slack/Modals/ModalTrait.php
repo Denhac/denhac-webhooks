@@ -6,10 +6,20 @@ use App\External\Slack\SlackApi;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use SlackPhp\BlockKit\Surfaces\Modal;
 
 trait ModalTrait
 {
-    public function push()
+    private Modal $modalView;
+
+    public function jsonSerialize(): array
+    {
+        $this->modalView->validate();
+
+        return $this->modalView->jsonSerialize();
+    }
+
+    public function push(): JsonResponse
     {
         return response()->json([
             'response_action' => 'push',

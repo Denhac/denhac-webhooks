@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class SelectAMemberModal implements ModalInterface
 {
@@ -17,8 +16,6 @@ class SelectAMemberModal implements ModalInterface
     use HasExternalOptions;
 
     private const SELECT_A_MEMBER = 'select-a-member';
-
-    private Modal $modalView;
 
     public function __construct($callbackOrModalClass)
     {
@@ -104,12 +101,5 @@ class SelectAMemberModal implements ModalInterface
         }
 
         return $optionSet;
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 }

@@ -6,13 +6,10 @@ use App\Http\Requests\SlackRequest;
 use App\Models\VolunteerGroup;
 use Illuminate\Http\JsonResponse;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class ManageVolunteerGroups implements ModalInterface
 {
     use ModalTrait;
-
-    private Modal $modalView;
 
     private const GROUP = 'group';
 
@@ -71,12 +68,5 @@ class ManageVolunteerGroups implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         return response()->json();
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 }

@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Notification;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class NewMemberIdCheckModal implements ModalInterface
 {
@@ -23,8 +22,6 @@ class NewMemberIdCheckModal implements ModalInterface
     private const BIRTHDAY = 'birthday';
 
     private const CARD_NUM = 'card-num';
-
-    private Modal $modalView;
 
     public function __construct($customer_id)
     {
@@ -168,10 +165,5 @@ class NewMemberIdCheckModal implements ModalInterface
         }
 
         return (new NewMemberInfoModal)->update();
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->modalView->jsonSerialize();
     }
 }

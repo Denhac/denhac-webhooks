@@ -5,13 +5,10 @@ namespace App\External\Slack\Modals;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class FailureModal implements ModalInterface
 {
     use ModalTrait;
-
-    private Modal $modalView;
 
     public function __construct($message)
     {
@@ -36,12 +33,5 @@ class FailureModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         return self::clearViewStack();
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 }

@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -28,8 +27,6 @@ class EquipmentAuthorization implements ModalInterface
     private const TRAINER_CHECK = 'trainer-check';
 
     private const USER_CHECK = 'user-check';
-
-    private Modal $modalView;
 
     public function __construct(?Customer $user)
     {
@@ -169,13 +166,6 @@ class EquipmentAuthorization implements ModalInterface
         }
 
         return Kit::optionSet();
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->modalView->validate();
-
-        return $this->modalView->jsonSerialize();
     }
 
     public static function onBlockAction(SlackRequest $request)

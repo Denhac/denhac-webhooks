@@ -8,7 +8,6 @@ use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use SlackPhp\BlockKit\Elements\ButtonStyle;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class CountdownTestModal implements ModalInterface
 {
@@ -16,8 +15,6 @@ class CountdownTestModal implements ModalInterface
     use RespondsToBlockActions;
 
     private const START_COUNTDOWN = 'start-countdown';
-
-    private Modal $modalView;
 
     public function __construct(?int $timeLeft)
     {
@@ -78,11 +75,6 @@ class CountdownTestModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         return self::clearViewStack();
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->modalView->jsonSerialize();
     }
 
     public static function getBlockActions(): array

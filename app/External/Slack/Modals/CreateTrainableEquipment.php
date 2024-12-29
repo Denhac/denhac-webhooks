@@ -11,14 +11,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class CreateTrainableEquipment implements ModalInterface
 {
     use ModalTrait;
     use HasExternalOptions;
-
-    private Modal $modalView;
 
     private const EQUIPMENT_NAME = 'equipment-name';
 
@@ -189,10 +186,5 @@ class CreateTrainableEquipment implements ModalInterface
     public static function getExternalOptions(SlackRequest $request): OptionSet
     {
         return SelectAMemberModal::getExternalOptions($request);
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->modalView->jsonSerialize();
     }
 }

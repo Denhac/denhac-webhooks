@@ -8,15 +8,12 @@ use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\Modal;
 
 class ManageMembersCardsModal implements ModalInterface
 {
     use ModalTrait;
 
     private const CARD_NUM = 'card-num';
-
-    private Modal $modalView;
 
     /**
      * @param  int  $customerId  The customer's Woo Commerce ID
@@ -95,10 +92,5 @@ class ManageMembersCardsModal implements ModalInterface
             ]);
 
         return self::clearViewStack();
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->modalView->jsonSerialize();
     }
 }
