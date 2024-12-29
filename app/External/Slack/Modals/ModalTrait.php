@@ -6,6 +6,7 @@ use App\External\Slack\SlackApi;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use SlackPhp\BlockKit\Previewer;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
 trait ModalTrait
@@ -17,6 +18,19 @@ trait ModalTrait
         $this->modalView->validate();
 
         return $this->modalView->jsonSerialize();
+    }
+
+    /**
+     * This is for debugging so you can see what your modal looks like in the Slack block kit builder.
+     *
+     * @return string Block kit url string
+     */
+    public function preview(): string
+    {
+        // We have to validate it here again, but most places validate it directly through jsonSerialize.
+        $this->modalView->validate();
+
+        return Previewer::new()->preview($this->modalView);
     }
 
     public function push(): JsonResponse
