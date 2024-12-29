@@ -16,6 +16,7 @@ use SlackPhp\BlockKit\Surfaces\Modal;
 class CreateTrainableEquipment implements ModalInterface
 {
     use ModalTrait;
+    use HasExternalOptions;
 
     private Modal $modalView;
 
@@ -185,9 +186,9 @@ class CreateTrainableEquipment implements ModalInterface
         return response()->json();
     }
 
-    public static function getOptions(SlackRequest $request): OptionSet
+    public static function getExternalOptions(SlackRequest $request): OptionSet
     {
-        return SelectAMemberModal::getOptions($request);
+        return SelectAMemberModal::getExternalOptions($request);
     }
 
     public function jsonSerialize(): array

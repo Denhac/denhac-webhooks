@@ -4,7 +4,6 @@ namespace App\External\Slack\Modals;
 
 use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -37,11 +36,6 @@ class FailureModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         return self::clearViewStack();
-    }
-
-    public static function getOptions(SlackRequest $request): OptionSet
-    {
-        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array

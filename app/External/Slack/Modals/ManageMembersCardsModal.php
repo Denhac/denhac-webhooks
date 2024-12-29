@@ -7,7 +7,6 @@ use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -96,11 +95,6 @@ class ManageMembersCardsModal implements ModalInterface
             ]);
 
         return self::clearViewStack();
-    }
-
-    public static function getOptions(SlackRequest $request): OptionSet
-    {
-        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array

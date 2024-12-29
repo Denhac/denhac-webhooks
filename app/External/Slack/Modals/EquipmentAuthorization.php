@@ -19,6 +19,7 @@ class EquipmentAuthorization implements ModalInterface
 {
     use ModalTrait;
     use RespondsToBlockActions;
+    use HasExternalOptions;
 
     private const EQUIPMENT_DROPDOWN = 'equipment-dropdown';
 
@@ -159,12 +160,12 @@ class EquipmentAuthorization implements ModalInterface
         return Customer::with('memberships')->whereIn('id', $customerIds)->get();
     }
 
-    public static function getOptions(SlackRequest $request): OptionSet
+    public static function getExternalOptions(SlackRequest $request): OptionSet
     {
         $blockId = $request->payload()['block_id'];
 
         if ($blockId == self::PERSON_DROPDOWN) {
-            return SelectAMemberModal::getOptions($request);
+            return SelectAMemberModal::getExternalOptions($request);
         }
 
         return Kit::optionSet();

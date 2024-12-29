@@ -14,6 +14,7 @@ use SlackPhp\BlockKit\Surfaces\Modal;
 class SelectAMemberModal implements ModalInterface
 {
     use ModalTrait;
+    use HasExternalOptions;
 
     private const SELECT_A_MEMBER = 'select-a-member';
 
@@ -73,7 +74,7 @@ class SelectAMemberModal implements ModalInterface
         return $modal->update();
     }
 
-    public static function getOptions(SlackRequest $request): OptionSet
+    public static function getExternalOptions(SlackRequest $request): OptionSet
     {
         $filterValue = $request->payload()['value'] ?? null;
         $optionSet = Kit::optionSet();

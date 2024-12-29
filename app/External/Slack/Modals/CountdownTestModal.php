@@ -6,7 +6,6 @@ use App\Actions\CountdownModalLoop;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Elements\ButtonStyle;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
@@ -79,11 +78,6 @@ class CountdownTestModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         return self::clearViewStack();
-    }
-
-    public static function getOptions(SlackRequest $request): OptionSet
-    {
-        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array

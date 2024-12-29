@@ -9,7 +9,6 @@ use App\Notifications\IdCheckedWithNoWaiver;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Notification;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -169,11 +168,6 @@ class NewMemberIdCheckModal implements ModalInterface
         }
 
         return (new NewMemberInfoModal)->update();
-    }
-
-    public static function getOptions(SlackRequest $request): OptionSet
-    {
-        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array

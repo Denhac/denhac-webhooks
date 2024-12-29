@@ -97,11 +97,6 @@ class OpenDoorModal implements ModalInterface
         return self::clearViewStack();
     }
 
-    public static function getOptions(SlackRequest $request): OptionSet
-    {
-        return Kit::optionSet();
-    }
-
     public function jsonSerialize(): array
     {
         $this->modalView->validate();

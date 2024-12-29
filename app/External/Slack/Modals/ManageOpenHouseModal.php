@@ -9,7 +9,6 @@ use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -110,11 +109,6 @@ class ManageOpenHouseModal implements ModalInterface
         event(new DoorControlUpdated($selectedTimeCarbon, ...$doors->toArray()));
 
         return self::clearViewStack();
-    }
-
-    public static function getOptions(SlackRequest $request): OptionSet
-    {
-        return Kit::optionSet();
     }
 
     /**

@@ -14,6 +14,7 @@ use SlackPhp\BlockKit\Surfaces\Modal;
 class NeedIdCheckModal implements ModalInterface
 {
     use ModalTrait;
+    use HasExternalOptions;
 
     private const NEW_MEMBER = 'new-member';
 
@@ -68,7 +69,7 @@ class NeedIdCheckModal implements ModalInterface
         return $modal->update();
     }
 
-    public static function getOptions(SlackRequest $request): OptionSet
+    public static function getExternalOptions(SlackRequest $request): OptionSet
     {
         $filterValue = $request->payload()['value'] ?? null;
 

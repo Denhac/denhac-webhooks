@@ -125,11 +125,6 @@ class MembershipOptionsModal implements ModalInterface
         return $this->modalView->jsonSerialize();
     }
 
-    public static function getOptions(SlackRequest $request): OptionSet
-    {
-        return Kit::optionSet();
-    }
-
     private static function getMembershipOptions(?Customer $customer): OptionSet
     {
         $optionSet = Kit::optionSet();
