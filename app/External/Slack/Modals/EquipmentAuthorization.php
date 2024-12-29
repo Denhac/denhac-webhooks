@@ -11,8 +11,8 @@ use App\Models\Customer;
 use App\Models\TrainableEquipment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class EquipmentAuthorization implements ModalInterface
 {
@@ -157,7 +157,7 @@ class EquipmentAuthorization implements ModalInterface
         return Customer::with('memberships')->whereIn('id', $customerIds)->get();
     }
 
-    public static function getExternalOptions(SlackRequest $request): OptionSet
+    public static function getExternalOptions(SlackRequest $request): OptionsResult
     {
         $blockId = $request->payload()['block_id'];
 
@@ -165,7 +165,7 @@ class EquipmentAuthorization implements ModalInterface
             return SelectAMemberModal::getExternalOptions($request);
         }
 
-        return Kit::optionSet();
+        return Kit::optionsResult();
     }
 
     public static function onBlockAction(SlackRequest $request)

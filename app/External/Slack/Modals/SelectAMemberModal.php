@@ -7,8 +7,8 @@ use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class SelectAMemberModal implements ModalInterface
 {
@@ -71,7 +71,7 @@ class SelectAMemberModal implements ModalInterface
         return $modal->update();
     }
 
-    public static function getExternalOptions(SlackRequest $request): OptionSet
+    public static function getExternalOptions(SlackRequest $request): OptionsResult
     {
         $filterValue = $request->payload()['value'] ?? null;
         $optionSet = Kit::optionSet();
@@ -82,7 +82,7 @@ class SelectAMemberModal implements ModalInterface
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
 
-            if(! is_null($filterValue) && ! Str::contains($name, $filterValue)) {
+            if(! is_null($filterValue) && ! Str::contains(Str::lower($name), Str::lower($filterValue))) {
                 continue;
             }
 
@@ -100,6 +100,6 @@ class SelectAMemberModal implements ModalInterface
             ));
         }
 
-        return $optionSet;
+        return Kit::optionsResult($optionSet);
     }
 }

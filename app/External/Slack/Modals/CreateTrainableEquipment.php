@@ -9,8 +9,8 @@ use App\Models\TrainableEquipment;
 use App\Models\UserMembership;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class CreateTrainableEquipment implements ModalInterface
 {
@@ -183,7 +183,7 @@ class CreateTrainableEquipment implements ModalInterface
         return response()->json();
     }
 
-    public static function getExternalOptions(SlackRequest $request): OptionSet
+    public static function getExternalOptions(SlackRequest $request): OptionsResult
     {
         return SelectAMemberModal::getExternalOptions($request);
     }
