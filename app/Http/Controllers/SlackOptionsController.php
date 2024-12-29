@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\External\Slack\ClassFinder;
 use App\Http\Requests\SlackRequest;
+use SlackPhp\BlockKit\Collections\OptionSet;
 
 class SlackOptionsController extends Controller
 {
@@ -29,7 +30,12 @@ class SlackOptionsController extends Controller
             throw new \Exception("Slack options payload has unknown callback id: $callback_id");
         }
 
+        /** @var OptionSet|array $options */
         $options = $modalClass::getOptions($request);
+
+        if($options instanceof OptionSet) {
+            $options = $options->toArray();
+        }
 
         return $options;
     }

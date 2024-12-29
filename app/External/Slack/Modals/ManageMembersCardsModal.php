@@ -5,7 +5,9 @@ namespace App\External\Slack\Modals;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -50,12 +52,12 @@ class ManageMembersCardsModal implements ModalInterface
         );
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'manage-members-cards-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->canIDcheck()) {
             Log::warning('ManageMembersCardsModal: Rejecting unauthorized submission from user '.$request->customer()->id);
@@ -96,9 +98,9 @@ class ManageMembersCardsModal implements ModalInterface
         return self::clearViewStack();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
-        return [];
+        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array

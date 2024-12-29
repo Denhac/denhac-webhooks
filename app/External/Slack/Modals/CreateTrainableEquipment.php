@@ -7,7 +7,9 @@ use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
 use App\Models\UserMembership;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -120,7 +122,7 @@ class CreateTrainableEquipment implements ModalInterface
         return 'create-trainable-equipment-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
             Log::warning('CreateTrainableEquipment: Rejecting unauthorized submission from user ' . $request->customer()->id);
@@ -180,10 +182,10 @@ class CreateTrainableEquipment implements ModalInterface
 
         $wooCommerceApi->members->addMembership($initialTrainerId, $trainerPlanId);
 
-        return response('');
+        return response()->json();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
         return SelectAMemberModal::getOptions($request);
     }

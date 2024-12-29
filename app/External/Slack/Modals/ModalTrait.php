@@ -59,7 +59,7 @@ trait ModalTrait
         return $slackApi->views->open($trigger_id, $this);
     }
 
-    protected static function clearViewStack()
+    protected static function clearViewStack(): JsonResponse
     {
         return response()->json([
             'response_action' => 'clear',

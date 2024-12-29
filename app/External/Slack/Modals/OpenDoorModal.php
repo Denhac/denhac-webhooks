@@ -6,8 +6,10 @@ use App\Events\DoorControlUpdated;
 use App\External\Slack\SlackApi;
 use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -55,7 +57,7 @@ class OpenDoorModal implements ModalInterface
         return 'door-open-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         $customer = $request->customer();
         $values = $request->payload()['view']['state']['values'];
@@ -95,13 +97,15 @@ class OpenDoorModal implements ModalInterface
         return self::clearViewStack();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
-        return [];
+        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array
     {
+        $this->modalView->validate();
+
         return $this->modalView->jsonSerialize();
     }
 }

@@ -4,6 +4,8 @@ namespace App\External\Slack\Modals;
 
 use App\Http\Requests\SlackRequest;
 use App\Models\VolunteerGroup;
+use Illuminate\Http\JsonResponse;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -67,18 +69,20 @@ class ManageVolunteerGroups implements ModalInterface
         return 'manage-volunteer-groups-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
-        return response('');
+        return response()->json();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
-        return [];
+        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array
     {
+        $this->modalView->validate();
+
         return $this->modalView->jsonSerialize();
     }
 }

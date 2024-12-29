@@ -9,7 +9,9 @@ use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -102,7 +104,7 @@ class EquipmentAuthorization implements ModalInterface
         return 'equipment-authorization-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         $state = self::getStateValues($request);
         $makeTrainers = ! is_null($state[self::TRAINER_CHECK][self::TRAINER_CHECK] ?? null);
@@ -121,7 +123,7 @@ class EquipmentAuthorization implements ModalInterface
             ]);
         }
 
-        return (new SuccessModal)->update();
+        return (new SuccessModal("Authorization submitted!"))->update();
     }
 
     /**
@@ -157,7 +159,7 @@ class EquipmentAuthorization implements ModalInterface
         return Customer::with('memberships')->whereIn('id', $customerIds)->get();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
         $blockId = $request->payload()['block_id'];
 
@@ -165,11 +167,13 @@ class EquipmentAuthorization implements ModalInterface
             return SelectAMemberModal::getOptions($request);
         }
 
-        return [];
+        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array
     {
+        $this->modalView->validate();
+
         return $this->modalView->jsonSerialize();
     }
 

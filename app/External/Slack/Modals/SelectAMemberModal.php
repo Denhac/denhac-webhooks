@@ -5,6 +5,9 @@ namespace App\External\Slack\Modals;
 use App\External\Slack\ClassFinder;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -49,7 +52,7 @@ class SelectAMemberModal implements ModalInterface
         return 'select-a-member-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         $selectedOption = $request->payload()['view']['state']['values'][self::SELECT_A_MEMBER][self::SELECT_A_MEMBER]['selected_option']['value'];
 
@@ -70,8 +73,9 @@ class SelectAMemberModal implements ModalInterface
         return $modal->update();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
+        $filterValue = $request->payload()['value'] ?? null;
         $optionSet = Kit::optionSet();
 
         $customers = Customer::all();
@@ -79,6 +83,10 @@ class SelectAMemberModal implements ModalInterface
         foreach ($customers as $customer) {
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
+
+            if(! is_null($filterValue) && ! Str::contains($name, $filterValue)) {
+                continue;
+            }
 
             if ($customer->member) {
                 $text = "$name (Member)";
@@ -99,6 +107,8 @@ class SelectAMemberModal implements ModalInterface
 
     public function jsonSerialize(): array
     {
+        $this->modalView->validate();
+
         return $this->modalView->jsonSerialize();
     }
 }

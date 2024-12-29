@@ -4,7 +4,10 @@ namespace App\External\Slack\Modals;
 
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -43,7 +46,7 @@ class NeedIdCheckModal implements ModalInterface
         return 'membership-need-id-check-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->canIDcheck()) {
             Log::warning('NeedIdCheckModal: Rejecting unauthorized submission from user ' . $request->customer()->id);
@@ -65,8 +68,10 @@ class NeedIdCheckModal implements ModalInterface
         return $modal->update();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
+        $filterValue = $request->payload()['value'] ?? null;
+
         $optionSet = Kit::optionSet();
 
         $customersNeedingIdCheck = Customer::with('memberships')
@@ -78,6 +83,10 @@ class NeedIdCheckModal implements ModalInterface
         foreach ($customersNeedingIdCheck as $customer) {
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
+
+            if(! is_null($filterValue) && ! Str::contains($name, $filterValue)) {
+                continue;
+            }
 
             $value = "customer-$customer->id";
 
@@ -92,6 +101,8 @@ class NeedIdCheckModal implements ModalInterface
 
     public function jsonSerialize(): array
     {
+        $this->modalView->validate();
+
         return $this->modalView->jsonSerialize();
     }
 }

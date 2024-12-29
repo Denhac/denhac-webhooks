@@ -6,6 +6,7 @@ use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use App\Models\UserMembership;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
@@ -62,12 +63,12 @@ class MembershipOptionsModal implements ModalInterface
 
     }
 
-    public static function callbackId()
+    public static function callbackId(): string
     {
         return 'membership-command-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         $selectedOption = $request->payload()['view']['state']['values'][self::MEMBERSHIP_OPTION][self::MEMBERSHIP_OPTION]['selected_option']['value'];
 
@@ -119,12 +120,14 @@ class MembershipOptionsModal implements ModalInterface
 
     public function jsonSerialize(): array
     {
+        $this->modalView->validate();
+
         return $this->modalView->jsonSerialize();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
-        return [];
+        return Kit::optionSet();
     }
 
     private static function getMembershipOptions(?Customer $customer): OptionSet

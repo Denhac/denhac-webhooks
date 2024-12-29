@@ -7,7 +7,9 @@ use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use App\Notifications\IdCheckedWithNoWaiver;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Notification;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -100,10 +102,9 @@ class NewMemberIdCheckModal implements ModalInterface
         return 'membership-new-member-id-check-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         $view = $request->payload()['view'];
-        $viewId = $view['id'];
         $firstName = $view['state']['values'][self::FIRST_NAME][self::FIRST_NAME]['value'];
         $lastName = $view['state']['values'][self::LAST_NAME][self::LAST_NAME]['value'];
         $birthday = Carbon::parse($view['state']['values'][self::BIRTHDAY][self::BIRTHDAY]['selected_date']);
@@ -170,9 +171,9 @@ class NewMemberIdCheckModal implements ModalInterface
         return (new NewMemberInfoModal)->update();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
-        return [];
+        return Kit::optionSet();
     }
 
     public function jsonSerialize(): array

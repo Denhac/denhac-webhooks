@@ -7,7 +7,9 @@ use App\External\Slack\BlockActions\BlockActionInterface;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\External\WinDSX\Door;
 use App\Http\Requests\SlackRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use SlackPhp\BlockKit\Collections\OptionSet;
 use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Modal;
 
@@ -73,7 +75,7 @@ class ManageOpenHouseModal implements ModalInterface
         return 'manage-open-house-modal';
     }
 
-    public static function handle(SlackRequest $request)
+    public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->canIDcheck()) {
             Log::warning('ManageOpenHouseModal: Rejecting unauthorized submission from user ' . $request->customer()->id);
@@ -110,9 +112,9 @@ class ManageOpenHouseModal implements ModalInterface
         return self::clearViewStack();
     }
 
-    public static function getOptions(SlackRequest $request)
+    public static function getOptions(SlackRequest $request): OptionSet
     {
-        return [];
+        return Kit::optionSet();
     }
 
     /**
@@ -127,6 +129,8 @@ class ManageOpenHouseModal implements ModalInterface
 
     public function jsonSerialize(): array
     {
+        $this->modalView->validate();
+
         return $this->modalView->jsonSerialize();
     }
 
