@@ -121,7 +121,8 @@ trait ModalTrait
         foreach ($values as $blockId => $blockValues) {
             $result[$blockId] = [];
             foreach ($blockValues as $actionId => $actionValues) {
-                if ($actionValues['type'] == 'checkboxes') {
+                $type = $actionValues['type'];
+                if ($type == 'checkboxes') {
                     // Checkboxes are kind of weird with Slack. Instead of just true/false,
                     // their values are either there or not. So we return a dictionary of values.
                     $selectedOptions = $actionValues['selected_options'] ?? [];
@@ -134,7 +135,7 @@ trait ModalTrait
                     foreach ($selectedOptions as $option) {
                         $result[$blockId][$actionId][] = $option['value'];
                     }
-                } elseif ($actionValues['type'] == 'multi_external_select') {
+                } elseif ($type == 'multi_external_select' || $type == 'multi_static_select') {
                     $selected = [];
                     foreach ($actionValues['selected_options'] as $selectedOption) {
                         $selected[] = $selectedOption['value'];

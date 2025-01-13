@@ -59,7 +59,7 @@ class EquipmentAuthorization implements ModalInterface
                     element: Kit::multiExternalSelectMenu(
                         actionId: self::PERSON_DROPDOWN,
                         placeholder: 'Select a member',
-                        minQueryLength: 2
+                        minQueryLength: 0
                     ),
                 ),
                 Kit::input(
