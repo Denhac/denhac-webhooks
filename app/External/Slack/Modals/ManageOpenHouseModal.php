@@ -89,8 +89,8 @@ class ManageOpenHouseModal implements ModalInterface
 
         $selectedTimeCarbon = now()->tz('America/Denver');
         $selectedTime = explode(':', $selectedTime);
-        $selectedTimeCarbon->hour = $selectedTime[0];
-        $selectedTimeCarbon->minute = $selectedTime[1];
+        $selectedTimeCarbon->hour = (int)$selectedTime[0];
+        $selectedTimeCarbon->minute = (int)$selectedTime[1];
 
         $doors = Door::all();
         /** @var Door $door */
