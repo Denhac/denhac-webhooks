@@ -22,6 +22,7 @@ Route::webhooks('webhooks/denhac-org', 'denhac.org');
 Route::webhooks('webhooks/octoprint', 'OctoPrint');
 Route::webhooks('webhooks/waiver', 'WaiverForever');
 Route::webhooks('webhooks/quickbooks', 'QuickBooks');
+Route::webhooks('webhooks/stripe', 'Stripe');
 
 Route::middleware(['slack'])->prefix('slack')->group(function () {
     Route::post('membership', SlackMembershipCommandController::class);
