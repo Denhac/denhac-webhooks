@@ -37,7 +37,7 @@ class UnknownGitHubUsernameOrganization extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Remove from GitHub team', fn () => $this->removeFromGitHubTeam())
+            ->defaultOption('Remove from GitHub team', fn () => $this->removeFromGitHubTeam())
             ->option('Assign to member', fn () => $this->assignGitHubUsernameToMember())
             ->run();
     }

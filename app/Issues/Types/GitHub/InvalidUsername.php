@@ -39,7 +39,7 @@ class InvalidUsername extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option("Use suggested username: $this->correctedUsername", fn () => $this->useSuggestedUsername())
+            ->defaultOption("Use suggested username: $this->correctedUsername", fn () => $this->useSuggestedUsername())
             ->option('Clear GitHub username field for member', fn () => $this->clearGitHubUsernameField())
             ->run();
     }

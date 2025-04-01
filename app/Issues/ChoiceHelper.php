@@ -8,17 +8,26 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class ChoiceHelper
 {
+    public const CANCEL = "Cancel";
+
     private OutputInterface $output;
 
     private string $choiceText;
 
     private Collection $choices;
+    private string $defaultChoice;
 
     public function __construct(OutputInterface $output, string $choiceText)
     {
         $this->choiceText = $choiceText;
         $this->output = $output;
         $this->choices = collect();
+        $cancelChoice = function () {
+            return false;
+        };
+
+        $this->defaultChoice = self::CANCEL;
+        $this->choices->put(self::CANCEL, $cancelChoice);
     }
 
     public function option($name, $callback): static
@@ -28,18 +37,23 @@ class ChoiceHelper
         return $this;
     }
 
+    public function defaultOption($name, $callback): static
+    {
+        $this->defaultChoice = $name;
+
+        return $this->option($name, $callback);
+    }
+
     /**
      * @return bool Whether the issue was fixed or not
      */
     public function run(): bool
     {
-        if (! $this->choices->has('Cancel')) {
-            $this->choices->put('Cancel', function () {
-                return false;
-            });
-        }
-
-        $question = new ChoiceQuestion($this->choiceText, $this->choices->keys()->toArray());
+        $question = new ChoiceQuestion(
+            $this->choiceText,
+            $this->choices->keys()->toArray(),
+            $this->defaultChoice
+        );
         $choiceResult = $this->output->askQuestion($question);
 
         if (empty($choiceResult)) {

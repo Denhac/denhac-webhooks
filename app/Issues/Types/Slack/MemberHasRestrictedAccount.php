@@ -42,7 +42,7 @@ class MemberHasRestrictedAccount extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Activate Slack account', function () {
+            ->defaultOption('Activate Slack account', function () {
                 dispatch(new MakeCustomerRegularMemberInSlack($this->member->id));
 
                 return true;

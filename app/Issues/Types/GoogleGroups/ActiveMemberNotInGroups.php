@@ -48,7 +48,7 @@ class ActiveMemberNotInGroups extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Add member to groups', function () {
+            ->defaultOption('Add member to groups', function () {
                 /** @var GoogleApi $googleApi */
                 $googleApi = app(GoogleApi::class);
                 foreach ($this->memberGroupsMissing as $group) {
