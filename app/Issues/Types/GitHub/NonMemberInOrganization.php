@@ -36,7 +36,7 @@ class NonMemberInOrganization extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Remove from GitHub team', function () {
+            ->defaultOption('Remove from GitHub team', function () {
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
 

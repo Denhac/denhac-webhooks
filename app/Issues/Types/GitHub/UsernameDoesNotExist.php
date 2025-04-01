@@ -36,7 +36,7 @@ class UsernameDoesNotExist extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Clear GitHub username field for member', function () {
+            ->defaultOption('Clear GitHub username field for member', function () {
                 $wooCommerceApi = app(WooCommerceApi::class);
 
                 $wooCommerceApi->customers

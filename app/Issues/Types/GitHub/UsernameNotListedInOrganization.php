@@ -36,7 +36,7 @@ class UsernameNotListedInOrganization extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Add to GitHub team', function () {
+            ->defaultOption('Add to GitHub team', function () {
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
                 $gitHubApi->denhac()->team('members')->add($this->member->githubUsername);

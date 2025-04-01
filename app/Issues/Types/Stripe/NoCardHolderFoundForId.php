@@ -36,7 +36,7 @@ class NoCardHolderFoundForId extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Clear card holder id', fn () => $this->clearCardHolderId())
+            ->defaultOption('Clear card holder id', fn () => $this->clearCardHolderId())
             ->run();
     }
 

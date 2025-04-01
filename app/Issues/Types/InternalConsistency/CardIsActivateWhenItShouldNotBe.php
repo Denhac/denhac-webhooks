@@ -40,7 +40,7 @@ class CardIsActivateWhenItShouldNotBe extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Deactivate non-member card', function () {
+            ->defaultOption('Deactivate non-member card', function () {
                 // Record that is fine since we just want the reactor to update
                 MembershipAggregate::make($this->member->id)
                     ->recordThat(new CardSentForDeactivation($this->member->id, $this->memberCard))

@@ -41,7 +41,7 @@ class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Send CardRemoved event', function () {
+            ->defaultOption('Send CardRemoved event', function () {
                 // Record that is fine since we just want the projector to update
                 MembershipAggregate::make($this->member->id)
                     ->recordThat(new CardRemoved($this->member->id, $this->cardNumber))

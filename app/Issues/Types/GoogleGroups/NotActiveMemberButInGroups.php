@@ -42,7 +42,7 @@ class NotActiveMemberButInGroups extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Remove member from groups', function () {
+            ->defaultOption('Remove member from groups', function () {
                 /** @var GoogleApi $googleApi */
                 $googleApi = app(GoogleApi::class);
                 foreach ($this->groupsForEmail as $group) {

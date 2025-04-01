@@ -36,7 +36,7 @@ class SubscriptionNotFoundOnRemote extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Delete local subscription', function () {
+            ->defaultOption('Delete local subscription', function () {
                 /** @var Subscription $subscription */
                 $subscription = Subscription::find($this->subscription_id);
 

@@ -42,7 +42,7 @@ class SubscriptionStatusDiffers extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Update subscription from WordPress', function () {
+            ->defaultOption('Update subscription from WordPress', function () {
                 /** @var WooCommerceApi $wooCommerceApi */
                 $wooCommerceApi = app(WooCommerceApi::class);
                 $subscription = $wooCommerceApi->subscriptions->get($this->subscription_id)->toArray();

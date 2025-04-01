@@ -42,7 +42,7 @@ class UserMembershipStatusDiffers extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Update User Membership from WordPress', function () {
+            ->defaultOption('Update User Membership from WordPress', function () {
                 /** @var WooCommerceApi $wooCommerceApi */
                 $wooCommerceApi = app(WooCommerceApi::class);
                 $userMembership = $wooCommerceApi->members->get($this->userMembershipId)->toArray();

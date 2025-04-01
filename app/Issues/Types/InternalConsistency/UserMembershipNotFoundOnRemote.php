@@ -36,7 +36,7 @@ class UserMembershipNotFoundOnRemote extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Delete local user membership', function () {
+            ->defaultOption('Delete local user membership', function () {
                 /** @var UserMembership $user_membership */
                 $userMembership = UserMembership::find($this->userMembershipId);
 

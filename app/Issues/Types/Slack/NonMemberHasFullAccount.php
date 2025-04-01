@@ -39,7 +39,7 @@ class NonMemberHasFullAccount extends IssueBase
     public function fix(): bool
     {
         return $this->issueFixChoice()
-            ->option('Deactivate Slack account', function () {
+            ->defaultOption('Deactivate Slack account', function () {
                 dispatch(new DemoteMemberToPublicOnlyMemberInSlack($this->member->id));
 
                 return true;
