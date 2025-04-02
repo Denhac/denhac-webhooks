@@ -2,6 +2,7 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Fixing\Preamble;
 use App\Issues\Types\ICanFixThem;
@@ -63,7 +64,7 @@ class CardInPossessionOfMultipleCustomers extends IssueBase
                     $this->newLine();
 
                     $this->line("Customer ID: $customerId");
-                    $member = $this->outer->memberDataById($customerId);
+                    $member = MemberData::byID($customerId);
 
                     if (is_null($member)) {
                         $this->line('Customer Deleted');
@@ -111,7 +112,7 @@ class CardInPossessionOfMultipleCustomers extends IssueBase
                 continue;  // They get to keep the card so we do nothing.
             }
 
-            $member = $this->memberDataById($customerId);
+            $member = MemberData::byID($customerId);
 
             if (is_null($member)) {
                 continue;  // Deleted customer, we can't update them

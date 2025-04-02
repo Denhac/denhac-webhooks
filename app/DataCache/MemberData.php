@@ -40,4 +40,12 @@ class MemberData extends Data
 
         return null;
     }
+
+    public static function byID($id): ?MemberData
+    {
+        /** @var AggregateCustomerData $aggregateCustomerData */
+        $aggregateCustomerData = app(AggregateCustomerData::class);
+
+        return $aggregateCustomerData->get()->filter(fn ($m) => $m->id == $id)->first();
+    }
 }

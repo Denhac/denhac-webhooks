@@ -65,12 +65,4 @@ trait ICanFixThem
     {
         return new ChoiceHelper($this->output, $text);
     }
-
-    protected function memberDataById($memberId): ?MemberData
-    {
-        /** @var AggregateCustomerData $aggregateCustomerData */
-        $aggregateCustomerData = app(AggregateCustomerData::class);
-
-        return $aggregateCustomerData->get()->filter(fn ($m) => $m->id == $memberId)->first();
-    }
 }
