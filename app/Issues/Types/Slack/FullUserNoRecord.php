@@ -6,6 +6,7 @@ use App\DataCache\MemberData;
 use App\External\Slack\Channels;
 use App\External\Slack\SlackApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Issues\Fixing\Preamble;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
@@ -37,12 +38,16 @@ class FullUserNoRecord extends IssueBase
 
     public function fix(): bool
     {
-        $this->line('Please note that assigning this account to a member will almost definitely');
-        $this->line('leave their old account in this same state the next time someone checks for');
-        $this->line('issues to fix.');
-        $this->newLine();
-
         return $this->issueFixChoice()
+            ->preamble(new class extends Preamble {
+                public function preamble(): void
+                {
+                    $this->line('Please note that assigning this account to a member will almost definitely');
+                    $this->line('leave their old account in this same state the next time someone checks for');
+                    $this->line('issues to fix.');
+                    $this->newLine();
+                }
+            })
             ->option('Deactivate Slack Account', fn () => $this->deactivateSlackAccount())
             ->option('Assign to member', fn () => $this->assignSlackUserToMember())
             ->run();

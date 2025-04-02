@@ -2,22 +2,25 @@
 
 namespace App\Issues;
 
+use App\Issues\Fixing\Preamble;
+use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class ChoiceHelper
 {
     public const CANCEL = "Cancel";
 
-    private OutputInterface $output;
+    private OutputStyle $output;
 
     private string $choiceText;
 
     private Collection $choices;
     private string $defaultChoice;
 
-    public function __construct(OutputInterface $output, string $choiceText)
+    private ?Preamble $preamble = null;
+
+    public function __construct(OutputStyle $output, string $choiceText)
     {
         $this->choiceText = $choiceText;
         $this->output = $output;
@@ -28,6 +31,26 @@ class ChoiceHelper
 
         $this->defaultChoice = self::CANCEL;
         $this->choices->put(self::CANCEL, $cancelChoice);
+    }
+
+    public function preamble(string|Preamble $preamble): static
+    {
+        if (is_string($preamble)) {
+            $this->preamble = new class($preamble) extends Preamble {
+                public function __construct(private $message)
+                {
+                }
+
+                public function preamble(): void
+                {
+                    $this->line($this->message);
+                }
+            };
+        } else {
+            $this->preamble = $preamble;
+        }
+
+        return $this;
     }
 
     public function option($name, $callback): static
@@ -49,6 +72,11 @@ class ChoiceHelper
      */
     public function run(): bool
     {
+        if (! is_null($this->preamble)) {
+            $this->preamble->setOutput($this->output);
+            $this->preamble->preamble();
+        }
+
         $question = new ChoiceQuestion(
             $this->choiceText,
             $this->choices->keys()->toArray(),
