@@ -6,19 +6,36 @@ use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use SlackPhp\BlockKit\Kit;
-use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class NeedIdCheckModal implements ModalInterface
 {
     use ModalTrait;
-    use HasExternalOptions;
 
     private const NEW_MEMBER = 'new-member';
 
     public function __construct()
     {
+        $customers = Kit::optionSet();
+
+        $customersNeedingIdCheck = Customer::with('memberships')
+            ->where('id_checked', false)
+            ->whereRelation('memberships', 'status', 'paused') // TODO Verify User Membership is 6410
+            ->orderBy('id', 'desc')  // Latest sign ups end up appearing first
+            ->get();
+
+        foreach ($customersNeedingIdCheck as $customer) {
+            /** @var Customer $customer */
+            $name = "{$customer->first_name} {$customer->last_name}";
+
+            $value = "customer-$customer->id";
+
+            $customers->append(Kit::option(
+                text: $name,
+                value: $value,
+            ));
+        }
+
         $this->modalView = Kit::modal(
             title: 'New Member Signup',
             callbackId: self::callbackId(),
@@ -29,10 +46,10 @@ class NeedIdCheckModal implements ModalInterface
                 Kit::input(
                     label: 'New Member',
                     blockId: self::NEW_MEMBER,
-                    element: Kit::externalSelectMenu(
+                    element: Kit::staticSelectMenu(
                         actionId: self::NEW_MEMBER,
                         placeholder: 'Select a Customer',
-                        minQueryLength: 0
+                        options: $customers
                     ),
                 )
             ],
@@ -64,36 +81,5 @@ class NeedIdCheckModal implements ModalInterface
         $modal = new NewMemberIdCheckModal($customer_id);
 
         return $modal->update();
-    }
-
-    public static function getExternalOptions(SlackRequest $request): OptionsResult
-    {
-        $filterValue = $request->payload()['value'] ?? null;
-
-        $optionSet = Kit::optionSet();
-
-        $customersNeedingIdCheck = Customer::with('memberships')
-            ->where('id_checked', false)
-            ->whereRelation('memberships', 'status', 'paused') // TODO Verify User Membership is 6410
-            ->orderBy('id', 'desc')  // Latest sign ups end up appearing first
-            ->get();
-
-        foreach ($customersNeedingIdCheck as $customer) {
-            /** @var Customer $customer */
-            $name = "{$customer->first_name} {$customer->last_name}";
-
-            if(! is_null($filterValue) && ! Str::contains(Str::lower($name), Str::lower($filterValue))) {
-                continue;
-            }
-
-            $value = "customer-$customer->id";
-
-            $optionSet->append(Kit::option(
-                text: $name,
-                value: $value,
-            ));
-        }
-
-        return Kit::optionsResult($optionSet);
     }
 }
