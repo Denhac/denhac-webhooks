@@ -4,6 +4,7 @@ namespace App\External\Slack\Modals;
 
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
+use App\Models\UserMembership;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use SlackPhp\BlockKit\Kit;
@@ -20,7 +21,8 @@ class NeedIdCheckModal implements ModalInterface
 
         $customersNeedingIdCheck = Customer::with('memberships')
             ->where('id_checked', false)
-            ->whereRelation('memberships', 'status', 'paused') // TODO Verify User Membership is 6410
+            ->whereRelation('memberships', 'status', 'paused')
+            ->whereRelation('memberships', 'plan_id', UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->orderBy('id', 'desc')  // Latest sign ups end up appearing first
             ->get();
 
