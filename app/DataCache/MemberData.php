@@ -5,6 +5,8 @@ namespace App\DataCache;
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 use Spatie\LaravelData\Data;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\search;
 
 /**
  * @property string uuid
@@ -47,5 +49,37 @@ class MemberData extends Data
         $aggregateCustomerData = app(AggregateCustomerData::class);
 
         return $aggregateCustomerData->get()->filter(fn ($m) => $m->id == $id)->first();
+    }
+
+    public static function selectMember(): ?MemberData
+    {
+        /** @var AggregateCustomerData $aggregateCustomerData */
+        $aggregateCustomerData = app(AggregateCustomerData::class);
+        $memberNames = $aggregateCustomerData->get()
+            ->mapWithKeys(fn ($m) => [$m => "$m->first_name $m->last_name"]);
+
+        do {
+            $choice = search(
+                label: 'Select customer/member',
+                options: $memberNames,
+                required: false,
+            );
+
+            if (empty($choice)) {
+                break;  // They decided to exit without entering anything
+            }
+
+            if ($memberNames->has($choice)) {
+                break;  // They selected a valid member name
+            }
+
+            info("$choice is not a valid option. Please select a member or enter no text to cancel.");
+        } while (true);
+
+        if (empty($choice)) {
+            return null;
+        }
+
+        return $memberNames->get($choice);
     }
 }

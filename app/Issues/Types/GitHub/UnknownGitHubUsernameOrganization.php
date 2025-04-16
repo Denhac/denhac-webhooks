@@ -54,7 +54,7 @@ class UnknownGitHubUsernameOrganization extends IssueBase
     private function assignGitHubUsernameToMember(): bool
     {
         /** @var MemberData $member */
-        $member = $this->selectMember();
+        $member = MemberData::selectMember();
 
         if (is_null($member)) {
             return false;

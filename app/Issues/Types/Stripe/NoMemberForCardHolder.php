@@ -50,7 +50,7 @@ class NoMemberForCardHolder extends IssueBase
     private function matchMember(): bool
     {
         /** @var MemberData $member */
-        $member = $this->selectMember();
+        $member = MemberData::selectMember();
         if (is_null($member)) {
             info('No member selected. Aborting issue fix.');
 
