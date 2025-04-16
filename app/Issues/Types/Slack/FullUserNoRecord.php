@@ -68,7 +68,7 @@ class FullUserNoRecord extends IssueBase
     private function assignSlackUserToMember(): bool
     {
         /** @var MemberData $member */
-        $member = $this->selectMember();
+        $member = MemberData::selectMember();
 
         if (is_null($member)) {
             return false;

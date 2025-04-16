@@ -60,7 +60,7 @@ class NoMemberFoundForEmail extends IssueBase
     private function assignEmailToMember(): bool
     {
         /** @var MemberData $member */
-        $member = $this->selectMember();
+        $member = MemberData::selectMember();
 
         if (is_null($member)) {
             return false;
