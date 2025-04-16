@@ -40,6 +40,8 @@ class UserMembership extends Model
 
     public const MEMBERSHIP_EVENTS_MANAGER = 22823;
 
+    public const SERVER_ROOM_ACCESS = 47984;
+
     protected $fillable = [
         'id',
         'plan_id',
