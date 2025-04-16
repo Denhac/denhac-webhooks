@@ -25,7 +25,7 @@ class TopUpIssuingBalance extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         // This code should only be temporary until we have the full system built out to manage current issuing balance
 
