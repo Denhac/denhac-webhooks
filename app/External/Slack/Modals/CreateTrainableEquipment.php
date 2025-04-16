@@ -14,8 +14,8 @@ use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class CreateTrainableEquipment implements ModalInterface
 {
-    use ModalTrait;
     use HasExternalOptions;
+    use ModalTrait;
 
     private const EQUIPMENT_NAME = 'equipment-name';
 
@@ -71,8 +71,8 @@ class CreateTrainableEquipment implements ModalInterface
                 Kit::context(
                     elements: [
                         Kit::plainText(
-                            text: 'Users/trainers will be automatically added to these channels/emails. All are ' .
-                            'optional. Email must be an existing group, for now. Please ask in #general and we\'ll ' .
+                            text: 'Users/trainers will be automatically added to these channels/emails. All are '.
+                            'optional. Email must be an existing group, for now. Please ask in #general and we\'ll '.
                             'help make one if needed.'
                         ),
                     ],
@@ -123,7 +123,7 @@ class CreateTrainableEquipment implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->hasMembership(UserMembership::MEMBERSHIP_META_TRAINER)) {
-            Log::warning('CreateTrainableEquipment: Rejecting unauthorized submission from user ' . $request->customer()->id);
+            Log::warning('CreateTrainableEquipment: Rejecting unauthorized submission from user '.$request->customer()->id);
             throw new \Exception('Unauthorized');
         }
 

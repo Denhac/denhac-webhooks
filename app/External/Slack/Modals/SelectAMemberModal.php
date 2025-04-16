@@ -12,8 +12,8 @@ use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class SelectAMemberModal implements ModalInterface
 {
-    use ModalTrait;
     use HasExternalOptions;
+    use ModalTrait;
 
     private const SELECT_A_MEMBER = 'select-a-member';
 
@@ -82,7 +82,7 @@ class SelectAMemberModal implements ModalInterface
             /** @var Customer $customer */
             $name = "{$customer->first_name} {$customer->last_name}";
 
-            if(! is_null($filterValue) && ! Str::contains(Str::lower($name), Str::lower($filterValue))) {
+            if (! is_null($filterValue) && ! Str::contains(Str::lower($name), Str::lower($filterValue))) {
                 continue;
             }
 

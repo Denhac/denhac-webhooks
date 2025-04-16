@@ -6,7 +6,6 @@ use App\External\Slack\ClassFinder;
 use App\External\Slack\Modals\HasExternalOptions;
 use App\Http\Requests\SlackRequest;
 use ReflectionClass;
-use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class SlackOptionsController extends Controller
 {
@@ -33,7 +32,7 @@ class SlackOptionsController extends Controller
         }
         $reflect = new ReflectionClass($modalClassName);
         if (! array_key_exists(HasExternalOptions::class, $reflect->getTraits())) {
-            throw new \Exception("Requested external options from Slack modal that does not implement the external options trait.");
+            throw new \Exception('Requested external options from Slack modal that does not implement the external options trait.');
         }
 
         return $modalClassName::getExternalOptions($request);

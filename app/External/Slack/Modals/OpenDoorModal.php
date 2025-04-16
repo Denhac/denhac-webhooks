@@ -25,7 +25,7 @@ class OpenDoorModal implements ModalInterface
         foreach (Door::all() as $door) {
             $doorButtonOptions->append(Kit::option(
                 text: $door->humanReadableName,
-                value: 'device-' . $door->dsxDeviceId,
+                value: 'device-'.$door->dsxDeviceId,
             ));
         }
 
@@ -57,13 +57,13 @@ class OpenDoorModal implements ModalInterface
     {
         $customer = $request->customer();
         $values = $request->payload()['view']['state']['values'];
-        Log::info('Open Door Modal: ' . print_r($values, true));
+        Log::info('Open Door Modal: '.print_r($values, true));
 
         $selectedOption = collect($values[self::DOORS][self::DOORS]['selected_option']);
 
         /** @var Door $door */
         $door = Door::all()
-            ->filter(fn($door) => $selectedOption['value'] == 'device-' . $door->dsxDeviceId)
+            ->filter(fn ($door) => $selectedOption['value'] == 'device-'.$door->dsxDeviceId)
             ->first();
 
         if (is_null($door)) {
@@ -76,10 +76,10 @@ class OpenDoorModal implements ModalInterface
 
         $earliestAllowedTimestamp = Carbon::now()->subMinutes(5)->getTimestamp();
         $atTheSpace = $accessLogs
-                ->where('user_id', $customer->slack_id)
-                ->where('ip', setting('ip.space'))
-                ->filter(fn($data) => $data['date_last'] >= $earliestAllowedTimestamp)
-                ->count() > 0;
+            ->where('user_id', $customer->slack_id)
+            ->where('ip', setting('ip.space'))
+            ->filter(fn ($data) => $data['date_last'] >= $earliestAllowedTimestamp)
+            ->count() > 0;
 
         if ($atTheSpace) {
             event(new DoorControlUpdated($door->momentaryOpenTime, $door->shouldOpen(true)));
