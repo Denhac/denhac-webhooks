@@ -8,7 +8,7 @@ use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use Symfony\Component\Console\Output\OutputInterface;
+use function Laravel\Prompts\info;
 
 class IssueChecker
 {
@@ -35,11 +35,8 @@ class IssueChecker
             $this->issues = collect();
 
             foreach ($this->getIssueCheckers() as $checker) {
-                if (app()->resolved(OutputInterface::class)) {
-                    $output = app(OutputInterface::class);
-                    $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
-                    $output->writeln("Getting issues for: $shortName");
-                }
+                $shortName = Str::replace('App\\Issues\\Checkers\\', '', get_class($checker));
+                info("Getting issues for: $shortName");
                 $this->issues = $this->issues->merge($checker->getIssues());
             }
         }

@@ -9,6 +9,7 @@ use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\Models\Card;
 use Illuminate\Support\Collection;
+use function Laravel\Prompts\info;
 
 class CardInPossessionOfMultipleCustomers extends IssueBase
 {
@@ -52,44 +53,44 @@ class CardInPossessionOfMultipleCustomers extends IssueBase
 
             public function preamble(): void
             {
-                $this->line('Usually, this will happen if a customer is deleted or if a card got re-used. If');
-                $this->line('one of the customers is deleted, the other customer almost definitely has the');
-                $this->line('card. The same thing is true if one of the customers is active and the other');
-                $this->line("isn't. If they both appear active and both members have the card in their");
-                $this->line('profile, then you unfortunately need to go track down who has the card.');
-                $this->newLine();
-                $this->line('By selecting one here, we will remove the card from the profiles of any non-deleted customer');
+                info('Usually, this will happen if a customer is deleted or if a card got re-used. If');
+                info('one of the customers is deleted, the other customer almost definitely has the');
+                info('card. The same thing is true if one of the customers is active and the other');
+                info("isn't. If they both appear active and both members have the card in their");
+                info('profile, then you unfortunately need to go track down who has the card.');
+                info("");
+                info('By selecting one here, we will remove the card from the profiles of any non-deleted customer');
 
                 foreach ($this->outer->uniqueCustomers as $customerId) {
-                    $this->newLine();
+                    info("");
 
-                    $this->line("Customer ID: $customerId");
+                    info("Customer ID: $customerId");
                     $member = MemberData::byID($customerId);
 
                     if (is_null($member)) {
-                        $this->line('Customer Deleted');
+                        info('Customer Deleted');
 
                         continue;
                     }
 
                     if ($member->cards->contains($this->outer->cardNum)) {
-                        $this->line("Card is in customer's profile");
+                        info("Card is in customer's profile");
                     } else {
-                        $this->line("Card is NOT  in customer's profile");
+                        info("Card is NOT  in customer's profile");
                     }
 
                     if ($member->isMember) {
-                        $this->line('They are an active member');
+                        info('They are an active member');
                     } else {
-                        $this->line('They are NOT an active member');
+                        info('They are NOT an active member');
                     }
 
                     /** @var Card $card */
                     $card = Card::where('number', $this->outer->cardNum)->where('customer_id', $customerId)->first();
                     if ($card->active) {
-                        $this->line('We think the card is currently active');
+                        info('We think the card is currently active');
                     } else {
-                        $this->line('We do NOT think the card is currently active');
+                        info('We do NOT think the card is currently active');
                     }
                 }
             }

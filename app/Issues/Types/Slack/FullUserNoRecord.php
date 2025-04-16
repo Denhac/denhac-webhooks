@@ -9,6 +9,7 @@ use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Issues\Fixing\Preamble;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
+use function Laravel\Prompts\info;
 
 class FullUserNoRecord extends IssueBase
 {
@@ -42,10 +43,10 @@ class FullUserNoRecord extends IssueBase
             ->preamble(new class extends Preamble {
                 public function preamble(): void
                 {
-                    $this->line('Please note that assigning this account to a member will almost definitely');
-                    $this->line('leave their old account in this same state the next time someone checks for');
-                    $this->line('issues to fix.');
-                    $this->newLine();
+                    info('Please note that assigning this account to a member will almost definitely');
+                    info('leave their old account in this same state the next time someone checks for');
+                    info('issues to fix.');
+                    info("");
                 }
             })
             ->option('Deactivate Slack Account', fn () => $this->deactivateSlackAccount())

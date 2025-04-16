@@ -3,15 +3,13 @@
 namespace App\Issues;
 
 use App\Issues\Fixing\Preamble;
-use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
-use Symfony\Component\Console\Question\ChoiceQuestion;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\select;
 
 class ChoiceHelper
 {
     public const CANCEL = "Cancel";
-
-    private OutputStyle $output;
 
     private string $choiceText;
 
@@ -20,17 +18,11 @@ class ChoiceHelper
 
     private ?Preamble $preamble = null;
 
-    public function __construct(OutputStyle $output, string $choiceText)
+    public function __construct(string $choiceText)
     {
         $this->choiceText = $choiceText;
-        $this->output = $output;
         $this->choices = collect();
-        $cancelChoice = function () {
-            return false;
-        };
-
         $this->defaultChoice = self::CANCEL;
-        $this->choices->put(self::CANCEL, $cancelChoice);
     }
 
     public function preamble(string|Preamble $preamble): static
@@ -43,7 +35,7 @@ class ChoiceHelper
 
                 public function preamble(): void
                 {
-                    $this->line($this->message);
+                    info($this->message);
                 }
             };
         } else {
@@ -72,17 +64,23 @@ class ChoiceHelper
      */
     public function run(): bool
     {
+        if(! $this->choices->has(self::CANCEL)) {
+            $cancelChoice = function () {
+                return false;
+            };
+
+            $this->choices->put(self::CANCEL, $cancelChoice);
+        }
+
         if (! is_null($this->preamble)) {
-            $this->preamble->setOutput($this->output);
             $this->preamble->preamble();
         }
 
-        $question = new ChoiceQuestion(
-            $this->choiceText,
-            $this->choices->keys()->toArray(),
-            $this->defaultChoice
+        $choiceResult = select(
+            label: $this->choiceText,
+            options: $this->choices->keys()->toArray(),
+            default: $this->defaultChoice
         );
-        $choiceResult = $this->output->askQuestion($question);
 
         if (empty($choiceResult)) {
             return false;

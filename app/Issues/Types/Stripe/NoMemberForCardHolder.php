@@ -8,6 +8,7 @@ use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Stripe\Issuing\Cardholder;
 use Stripe\StripeClient;
+use function Laravel\Prompts\info;
 
 class NoMemberForCardHolder extends IssueBase
 {
@@ -51,7 +52,7 @@ class NoMemberForCardHolder extends IssueBase
         /** @var MemberData $member */
         $member = $this->selectMember();
         if (is_null($member)) {
-            $this->info('No member selected. Aborting issue fix.');
+            info('No member selected. Aborting issue fix.');
 
             return false;
         }
