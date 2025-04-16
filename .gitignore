@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/pail
 /vendor
 .env
 .env.*
@@ -129,3 +130,4 @@ storage/backups
 cron-fail.log
 .DS_Store
 .phpunit.cache/
+/.nova

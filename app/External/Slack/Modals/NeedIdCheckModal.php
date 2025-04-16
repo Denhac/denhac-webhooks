@@ -53,7 +53,7 @@ class NeedIdCheckModal implements ModalInterface
                         placeholder: 'Select a Customer',
                         options: $customers
                     ),
-                )
+                ),
             ],
         );
     }
@@ -66,7 +66,7 @@ class NeedIdCheckModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->canIDcheck()) {
-            Log::warning('NeedIdCheckModal: Rejecting unauthorized submission from user ' . $request->customer()->id);
+            Log::warning('NeedIdCheckModal: Rejecting unauthorized submission from user '.$request->customer()->id);
             throw new \Exception('Unauthorized');
         }
 
