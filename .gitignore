@@ -3,6 +3,7 @@
 /public/storage
 /storage/*.key
 /storage/*.json
+/storage/pail
 /vendor
 .env
 .phpunit.result.cache
@@ -129,3 +130,4 @@ storage/backups
 cron-fail.log
 .DS_Store
 .phpunit.cache/
+/.nova
