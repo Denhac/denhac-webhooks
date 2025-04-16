@@ -16,9 +16,9 @@ use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class EquipmentAuthorization implements ModalInterface
 {
+    use HasExternalOptions;
     use ModalTrait;
     use RespondsToBlockActions;
-    use HasExternalOptions;
 
     private const string EQUIPMENT_DROPDOWN = 'equipment-dropdown';
 
@@ -121,7 +121,7 @@ class EquipmentAuthorization implements ModalInterface
             ]);
         }
 
-        return new SuccessModal("Authorization submitted!")->update();
+        return new SuccessModal('Authorization submitted!')->update();
     }
 
     /**

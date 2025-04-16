@@ -30,7 +30,7 @@ class ManageOpenHouseModal implements ModalInterface
         foreach (Door::all() as $door) {
             $doorCheckboxOptions->append(Kit::option(
                 text: $door->humanReadableName,
-                value: 'device-' . $door->dsxDeviceId,
+                value: 'device-'.$door->dsxDeviceId,
                 initial: $door->openDuringOpenHouseByDefault
             ));
         }
@@ -74,12 +74,12 @@ class ManageOpenHouseModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->canIDcheck()) {
-            Log::warning('ManageOpenHouseModal: Rejecting unauthorized submission from user ' . $request->customer()->id);
+            Log::warning('ManageOpenHouseModal: Rejecting unauthorized submission from user '.$request->customer()->id);
             throw new \Exception('Unauthorized');
         }
 
         $values = $request->payload()['view']['state']['values'];
-        Log::info('Manage open house modal: ' . print_r($values, true));
+        Log::info('Manage open house modal: '.print_r($values, true));
 
         $selectedTime = $values[self::EXPIRES_TIME][self::EXPIRES_TIME]['selected_time'];
         $selectedOptions = collect($values[self::DOORS][self::DOORS]['selected_options'])
@@ -89,13 +89,13 @@ class ManageOpenHouseModal implements ModalInterface
 
         $selectedTimeCarbon = now()->tz('America/Denver');
         $selectedTime = explode(':', $selectedTime);
-        $selectedTimeCarbon->hour = (int)$selectedTime[0];
-        $selectedTimeCarbon->minute = (int)$selectedTime[1];
+        $selectedTimeCarbon->hour = (int) $selectedTime[0];
+        $selectedTimeCarbon->minute = (int) $selectedTime[1];
 
         $doors = Door::all();
         /** @var Door $door */
         foreach ($doors as $door) {
-            $shouldOpen = $selectedOptions->contains('device-' . $door->dsxDeviceId);
+            $shouldOpen = $selectedOptions->contains('device-'.$door->dsxDeviceId);
             if ($selectedOptions->contains(self::CLOSE_ALL_DOORS)) {
                 $door->shouldOpen(false);
             } else {
