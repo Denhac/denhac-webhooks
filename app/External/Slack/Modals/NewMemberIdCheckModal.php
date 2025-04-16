@@ -73,7 +73,7 @@ class NewMemberIdCheckModal implements ModalInterface
                 ),
                 Kit::section(
                     text: Kit::plainText(
-                        'The numbers on the card will look like either "12345 3300687-1" or "175-012345" and ' .
+                        'The numbers on the card will look like either "12345 3300687-1" or "175-012345" and '.
                         'you should enter "12345" in this field.',
                     ),
                 ),

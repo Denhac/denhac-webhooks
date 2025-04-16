@@ -25,8 +25,8 @@ class ManageVolunteerGroups implements ModalInterface
             submit: 'Submit',
             blocks: [
                 Kit::section(
-                    text: "This feature is not yet implemented.",
-                )
+                    text: 'This feature is not yet implemented.',
+                ),
             ]
         );
     }

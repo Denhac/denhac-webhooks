@@ -54,7 +54,7 @@ class MembershipOptionsModal implements ModalInterface
                         placeholder: 'Select an item',
                         options: $membershipOptions,
                     ),
-                )
+                ),
             ]
         );
 
@@ -81,7 +81,7 @@ class MembershipOptionsModal implements ModalInterface
                 break;
             case self::QUICK_OPEN_HOUSE_VALUE:
                 if (! $request->customer()->canIDcheck()) {
-                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user ' . $request->customer()->id);
+                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
                     throw new \Exception('Unauthorized');
                 }
                 Door::quickOpenHouse();
@@ -89,7 +89,7 @@ class MembershipOptionsModal implements ModalInterface
                 return self::clearViewStack();
             case self::ALL_DOORS_DEFAULT_VALUE:
                 if (! $request->customer()->canIDcheck()) {
-                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user ' . $request->customer()->id);
+                    Log::warning('QuickOpenHouse: Rejecting unauthorized submission from user '.$request->customer()->id);
                     throw new \Exception('Unauthorized');
                 }
                 Door::quickDefaultDoors();

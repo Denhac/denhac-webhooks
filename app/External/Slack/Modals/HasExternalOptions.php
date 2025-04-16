@@ -7,5 +7,5 @@ use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 trait HasExternalOptions
 {
-    public abstract static function getExternalOptions(SlackRequest $request): OptionsResult;
+    abstract public static function getExternalOptions(SlackRequest $request): OptionsResult;
 }

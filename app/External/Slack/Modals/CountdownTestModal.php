@@ -26,7 +26,7 @@ class CountdownTestModal implements ModalInterface
             blocks: [
                 Kit::section(
                     text: 'This is a test to see how responsive something like a countdown is.'
-                )
+                ),
             ],
         );
 
@@ -41,7 +41,7 @@ class CountdownTestModal implements ModalInterface
                             actionId: self::START_COUNTDOWN,
                             text: 'Start Countdown',
                             style: ButtonStyle::PRIMARY,
-                        )
+                        ),
                     ],
                     blockId: self::START_COUNTDOWN
                 ),
