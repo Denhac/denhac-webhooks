@@ -20,12 +20,14 @@ class AllCardsController extends Controller
             ->through(function ($customer) {
                 /** @var Customer $customer */
 
-                $cards = $customer->cards->map(function ($card) use ($customer) {
+                $cards = $customer->cards
+                    ->filter(fn($card) => $card->member_has_card)
+                    ->map(function ($card) use ($customer) {
                     /** @var Card $card */
 
                     // Their card should only be active if it's already set to active, they have it, and they're a
-                    // member.
-                    $activeCard = $card->active && $card->member_has_card && $customer->member;
+                    // member. We already filter out cards that the member for sure does not have.
+                    $activeCard = $card->active && $customer->member;
 
                     $access = [];
                     if($activeCard) {
