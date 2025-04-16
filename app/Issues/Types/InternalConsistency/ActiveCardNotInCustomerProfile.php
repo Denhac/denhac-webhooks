@@ -9,6 +9,7 @@ use App\Issues\Fixing\Preamble;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
+use function Laravel\Prompts\info;
 
 class ActiveCardNotInCustomerProfile extends IssueBase
 {
@@ -50,27 +51,27 @@ class ActiveCardNotInCustomerProfile extends IssueBase
 
                 public function preamble(): void
                 {
-                    $this->line("This issue requires some communication with the customer. There's a chance that");
-                    $this->line('because this card is active, that they are using this card. If we deactivate the');
-                    $this->line("card and they're using it, we could mess up their access to the space. If we add");
-                    $this->line("it to their profile, but they don't have it, we're creating a possible security");
-                    $this->line('issue. You can either email them or try to find the last badge in use to decide');
-                    $this->line('on the correct coarse of action.');
-                    $this->newLine();
-                    $this->line("For non-members, it's easy enough to just revoke this card and issue a new one.");
-                    $this->line('It is also abnormal for a member to have or use more than one card.');
-                    $this->newLine();
+                    info("This issue requires some communication with the customer. There's a chance that");
+                    info('because this card is active, that they are using this card. If we deactivate the');
+                    info("card and they're using it, we could mess up their access to the space. If we add");
+                    info("it to their profile, but they don't have it, we're creating a possible security");
+                    info('issue. You can either email them or try to find the last badge in use to decide');
+                    info('on the correct coarse of action.');
+                    info("");
+                    info("For non-members, it's easy enough to just revoke this card and issue a new one.");
+                    info('It is also abnormal for a member to have or use more than one card.');
+                    info("");
 
-                    $this->line("Here's what we know:");
+                    info("Here's what we know:");
 
                     if ($this->outer->member->isMember) {
-                        $this->line(' - They are a member');
+                        info(' - They are a member');
                     } else {
-                        $this->line(' - They are NOT a member');
+                        info(' - They are NOT a member');
                     }
-                    $this->line(" - Cards in their profile: {$this->outer->member->cards->implode(', ')}");
+                    info(" - Cards in their profile: {$this->outer->member->cards->implode(', ')}");
 
-                    $this->newLine();
+                    info("");
                 }
             })
             ->option('Add card to member profile', fn() => $this->addCardToMemberProfile())

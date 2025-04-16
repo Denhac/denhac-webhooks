@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "0a285275cf1968431507061cd080c95f",
+=======
+    "content-hash": "1c641d85dafc414b1318444da3607ac9",
+>>>>>>> ca8eba5 (Issues now use Laravel Prompt)
     "packages": [
         {
             "name": "amphp/amp",
