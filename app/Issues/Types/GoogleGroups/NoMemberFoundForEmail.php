@@ -5,14 +5,13 @@ namespace App\Issues\Types\GoogleGroups;
 use App\DataCache\MemberData;
 use App\External\Google\GoogleApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
 
-class NoMemberFoundForEmail extends IssueBase
+class NoMemberFoundForEmail extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private string $email;
 
     private Collection $groupsForEmail;
@@ -40,10 +39,10 @@ class NoMemberFoundForEmail extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->option('Remove email from groups', fn () => $this->removeMemberEmailFromGroups())
             ->option('Assign email to member', fn () => $this->assignEmailToMember())
-            ->run();
+            ->fix();
     }
 
     private function removeMemberEmailFromGroups(): bool

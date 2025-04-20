@@ -4,14 +4,13 @@ namespace App\Issues\Types\AccessCards;
 
 use App\Aggregates\MembershipAggregate;
 use App\DataCache\MemberData;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
 
-class NonMemberHasActiveCard extends IssueBase
+class NonMemberHasActiveCard extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private $cardNumber;
@@ -39,14 +38,10 @@ class NonMemberHasActiveCard extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->option('Deactivate Card', function () {
-                MembershipAggregate::make($this->member->id)
-                    ->recordThat(new CardSentForDeactivation($this->member->id, $this->cardNumber))
-                    ->persist();
+        MembershipAggregate::make($this->member->id)
+            ->recordThat(new CardSentForDeactivation($this->member->id, $this->cardNumber))
+            ->persist();
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

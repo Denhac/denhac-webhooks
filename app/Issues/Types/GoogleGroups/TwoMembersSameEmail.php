@@ -4,14 +4,14 @@ namespace App\Issues\Types\GoogleGroups;
 
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
+use function Laravel\Prompts\text;
 
-class TwoMembersSameEmail extends IssueBase
+class TwoMembersSameEmail extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private string $email;
 
     private Collection $membersForEmail;
@@ -39,7 +39,7 @@ class TwoMembersSameEmail extends IssueBase
 
     public function fix(): bool
     {
-        $options = $this->issueFixChoice();
+        $options = FixChooser::new();
 
         $needToUpdate = collect($this->membersForEmail);
 
@@ -56,7 +56,7 @@ class TwoMembersSameEmail extends IssueBase
                 }
             }
 
-            $runResult = $options->run();
+            $runResult = $options->fix();
             if (! $runResult) {  // Cancelled
                 return false;
             }
@@ -67,7 +67,7 @@ class TwoMembersSameEmail extends IssueBase
 
     private function updatePrimaryEmail(MemberData $member, Collection &$needToUpdate): bool
     {
-        $newEmail = $this->ask('What should the new email be?');
+        $newEmail = text('What should the new email be?');
 
         /** @var WooCommerceApi $wooCommerceApi */
         $wooCommerceApi = app(WooCommerceApi::class);

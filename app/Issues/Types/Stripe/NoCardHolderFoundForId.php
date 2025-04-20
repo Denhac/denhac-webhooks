@@ -4,13 +4,12 @@ namespace App\Issues\Types\Stripe;
 
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 
-class NoCardHolderFoundForId extends IssueBase
+class NoCardHolderFoundForId extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     public function __construct(MemberData $member)
@@ -35,9 +34,9 @@ class NoCardHolderFoundForId extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->defaultOption('Clear card holder id', fn () => $this->clearCardHolderId())
-            ->run();
+            ->fix();
     }
 
     private function clearCardHolderId(): bool

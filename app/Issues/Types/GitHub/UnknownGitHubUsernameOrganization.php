@@ -5,13 +5,12 @@ namespace App\Issues\Types\GitHub;
 use App\DataCache\MemberData;
 use App\External\GitHub\GitHubApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 
-class UnknownGitHubUsernameOrganization extends IssueBase
+class UnknownGitHubUsernameOrganization extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private string $gitHubUsername;
 
     public function __construct(string $gitHubUsername)
@@ -36,10 +35,10 @@ class UnknownGitHubUsernameOrganization extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->defaultOption('Remove from GitHub team', fn () => $this->removeFromGitHubTeam())
             ->option('Assign to member', fn () => $this->assignGitHubUsernameToMember())
-            ->run();
+            ->fix();
     }
 
     private function removeFromGitHubTeam(): bool

@@ -3,7 +3,7 @@
 namespace App\Issues;
 
 use App\Issues\Checkers\IssueCheck;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -57,7 +57,7 @@ class IssueChecker
             ->filter(fn ($name) => str_starts_with($name, 'App\\Issues\\Types'))
             ->map(fn ($name) => new ReflectionClass($name))
             ->filter(fn ($reflect) => $reflect->isSubclassOf(IssueBase::class))
-            ->filter(fn ($reflect) => ! array_key_exists(ICanFixThem::class, $reflect->getTraits()))
+            ->filter(fn ($reflect) => !$reflect->implementsInterface(Fixable::class))
             ->map(fn ($reflect) => $reflect->getName())
             ->values();
     }

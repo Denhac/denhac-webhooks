@@ -2,13 +2,15 @@
 
 namespace App\Issues;
 
+use App\Issues\Fixing\Fixable;
 use App\Issues\Fixing\Preamble;
 use Illuminate\Support\Collection;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\select;
 
-class ChoiceHelper
+class FixChooser implements Fixable
 {
+    private const DEFAULT_TEXT = 'How do you want to fix this issue?';
     public const CANCEL = "Cancel";
 
     private string $choiceText;
@@ -18,11 +20,19 @@ class ChoiceHelper
 
     private ?Preamble $preamble = null;
 
-    public function __construct(string $choiceText)
+    public function __construct(string $choiceText = self::DEFAULT_TEXT)
     {
         $this->choiceText = $choiceText;
         $this->choices = collect();
         $this->defaultChoice = self::CANCEL;
+    }
+
+    // This method is helpful for builders, but is required to avoid one of these two unwanted syntaxes:
+    // tap(new FixChooser())
+    // (new FixChooser())
+    public static function new(string $choiceText = self::DEFAULT_TEXT): static
+    {
+        return new FixChooser($choiceText);
     }
 
     public function preamble(string|Preamble $preamble): static
@@ -59,10 +69,7 @@ class ChoiceHelper
         return $this->option($name, $callback);
     }
 
-    /**
-     * @return bool Whether the issue was fixed or not
-     */
-    public function run(): bool
+    function fix(): bool
     {
         if(! $this->choices->has(self::CANCEL)) {
             $cancelChoice = function () {

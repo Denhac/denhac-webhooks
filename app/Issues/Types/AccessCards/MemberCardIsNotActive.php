@@ -4,17 +4,16 @@ namespace App\Issues\Types\AccessCards;
 
 use App\Aggregates\MembershipAggregate;
 use App\DataCache\MemberData;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\Fixable;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardSentForActivation;
 
-class MemberCardIsNotActive extends IssueBase
+class MemberCardIsNotActive extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
+    public MemberData $member;
 
-    private MemberData $member;
-
-    private $cardNumber;
+    public $cardNumber;
 
     public function __construct(MemberData $member, $cardNumber)
     {
@@ -37,16 +36,12 @@ class MemberCardIsNotActive extends IssueBase
         return "{$this->member->first_name} {$this->member->last_name} has the access card $this->cardNumber but it doesn't appear to be active";
     }
 
-    public function fix(): bool
+    function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->option('Activate Card', function () {
-                MembershipAggregate::make($this->member->id)
-                    ->recordThat(new CardSentForActivation($this->member->id, $this->cardNumber))
-                    ->persist();
+        MembershipAggregate::make($this->member->id)
+            ->recordThat(new CardSentForActivation($this->member->id, $this->cardNumber))
+            ->persist();
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

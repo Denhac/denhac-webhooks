@@ -3,14 +3,13 @@
 namespace App\Issues\Types\Slack;
 
 use App\DataCache\MemberData;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 
-class NonMemberHasFullAccount extends IssueBase
+class NonMemberHasFullAccount extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private $slackUser;
@@ -38,12 +37,12 @@ class NonMemberHasFullAccount extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->defaultOption('Deactivate Slack account', function () {
                 dispatch(new DemoteMemberToPublicOnlyMemberInSlack($this->member->id));
 
                 return true;
             })
-            ->run();
+            ->fix();
     }
 }

@@ -3,14 +3,12 @@
 namespace App\Issues\Types\Slack;
 
 use App\DataCache\MemberData;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\Jobs\MakeCustomerRegularMemberInSlack;
 
-class MemberHasRestrictedAccount extends IssueBase
+class MemberHasRestrictedAccount extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private $slackUser;
@@ -41,12 +39,8 @@ class MemberHasRestrictedAccount extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Activate Slack account', function () {
-                dispatch(new MakeCustomerRegularMemberInSlack($this->member->id));
+        dispatch(new MakeCustomerRegularMemberInSlack($this->member->id));
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

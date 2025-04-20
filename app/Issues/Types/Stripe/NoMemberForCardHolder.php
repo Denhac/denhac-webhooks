@@ -4,16 +4,15 @@ namespace App\Issues\Types\Stripe;
 
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 use Stripe\Issuing\Cardholder;
 use Stripe\StripeClient;
 use function Laravel\Prompts\info;
 
-class NoMemberForCardHolder extends IssueBase
+class NoMemberForCardHolder extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private Cardholder $cardHolder;
 
     public function __construct(Cardholder $cardHolder)
@@ -41,10 +40,10 @@ class NoMemberForCardHolder extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->option('Match Member', fn () => $this->matchMember())
             ->option('Deactivate Card Holder', fn () => $this->deactivateCardHolder())
-            ->run();
+            ->fix();
     }
 
     private function matchMember(): bool

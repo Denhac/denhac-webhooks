@@ -4,13 +4,11 @@ namespace App\Issues\Types\GitHub;
 
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
-class UsernameDoesNotExist extends IssueBase
+class UsernameDoesNotExist extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     public function __construct(MemberData $member)
@@ -35,22 +33,18 @@ class UsernameDoesNotExist extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Clear GitHub username field for member', function () {
-                $wooCommerceApi = app(WooCommerceApi::class);
+        $wooCommerceApi = app(WooCommerceApi::class);
 
-                $wooCommerceApi->customers
-                    ->update($this->member->id, [
-                        'meta_data' => [
-                            [
-                                'key' => 'github_username',
-                                'value' => null,
-                            ],
-                        ],
-                    ]);
+        $wooCommerceApi->customers
+            ->update($this->member->id, [
+                'meta_data' => [
+                    [
+                        'key' => 'github_username',
+                        'value' => null,
+                    ],
+                ],
+            ]);
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

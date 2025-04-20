@@ -4,14 +4,12 @@ namespace App\Issues\Types\InternalConsistency;
 
 use App\Aggregates\MembershipAggregate;
 use App\DataCache\MemberData;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardRemoved;
 
-class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
+class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private $cardNumber;
@@ -40,15 +38,11 @@ class CustomerStillInPossessionOfCardNotInCustomerProfile extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Send CardRemoved event', function () {
-                // Record that is fine since we just want the projector to update
-                MembershipAggregate::make($this->member->id)
-                    ->recordThat(new CardRemoved($this->member->id, $this->cardNumber))
-                    ->persist();
+        // Record that is fine since we just want the projector to update
+        MembershipAggregate::make($this->member->id)
+            ->recordThat(new CardRemoved($this->member->id, $this->cardNumber))
+            ->persist();
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

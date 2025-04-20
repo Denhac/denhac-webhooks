@@ -4,17 +4,16 @@ namespace App\Issues\Types\InternalConsistency;
 
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Fixing\Preamble;
-use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\Models\Card;
 use Illuminate\Support\Collection;
 use function Laravel\Prompts\info;
 
-class CardInPossessionOfMultipleCustomers extends IssueBase
+class CardInPossessionOfMultipleCustomers extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     public $cardNum;
 
     private $numEntries;
@@ -45,7 +44,7 @@ class CardInPossessionOfMultipleCustomers extends IssueBase
 
     public function fix(): bool
     {
-        $options = $this->issueFixChoice();
+        $options = FixChooser::new();
         $options->preamble(new class($this) extends Preamble {
             public function __construct(private readonly CardInPossessionOfMultipleCustomers $outer)
             {
@@ -100,7 +99,7 @@ class CardInPossessionOfMultipleCustomers extends IssueBase
             $options->option("Give the card {$this->cardNum} to customer id $customerId", fn () => $this->assignCardTo($customerId));
         }
 
-        return $options->run();
+        return $options->fix();
     }
 
     private function assignCardTo(int $winnerCustomerId): bool

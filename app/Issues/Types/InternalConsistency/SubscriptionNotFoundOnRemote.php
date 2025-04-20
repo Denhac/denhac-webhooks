@@ -3,14 +3,12 @@
 namespace App\Issues\Types\InternalConsistency;
 
 use App\Aggregates\MembershipAggregate;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\Models\Subscription;
 
-class SubscriptionNotFoundOnRemote extends IssueBase
+class SubscriptionNotFoundOnRemote extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private int $subscription_id;
 
     public function __construct($subscription_id)
@@ -35,17 +33,13 @@ class SubscriptionNotFoundOnRemote extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Delete local subscription', function () {
-                /** @var Subscription $subscription */
-                $subscription = Subscription::find($this->subscription_id);
+        /** @var Subscription $subscription */
+        $subscription = Subscription::find($this->subscription_id);
 
-                MembershipAggregate::make($subscription->customer_id)
-                    ->deleteSubscription(['id' => $subscription->id])
-                    ->persist();
+        MembershipAggregate::make($subscription->customer_id)
+            ->deleteSubscription(['id' => $subscription->id])
+            ->persist();
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

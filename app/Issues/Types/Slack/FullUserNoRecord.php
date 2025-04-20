@@ -6,15 +6,14 @@ use App\DataCache\MemberData;
 use App\External\Slack\Channels;
 use App\External\Slack\SlackApi;
 use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Fixing\Preamble;
-use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use function Laravel\Prompts\info;
 
-class FullUserNoRecord extends IssueBase
+class FullUserNoRecord extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private $slackUser;
 
     public function __construct($slackUser)
@@ -39,7 +38,7 @@ class FullUserNoRecord extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->preamble(new class extends Preamble {
                 public function preamble(): void
                 {
@@ -51,7 +50,7 @@ class FullUserNoRecord extends IssueBase
             })
             ->option('Deactivate Slack Account', fn () => $this->deactivateSlackAccount())
             ->option('Assign to member', fn () => $this->assignSlackUserToMember())
-            ->run();
+            ->fix();
     }
 
     private function deactivateSlackAccount(): bool

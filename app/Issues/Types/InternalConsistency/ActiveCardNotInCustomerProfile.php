@@ -5,16 +5,15 @@ namespace App\Issues\Types\InternalConsistency;
 use App\Aggregates\MembershipAggregate;
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Fixing\Preamble;
-use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
 use function Laravel\Prompts\info;
 
-class ActiveCardNotInCustomerProfile extends IssueBase
+class ActiveCardNotInCustomerProfile extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     public MemberData $member;
 
     private $cardNumber;
@@ -43,7 +42,7 @@ class ActiveCardNotInCustomerProfile extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->preamble(new class($this) extends Preamble {
                 public function __construct(public ActiveCardNotInCustomerProfile $outer)
                 {
@@ -76,7 +75,7 @@ class ActiveCardNotInCustomerProfile extends IssueBase
             })
             ->option('Add card to member profile', fn() => $this->addCardToMemberProfile())
             ->option('Deactivate card', fn() => $this->deactivateCard())
-            ->run();
+            ->fix();
     }
 
     private function addCardToMemberProfile(): bool

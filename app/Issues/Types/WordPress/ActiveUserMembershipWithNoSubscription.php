@@ -24,7 +24,6 @@ class ActiveUserMembershipWithNoSubscription extends IssueBase
 
     public function getIssueText(): string
     {
-
         return "{$this->memberData->full_name} ({$this->memberData->id}) has user membership ({$this->userMembership['id']}) with status "
             ."\"{$this->userMembership['status']}\" with no linked subscription";
     }
