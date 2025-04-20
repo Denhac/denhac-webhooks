@@ -4,14 +4,13 @@ namespace App\Issues\Types\AccessCards;
 
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Collection;
 
-class ActiveCardMultipleAccounts extends IssueBase
+class ActiveCardMultipleAccounts extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private $cardHolder;
 
     private Collection $membersWithCard;
@@ -41,7 +40,7 @@ class ActiveCardMultipleAccounts extends IssueBase
 
     public function fix(): bool
     {
-        $choiceHelper = $this->issueFixChoice();
+        $choiceHelper = FixChooser::new();
 
         foreach ($this->membersWithCard as $memberData) {
             /** @var MemberData $memberData */
@@ -51,10 +50,10 @@ class ActiveCardMultipleAccounts extends IssueBase
             );
         }
 
-        return $choiceHelper->run();
+        return $choiceHelper->fix();
     }
 
-    private function keepOnlyCardHolder(MemberData $winnerMemberData)
+    private function keepOnlyCardHolder(MemberData $winnerMemberData): bool
     {
         $cardNum = $this->cardHolder['card_num'];
 
@@ -79,5 +78,7 @@ class ActiveCardMultipleAccounts extends IssueBase
                     ],
                 ]);
         }
+
+        return true;
     }
 }

@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Issues\Fixing\Fixable;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\IssueChecker;
-use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
@@ -48,19 +49,20 @@ class IdentifyIssues extends Command
             /** @var IssueBase $firstIssue */
             $firstIssue = $myIssues->first();
             $issueTitle = $firstIssue->getIssueTitle();
-            $issueTraits = (new \ReflectionClass($firstIssue))->getTraits();
-            $canFixThisIssueType = array_key_exists(ICanFixThem::class, $issueTraits);
+            $canFixThisIssueType = $firstIssue instanceof Fixable;
+            $canFixAutomatically = $firstIssue instanceof ICanFixThem;
 
             $this->info(sprintf('%d: %s (%d)', $issueNumber, $issueTitle, count($myIssues)));
             $this->info("URL: {$firstIssue->getIssueURL()}");
             if ($canFixThisIssueType) {
-                $this->info('These issues can be fixed by this tool.');
+                $automatedText = $canFixAutomatically ? "They will be fixed automatically." : "";
+                $this->info("These issues can be fixed by this tool. $automatedText");
             }
             foreach ($myIssues as $issue) {
                 /** @var IssueBase $issue */
                 $this->info("\t{$issue->getIssueText()}");
                 if ($canFixThisIssueType) {
-                    /** @var ICanFixThem|IssueBase $issue */
+                    /** @var Fixable|IssueBase $issue */
                     $fixableIssues->add($issue);
                 }
             }
@@ -81,11 +83,20 @@ class IdentifyIssues extends Command
 
         $numIssuesFixed = 0;
         foreach ($fixableIssues as $issue) {
-            /** @var IssueBase|ICanFixThem $issue */
+            /** @var IssueBase|Fixable $issue */
             $this->info(sprintf('%d: %s', $issue::getIssueNumber(), $issue->getIssueText()));
             try {
-                if ($issue->fix()) {
+                $wasFixed = $issue->fix();
+                if ($wasFixed) {
                     $numIssuesFixed++;
+                }
+
+                if($issue instanceof ICanFixThem) {
+                    if($wasFixed) {
+                        $this->info("This issue was automatically fixed.");
+                    } else {
+                        $this->info("This issue failed to be fixed automatically.");
+                    }
                 }
             } catch (\Exception $exception) {
                 $this->getApplication()->renderThrowable($exception, $this->output->getOutput());

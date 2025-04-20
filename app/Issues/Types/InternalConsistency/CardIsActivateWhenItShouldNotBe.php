@@ -4,14 +4,12 @@ namespace App\Issues\Types\InternalConsistency;
 
 use App\Aggregates\MembershipAggregate;
 use App\DataCache\MemberData;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
 
-class CardIsActivateWhenItShouldNotBe extends IssueBase
+class CardIsActivateWhenItShouldNotBe extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private $memberCard;
@@ -39,13 +37,11 @@ class CardIsActivateWhenItShouldNotBe extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Deactivate non-member card', function () {
-                // Record that is fine since we just want the reactor to update
-                MembershipAggregate::make($this->member->id)
-                    ->recordThat(new CardSentForDeactivation($this->member->id, $this->memberCard))
-                    ->persist();
-            })
-            ->run();
+        // Record that is fine since we just want the reactor to update
+        MembershipAggregate::make($this->member->id)
+            ->recordThat(new CardSentForDeactivation($this->member->id, $this->memberCard))
+            ->persist();
+
+        return true;
     }
 }

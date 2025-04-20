@@ -4,14 +4,12 @@ namespace App\Issues\Types\GoogleGroups;
 
 use App\DataCache\MemberData;
 use App\External\Google\GoogleApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use Illuminate\Support\Str;
 
-class ActiveMemberNotInGroups extends IssueBase
+class ActiveMemberNotInGroups extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private $memberGroupsMissing;
@@ -47,16 +45,12 @@ class ActiveMemberNotInGroups extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Add member to groups', function () {
-                /** @var GoogleApi $googleApi */
-                $googleApi = app(GoogleApi::class);
-                foreach ($this->memberGroupsMissing as $group) {
-                    $googleApi->group($group)->add($this->member->primaryEmail);
-                }
+        /** @var GoogleApi $googleApi */
+        $googleApi = app(GoogleApi::class);
+        foreach ($this->memberGroupsMissing as $group) {
+            $googleApi->group($group)->add($this->member->primaryEmail);
+        }
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

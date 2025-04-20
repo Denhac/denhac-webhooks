@@ -4,13 +4,12 @@ namespace App\Issues\Types\GitHub;
 
 use App\DataCache\MemberData;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 
-class InvalidUsername extends IssueBase
+class InvalidUsername extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private string $correctedUsername;
@@ -38,10 +37,10 @@ class InvalidUsername extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->defaultOption("Use suggested username: $this->correctedUsername", fn () => $this->useSuggestedUsername())
             ->option('Clear GitHub username field for member', fn () => $this->clearGitHubUsernameField())
-            ->run();
+            ->fix();
     }
 
     private function useSuggestedUsername(): bool

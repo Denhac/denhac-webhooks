@@ -4,13 +4,11 @@ namespace App\Issues\Types\InternalConsistency;
 
 use App\Aggregates\MembershipAggregate;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
-class UserMembershipStatusDiffers extends IssueBase
+class UserMembershipStatusDiffers extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private int $userMembershipId;
 
     private string $remote_status;
@@ -41,18 +39,14 @@ class UserMembershipStatusDiffers extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Update User Membership from WordPress', function () {
-                /** @var WooCommerceApi $wooCommerceApi */
-                $wooCommerceApi = app(WooCommerceApi::class);
-                $userMembership = $wooCommerceApi->members->get($this->userMembershipId)->toArray();
+        /** @var WooCommerceApi $wooCommerceApi */
+        $wooCommerceApi = app(WooCommerceApi::class);
+        $userMembership = $wooCommerceApi->members->get($this->userMembershipId)->toArray();
 
-                MembershipAggregate::make($userMembership['customer_id'])
-                    ->updateUserMembership($userMembership)
-                    ->persist();
+        MembershipAggregate::make($userMembership['customer_id'])
+            ->updateUserMembership($userMembership)
+            ->persist();
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

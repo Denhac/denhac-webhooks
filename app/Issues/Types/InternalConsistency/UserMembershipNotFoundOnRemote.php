@@ -3,14 +3,12 @@
 namespace App\Issues\Types\InternalConsistency;
 
 use App\Aggregates\MembershipAggregate;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\Models\UserMembership;
 
-class UserMembershipNotFoundOnRemote extends IssueBase
+class UserMembershipNotFoundOnRemote extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private int $userMembershipId;
 
     public function __construct($userMembershipId)
@@ -35,17 +33,13 @@ class UserMembershipNotFoundOnRemote extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Delete local user membership', function () {
-                /** @var UserMembership $user_membership */
-                $userMembership = UserMembership::find($this->userMembershipId);
+        /** @var UserMembership $user_membership */
+        $userMembership = UserMembership::find($this->userMembershipId);
 
-                MembershipAggregate::make($userMembership->customer_id)
-                    ->deleteUserMembership(['id' => $userMembership->id])
-                    ->persist();
+        MembershipAggregate::make($userMembership->customer_id)
+            ->deleteUserMembership(['id' => $userMembership->id])
+            ->persist();
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

@@ -4,13 +4,11 @@ namespace App\Issues\Types\GitHub;
 
 use App\DataCache\MemberData;
 use App\External\GitHub\GitHubApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
-class UsernameNotListedInOrganization extends IssueBase
+class UsernameNotListedInOrganization extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     public function __construct(MemberData $member)
@@ -35,14 +33,10 @@ class UsernameNotListedInOrganization extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Add to GitHub team', function () {
-                /** @var GitHubApi $gitHubApi */
-                $gitHubApi = app(GitHubApi::class);
-                $gitHubApi->denhac()->team('members')->add($this->member->githubUsername);
+        /** @var GitHubApi $gitHubApi */
+        $gitHubApi = app(GitHubApi::class);
+        $gitHubApi->denhac()->team('members')->add($this->member->githubUsername);
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }

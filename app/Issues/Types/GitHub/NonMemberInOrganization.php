@@ -4,13 +4,12 @@ namespace App\Issues\Types\GitHub;
 
 use App\DataCache\MemberData;
 use App\External\GitHub\GitHubApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\FixChooser;
+use App\Issues\Fixing\Fixable;
 use App\Issues\Types\IssueBase;
 
-class NonMemberInOrganization extends IssueBase
+class NonMemberInOrganization extends IssueBase implements Fixable
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     public function __construct(MemberData $member)
@@ -35,7 +34,7 @@ class NonMemberInOrganization extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
+        return FixChooser::new()
             ->defaultOption('Remove from GitHub team', function () {
                 /** @var GitHubApi $gitHubApi */
                 $gitHubApi = app(GitHubApi::class);
@@ -44,6 +43,6 @@ class NonMemberInOrganization extends IssueBase
 
                 return true;
             })
-            ->run();
+            ->fix();
     }
 }

@@ -4,13 +4,11 @@ namespace App\Issues\Types\GoogleGroups;
 
 use App\DataCache\MemberData;
 use App\External\Google\GoogleApi;
-use App\Issues\Types\ICanFixThem;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
-class NotActiveMemberButInGroups extends IssueBase
+class NotActiveMemberButInGroups extends IssueBase implements ICanFixThem
 {
-    use ICanFixThem;
-
     private MemberData $member;
 
     private $email;
@@ -41,16 +39,12 @@ class NotActiveMemberButInGroups extends IssueBase
 
     public function fix(): bool
     {
-        return $this->issueFixChoice()
-            ->defaultOption('Remove member from groups', function () {
-                /** @var GoogleApi $googleApi */
-                $googleApi = app(GoogleApi::class);
-                foreach ($this->groupsForEmail as $group) {
-                    $googleApi->group($group)->remove($this->email);
-                }
+        /** @var GoogleApi $googleApi */
+        $googleApi = app(GoogleApi::class);
+        foreach ($this->groupsForEmail as $group) {
+            $googleApi->group($group)->remove($this->email);
+        }
 
-                return true;
-            })
-            ->run();
+        return true;
     }
 }
