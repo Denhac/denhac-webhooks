@@ -2,7 +2,9 @@
 
 namespace App\External;
 
+use Laravel\Prompts\Concerns\Themes;
 use Laravel\Prompts\Progress;
+use Laravel\Prompts\Prompt;
 use function Laravel\Prompts\progress;
 
 trait HasApiProgressBar

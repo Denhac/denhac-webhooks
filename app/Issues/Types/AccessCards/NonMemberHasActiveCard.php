@@ -4,7 +4,6 @@ namespace App\Issues\Types\AccessCards;
 
 use App\Aggregates\MembershipAggregate;
 use App\DataCache\MemberData;
-use App\Issues\FixChooser;
 use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
