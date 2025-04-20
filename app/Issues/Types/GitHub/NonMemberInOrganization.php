@@ -4,11 +4,10 @@ namespace App\Issues\Types\GitHub;
 
 use App\DataCache\MemberData;
 use App\External\GitHub\GitHubApi;
-use App\Issues\FixChooser;
-use App\Issues\Fixing\Fixable;
+use App\Issues\Fixing\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
-class NonMemberInOrganization extends IssueBase implements Fixable
+class NonMemberInOrganization extends IssueBase implements ICanFixThem
 {
     private MemberData $member;
 
@@ -34,15 +33,11 @@ class NonMemberInOrganization extends IssueBase implements Fixable
 
     public function fix(): bool
     {
-        return FixChooser::new()
-            ->defaultOption('Remove from GitHub team', function () {
-                /** @var GitHubApi $gitHubApi */
-                $gitHubApi = app(GitHubApi::class);
+        /** @var GitHubApi $gitHubApi */
+        $gitHubApi = app(GitHubApi::class);
 
-                $gitHubApi->denhac()->remove($this->member->githubUsername);
+        $gitHubApi->denhac()->remove($this->member->githubUsername);
 
-                return true;
-            })
-            ->fix();
+        return true;
     }
 }

@@ -31,6 +31,11 @@ class ActiveCardIssues implements IssueCheck
         $members = $this->aggregateCustomerData->get();
 
         /** @var ActiveCardHolderUpdate $activeCardHolderUpdate */
+        return;
+        // We're not currently pushing up active card holder updates. We're inverting the logic so that the client is
+        // the one that looks at what state all the cards should be and makes updates accordingly. This class will be
+        // deleted in addition to the ActiveCardHolderUpdate and associated routes when that work is done.
+
         $activeCardHolderUpdate = ActiveCardHolderUpdate::latest()->first();
         if (is_null($activeCardHolderUpdate)) {
             return;  // TODO Issue for no active card holder update
