@@ -19,6 +19,7 @@
         "laravel/horizon": "^5.31",
         "laravel/passport": "^12.4",
         "laravel/reverb": "^1.4",
+        "laravel/sail": "^1.42",
         "laravel/tinker": "^2.9",
         "php-http/curl-client": "^2.3",
         "predis/predis": "^2.3",
@@ -37,6 +38,7 @@
         "ylsideas/feature-flags": "^2.6"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.5",
         "deployer/deployer": "^7.5",
         "fakerphp/faker": "^1.23",
         "mockery/mockery": "^1.6",
