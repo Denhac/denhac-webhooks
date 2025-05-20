@@ -15,7 +15,7 @@
         "anlutro/l4-settings": "^1.4",
         "guzzlehttp/guzzle": "^7.9",
         "hashids/hashids": "^5.0",
-        "laravel/framework": "^11.44",
+        "laravel/framework": "^11.45",
         "laravel/horizon": "^5.31",
         "laravel/passport": "^12.4",
         "laravel/reverb": "^1.4",
