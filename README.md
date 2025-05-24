@@ -4,6 +4,17 @@ This repo holds some of our membership automation. It listens to webhooks from t
 # Architecture
 Quite a bit of the code runs using event sourcing. The MembershipAggregate is the main entry point for a lot of the functionality as it decides based on subscription updates if someone is a member or not. Various projectors update models in the database and various reactors do things like send emails when needed.
 
+## Install
+
+  1. Have docker, composer, and php installed on your system
+2. `cd $ProjectDir`
+3. `composer install --ignore-platform-reqs`
+4. `sail up -d`
+5. `cp ./.env.example ./.env`
+6. `sail artisan key:generate`
+7. `sail artisan db:migrate --seed`
+8. Profit
+
 ## Helpful Things
 ### Aggregate Version Reset
 Usually, you don't delete events from the database, but it can be useful to do so in the event of deprecation of events or fixing badly stored events. Sometimes, when that happens, the version numbers for the aggregate get out of wack. Here is a helper command to fix that:
