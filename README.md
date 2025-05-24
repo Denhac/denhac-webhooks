@@ -11,9 +11,13 @@ Quite a bit of the code runs using event sourcing. The MembershipAggregate is th
 3. `composer install --ignore-platform-reqs`
 4. `sail up -d`
 5. `cp ./.env.example ./.env`
-6. `sail artisan key:generate`
-7. `sail artisan db:migrate --seed`
-8. Profit
+6. Update the following values in the `.env` file
+    1. `DB_CONNECTION=mysql`
+   2. `REDIS_HOST=redis`
+   3. `MAIL_HOST=mailpit`
+7. `sail artisan key:generate`
+8. `sail artisan db:migrate --seed`
+9. Profit
 
 ## Helpful Things
 ### Aggregate Version Reset
