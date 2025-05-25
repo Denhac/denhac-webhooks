@@ -3,6 +3,7 @@
 use App\Http\Controllers\AllCardsController;
 use App\Http\Controllers\CardScannedController;
 use App\Http\Controllers\CardUpdateRequestsController;
+use App\Http\Controllers\MemberCountApiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,3 +26,5 @@ Route::middleware(['auth:api', 'scopes:card:manage'])
 
         Route::post('/events/card_scanned', CardScannedController::class);
     });
+
+Route::get('/member_count', MemberCountApiController::class);
