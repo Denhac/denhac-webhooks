@@ -161,6 +161,7 @@ class NewMemberIdCheckModal implements ModalInterface
 
         $idChecker = $request->customer();
         app(IdCheckMember::class)
+            ->onQueue()
             ->execute(
                 $customerId,
                 $firstName,
