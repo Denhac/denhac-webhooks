@@ -112,7 +112,7 @@ class CustomerProjectorTest extends TestCase
         $builder->first_name = $this->faker->firstName();
         $builder->last_name = $this->faker->lastName();
         $builder->github_username = $this->faker->userName();
-        $builder->slack_id = 'U'.$this->faker->randomNumber();
+        $builder->slack_id = 'U' . $this->faker->randomNumber();
         $builder->birthday = $this->faker->date();
         $builder->access_card_temporary_code = strval($this->faker->randomNumber(6));
 
@@ -268,5 +268,34 @@ class CustomerProjectorTest extends TestCase
         $customer = Customer::find($builder->id);
 
         $this->assertTrue($customer->id_checked);
+    }
+
+    /** @test */
+    public function display_name_is_set_from_json(): void
+    {
+        $display_name = $this->faker->name;
+        $builder = $this->customer()->display_name($display_name);
+
+        $this->assertNull(Customer::find($builder->id));
+
+        event(new CustomerCreated($builder->toArray()));
+
+        /** @var Customer $customer */
+        $customer = Customer::find($builder->id);
+        $this->assertEquals($display_name, $customer->display_name);
+    }
+
+    /** @test */
+    public function display_name_defaults_to_first_and_last_name(): void
+    {
+        $builder = $this->customer();
+
+        $this->assertNull(Customer::find($builder->id));
+
+        event(new CustomerCreated($builder->toArray()));
+
+        /** @var Customer $customer */
+        $customer = Customer::find($builder->id);
+        $this->assertEquals("$builder->first_name $builder->last_name", $customer->display_name);
     }
 }
