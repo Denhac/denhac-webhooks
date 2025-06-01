@@ -186,7 +186,7 @@ class Customer extends Model
     public function displayName(): Attribute
     {
         return Attribute::make(
-            get: fn(?string $value) => $value ?? "{$this->first_name} {$this->last_name}"
+            get: fn(?string $value) => $value ?? "$this->first_name $this->last_name"
         );
     }
 }
