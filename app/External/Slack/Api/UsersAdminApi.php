@@ -52,15 +52,15 @@ class UsersAdminApi
         $response = $this->clients->adminClient
             ->post('https://denhac.slack.com/api/users.admin.inviteBulk', [
                 RequestOptions::MULTIPART => [
+                    // TODO Don't hardcode the token when we split out the slack clients
+                    $this->_multipart('token', setting('slack.admin.token')),
+                    $this->_multipart('team_id', config('denhac.slack.team_id')),
                     $this->_multipart('invites', json_encode($invites->all())),
-                    $this->_multipart('source', 'invite_modal'),
                     $this->_multipart('campaign', 'team_site_admin'),
-                    $this->_multipart('mode', 'manual'),
                     $this->_multipart('restricted', $restricted),
                     $this->_multipart('ultra_restricted', $ultraRestricted),
-                    $this->_multipart('email_password_policy_enabled', false),
                     $this->_multipart('channels', $channels),
-                    $this->_multipart('_x_reason', 'invite_bulk'),
+                    $this->_multipart('_x_reason', 'submit-invite-to-workspace-invites'),
                     $this->_multipart('_x_mode', 'online'),
                 ],
             ]);
