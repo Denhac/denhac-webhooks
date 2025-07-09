@@ -5,6 +5,7 @@ namespace App\External\Slack\Api;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class UsersAdminApi
 {
@@ -29,6 +30,8 @@ class UsersAdminApi
      */
     public function inviteBulk($emails, $channels)
     {
+        Log::info("Calling Slack invite with " . print_r($emails, true));
+
         $emails = Arr::wrap($emails);
         if (! Arr::isAssoc($emails)) {
             $emails = array_fill_keys($emails, 'regular');
@@ -54,18 +57,25 @@ class UsersAdminApi
                 RequestOptions::MULTIPART => [
                     // TODO Don't hardcode the token when we split out the slack clients
                     $this->_multipart('token', setting('slack.admin.token')),
-                    $this->_multipart('team_id', config('denhac.slack.team_id')),
                     $this->_multipart('invites', json_encode($invites->all())),
-                    $this->_multipart('campaign', 'team_site_admin'),
+                    $this->_multipart('team_id', config('denhac.slack.team_id')),
                     $this->_multipart('restricted', $restricted),
                     $this->_multipart('ultra_restricted', $ultraRestricted),
+                    $this->_multipart('campaign', 'team_site_admin'),
                     $this->_multipart('channels', $channels),
                     $this->_multipart('_x_reason', 'submit-invite-to-workspace-invites'),
                     $this->_multipart('_x_mode', 'online'),
                 ],
             ]);
 
-        return json_decode($response->getBody(), true);
+        $jsonBody = json_decode($response->getBody(), true);
+        Log::info(
+            "Slack invite response:\n" .
+            "Status: {$response->getStatusCode()}\n" .
+            "Json: ".print_r($jsonBody, true)
+        );
+
+        return $jsonBody;
     }
 
     public function setRegular($slack_id)
