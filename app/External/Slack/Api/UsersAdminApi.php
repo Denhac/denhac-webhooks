@@ -68,11 +68,19 @@ class UsersAdminApi
                 ],
             ]);
 
+        # TODO Handle ok -> false, reason -> invite_failed
+
+        foreach ($response->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                Log::info(sprintf("Header %s: %s", $name, $value));
+            }
+        }
+
         $jsonBody = json_decode($response->getBody(), true);
         Log::info(
             "Slack invite response:\n" .
             "Status: {$response->getStatusCode()}\n" .
-            "Json: ".print_r($jsonBody, true)
+            "Json: " . print_r($jsonBody, true)
         );
 
         return $jsonBody;
