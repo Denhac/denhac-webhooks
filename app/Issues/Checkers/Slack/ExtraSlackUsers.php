@@ -86,7 +86,15 @@ class ExtraSlackUsers implements IssueCheck
         $membersForEmail = $members
             ->filter(function ($member) use ($user) {
                 /** @var MemberData $member */
-                return in_array($user['email'], $member->emails->all());
+                if(! array_key_exists('profile', $user)) {
+                    return false;
+                }
+                $profile = $user['profile'];
+                if(! array_key_exists('email', $profile)) {
+                    return false;
+                }
+
+                return in_array($profile['email'], $member->emails->all());
             });
 
         if($membersForEmail->count() > 0) {
