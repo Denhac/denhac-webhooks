@@ -83,27 +83,28 @@ class ExtraSlackUsers implements IssueCheck
 
     private function handleNoMatchingAccount($user, $members): void
     {
+        if (! $this->isFullSlackUser($user)) {
+            // Not a full member, we probably don't care
+            return;
+        }
+
         $membersForEmail = $members
             ->filter(function ($member) use ($user) {
                 /** @var MemberData $member */
-                if(! array_key_exists('profile', $user)) {
+                if (! array_key_exists('profile', $user)) {
                     return false;
                 }
                 $profile = $user['profile'];
-                if(! array_key_exists('email', $profile)) {
+                if (! array_key_exists('email', $profile)) {
                     return false;
                 }
 
                 return in_array($profile['email'], $member->emails->all());
             });
 
-        if($membersForEmail->count() > 0) {
+        if ($membersForEmail->count() > 0) {
             $this->issues->add(new UserMissingSlackLink($user, $membersForEmail));
-
-            return;
-        }
-
-        if ($this->isFullSlackUser($user)) {
+        } else {
             $this->issues->add(new FullUserNoRecord($user));
         }
     }
