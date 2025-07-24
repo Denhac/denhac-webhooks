@@ -74,8 +74,9 @@ class AppServiceProvider extends ServiceProvider
     public function bootAuth(): void
     {
         Passport::tokensCan([
-            'card:manage' => 'Manage card access', // Used by WinDSX only
-            'door:manage' => 'Manage door control', // Used by the Pi that controls doors for open house
+            'card:manage' => 'Determine what cards need activated/deactivated and update them',
+            'door:manage' => 'Allows listening in on the websocket channel for door open/close updates',
+            'slack:invite' => 'See what users need slack invites and allows assigning them a Slack ID',
         ]);
     }
 
