@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,30 +18,31 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class UserMembership extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
-    public const MEMBERSHIP_FULL_MEMBER = 6410;
+    public const int MEMBERSHIP_FULL_MEMBER = 6410;
 
-    public const MEMBERSHIP_3DP_USER = 8749;
+    public const int MEMBERSHIP_3DP_USER = 8749;
 
-    public const MEMBERSHIP_3DP_TRAINER = 8750;
+    public const int MEMBERSHIP_3DP_TRAINER = 8750;
 
-    public const MEMBERSHIP_META_TRAINER = 15914;
+    public const int MEMBERSHIP_META_TRAINER = 15914;
 
-    public const MEMBERSHIP_CAN_ID_CHECK = 17682;
+    public const int MEMBERSHIP_CAN_ID_CHECK = 17682;
 
-    public const MEMBERSHIP_BOARD = 14105;
+    public const int MEMBERSHIP_BOARD = 14105;
 
-    public const MEMBERSHIP_OPS_MANAGER = 22820;
+    public const int MEMBERSHIP_OPS_MANAGER = 22820;
 
-    public const MEMBERSHIP_BUSINESS_MANAGER = 22821;
+    public const int MEMBERSHIP_BUSINESS_MANAGER = 22821;
 
-    public const MEMBERSHIP_TREASURER = 22822;
+    public const int MEMBERSHIP_TREASURER = 22822;
 
-    public const MEMBERSHIP_SAFETY_MANAGER = 22824;
+    public const int MEMBERSHIP_SAFETY_MANAGER = 22824;
 
-    public const MEMBERSHIP_EVENTS_MANAGER = 22823;
+    public const int MEMBERSHIP_EVENTS_MANAGER = 22823;
 
-    public const SERVER_ROOM_ACCESS = 47984;
+    public const int SERVER_ROOM_ACCESS = 47984;
 
     protected $fillable = [
         'id',
