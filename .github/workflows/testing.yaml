@@ -18,6 +18,7 @@ jobs:
 
       - name: Setup Application
         run: |
+          touch .env
           php artisan key:generate
           php artisan passport:keys
 
