@@ -55,6 +55,7 @@ class InvitesNeededController extends Controller
                     'type' => $membership_type,
                 ];
             })
-            ->filter();
+            ->filter()
+            ->values();
     }
 }
