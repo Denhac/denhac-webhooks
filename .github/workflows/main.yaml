@@ -23,6 +23,7 @@ jobs:
 
       - name: Setup Application
         run: |
+          php artisan key:generate
           php artisan passport:keys
 
       - name: Run Tests
