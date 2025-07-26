@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Database\Factories\CustomerFactory;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -40,6 +41,7 @@ use Illuminate\Support\Collection;
  * @property ?Customer idWasCheckedBy
  * @property ?string access_card_temporary_code
  *
+ * @method static CustomerFactory factory()
  * @method static Builder whereSlackId($slackId)
  */
 class Customer extends Model

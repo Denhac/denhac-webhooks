@@ -44,7 +44,7 @@ class CustomerFactory extends Factory
         ]);
     }
 
-    public function withSlackId()
+    public function withSlackId(): static
     {
         return $this->state([
             // Not a perfect representation of slack's User IDs as they use letters and numbers

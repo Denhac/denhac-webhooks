@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\UserMembershipFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int customer_id
  * @property int plan_id
  * @property string status
+ *
+ * @method static UserMembershipFactory factory()
  */
 class UserMembership extends Model
 {
