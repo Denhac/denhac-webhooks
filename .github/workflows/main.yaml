@@ -23,6 +23,7 @@ jobs:
 
       - name: Setup Application
         run: |
+          cp .env.ci .env
           php artisan key:generate
           php artisan passport:keys
 
