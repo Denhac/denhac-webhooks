@@ -185,6 +185,7 @@ class NewMemberIdCheckModal implements ModalInterface
     {
         $view = $request->payload()['view'];
         $customerId = $view['private_metadata'];
-        return new NewMemberIdCheckModal($customerId);
+        $modal = new NewMemberIdCheckModal($customerId);
+        return $modal->updateViaApi($request);
     }
 }

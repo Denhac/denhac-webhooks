@@ -2,6 +2,7 @@
 
 namespace App\External\Slack\Modals;
 
+use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
@@ -16,26 +17,31 @@ class CreateTrainableEquipment implements ModalInterface
 {
     use ModalTrait;
     use HasExternalOptions;
+    use RespondsToBlockActions;
 
-    private const EQUIPMENT_NAME = 'equipment-name';
+    private const string EQUIPMENT_NAME = 'equipment-name';
 
-    private const INITIAL_TRAINER = 'initial-trainer-block';
+    private const string INITIAL_TRAINER = 'initial-trainer-block';
 
-    private const USER_SLACK_CHANNEL = 'user-slack-channel';
+    private const string USER_SLACK_CHANNEL = 'user-slack-channel';
 
-    private const USER_EMAIL = 'user-email';
+    private const string USER_EMAIL = 'user-email';
 
-    private const TRAINER_SLACK_CHANNEL = 'trainer-slack-channel';
+    private const string TRAINER_SLACK_CHANNEL = 'trainer-slack-channel';
 
-    private const TRAINER_EMAIL = 'trainer-email';
+    private const string TRAINER_EMAIL = 'trainer-email';
 
-    public function __construct(?Customer $user)
+    public function __construct(?Customer $submittingUser, ?Customer $initialTrainer = null)
     {
-        if (! is_null($user)) {
-            $name = "{$user->first_name} {$user->last_name}";
+        if (is_null($initialTrainer)) {
+            $initialTrainer = $submittingUser;
+        }
+
+        if (! is_null($initialTrainer)) {
+            $name = "$initialTrainer->first_name $initialTrainer->last_name";
             $initialTrainerOption = Kit::option(
                 text: $name,
-                value: "customer-{$user->id}"
+                value: "customer-{$initialTrainer->id}"
             );
         } else {
             $initialTrainerOption = null;
@@ -65,53 +71,55 @@ class CreateTrainableEquipment implements ModalInterface
                         initialOption: $initialTrainerOption,
                         minQueryLength: 0,
                     ),
+                    dispatchAction: true,
                 ),
-                Kit::divider(),
-                Kit::header('Slack Channels & Email Groups'),
+            ],
+        );
+
+        // Sometimes people get confused when they mark someone else as the initial trainer and then can't see the
+        // equipment they just created. Mostly this seems to stem from the idea that they'll automatically be marked as
+        // a trainer. Hopefully this warning message helps.
+        if (! is_null($initialTrainer) && ! is_null($submittingUser) && $initialTrainer->id != $submittingUser->id) {
+            $this->modalView->blocks(
                 Kit::context(
                     elements: [
-                        Kit::plainText(
-                            text: 'Users/trainers will be automatically added to these channels/emails. All are ' .
-                            'optional. Email must be an existing group, for now. Please ask in #general and we\'ll ' .
-                            'help make one if needed.'
+                        Kit::mrkdwnText(
+                            text: ':warning: If you are not the initial trainer, you will not see this item in your ' .
+                            'list of equipment authorizations.',
                         ),
                     ],
                 ),
-                Kit::input(
-                    label: 'User slack channel',
-                    blockId: self::USER_SLACK_CHANNEL,
-                    optional: true,
-                    element: Kit::channelSelectMenu(
-                        actionId: self::USER_SLACK_CHANNEL,
-                        placeholder: 'Select a channel',
+            );
+        }
+
+        $this->modalView->blocks(
+            Kit::divider(),
+            Kit::header('Slack Channels & Email Groups'),
+            Kit::context(
+                elements: [
+                    Kit::plainText(
+                        text: 'Users/trainers will be automatically added to these Slack channels. All are optional'
                     ),
+                ],
+            ),
+            Kit::input(
+                label: 'User slack channel',
+                blockId: self::USER_SLACK_CHANNEL,
+                optional: true,
+                element: Kit::channelSelectMenu(
+                    actionId: self::USER_SLACK_CHANNEL,
+                    placeholder: 'Select a channel',
                 ),
-                Kit::input(
-                    label: 'User email',
-                    blockId: self::USER_EMAIL,
-                    optional: true,
-                    element: Kit::plainTextInput(
-                        actionId: self::USER_EMAIL,
-                    ),
+            ),
+            Kit::input(
+                label: 'Trainer slack channel',
+                blockId: self::TRAINER_SLACK_CHANNEL,
+                optional: true,
+                element: Kit::channelSelectMenu(
+                    actionId: self::TRAINER_SLACK_CHANNEL,
+                    placeholder: 'Select a channel',
                 ),
-                Kit::input(
-                    label: 'Trainer slack channel',
-                    blockId: self::TRAINER_SLACK_CHANNEL,
-                    optional: true,
-                    element: Kit::channelSelectMenu(
-                        actionId: self::TRAINER_SLACK_CHANNEL,
-                        placeholder: 'Select a channel',
-                    ),
-                ),
-                Kit::input(
-                    label: 'Trainer email',
-                    blockId: self::TRAINER_EMAIL,
-                    optional: true,
-                    element: Kit::plainTextInput(
-                        actionId: self::TRAINER_EMAIL,
-                    ),
-                ),
-            ],
+            )
         );
     }
 
@@ -127,64 +135,59 @@ class CreateTrainableEquipment implements ModalInterface
             throw new \Exception('Unauthorized');
         }
 
-        $values = $request->payload()['view']['state']['values'];
 
+        $values = self::getStateValues($request);
         $equipmentName = $values[self::EQUIPMENT_NAME][self::EQUIPMENT_NAME]['value'];
-        $initialTrainerValue = $values[self::INITIAL_TRAINER][self::INITIAL_TRAINER]['selected_option']['value'];
         $userSlackChannel = $values[self::USER_SLACK_CHANNEL][self::USER_SLACK_CHANNEL]['selected_channel'];
-        $userEmail = $values[self::USER_EMAIL][self::USER_EMAIL]['value'];
         $trainerSlackChannel = $values[self::TRAINER_SLACK_CHANNEL][self::TRAINER_SLACK_CHANNEL]['selected_channel'];
-        $trainerEmail = $values[self::TRAINER_EMAIL][self::TRAINER_EMAIL]['value'];
+        $initialTrainerId = self::getInitialTrainerOption($values);
 
+        $initialTrainer = Customer::find($initialTrainerId);
+
+        app(\App\Actions\WordPress\CreateTrainableEquipment::class)
+            ->onQueue()
+            ->execute(
+                $equipmentName,
+                $request->customer(),
+                $initialTrainer,
+                $userSlackChannel,
+                $trainerSlackChannel
+            );
+
+        $message = "Equipment submitted for creation. Please do not re-submit this form if the equipment does not show " .
+            "up. Instead, ask in #project-webhooks-denhac-org for help.";
+        return new SuccessModal($message)->push();
+    }
+
+    private static function getInitialTrainerOption(array $values): string
+    {
+        $initialTrainerValue = $values[self::INITIAL_TRAINER][self::INITIAL_TRAINER]['selected_option']['value'];
         $matches = [];
         $result = preg_match('/customer-(\d+)/', $initialTrainerValue, $matches);
         if (! $result) {
             throw new \Exception("Option wasn't valid for customer: $initialTrainerValue");
         }
-        $initialTrainerId = $matches[1];
-
-        /** @var WooCommerceApi $wooCommerceApi */
-        $wooCommerceApi = app(WooCommerceApi::class);
-        $responseTrainer = $wooCommerceApi->denhac->createUserPlan(
-            "$equipmentName Trainer",
-            $request->customer()->id
-        );
-        $trainerPlanId = $responseTrainer['id'];
-
-        $responseUser = $wooCommerceApi->denhac->createUserPlan(
-            "$equipmentName User",
-            $request->customer()->id
-        );
-        $userPlanId = $responseUser['id'];
-
-        $trainableEquipmentData = [
-            'name' => $equipmentName,
-            'user_plan_id' => $userPlanId,
-            'trainer_plan_id' => $trainerPlanId,
-        ];
-
-        if (! empty($userSlackChannel)) {
-            $trainableEquipmentData['user_slack_id'] = $userSlackChannel;
-        }
-        if (! empty($userEmail)) {
-            $trainableEquipmentData['user_email'] = $userEmail;
-        }
-        if (! empty($trainerSlackChannel)) {
-            $trainableEquipmentData['trainer_slack_id'] = $trainerSlackChannel;
-        }
-        if (! empty($trainerEmail)) {
-            $trainableEquipmentData['trainer_email'] = $trainerEmail;
-        }
-
-        TrainableEquipment::create($trainableEquipmentData);
-
-        $wooCommerceApi->members->addMembership($initialTrainerId, $trainerPlanId);
-
-        return response()->json();
+        return $matches[1];
     }
 
     public static function getExternalOptions(SlackRequest $request): OptionsResult
     {
         return SelectAMemberModal::getExternalOptions($request);
+    }
+
+    public static function getBlockActions(): array
+    {
+        return [
+            self::blockActionUpdate(self::INITIAL_TRAINER),
+        ];
+    }
+
+    public static function onBlockAction(SlackRequest $request)
+    {
+        $initialTrainerValue = self::getInitialTrainerOption(self::getStateValues($request));
+
+        $modal = new CreateTrainableEquipment($request->customer(), Customer::find($initialTrainerValue));
+
+        return $modal->updateViaApi($request);
     }
 }

@@ -10,24 +10,15 @@ class AddUserMembership
 {
     use QueueableAction;
 
-    /**
-     * Create a new action instance.
-     *
-     * @return void
-     */
-    public function __construct(WooCommerceApi $wpApi)
+    public function __construct(
+        private readonly WooCommerceApi $wooCommerceApi
+    )
     {
-        $this->wpApi = $wpApi;
     }
 
-    /**
-     * Execute the action.
-     *
-     * @return mixed
-     */
-    public function execute($actorId, $memberId, $planId)
+    public function execute($actorId, $memberId, $planId): void
     {
-        $this->wpApi->members->addMembership($memberId, $planId);
-        Log::info('AddUserMembership: Customer '.$actorId.' granted user plan id '.$planId.' to Customer '.$memberId);
+        $this->wooCommerceApi->members->addMembership($memberId, $planId);
+        Log::info('AddUserMembership: Customer ' . $actorId . ' granted user plan id ' . $planId . ' to Customer ' . $memberId);
     }
 }
