@@ -22,8 +22,8 @@ class CreateTrainableEquipment
         string   $equipmentName,
         Customer $submittingUser,
         Customer $initialTrainer,
-        string   $userSlackChannel,
-        string   $trainerSlackChannel,
+        ?string  $userSlackChannel,
+        ?string  $trainerSlackChannel,
     ): void
     {
         $responseTrainer = $this->wooCommerceApi->denhac->createUserPlan(

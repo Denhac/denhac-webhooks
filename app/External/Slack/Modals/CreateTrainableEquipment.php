@@ -3,10 +3,8 @@
 namespace App\External\Slack\Modals;
 
 use App\External\Slack\BlockActions\RespondsToBlockActions;
-use App\External\WooCommerce\Api\WooCommerceApi;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
-use App\Models\TrainableEquipment;
 use App\Models\UserMembership;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -31,7 +29,7 @@ class CreateTrainableEquipment implements ModalInterface
 
     private const string TRAINER_EMAIL = 'trainer-email';
 
-    public function __construct(?Customer $submittingUser, ?Customer $initialTrainer = null)
+    public function __construct(Customer $submittingUser, ?Customer $initialTrainer = null)
     {
         if (is_null($initialTrainer)) {
             $initialTrainer = $submittingUser;
