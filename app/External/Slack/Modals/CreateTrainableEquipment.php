@@ -136,7 +136,7 @@ class CreateTrainableEquipment implements ModalInterface
         }
 
 
-        $values = self::getStateValues($request);
+        $values = $request->payload()['view']['state']['values'];
         $equipmentName = $values[self::EQUIPMENT_NAME][self::EQUIPMENT_NAME]['value'];
         $userSlackChannel = $values[self::USER_SLACK_CHANNEL][self::USER_SLACK_CHANNEL]['selected_channel'];
         $trainerSlackChannel = $values[self::TRAINER_SLACK_CHANNEL][self::TRAINER_SLACK_CHANNEL]['selected_channel'];
@@ -184,7 +184,8 @@ class CreateTrainableEquipment implements ModalInterface
 
     public static function onBlockAction(SlackRequest $request)
     {
-        $initialTrainerValue = self::getInitialTrainerOption(self::getStateValues($request));
+        $values = $request->payload()['view']['state']['values'];
+        $initialTrainerValue = self::getInitialTrainerOption($values);
 
         $modal = new CreateTrainableEquipment($request->customer(), Customer::find($initialTrainerValue));
 
