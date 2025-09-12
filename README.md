@@ -6,18 +6,19 @@ Quite a bit of the code runs using event sourcing. The MembershipAggregate is th
 
 ## Install
 
-  1. Have docker, composer, and php installed on your system
+1. Have docker, composer, and php installed on your system
 2. `cd $ProjectDir`
 3. `composer install --ignore-platform-reqs`
 4. `sail up -d`
 5. `cp ./.env.example ./.env`
 6. Update the following values in the `.env` file
-    1. `DB_CONNECTION=mysql`
-   2. `REDIS_HOST=redis`
-   3. `MAIL_HOST=mailpit`
+  1. `DB_HOST=mysql`
+  2. `REDIS_HOST=redis`
+  3. `MAIL_HOST=mailpit`
 7. `sail artisan key:generate`
-8. `sail artisan db:migrate --seed`
-9. Profit
+8. `sail artisan migrate`
+9. `sail artisan db:seed`
+10. Profit
 
 ## Helpful Things
 ### Aggregate Version Reset
