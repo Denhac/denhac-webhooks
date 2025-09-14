@@ -30,7 +30,7 @@ class ManageMembersCardsModal implements ModalInterface
             ->implode('number', ',');
 
         $this->modalView = Kit::modal(
-            title: "Manage a member's access card",
+            title: "Manage a member's card",
             callbackId: self::callbackId(),
             clearOnClose: true,
             close: 'Cancel',
