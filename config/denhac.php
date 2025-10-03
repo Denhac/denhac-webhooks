@@ -19,6 +19,7 @@ return [
         'management_api_signing_secret' => env('SLACK_MANAGEMENT_API_SIGNING_SECRET'),
         'email' => env('SLACK_ADMIN_API_EMAIL'),
         'password' => env('SLACK_ADMIN_API_PASSWORD'),
+        'team_id' => env('SLACK_TEAM_ID')
     ],
     'github' => [
         'key_path' => env('GITHUB_API_KEY_PATH', storage_path('github-api.pem')),

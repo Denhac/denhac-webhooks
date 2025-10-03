@@ -23,12 +23,14 @@ class ManageMembersCardsModal implements ModalInterface
         /** @var Customer $customer */
         $customer = Customer::find($customerId);
 
+        // The implode here to make it comma separate is so members with 2 cards will show up as a comma-separated list,
+        // but the user won't be able to submit it this way. They'll have to reduce it down to one card.
         $cardString = $customer->cards
             ->where('member_has_card', true)
             ->implode('number', ',');
 
         $this->modalView = Kit::modal(
-            title: "Manage a member's cards",
+            title: "Manage a member's card",
             callbackId: self::callbackId(),
             clearOnClose: true,
             close: 'Cancel',
@@ -36,7 +38,7 @@ class ManageMembersCardsModal implements ModalInterface
             privateMetadata: $customerId,
             blocks: [
                 Kit::input(
-                    label: 'Card Number (comma separated)',
+                    label: 'Card Number',
                     blockId: self::CARD_NUM,
                     element: Kit::plainTextInput(
                         actionId: self::CARD_NUM,
@@ -60,14 +62,12 @@ class ManageMembersCardsModal implements ModalInterface
             throw new \Exception('Unauthorized');
         }
 
-        $cards = $request->payload()['view']['state']['values'][self::CARD_NUM][self::CARD_NUM]['value'];
+        $card = $request->payload()['view']['state']['values'][self::CARD_NUM][self::CARD_NUM]['value'];
 
         $errors = [];
 
-        foreach (explode(',', $cards) as $card) {
-            if (preg_match("/^\d+$/", $card) == 0) {
-                $errors[self::CARD_NUM] = 'This is a comma separated list of cards (no spaces!)';
-            }
+        if (preg_match("/^\d+$/", $card) == 0) {
+            $errors[self::CARD_NUM] = 'Please enter a valid card number';
         }
 
         if (! empty($errors)) {
@@ -86,7 +86,7 @@ class ManageMembersCardsModal implements ModalInterface
                 'meta_data' => [
                     [
                         'key' => 'access_card_number',
-                        'value' => $cards,
+                        'value' => $card,
                     ],
                 ],
             ]);

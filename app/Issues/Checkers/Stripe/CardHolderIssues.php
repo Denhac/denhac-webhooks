@@ -12,7 +12,7 @@ use App\Issues\Types\Stripe\NoCardHolderFoundForId;
 use App\Issues\Types\Stripe\NoMemberForCardHolder;
 use Stripe\Issuing\Cardholder;
 
-class CardHolderIssues implements IssueCheck
+class CardHolderIssues /*implements IssueCheck*/
 {
     use IssueCheckTrait;
 

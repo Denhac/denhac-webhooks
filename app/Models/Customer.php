@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Database\Factories\CustomerFactory;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -32,17 +35,20 @@ use Illuminate\Support\Collection;
  * @property Collection equipmentTrainer
  * @property string member_code
  * @property bool id_checked
+ * @property string display_name
  * @property ?string stripe_card_holder_id
  * @property ?int id_was_checked_by_id
  * @property ?Customer idWasCheckedBy
  * @property ?string access_card_temporary_code
  *
+ * @method static CustomerFactory factory()
  * @method static Builder whereSlackId($slackId)
  */
 class Customer extends Model
 {
     use Notifiable;
     use SoftDeletes;
+    use HasFactory;
 
     public $incrementing = false;
 
@@ -133,8 +139,8 @@ class Customer extends Model
     public function isATrainer()
     {
         return $this->equipmentTrainer()
-            ->where('status', 'active')
-            ->count() > 0;
+                ->where('status', 'active')
+                ->count() > 0;
     }
 
     public function routeNotificationForMail(Notification $notification): string
@@ -177,5 +183,12 @@ class Customer extends Model
         $membershipWaiverTemplateId = Waiver::getValidMembershipWaiverId();
 
         return "https://app.waiverforever.com/pending/{$membershipWaiverTemplateId}?name-first_name-2={$this->first_name}&name-last_name-2={$this->last_name}&email-email-3={$this->email}&checkbox-checked-4=true";
+    }
+
+    public function displayName(): Attribute
+    {
+        return Attribute::make(
+            get: fn(?string $value) => $value ?? "$this->first_name $this->last_name"
+        );
     }
 }

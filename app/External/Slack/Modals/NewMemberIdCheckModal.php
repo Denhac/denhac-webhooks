@@ -2,18 +2,18 @@
 
 namespace App\External\Slack\Modals;
 
-use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Actions\WordPress\IdCheckMember;
+use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
-use App\Notifications\IdCheckedWithNoWaiver;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Notification;
 use SlackPhp\BlockKit\Kit;
 
 class NewMemberIdCheckModal implements ModalInterface
 {
     use ModalTrait;
+    use RespondsToBlockActions;
 
     private const FIRST_NAME = 'first-name';
 
@@ -23,33 +23,21 @@ class NewMemberIdCheckModal implements ModalInterface
 
     private const CARD_NUM = 'card-num';
 
+    private const REFRESH_ACTION = 'refresh';
+
     public function __construct($customer_id)
     {
         /** @var Customer $customer */
         $customer = Customer::find($customer_id);
 
         if ($customer->hasSignedMembershipWaiver()) {
-            $membershipWaiverSection = Kit::section(
-                text: Kit::mrkdwnText(':white_check_mark: Waiver found'),
-            );
-        } else {
-            $membershipWaiverSection = Kit::section(
-                text: Kit::mrkdwnText(':x: No waiver found.'),  # TODO see next page after ID check
-            );
-        }
+            $initialBirthday = $customer->birthday?->format('Y-m-d');
+            $initialCardString = $customer->cards?->implode('number', ',');
 
-        $initialBirthday = $customer->birthday?->format('Y-m-d');
-        $initialCardString = $customer->cards?->implode('number', ',');
-
-        $this->modalView = Kit::modal(
-            title: 'New Member Signup',
-            callbackId: self::callbackId(),
-            clearOnClose: true,
-            close: 'Cancel',
-            submit: 'Submit',
-            privateMetadata: $customer->id,
-            blocks: [
-                $membershipWaiverSection,
+            $modalBlocks = [
+                Kit::section(
+                    text: Kit::mrkdwnText(':white_check_mark: Waiver found'),
+                ),
                 Kit::input(
                     label: 'First Name',
                     blockId: self::FIRST_NAME,
@@ -89,7 +77,53 @@ class NewMemberIdCheckModal implements ModalInterface
                         'you should enter "12345" in this field.',
                     ),
                 ),
-            ],
+            ];
+        } else {
+            $modalBlocks = [
+                Kit::section(
+                    text: Kit::mrkdwnText(':x: No waiver found. The first name, last name, and email must all ' .
+                        'match for us to find the waiver.'),
+                ),
+                Kit::section(
+                    text: Kit::mrkdwnText("Please have the member sign the waiver by logging in to denhac.org and " .
+                        "clicking the waiver button in the top menu. If their information doesn't automatically fill " .
+                        "in, make sure it matches the information below *exactly*. If there is a typo in the " .
+                        "information below, please reach out to a board member/web admin or email access@denhac.org " .
+                        "before proceeding.")
+                ),
+                Kit::divider(),
+                Kit::section(
+                    text: Kit::mrkdwnText(
+                        "*First Name:* $customer->first_name\n" .
+                        "*Last Name:* $customer->last_name\n" .
+                        "*Email:* $customer->email"
+                    )
+                ),
+                Kit::divider(),
+                Kit::section(
+                    text: Kit::plainText("After the user has submitted a new waiver, please wait a minute or so " .
+                        "and click this button:")
+                ),
+                Kit::actions(
+                    blockId: self::REFRESH_ACTION,
+                    elements: [
+                        Kit::button(
+                            text: Kit::plainText("Refresh"),
+                            actionId: self::REFRESH_ACTION,
+                        )
+                    ]
+                )
+            ];
+        }
+
+        $this->modalView = Kit::modal(
+            title: 'New Member Signup',
+            callbackId: self::callbackId(),
+            clearOnClose: true,
+            close: 'Cancel',
+            submit: 'Submit',
+            privateMetadata: $customer->id,
+            blocks: $modalBlocks,
         );
     }
 
@@ -124,46 +158,34 @@ class NewMemberIdCheckModal implements ModalInterface
         }
 
         $customerId = $view['private_metadata'];
-        /** @var Customer $customer */
-        $customer = Customer::find($customerId);
-
-        $wooCommerceApi = app(WooCommerceApi::class);
 
         $idChecker = $request->customer();
-        $wooCommerceApi->customers
-            ->update($customerId, [
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'meta_data' => [
-                    [
-                        'key' => 'access_card_number',
-                        'value' => $card,
-                    ],
-                    [
-                        'key' => 'account_birthday',
-                        'value' => $birthday->format('Y-m-d'),
-                    ],
-                    [
-                        'key' => 'id_was_checked_by',
-                        'value' => $idChecker->id,
-                    ],
-                    [
-                        'key' => 'id_was_checked_when',
-                        'value' => Carbon::now(),
-                    ],
-                    [
-                        'key' => 'id_was_checked',
-                        'value' => true,
-                    ],
-                ],
-            ]);
-
-        if (! $customer->hasSignedMembershipWaiver()) {
-            Notification::route('mail', $customer->email)
-                ->notify(new IdCheckedWithNoWaiver($customer));
-            // TODO Pop something up so id checker can match the waiver
-        }
+        app(IdCheckMember::class)
+            ->onQueue()
+            ->execute(
+                $customerId,
+                $firstName,
+                $lastName,
+                $card,
+                $birthday,
+                $idChecker->id,
+            );
 
         return (new NewMemberInfoModal)->update();
+    }
+
+    public static function getBlockActions(): array
+    {
+        return [
+            self::blockActionUpdate(self::REFRESH_ACTION),
+        ];
+    }
+
+    public static function onBlockAction(SlackRequest $request)
+    {
+        $view = $request->payload()['view'];
+        $customerId = $view['private_metadata'];
+        $modal = new NewMemberIdCheckModal($customerId);
+        return $modal->updateViaApi($request);
     }
 }

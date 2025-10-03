@@ -114,6 +114,7 @@ final class CustomerProjector extends Projector
         $customerModel->username = $customer_json['username'];
         $customerModel->first_name = $customer_json['first_name'];
         $customerModel->last_name = $customer_json['last_name'];
+        $customerModel->display_name = $customer_json['display_name'] ?? null;
         $customerModel->github_username = $this->getMetadataField($customer_json, 'github_username');
         $customerModel->slack_id = $this->getMetadataField($customer_json, 'access_slack_id');
         $customerModel->birthday = $this->getMetadataFieldDate($customer_json, 'account_birthday');

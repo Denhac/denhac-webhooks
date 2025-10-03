@@ -11,6 +11,7 @@ use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
 use App\Issues\Types\GoogleGroups\ActiveMemberNotInGroups;
 use App\Issues\Types\GoogleGroups\NoMemberFoundForEmail;
+use App\Issues\Types\GoogleGroups\NoMembersInGroup;
 use App\Issues\Types\GoogleGroups\NotActiveMemberButInGroups;
 use App\Issues\Types\GoogleGroups\TwoMembersSameEmail;
 use Illuminate\Support\Collection;
@@ -41,7 +42,13 @@ class GoogleGroupIssues implements IssueCheck
         $emailsToGroups = collect();
 
         $groups->each(function ($group) use (&$emailsToGroups) {
+            /** @var Collection $membersInGroup */
             $membersInGroup = $this->googleGroupMembers->get($group);
+
+            if($membersInGroup->isEmpty()) {
+                $this->issues->add(new NoMembersInGroup($group));
+                return;
+            }
 
             $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
                 $groupMember = GmailEmailHelper::handleGmail(Str::lower($groupMember));

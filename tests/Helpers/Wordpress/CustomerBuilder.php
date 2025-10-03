@@ -110,6 +110,13 @@ class CustomerBuilder extends BaseBuilder
         return $this->meta_data('_access_temporary_code', $code);
     }
 
+    public function display_name($display_name): static
+    {
+        $this->data['display_name'] = $display_name;
+
+        return $this;
+    }
+
     public function __set(string $name, $value): void
     {
         switch ($name) {

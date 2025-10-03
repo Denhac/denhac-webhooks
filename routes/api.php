@@ -3,6 +3,9 @@
 use App\Http\Controllers\AllCardsController;
 use App\Http\Controllers\CardScannedController;
 use App\Http\Controllers\CardUpdateRequestsController;
+use App\Http\Controllers\MemberCountApiController;
+use App\Http\Controllers\Slack\ConfirmInviteController;
+use App\Http\Controllers\Slack\InvitesNeededController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,3 +28,12 @@ Route::middleware(['auth:api', 'scopes:card:manage'])
 
         Route::post('/events/card_scanned', CardScannedController::class);
     });
+
+Route::middleware(['auth:api', 'scopes:slack:invite'])
+    ->prefix('slack')
+    ->group(function () {
+        Route::get('invites', InvitesNeededController::class);
+        Route::post('invites', ConfirmInviteController::class);
+    });
+
+Route::get('/member_count', MemberCountApiController::class);
