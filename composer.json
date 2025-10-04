@@ -37,8 +37,10 @@
         "ylsideas/feature-flags": "^2.6"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.5",
         "deployer/deployer": "^7.5",
         "fakerphp/faker": "^1.23",
+        "laravel/sail": "^1.46",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
         "phpunit/phpunit": "^11.0.1"
