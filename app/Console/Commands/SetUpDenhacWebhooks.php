@@ -43,6 +43,8 @@ class SetUpDenhacWebhooks extends Command
         'user_membership.deleted' => 'User Membership Deleted',
         'action.wc_em_event_saved' => 'Event Saved',
         'action.wc_em_event_deleted' => 'Event Deleted',
+        'action.wc_em_booking_saved' => 'Event Booking Saved',
+        'action.wc_em_booking_deleted' => 'Event Booking Deleted',
     ];
 
     /**
