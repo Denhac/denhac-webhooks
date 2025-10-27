@@ -45,7 +45,7 @@ class UserMembershipStatusDiffers extends IssueBase
             ->option('Update User Membership from WordPress', function () {
                 /** @var WooCommerceApi $wooCommerceApi */
                 $wooCommerceApi = app(WooCommerceApi::class);
-                $userMembership = $wooCommerceApi->members->get($this->userMembershipId)->toArray();
+                $userMembership = $wooCommerceApi->membership->members->get($this->userMembershipId)->toArray();
 
                 MembershipAggregate::make($userMembership['customer_id'])
                     ->updateUserMembership($userMembership)

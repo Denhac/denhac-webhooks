@@ -16,7 +16,7 @@ class WooCommerceUserMemberships extends CachedData
     public function get(): Collection
     {
         return $this->cache(function () {
-            return $this->wooCommerceApi->members->list($this->apiProgress('Fetching WooCommerce User Memberships'));
+            return $this->wooCommerceApi->membership->members->list($this->apiProgress('Fetching WooCommerce User Memberships'));
         });
     }
 }
