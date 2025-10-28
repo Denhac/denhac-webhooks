@@ -74,6 +74,12 @@ class SelectAMemberModal implements ModalInterface
     public static function getExternalOptions(SlackRequest $request): OptionsResult
     {
         $filterValue = $request->payload()['value'] ?? null;
+
+        // Treat empty string also as null for consistency.
+        if($filterValue == "") {
+            $filterValue = null;
+        }
+
         $optionSet = Kit::optionSet();
 
         $customers = Customer::all();
@@ -88,6 +94,9 @@ class SelectAMemberModal implements ModalInterface
 
             if ($customer->member) {
                 $text = "$name (Member)";
+            } else if (is_null($filterValue)) {
+                // When showing the initial list, do not show non-members
+                continue;
             } else {
                 $text = "$name (Not a Member)";
             }
