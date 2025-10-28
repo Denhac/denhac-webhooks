@@ -234,7 +234,7 @@ class CreateTrainableEquipment implements ModalInterface
         $values = $request->payload()['view']['state']['values'];
         $initialTrainerValue = self::getInitialTrainerOption($values);
 
-        $equipmentName = $values[self::EQUIPMENT_NAME][self::EQUIPMENT_NAME] ?? null;
+        $equipmentName = $values[self::EQUIPMENT_NAME][self::EQUIPMENT_NAME]['value'] ?? null;
 
         $modal = new CreateTrainableEquipment(
             $request->customer(),
