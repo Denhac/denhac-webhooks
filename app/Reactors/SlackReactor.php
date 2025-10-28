@@ -2,12 +2,11 @@
 
 namespace App\Reactors;
 
+use App\Actions\SetUltraRestrictedUser;
 use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\SendMessage;
+use App\Actions\Slack\SetRegularUser;
 use App\External\Slack\SlackProfileFields;
-use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
-use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
-use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Models\Card;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
@@ -15,7 +14,6 @@ use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
-use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Illuminate\Support\Collection;
 use SlackPhp\BlockKit\Kit;
@@ -26,15 +24,22 @@ use function ltrim;
 
 final class SlackReactor extends Reactor
 {
-    public function onCustomerCreated(CustomerCreated $event): void
-    {
-        // TODO Technically this should be specific to a new customer who is signing up, vs something like a manual user
-        dispatch(new InviteCustomerNeedIdCheckOnlyMemberInSlack($event->customer['id']));
-    }
-
     public function onMembershipActivated(MembershipActivated $event): void
     {
-        dispatch(new MakeCustomerRegularMemberInSlack($event->customerId));
+        /** @var Customer $customer */
+        $customer = Customer::find($event->customerId);
+
+        if (is_null($customer)) {
+            return;
+        }
+
+        if (! is_null($customer->slack_id)) {
+            SlackProfileFields::updateIfNeeded($customer->slack_id, []);
+        }
+
+        app(SetRegularUser::class)
+            ->onQueue()
+            ->execute($customer);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event): void
@@ -42,11 +47,13 @@ final class SlackReactor extends Reactor
         /** @var Customer $customer */
         $customer = Customer::find($event->customerId);
 
-        if (! is_null($customer)) {
+        if (! is_null($customer->slack_id)) {
             SlackProfileFields::updateIfNeeded($customer->slack_id, []);
         }
 
-        dispatch(new DemoteMemberToPublicOnlyMemberInSlack($event->customerId));
+        app(SetUltraRestrictedUser::class)
+            ->onQueue()
+            ->execute($customer);
     }
 
     public function onUserMembershipCreated(UserMembershipCreated $event): void
@@ -62,13 +69,13 @@ final class SlackReactor extends Reactor
         $userSlackIds = TrainableEquipment::select('user_slack_id')
             ->where('user_plan_id', $plan_id)
             ->get()
-            ->map(fn ($row) => $row['user_slack_id']);
+            ->map(fn($row) => $row['user_slack_id']);
 
         /** @var Collection $trainerSlackIds */
         $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
             ->where('trainer_plan_id', $plan_id)
             ->get()
-            ->map(fn ($row) => $row['trainer_slack_id']);
+            ->map(fn($row) => $row['trainer_slack_id']);
 
         $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
 

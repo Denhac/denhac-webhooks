@@ -15,6 +15,8 @@ trait AssertsActions
     {
         $this->actionAssertions = collect();
         $this->beforeApplicationDestroyed(fn () => $this->checkAssertions());
+
+        Queue::fake();
     }
 
     private function checkAssertions()

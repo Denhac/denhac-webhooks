@@ -2,10 +2,10 @@
 
 namespace App\Issues\Types\Slack;
 
+use App\Actions\Slack\SetRegularUser;
 use App\DataCache\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
-use App\Jobs\MakeCustomerRegularMemberInSlack;
 
 class MemberHasRestrictedAccount extends IssueBase
 {
@@ -43,7 +43,7 @@ class MemberHasRestrictedAccount extends IssueBase
     {
         return $this->issueFixChoice()
             ->option('Activate Slack account', function () {
-                dispatch(new MakeCustomerRegularMemberInSlack($this->member->id));
+                app(SetRegularUser::class)->execute($this->member->customer);
 
                 return true;
             })

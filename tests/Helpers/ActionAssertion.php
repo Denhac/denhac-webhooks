@@ -2,6 +2,7 @@
 
 namespace Tests\Helpers;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Assert;
@@ -63,9 +64,32 @@ class ActionAssertion
 
                 $parameters = $job->parameters();
 
-                $identical = new IsIdentical($args);
+                if(count($args) != count($parameters)) {
+                    return false;  // Different parameter lists were passed in, don't bother checking for specifics
+                }
 
-                return $identical->evaluate($parameters, '', true);
+                $zipped_array = array_map(null, $args, $parameters);
+
+                foreach ($zipped_array as $pair) {
+                    $arg = $pair[0];
+                    $parameter = $pair[1];
+
+                    // The same model but different instances fail IsIdentical. Check more manually for those.
+                    if($arg instanceof Model and $parameter instanceof Model) {
+                        if(! $arg->is($parameter)) {
+                            return false;  // Not the same model
+                        }
+                    } else {
+                        $identical = new IsIdentical($arg);
+
+                        if(! $identical->evaluate($parameter, '', true)) {
+                            return false;
+                        }
+                    }
+                }
+
+                // All args and parameters match at this point.
+                return true;
             });
 
         // Check the number of times it was queued
