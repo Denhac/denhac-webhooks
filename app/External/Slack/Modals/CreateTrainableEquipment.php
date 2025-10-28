@@ -78,7 +78,7 @@ class CreateTrainableEquipment implements ModalInterface
 
                 $mappedToSimilarity = $equipmentNames->map(fn($name) => [
                     'name' => $name,
-                    'value' => similar_text(Str::lower($name), $equipmentName)
+                    'value' => similar_text(Str::lower($name), Str::lower($equipmentName))
                 ]);
 
                 $maxValue = $mappedToSimilarity->max('value');
