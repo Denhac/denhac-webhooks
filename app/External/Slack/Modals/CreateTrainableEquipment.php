@@ -5,10 +5,14 @@ namespace App\External\Slack\Modals;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
+use App\Models\TrainableEquipment;
 use App\Models\UserMembership;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use SlackPhp\BlockKit\Elements\RichTexts\ListStyle;
 use SlackPhp\BlockKit\Kit;
+use SlackPhp\BlockKit\Parts\TriggerActionsOn;
 use SlackPhp\BlockKit\Surfaces\OptionsResult;
 
 class CreateTrainableEquipment implements ModalInterface
@@ -29,21 +33,21 @@ class CreateTrainableEquipment implements ModalInterface
 
     private const string TRAINER_EMAIL = 'trainer-email';
 
-    public function __construct(Customer $submittingUser, ?Customer $initialTrainer = null)
+    public function __construct(
+        Customer  $submittingUser,
+        ?Customer $initialTrainer = null,
+        ?string   $equipmentName = null,
+    )
     {
         if (is_null($initialTrainer)) {
             $initialTrainer = $submittingUser;
         }
 
-        if (! is_null($initialTrainer)) {
-            $name = "$initialTrainer->first_name $initialTrainer->last_name";
-            $initialTrainerOption = Kit::option(
-                text: $name,
-                value: "customer-{$initialTrainer->id}"
-            );
-        } else {
-            $initialTrainerOption = null;
-        }
+        $name = "$initialTrainer->first_name $initialTrainer->last_name";
+        $initialTrainerOption = Kit::option(
+            text: $name,
+            value: "customer-{$initialTrainer->id}"
+        );
 
         $this->modalView = Kit::modal(
             title: 'New Trainable Equipment',
@@ -55,29 +59,74 @@ class CreateTrainableEquipment implements ModalInterface
                 Kit::input(
                     label: 'Equipment Name',
                     blockId: self::EQUIPMENT_NAME,
+                    dispatchAction: true,
                     element: Kit::plainTextInput(
                         actionId: self::EQUIPMENT_NAME,
                         placeholder: 'Name',
+                        focusOnLoad: true,
+                        // Without the dispatch config, we get "enter" events too, which we don't want.
+                        dispatchActionConfig: Kit::dispatchActionConfig([
+                            TriggerActionsOn::CHARACTER_ENTERED,
+                        ]),
                     ),
-                ),
-                Kit::input(
-                    label: 'Initial Trainer',
-                    blockId: self::INITIAL_TRAINER,
-                    element: Kit::externalSelectMenu(
-                        actionId: self::INITIAL_TRAINER,
-                        placeholder: 'Select a customer',
-                        initialOption: $initialTrainerOption,
-                        minQueryLength: 0,
-                    ),
-                    dispatchAction: true,
                 ),
             ],
+        );
+
+        if (! is_null($equipmentName)) {
+            $equipmentNames = TrainableEquipment::pluck("name");
+
+                $mappedToSimilarity = $equipmentNames->map(fn($name) => [
+                    'name' => $name,
+                    'value' => similar_text(Str::lower($name), $equipmentName)
+                ]);
+
+                $maxValue = $mappedToSimilarity->max('value');
+                // Get up to 5 responses with the same comparison score
+                $namesToShow = $mappedToSimilarity->where('value', $maxValue)->pluck('name')->take(5);
+
+            if ($namesToShow->count() > 0) {
+                $bulletedList = Kit::richTextList(
+                    style: ListStyle::BULLET,
+                );
+
+                foreach($namesToShow as $name) {
+                    $bulletedList->elements(
+                        Kit::richTextSection([
+                            Kit::text($name),
+                        ]),
+                    );
+                }
+
+                $richTextBlock = Kit::richText([
+                    Kit::richTextSection([
+                        Kit::text("Please verify that you are not creating a duplicate training item. Similar items:")
+                    ]),
+                    $bulletedList,
+                ]);
+
+                $this->modalView->blocks($richTextBlock);
+            }
+        }
+
+        $this->modalView->blocks(
+            Kit::input(
+                label: 'Initial Trainer',
+                blockId: self::INITIAL_TRAINER,
+                element: Kit::externalSelectMenu(
+                    actionId: self::INITIAL_TRAINER,
+                    placeholder: 'Select a customer',
+                    initialOption: $initialTrainerOption,
+                    minQueryLength: 0,
+                ),
+                dispatchAction: true,
+            ),
         );
 
         // Sometimes people get confused when they mark someone else as the initial trainer and then can't see the
         // equipment they just created. Mostly this seems to stem from the idea that they'll automatically be marked as
         // a trainer. Hopefully this warning message helps.
-        if (! is_null($initialTrainer) && ! is_null($submittingUser) && $initialTrainer->id != $submittingUser->id) {
+        if (! is_null($initialTrainer) && $initialTrainer->id != $submittingUser->id) {
             $this->modalView->blocks(
                 Kit::context(
                     elements: [
@@ -176,6 +225,7 @@ class CreateTrainableEquipment implements ModalInterface
     public static function getBlockActions(): array
     {
         return [
+            self::blockActionUpdate(self::EQUIPMENT_NAME),
             self::blockActionUpdate(self::INITIAL_TRAINER),
         ];
     }
@@ -185,7 +235,13 @@ class CreateTrainableEquipment implements ModalInterface
         $values = $request->payload()['view']['state']['values'];
         $initialTrainerValue = self::getInitialTrainerOption($values);
 
-        $modal = new CreateTrainableEquipment($request->customer(), Customer::find($initialTrainerValue));
+        $equipmentName = $values[self::EQUIPMENT_NAME][self::EQUIPMENT_NAME] ?? null;
+
+        $modal = new CreateTrainableEquipment(
+            $request->customer(),
+            Customer::find($initialTrainerValue),
+            $equipmentName
+        );
 
         return $modal->updateViaApi($request);
     }
