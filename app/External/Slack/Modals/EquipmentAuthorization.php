@@ -20,13 +20,11 @@ class EquipmentAuthorization implements ModalInterface
     use RespondsToBlockActions;
     use HasExternalOptions;
 
-    private const EQUIPMENT_DROPDOWN = 'equipment-dropdown';
+    private const string EQUIPMENT_DROPDOWN = 'equipment-dropdown';
 
-    private const PERSON_DROPDOWN = 'person-dropdown';
+    private const string PERSON_DROPDOWN = 'person-dropdown';
 
-    private const TRAINER_CHECK = 'trainer-check';
-
-    private const USER_CHECK = 'user-check';
+    private const string TRAINER_CHECK = 'trainer-check';
 
     public function __construct(?Customer $user)
     {
@@ -39,7 +37,9 @@ class EquipmentAuthorization implements ModalInterface
                 $equipmentOptions->append(
                     Kit::option(
                         text: $equipment->name,
-                        value: "equipment-$equipment->id"
+                        value: "equipment-$equipment->id",
+                        // If the user only has one item they can train on, pre-select it.
+                        initial: $trainingList->count() == 1
                     )
                 );
             }
@@ -132,7 +132,6 @@ class EquipmentAuthorization implements ModalInterface
         return [
             self::blockActionUpdate(self::EQUIPMENT_DROPDOWN),
             self::blockActionUpdate(self::PERSON_DROPDOWN),
-            self::blockActionDoNothing(self::USER_CHECK),
             self::blockActionDoNothing(self::TRAINER_CHECK),
         ];
     }
