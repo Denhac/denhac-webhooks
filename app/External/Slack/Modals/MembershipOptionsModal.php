@@ -15,29 +15,32 @@ class MembershipOptionsModal implements ModalInterface
 {
     use ModalTrait;
 
-    private const MEMBERSHIP_OPTION = 'membership-option';
+    private const string MEMBERSHIP_OPTION = 'membership-option';
 
-    private const SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
+    private const string SIGN_UP_NEW_MEMBER_VALUE = 'value-sign-up-new-member';
 
-    private const MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
+    private const string MANAGE_MEMBERS_CARDS_VALUE = 'value-manage-members-cards';
 
-    private const MANAGE_OPEN_HOUSE_VALUE = 'value-manage-open-house-doors';
+    private const string MANAGE_OPEN_HOUSE_VALUE = 'value-manage-open-house-doors';
 
-    private const QUICK_OPEN_HOUSE_VALUE = 'value-quick-open-house';
+    private const string QUICK_OPEN_HOUSE_VALUE = 'value-quick-open-house';
 
-    private const ALL_DOORS_DEFAULT_VALUE = 'value-all-doors-default';
+    private const string ALL_DOORS_DEFAULT_VALUE = 'value-all-doors-default';
 
-    private const CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
+    private const string CREATE_TRAINABLE_EQUIPMENT_VALUE = 'value-create-trainable-equipment';
 
-    private const EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
+    // Public so the SlackMembershipCommandController can use it to identify if the only option is equipment auth.
+    public const string EQUIPMENT_AUTHORIZATION_VALUE = 'value-equipment-authorization';
 
-    private const MANAGE_VOLUNTEER_GROUPS = 'value-manage-volunteer-groups';
+    private const string MANAGE_VOLUNTEER_GROUPS = 'value-manage-volunteer-groups';
 
-    private const COUNTDOWN_TEST_VALUE = 'value-countdown-test';
+    private const string COUNTDOWN_TEST_VALUE = 'value-countdown-test';
 
-    public function __construct(?Customer $customer)
+    public function __construct(Customer $customer, ?OptionSet $membershipOptions = null)
     {
-        $membershipOptions = self::getMembershipOptions($customer);
+        if(is_null($membershipOptions)) {
+            $membershipOptions = self::getMembershipOptions($customer);
+        }
 
         $this->modalView = Kit::modal(
             title: 'What do you want to do?',
@@ -115,7 +118,7 @@ class MembershipOptionsModal implements ModalInterface
         return $modal->update();
     }
 
-    private static function getMembershipOptions(?Customer $customer): OptionSet
+    public static function getMembershipOptions(?Customer $customer): OptionSet
     {
         $optionSet = Kit::optionSet();
 
