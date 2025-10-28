@@ -33,13 +33,30 @@ final class SlackReactor extends Reactor
             return;
         }
 
-        if (! is_null($customer->slack_id)) {
-            SlackProfileFields::updateIfNeeded($customer->slack_id, []);
+        // A customer may not have a slack invite yet if they signed up and immediately got their ID check.
+        if (is_null($customer->slack_id)) {
+            return;
         }
 
+        // On Slack creation, our Slack event hook will handle the profile update if the slack_id was null.
+        SlackProfileFields::updateIfNeeded($customer->slack_id, []);
+
+        // The invite will handle setting the customer as a regular user if they didn't get to this point.
         app(SetRegularUser::class)
             ->onQueue()
             ->execute($customer);
+
+        // Let the user know their RFID card will be activated soon, since there's a delay and we don't want them to
+        // send an email asking why their card doesn't work 0.2 seconds after clicking submit on the website.
+        $customerFacingMessage = new Message(
+            blocks: [
+                Kit::section("Thanks for signing up! Your RFID card will be activated soon."),
+            ],
+        );
+
+        app(SendMessage::class)
+            ->onQueue()
+            ->execute($customer, $customerFacingMessage);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event): void
@@ -47,9 +64,14 @@ final class SlackReactor extends Reactor
         /** @var Customer $customer */
         $customer = Customer::find($event->customerId);
 
-        if (! is_null($customer->slack_id)) {
-            SlackProfileFields::updateIfNeeded($customer->slack_id, []);
+        // There shouldn't be an instance where a slack id is not set on the customer at this point, however everything
+        // below assumes there is a slack id. We can exit early here and have the issue checker pick off any remaining
+        // issues.
+        if (is_null($customer->slack_id)) {
+            return;
         }
+
+        SlackProfileFields::updateIfNeeded($customer->slack_id, []);
 
         app(SetUltraRestrictedUser::class)
             ->onQueue()
