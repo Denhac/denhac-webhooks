@@ -3,7 +3,6 @@
 namespace App\Actions\Slack;
 
 use App\External\Slack\SlackApi;
-use App\External\Slack\SlackRateLimit;
 use App\Models\Customer;
 use Illuminate\Support\Str;
 use SlackPhp\BlockKit\Surfaces\Message;

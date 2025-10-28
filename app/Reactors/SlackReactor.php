@@ -18,6 +18,7 @@ use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Illuminate\Support\Collection;
+use SlackPhp\BlockKit\Kit;
 use SlackPhp\BlockKit\Surfaces\Message;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
@@ -25,18 +26,18 @@ use function ltrim;
 
 final class SlackReactor extends Reactor
 {
-    public function onCustomerCreated(CustomerCreated $event)
+    public function onCustomerCreated(CustomerCreated $event): void
     {
         // TODO Technically this should be specific to a new customer who is signing up, vs something like a manual user
         dispatch(new InviteCustomerNeedIdCheckOnlyMemberInSlack($event->customer['id']));
     }
 
-    public function onMembershipActivated(MembershipActivated $event)
+    public function onMembershipActivated(MembershipActivated $event): void
     {
         dispatch(new MakeCustomerRegularMemberInSlack($event->customerId));
     }
 
-    public function onMembershipDeactivated(MembershipDeactivated $event)
+    public function onMembershipDeactivated(MembershipDeactivated $event): void
     {
         /** @var Customer $customer */
         $customer = Customer::find($event->customerId);
@@ -48,7 +49,7 @@ final class SlackReactor extends Reactor
         dispatch(new DemoteMemberToPublicOnlyMemberInSlack($event->customerId));
     }
 
-    public function onUserMembershipCreated(UserMembershipCreated $event)
+    public function onUserMembershipCreated(UserMembershipCreated $event): void
     {
         if ($event->membership['status'] != 'active') {
             return;
@@ -80,7 +81,7 @@ final class SlackReactor extends Reactor
         }
     }
 
-    public function onCardActivated(CardActivated $event)
+    public function onCardActivated(CardActivated $event): void
     {
         /** @var Card $card */
         $card = Card::where('number', ltrim($event->cardNumber, '0'))
@@ -99,16 +100,18 @@ final class SlackReactor extends Reactor
         }
 
         // Let the customer know their card is activated
-        $customerFacingMessage = Message::new()
-            ->inChannel()
-            ->text("Your RFID access card {$event->cardNumber} has been activated!");
+        $customerFacingMessage = new Message(
+            blocks: [
+                Kit::section("Your RFID access card {$event->cardNumber} has been activated!"),
+            ],
+        );
 
         app(SendMessage::class)
             ->onQueue()
             ->execute($customer, $customerFacingMessage);
     }
 
-    public function onCardActivatedForTheFirstTime(CardActivatedForTheFirstTime $event)
+    public function onCardActivatedForTheFirstTime(CardActivatedForTheFirstTime $event): void
     {
         /** @var Card $card */
         $card = Card::where('number', ltrim($event->cardNumber, '0'))
@@ -126,9 +129,11 @@ final class SlackReactor extends Reactor
             return;
         }
 
-        $idCheckerFacingMessage = Message::new()
-            ->inChannel()
-            ->text("Card {$event->cardNumber} activated for {$customer->first_name} {$customer->last_name}");
+        $idCheckerFacingMessage = new Message(
+            blocks: [
+                Kit::section("Card {$event->cardNumber} activated for $customer->first_name $customer->last_name"),
+            ],
+        );
 
         app(SendMessage::class)
             ->onQueue()
