@@ -146,6 +146,12 @@ class MembershipOptionsModal implements ModalInterface
             $optionSet->append(Kit::option('Create Trainable Equipment', self::CREATE_TRAINABLE_EQUIPMENT_VALUE));
         }
 
+        // If there's only 1 option, automatically select it.
+        if($optionSet->count() == 1) {
+            $option = $optionSet->offsetGet(0);
+            $option->initial(true);
+        }
+
         return $optionSet;
     }
 }
