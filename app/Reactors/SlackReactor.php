@@ -2,12 +2,11 @@
 
 namespace App\Reactors;
 
+use App\Actions\SetUltraRestrictedUser;
 use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\SendMessage;
+use App\Actions\Slack\SetRegularUser;
 use App\External\Slack\SlackProfileFields;
-use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
-use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
-use App\Jobs\MakeCustomerRegularMemberInSlack;
 use App\Models\Card;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
@@ -15,7 +14,6 @@ use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
-use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
 use Illuminate\Support\Collection;
 use SlackPhp\BlockKit\Kit;
@@ -26,15 +24,39 @@ use function ltrim;
 
 final class SlackReactor extends Reactor
 {
-    public function onCustomerCreated(CustomerCreated $event): void
-    {
-        // TODO Technically this should be specific to a new customer who is signing up, vs something like a manual user
-        dispatch(new InviteCustomerNeedIdCheckOnlyMemberInSlack($event->customer['id']));
-    }
-
     public function onMembershipActivated(MembershipActivated $event): void
     {
-        dispatch(new MakeCustomerRegularMemberInSlack($event->customerId));
+        /** @var Customer $customer */
+        $customer = Customer::find($event->customerId);
+
+        if (is_null($customer)) {
+            return;
+        }
+
+        // A customer may not have a slack invite yet if they signed up and immediately got their ID check.
+        if (is_null($customer->slack_id)) {
+            return;
+        }
+
+        // On Slack creation, our Slack event hook will handle the profile update if the slack_id was null.
+        SlackProfileFields::updateIfNeeded($customer->slack_id, []);
+
+        // The invite will handle setting the customer as a regular user if they didn't get to this point.
+        app(SetRegularUser::class)
+            ->onQueue()
+            ->execute($customer);
+
+        // Let the user know their RFID card will be activated soon, since there's a delay and we don't want them to
+        // send an email asking why their card doesn't work 0.2 seconds after clicking submit on the website.
+        $customerFacingMessage = new Message(
+            blocks: [
+                Kit::section("Thanks for signing up! Your RFID card will be activated soon."),
+            ],
+        );
+
+        app(SendMessage::class)
+            ->onQueue()
+            ->execute($customer, $customerFacingMessage);
     }
 
     public function onMembershipDeactivated(MembershipDeactivated $event): void
@@ -42,11 +64,18 @@ final class SlackReactor extends Reactor
         /** @var Customer $customer */
         $customer = Customer::find($event->customerId);
 
-        if (! is_null($customer)) {
-            SlackProfileFields::updateIfNeeded($customer->slack_id, []);
+        // There shouldn't be an instance where a slack id is not set on the customer at this point, however everything
+        // below assumes there is a slack id. We can exit early here and have the issue checker pick off any remaining
+        // issues.
+        if (is_null($customer->slack_id)) {
+            return;
         }
 
-        dispatch(new DemoteMemberToPublicOnlyMemberInSlack($event->customerId));
+        SlackProfileFields::updateIfNeeded($customer->slack_id, []);
+
+        app(SetUltraRestrictedUser::class)
+            ->onQueue()
+            ->execute($customer);
     }
 
     public function onUserMembershipCreated(UserMembershipCreated $event): void
@@ -62,13 +91,13 @@ final class SlackReactor extends Reactor
         $userSlackIds = TrainableEquipment::select('user_slack_id')
             ->where('user_plan_id', $plan_id)
             ->get()
-            ->map(fn ($row) => $row['user_slack_id']);
+            ->map(fn($row) => $row['user_slack_id']);
 
         /** @var Collection $trainerSlackIds */
         $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
             ->where('trainer_plan_id', $plan_id)
             ->get()
-            ->map(fn ($row) => $row['trainer_slack_id']);
+            ->map(fn($row) => $row['trainer_slack_id']);
 
         $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
 

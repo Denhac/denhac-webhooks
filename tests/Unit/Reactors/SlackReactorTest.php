@@ -2,16 +2,16 @@
 
 namespace Tests\Unit\Reactors;
 
+use App\Actions\SetUltraRestrictedUser;
 use App\Actions\Slack\AddToChannel;
-use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
-use App\Jobs\InviteCustomerNeedIdCheckOnlyMemberInSlack;
-use App\Jobs\MakeCustomerRegularMemberInSlack;
+use App\Actions\Slack\SetRegularUser;
+use App\External\Slack\Channels;
+use App\Models\Customer;
 use App\Models\TrainableEquipment;
 use App\Reactors\SlackReactor;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Tests\AssertsActions;
 use Tests\TestCase;
@@ -25,38 +25,26 @@ class SlackReactorTest extends TestCase
         parent::setUp();
 
         $this->withOnlyEventHandlerType(SlackReactor::class);
-
-        Queue::fake();
-
-        Bus::fake([
-            DemoteMemberToPublicOnlyMemberInSlack::class,
-            MakeCustomerRegularMemberInSlack::class,
-            InviteCustomerNeedIdCheckOnlyMemberInSlack::class,
-        ]);
     }
 
     /** @test */
     public function on_membership_deactivation_they_are_demoted_in_slack(): void
     {
-        $customerId = 1;
-        event(new MembershipDeactivated($customerId));
+        $customer = Customer::factory()->withSlackId()->create();
+        event(new MembershipDeactivated($customer->id));
 
-        Bus::assertDispatched(DemoteMemberToPublicOnlyMemberInSlack::class,
-            function (DemoteMemberToPublicOnlyMemberInSlack $job) use ($customerId) {
-                return $job->wooCustomerId == $customerId;
-            });
+        $this->assertAction(SetUltraRestrictedUser::class)
+            ->with($customer);
     }
 
     /** @test */
     public function on_membership_activation_they_are_made_a_regular_member_in_slack(): void
     {
-        $customerId = 1;
-        event(new MembershipActivated($customerId));
+        $customer = Customer::factory()->withSlackId()->create();
+        event(new MembershipActivated($customer->id));
 
-        Bus::assertDispatched(MakeCustomerRegularMemberInSlack::class,
-            function (MakeCustomerRegularMemberInSlack $job) use ($customerId) {
-                return $job->wooCustomerId == $customerId;
-            });
+        $this->assertAction(SetRegularUser::class)
+            ->with($customer);
     }
 
     /** @test */

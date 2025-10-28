@@ -2,10 +2,10 @@
 
 namespace App\Issues\Types\Slack;
 
+use App\Actions\SetUltraRestrictedUser;
 use App\DataCache\MemberData;
 use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
-use App\Jobs\DemoteMemberToPublicOnlyMemberInSlack;
 
 class NonMemberHasFullAccount extends IssueBase
 {
@@ -40,7 +40,7 @@ class NonMemberHasFullAccount extends IssueBase
     {
         return $this->issueFixChoice()
             ->option('Deactivate Slack account', function () {
-                dispatch(new DemoteMemberToPublicOnlyMemberInSlack($this->member->id));
+                app(SetUltraRestrictedUser::class)->execute($this->member->customer);
 
                 return true;
             })
