@@ -36,12 +36,13 @@ class MembersApi
      *
      * @returns true if adding the membership succeeded
      */
-    public function addMembership($woo_id, $plan_id): bool
+    public function addMembership($woo_id, $plan_id, $profile_fields = []): bool
     {
         $response = $this->client->post('/wp-json/wc/v3/memberships/members', [
             RequestOptions::JSON => [
                 'customer_id' => $woo_id,
                 'plan_id' => $plan_id,
+                'profile_fields' => $profile_fields
             ],
             RequestOptions::HTTP_ERRORS => false,
         ]);
