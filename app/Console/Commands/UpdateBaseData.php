@@ -112,7 +112,7 @@ class UpdateBaseData extends Command
         $this->line('Updating user memberships');
 
         $userMembershipsInDB = UserMembership::all();
-        $userMembershipsInWooCommerce = $this->api->members->list();
+        $userMembershipsInWooCommerce = $this->api->membership->members->list();
         $userMembershipsInWooCommerce->each(function ($membership) use ($userMembershipsInDB) {
             $wooId = $membership['id'];
             if (! $userMembershipsInDB->contains('id', $wooId)) {

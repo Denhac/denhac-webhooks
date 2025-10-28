@@ -3,7 +3,7 @@
 namespace App\External\WooCommerce\Api;
 
 use App\External\WooCommerce\Api\customer\CustomerApi;
-use App\External\WooCommerce\Api\members\MembersApi;
+use App\External\WooCommerce\Api\members\MembershipApi;
 use App\External\WooCommerce\Api\subscriptions\SubscriptionsApi;
 use App\External\WooCommerce\Api\webhook\WebhookApi;
 use GuzzleHttp\Client;
@@ -13,7 +13,7 @@ use GuzzleHttp\Client;
  *
  * @property CustomerApi customers
  * @property DenhacApi denhac
- * @property MembersApi members
+ * @property MembershipApi membership
  * @property OrdersApi orders
  * @property ProductsApi products
  * @property SubscriptionsApi subscriptions
@@ -21,10 +21,7 @@ use GuzzleHttp\Client;
  */
 class WooCommerceApi
 {
-    /**
-     * @var Client
-     */
-    private $guzzleClient;
+    private Client $guzzleClient;
 
     public function __construct()
     {
@@ -39,21 +36,15 @@ class WooCommerceApi
 
     public function __get($name)
     {
-        switch ($name) {
-            case 'customers':
-                return new CustomerApi($this->guzzleClient);
-            case 'denhac':
-                return new DenhacApi($this->guzzleClient);
-            case 'members':
-                return new MembersApi($this->guzzleClient);
-            case 'orders':
-                return new OrdersApi($this->guzzleClient);
-            case 'products':
-                return new ProductsApi($this->guzzleClient);
-            case 'subscriptions':
-                return new SubscriptionsApi($this->guzzleClient);
-            case 'webhooks':
-                return new WebhookApi($this->guzzleClient);
-        }
+        return match ($name) {
+            'customers' => new CustomerApi($this->guzzleClient),
+            'denhac' => new DenhacApi($this->guzzleClient),
+            'membership' => new MembershipApi($this->guzzleClient),
+            'orders' => new OrdersApi($this->guzzleClient),
+            'products' => new ProductsApi($this->guzzleClient),
+            'subscriptions' => new SubscriptionsApi($this->guzzleClient),
+            'webhooks' => new WebhookApi($this->guzzleClient),
+            default => null,
+        };
     }
 }
