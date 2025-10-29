@@ -36,7 +36,8 @@ class AddToChannel
     public function execute(string $userId, $channel)
     {
         $slackId = $this->slackIdFromGeneralId($userId);
-        $channelId = $this->channelIdFromChannel($channel);
+        $channelId = $channel;  // Temporary workaround to prevent rate limit issues.
+//        $channelId = $this->channelIdFromChannel($channel);
 
         $response = $this->slackApi->conversations->invite($slackId, $channelId);
 
