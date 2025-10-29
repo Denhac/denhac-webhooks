@@ -36,7 +36,7 @@
         "ylsideas/feature-flags": "^3.0"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^3.5",
+        "barryvdh/laravel-ide-helper": "^3.6",
         "deployer/deployer": "^7.5",
         "fakerphp/faker": "^1.23",
         "laravel/sail": "^1.46",
