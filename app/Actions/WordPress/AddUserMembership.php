@@ -19,7 +19,10 @@ class AddUserMembership
     public function execute($actorId, $memberId, $planId): void
     {
         $this->wooCommerceApi->membership->members->addMembership($memberId, $planId, [
-            'issuing-user-id' => $actorId,
+            [
+                'key' => 'issuing-user-id',
+                'value' => $actorId,
+            ],
         ]);
         Log::info('AddUserMembership: Customer ' . $actorId . ' granted user plan id ' . $planId . ' to Customer ' . $memberId);
     }
