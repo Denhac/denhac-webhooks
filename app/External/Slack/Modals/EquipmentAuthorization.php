@@ -121,7 +121,7 @@ class EquipmentAuthorization implements ModalInterface
             ]);
         }
 
-        return new SuccessModal('Authorization submitted!')->update();
+        return new SuccessModal('Authorization submitted!')->push();
     }
 
     /**
