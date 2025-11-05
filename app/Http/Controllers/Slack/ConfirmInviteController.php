@@ -23,13 +23,13 @@ class ConfirmInviteController extends Controller
         /** @var Customer $customer */
         $customer = Customer::where('email', $email)->first();
 
-        if(is_null($customer)) {
+        if (is_null($customer)) {
             return response()->json([
                 'message' => 'Could not find customer by that email address"',
             ], Response::HTTP_NOT_FOUND);
         }
 
-        if(! is_null($customer->slack_id)) {
+        if (! is_null($customer->slack_id)) {
             return response()->json([
                 'message' => 'Customer already has a Slack ID',
             ], Response::HTTP_CONFLICT);

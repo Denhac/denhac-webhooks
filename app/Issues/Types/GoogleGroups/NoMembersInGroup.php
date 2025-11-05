@@ -8,9 +8,7 @@ class NoMembersInGroup extends IssueBase
 {
     public function __construct(
         private readonly string $group
-    )
-    {
-    }
+    ) {}
 
     public static function getIssueNumber(): int
     {
@@ -19,7 +17,7 @@ class NoMembersInGroup extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Google Groups: No members in group";
+        return 'Google Groups: No members in group';
     }
 
     public function getIssueText(): string

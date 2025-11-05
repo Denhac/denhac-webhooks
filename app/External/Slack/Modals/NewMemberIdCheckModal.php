@@ -81,38 +81,38 @@ class NewMemberIdCheckModal implements ModalInterface
         } else {
             $modalBlocks = [
                 Kit::section(
-                    text: Kit::mrkdwnText(':x: No waiver found. The first name, last name, and email must all ' .
+                    text: Kit::mrkdwnText(':x: No waiver found. The first name, last name, and email must all '.
                         'match for us to find the waiver.'),
                 ),
                 Kit::section(
-                    text: Kit::mrkdwnText("Please have the member sign the waiver by logging in to denhac.org and " .
-                        "clicking the waiver button in the top menu. If their information doesn't automatically fill " .
-                        "in, make sure it matches the information below *exactly*. If there is a typo in the " .
-                        "information below, please reach out to a board member/web admin or email access@denhac.org " .
-                        "before proceeding.")
+                    text: Kit::mrkdwnText('Please have the member sign the waiver by logging in to denhac.org and '.
+                        "clicking the waiver button in the top menu. If their information doesn't automatically fill ".
+                        'in, make sure it matches the information below *exactly*. If there is a typo in the '.
+                        'information below, please reach out to a board member/web admin or email access@denhac.org '.
+                        'before proceeding.')
                 ),
                 Kit::divider(),
                 Kit::section(
                     text: Kit::mrkdwnText(
-                        "*First Name:* $customer->first_name\n" .
-                        "*Last Name:* $customer->last_name\n" .
+                        "*First Name:* $customer->first_name\n".
+                        "*Last Name:* $customer->last_name\n".
                         "*Email:* $customer->email"
                     )
                 ),
                 Kit::divider(),
                 Kit::section(
-                    text: Kit::plainText("After the user has submitted a new waiver, please wait a minute or so " .
-                        "and click this button:")
+                    text: Kit::plainText('After the user has submitted a new waiver, please wait a minute or so '.
+                        'and click this button:')
                 ),
                 Kit::actions(
                     blockId: self::REFRESH_ACTION,
                     elements: [
                         Kit::button(
-                            text: Kit::plainText("Refresh"),
+                            text: Kit::plainText('Refresh'),
                             actionId: self::REFRESH_ACTION,
-                        )
+                        ),
                     ]
-                )
+                ),
             ];
         }
 
@@ -186,6 +186,7 @@ class NewMemberIdCheckModal implements ModalInterface
         $view = $request->payload()['view'];
         $customerId = $view['private_metadata'];
         $modal = new NewMemberIdCheckModal($customerId);
+
         return $modal->updateViaApi($request);
     }
 }

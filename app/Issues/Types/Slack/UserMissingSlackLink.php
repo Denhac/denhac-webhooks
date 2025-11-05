@@ -14,9 +14,7 @@ class UserMissingSlackLink extends IssueBase
     public function __construct(
         private $slackUser,
         private $membersForEmail,
-    )
-    {
-    }
+    ) {}
 
     public static function getIssueNumber(): int
     {
@@ -25,7 +23,7 @@ class UserMissingSlackLink extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return "Slack: User missing slack link";
+        return 'Slack: User missing slack link';
     }
 
     public function getIssueText(): string

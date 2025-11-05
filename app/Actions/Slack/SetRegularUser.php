@@ -19,9 +19,7 @@ class SetRegularUser
         private readonly SlackApi $slackApi,
         private readonly RemoveFromChannel $removeFromChannel,
         private readonly AddToChannel $addToChannel
-    )
-    {
-    }
+    ) {}
 
     public function execute(Customer $customer): void
     {

@@ -147,7 +147,7 @@ class MembershipOptionsModal implements ModalInterface
         }
 
         // If there's only 1 option, automatically select it.
-        if($optionSet->count() == 1) {
+        if ($optionSet->count() == 1) {
             $option = $optionSet->offsetGet(0);
             $option->initial(true);
         }

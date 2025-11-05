@@ -20,10 +20,8 @@ class ExtraSlackUsers implements IssueCheck
 
     public function __construct(
         private readonly AggregateCustomerData $aggregateCustomerData,
-        private readonly SlackUsers            $slackUsers
-    )
-    {
-    }
+        private readonly SlackUsers $slackUsers
+    ) {}
 
     public function generateIssues(): void
     {
@@ -45,7 +43,7 @@ class ExtraSlackUsers implements IssueCheck
 
         $members = $this->aggregateCustomerData->get();
 
-        $slackUsers->each(fn($user) => $this->handleSlackUser($user, $members));
+        $slackUsers->each(fn ($user) => $this->handleSlackUser($user, $members));
     }
 
     private function handleSlackUser($user, $members): void

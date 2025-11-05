@@ -20,8 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class UserMembership extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
     public const int MEMBERSHIP_FULL_MEMBER = 6410;
 

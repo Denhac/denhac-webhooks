@@ -26,13 +26,15 @@ class InvitesNeededControllerTest extends TestCase
             ->assertStatus(200);
     }
 
-    #[Test] public function by_default_the_list_is_empty(): void
+    #[Test]
+    public function by_default_the_list_is_empty(): void
     {
         $this->getInvites()
             ->assertExactJson([]);
     }
 
-    #[Test] public function a_customer_with_no_user_membership(): void
+    #[Test]
+    public function a_customer_with_no_user_membership(): void
     {
         Customer::factory()->create();
 
@@ -40,7 +42,8 @@ class InvitesNeededControllerTest extends TestCase
             ->assertExactJson([]);
     }
 
-    #[Test] public function a_customer_without_an_id_check(): void
+    #[Test]
+    public function a_customer_without_an_id_check(): void
     {
         $userMembership = UserMembership::factory()->paused();
         /** @var Customer $customer */
@@ -57,12 +60,13 @@ class InvitesNeededControllerTest extends TestCase
                     'type' => MembershipType::SINGLE_CHANNEL_GUEST,
                     'channels' => [
                         Channels::NEED_ID_CHECK,
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
-    #[Test] public function a_customer_with_an_id_check_but_a_lapsed_membership(): void
+    #[Test]
+    public function a_customer_with_an_id_check_but_a_lapsed_membership(): void
     {
         $userMembership = UserMembership::factory()->paused();
         /** @var Customer $customer */
@@ -82,12 +86,13 @@ class InvitesNeededControllerTest extends TestCase
                     'type' => MembershipType::SINGLE_CHANNEL_GUEST,
                     'channels' => [
                         Channels::PUBLIC,
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
-    #[Test] public function an_active_member(): void
+    #[Test]
+    public function an_active_member(): void
     {
         $userMembership = UserMembership::factory();
         /** @var Customer $customer */
@@ -110,12 +115,13 @@ class InvitesNeededControllerTest extends TestCase
                         Channels::GENERAL,
                         Channels::PUBLIC,
                         Channels::RANDOM,
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
-    #[Test] public function a_deleted_customer(): void
+    #[Test]
+    public function a_deleted_customer(): void
     {
         $userMembership = UserMembership::factory()->paused();
         Customer::factory()
@@ -127,7 +133,8 @@ class InvitesNeededControllerTest extends TestCase
             ->assertExactJson([]);
     }
 
-    #[Test] public function a_cancelled_user_membership(): void
+    #[Test]
+    public function a_cancelled_user_membership(): void
     {
         $userMembership = UserMembership::factory()->cancelled();
         Customer::factory()
@@ -138,7 +145,8 @@ class InvitesNeededControllerTest extends TestCase
             ->assertExactJson([]);
     }
 
-    #[Test] public function a_customer_with_an_existing_slack_id(): void
+    #[Test]
+    public function a_customer_with_an_existing_slack_id(): void
     {
         $userMembership = UserMembership::factory();
         Customer::factory()

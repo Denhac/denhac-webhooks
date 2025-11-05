@@ -64,7 +64,7 @@ class ActionAssertion
 
                 $parameters = $job->parameters();
 
-                if(count($args) != count($parameters)) {
+                if (count($args) != count($parameters)) {
                     return false;  // Different parameter lists were passed in, don't bother checking for specifics
                 }
 
@@ -75,14 +75,14 @@ class ActionAssertion
                     $parameter = $pair[1];
 
                     // The same model but different instances fail IsIdentical. Check more manually for those.
-                    if($arg instanceof Model and $parameter instanceof Model) {
-                        if(! $arg->is($parameter)) {
+                    if ($arg instanceof Model and $parameter instanceof Model) {
+                        if (! $arg->is($parameter)) {
                             return false;  // Not the same model
                         }
                     } else {
                         $identical = new IsIdentical($arg);
 
-                        if(! $identical->evaluate($parameter, '', true)) {
+                        if (! $identical->evaluate($parameter, '', true)) {
                             return false;
                         }
                     }

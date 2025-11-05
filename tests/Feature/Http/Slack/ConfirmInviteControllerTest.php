@@ -14,8 +14,10 @@ use Tests\TestCase;
 
 class ConfirmInviteControllerTest extends TestCase
 {
-    private const string SLACK_ID = "U123456789";
+    private const string SLACK_ID = 'U123456789';
+
     private MockInterface|WooCommerceApi $wooCommerceApi;
+
     private MockInterface|CustomerApi $customerApi;
 
     protected function setUp(): void
@@ -34,43 +36,47 @@ class ConfirmInviteControllerTest extends TestCase
         return $this->postJson('/api/slack/invites', $data);
     }
 
-    #[Test] public function missing_email_is_invalid(): void
+    #[Test]
+    public function missing_email_is_invalid(): void
     {
         $this->postInvite(['slack_id' => self::SLACK_ID])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonStructure([
-                "message",
-                "errors" => [
-                    "email"
-                ]
+                'message',
+                'errors' => [
+                    'email',
+                ],
             ]);
     }
 
-    #[Test] public function email_must_be_valid_email(): void
+    #[Test]
+    public function email_must_be_valid_email(): void
     {
         $this->postInvite(['slack_id' => self::SLACK_ID, 'email' => 'foo'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonStructure([
-                "message",
-                "errors" => [
-                    "email"
-                ]
+                'message',
+                'errors' => [
+                    'email',
+                ],
             ]);
     }
 
-    #[Test] public function missing_slack_id_is_invalid(): void
+    #[Test]
+    public function missing_slack_id_is_invalid(): void
     {
         $this->postInvite(['email' => $this->faker->email])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonStructure([
-                "message",
-                "errors" => [
-                    "slack_id",
-                ]
+                'message',
+                'errors' => [
+                    'slack_id',
+                ],
             ]);
     }
 
-    #[Test] public function missing_customer_returns_404(): void
+    #[Test]
+    public function missing_customer_returns_404(): void
     {
         $this->postInvite(['slack_id' => self::SLACK_ID, 'email' => $this->faker->email])
             ->assertStatus(Response::HTTP_NOT_FOUND)
@@ -79,7 +85,8 @@ class ConfirmInviteControllerTest extends TestCase
             ]);
     }
 
-    #[Test] public function customer_with_existing_slack_id_cannot_be_re_assigned(): void
+    #[Test]
+    public function customer_with_existing_slack_id_cannot_be_re_assigned(): void
     {
         $customer = Customer::factory()->withSlackId()->create();
 
@@ -90,7 +97,8 @@ class ConfirmInviteControllerTest extends TestCase
             ]);
     }
 
-    #[Test] public function can_assign_slack_id_to_customer(): void
+    #[Test]
+    public function can_assign_slack_id_to_customer(): void
     {
         $customer = Customer::factory()->create();
 

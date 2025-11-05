@@ -12,20 +12,17 @@ class CreateTrainableEquipment
     use QueueableAction;
 
     public function __construct(
-        private readonly WooCommerceApi    $wooCommerceApi,
+        private readonly WooCommerceApi $wooCommerceApi,
         private readonly AddUserMembership $addUserMembership,
-    )
-    {
-    }
+    ) {}
 
     public function execute(
-        string   $equipmentName,
+        string $equipmentName,
         Customer $submittingUser,
         Customer $initialTrainer,
-        ?string  $userSlackChannel,
-        ?string  $trainerSlackChannel,
-    ): void
-    {
+        ?string $userSlackChannel,
+        ?string $trainerSlackChannel,
+    ): void {
         $responseTrainer = $this->wooCommerceApi->denhac->createUserPlan(
             "$equipmentName Trainer",
             $submittingUser->id

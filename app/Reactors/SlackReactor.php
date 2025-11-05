@@ -50,7 +50,7 @@ final class SlackReactor extends Reactor
         // send an email asking why their card doesn't work 0.2 seconds after clicking submit on the website.
         $customerFacingMessage = new Message(
             blocks: [
-                Kit::section("Thanks for signing up! Your RFID card will be activated soon."),
+                Kit::section('Thanks for signing up! Your RFID card will be activated soon.'),
             ],
         );
 
@@ -91,13 +91,13 @@ final class SlackReactor extends Reactor
         $userSlackIds = TrainableEquipment::select('user_slack_id')
             ->where('user_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['user_slack_id']);
+            ->map(fn ($row) => $row['user_slack_id']);
 
         /** @var Collection $trainerSlackIds */
         $trainerSlackIds = TrainableEquipment::select('trainer_slack_id')
             ->where('trainer_plan_id', $plan_id)
             ->get()
-            ->map(fn($row) => $row['trainer_slack_id']);
+            ->map(fn ($row) => $row['trainer_slack_id']);
 
         $slackIds = collect($userSlackIds->union($trainerSlackIds))->unique();
 

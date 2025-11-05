@@ -10,9 +10,7 @@ class IdCheckMember
 {
     use QueueableAction;
 
-    public function __construct(private WooCommerceApi $wooCommerceApi)
-    {
-    }
+    public function __construct(private WooCommerceApi $wooCommerceApi) {}
 
     public function execute(
         int $customerId,
@@ -21,8 +19,7 @@ class IdCheckMember
         string $card,
         Carbon $birthday,
         int $idCheckerId,
-    )
-    {
+    ) {
         $this->wooCommerceApi->customers
             ->update($customerId, [
                 'first_name' => $firstName,
