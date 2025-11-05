@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\TrainableEquipment;
 use App\Models\UserMembership;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Log;
 
 class TrainableEquipmentSeeder extends Seeder
@@ -17,6 +16,7 @@ class TrainableEquipmentSeeder extends Seeder
     {
         if (TrainableEquipment::exists()) {
             Log::info('TrainableEquipmentSeeder: TrainableEquipment table is not empty. Skipping seeeding.');
+
             return;
         }
         Log::info('TrainableEquipmentSeeder: Seeding TrainableEquipment.');

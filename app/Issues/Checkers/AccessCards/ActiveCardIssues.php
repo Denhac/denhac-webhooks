@@ -17,7 +17,7 @@ use App\Models\Card;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-class ActiveCardIssues /*implements IssueCheck*/
+class ActiveCardIssues /* implements IssueCheck */
 {
     use IssueCheckTrait;
 

@@ -18,9 +18,7 @@ class SetUltraRestrictedUser
 
     public function __construct(
         private readonly SlackApi $slackApi,
-    )
-    {
-    }
+    ) {}
 
     public function execute(Customer $customer): void
     {

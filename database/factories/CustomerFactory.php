@@ -48,7 +48,7 @@ class CustomerFactory extends Factory
     {
         return $this->state([
             // Not a perfect representation of slack's User IDs as they use letters and numbers
-            'slack_id' => 'U' . ($this->faker->numberBetween())
+            'slack_id' => 'U'.($this->faker->numberBetween()),
         ]);
     }
 }

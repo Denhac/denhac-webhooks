@@ -31,14 +31,14 @@ class InvitesNeededController extends Controller
                 if ($fullMemberPlan->status == 'active') {
                     $channels = [Channels::GENERAL, Channels::PUBLIC, Channels::RANDOM];
                     $membership_type = MembershipType::FULL_USER;
-                } else if ($fullMemberPlan->status != 'paused') {
+                } elseif ($fullMemberPlan->status != 'paused') {
                     // Everything below here expects a paused membership. If the user membership is something other than
                     // paused or active, we don't want to invite them into our Slack workspace.
                     return null;
-                } else if (! $customer->id_checked) {
+                } elseif (! $customer->id_checked) {
                     $channels = [Channels::NEED_ID_CHECK];
                     $membership_type = MembershipType::SINGLE_CHANNEL_GUEST;
-                } else if (! $customer->member) {
+                } elseif (! $customer->member) {
                     $channels = [Channels::PUBLIC];
                     $membership_type = MembershipType::SINGLE_CHANNEL_GUEST;
                 } else {
@@ -47,7 +47,6 @@ class InvitesNeededController extends Controller
                     // the issue checkers should already catch this invalid configuration.
                     return null;
                 }
-
 
                 return [
                     'channels' => $channels,

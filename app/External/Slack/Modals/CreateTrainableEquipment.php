@@ -14,8 +14,8 @@ use SlackPhp\BlockKit\Surfaces\OptionsResult;
 class CreateTrainableEquipment implements ModalInterface
 {
     use HasExternalOptions;
-    use RespondsToBlockActions;
     use ModalTrait;
+    use RespondsToBlockActions;
 
     private const string EQUIPMENT_NAME = 'equipment-name';
 
@@ -82,7 +82,7 @@ class CreateTrainableEquipment implements ModalInterface
                 Kit::context(
                     elements: [
                         Kit::mrkdwnText(
-                            text: ':warning: If you are not the initial trainer, you will not see this item in your ' .
+                            text: ':warning: If you are not the initial trainer, you will not see this item in your '.
                             'list of equipment authorizations.',
                         ),
                     ],
@@ -151,8 +151,9 @@ class CreateTrainableEquipment implements ModalInterface
                 $trainerSlackChannel
             );
 
-        $message = "Equipment submitted for creation. Please do not re-submit this form if the equipment does not show " .
-            "up. Instead, ask in #project-webhooks-denhac-org for help.";
+        $message = 'Equipment submitted for creation. Please do not re-submit this form if the equipment does not show '.
+            'up. Instead, ask in #project-webhooks-denhac-org for help.';
+
         return new SuccessModal($message)->push();
     }
 
@@ -164,6 +165,7 @@ class CreateTrainableEquipment implements ModalInterface
         if (! $result) {
             throw new \Exception("Option wasn't valid for customer: $initialTrainerValue");
         }
+
         return $matches[1];
     }
 

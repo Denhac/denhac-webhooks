@@ -12,9 +12,7 @@ class AddUserMembership
 
     public function __construct(
         private readonly WooCommerceApi $wooCommerceApi
-    )
-    {
-    }
+    ) {}
 
     public function execute($actorId, $memberId, $planId): void
     {
@@ -24,6 +22,6 @@ class AddUserMembership
                 'value' => $actorId,
             ],
         ]);
-        Log::info('AddUserMembership: Customer ' . $actorId . ' granted user plan id ' . $planId . ' to Customer ' . $memberId);
+        Log::info('AddUserMembership: Customer '.$actorId.' granted user plan id '.$planId.' to Customer '.$memberId);
     }
 }

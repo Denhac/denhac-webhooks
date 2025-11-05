@@ -64,33 +64,35 @@ class WaiverReactorTest extends TestCase
         ]);
     }
 
-    protected function uniqueFirstName(): string {
-        while(true) {
+    protected function uniqueFirstName(): string
+    {
+        while (true) {
             $firstName = $this->faker->firstName();
-            if($firstName != $this->matchingCustomer->first_name) {
+            if ($firstName != $this->matchingCustomer->first_name) {
                 return $firstName;
             }
         }
     }
 
-    protected function uniqueLastName(): string {
-        while(true) {
+    protected function uniqueLastName(): string
+    {
+        while (true) {
             $firstName = $this->faker->firstName();
-            if($firstName != $this->matchingCustomer->first_name) {
+            if ($firstName != $this->matchingCustomer->first_name) {
                 return $firstName;
             }
         }
     }
 
-    protected function uniqueEmail(): string {
-        while(true) {
+    protected function uniqueEmail(): string
+    {
+        while (true) {
             $firstName = $this->faker->firstName();
-            if($firstName != $this->matchingCustomer->first_name) {
+            if ($firstName != $this->matchingCustomer->first_name) {
                 return $firstName;
             }
         }
     }
-
 
     /** @test */
     public function waiver_accepted_with_all_fields_matching_is_assigned_to_customer(): void

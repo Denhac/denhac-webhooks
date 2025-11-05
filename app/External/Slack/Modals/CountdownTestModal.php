@@ -92,6 +92,7 @@ class CountdownTestModal implements ModalInterface
             ->execute($viewId);
 
         $modal = new CountdownTestModal(-1);
+
         return $modal->updateViaApi($request);
     }
 }

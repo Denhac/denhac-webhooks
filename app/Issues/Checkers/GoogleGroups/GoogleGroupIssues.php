@@ -45,8 +45,9 @@ class GoogleGroupIssues implements IssueCheck
             /** @var Collection $membersInGroup */
             $membersInGroup = $this->googleGroupMembers->get($group);
 
-            if($membersInGroup->isEmpty()) {
+            if ($membersInGroup->isEmpty()) {
                 $this->issues->add(new NoMembersInGroup($group));
+
                 return;
             }
 

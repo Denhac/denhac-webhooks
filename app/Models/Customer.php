@@ -46,9 +46,9 @@ use Illuminate\Support\Collection;
  */
 class Customer extends Model
 {
+    use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    use HasFactory;
 
     public $incrementing = false;
 
@@ -139,8 +139,8 @@ class Customer extends Model
     public function isATrainer()
     {
         return $this->equipmentTrainer()
-                ->where('status', 'active')
-                ->count() > 0;
+            ->where('status', 'active')
+            ->count() > 0;
     }
 
     public function routeNotificationForMail(Notification $notification): string
@@ -188,7 +188,7 @@ class Customer extends Model
     public function displayName(): Attribute
     {
         return Attribute::make(
-            get: fn(?string $value) => $value ?? "$this->first_name $this->last_name"
+            get: fn (?string $value) => $value ?? "$this->first_name $this->last_name"
         );
     }
 }

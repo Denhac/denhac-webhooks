@@ -139,7 +139,7 @@ class EquipmentAuthorization implements ModalInterface
     public static function equipmentFromState($state): Collection
     {
         $equipmentIds = array_map(
-            fn($formValue) => str_replace('equipment-', '', $formValue),
+            fn ($formValue) => str_replace('equipment-', '', $formValue),
             $state[self::EQUIPMENT_DROPDOWN][self::EQUIPMENT_DROPDOWN] ?? []
         );
 
@@ -149,7 +149,7 @@ class EquipmentAuthorization implements ModalInterface
     public static function peopleFromState($state): Collection
     {
         $customerIds = array_map(
-            fn($formValue) => str_replace('customer-', '', $formValue),
+            fn ($formValue) => str_replace('customer-', '', $formValue),
             $state[self::PERSON_DROPDOWN][self::PERSON_DROPDOWN] ?? []
         );
 
@@ -187,16 +187,16 @@ class EquipmentAuthorization implements ModalInterface
 
                 // Get names of equipment for which the member is already a user
                 $trainedEquipmentNames = $selectedEquipment
-                    ->where(fn($e) => $person->hasMembership($e->user_plan_id))
-                    ->map(fn($e) => $e->name);
+                    ->where(fn ($e) => $person->hasMembership($e->user_plan_id))
+                    ->map(fn ($e) => $e->name);
                 if ($trainedEquipmentNames->isNotEmpty()) {
                     $alreadyTrained[$traineeName] = $trainedEquipmentNames;
                 }
 
                 // Get names of equipment for which the member is already a trainer
                 $trainerForEquipmentNames = $selectedEquipment
-                    ->where(fn($e) => $person->hasMembership($e->trainer_plan_id))
-                    ->map(fn($e) => $e->name);
+                    ->where(fn ($e) => $person->hasMembership($e->trainer_plan_id))
+                    ->map(fn ($e) => $e->name);
                 if ($trainerForEquipmentNames->isNotEmpty()) {
                     $alreadyTrainers[$traineeName] = $trainerForEquipmentNames;
                 }
@@ -216,7 +216,7 @@ class EquipmentAuthorization implements ModalInterface
                     $modal->modalView->blocks(
                         Kit::context(
                             elements: [
-                                Kit::mrkdwnText($trainee . ' is already trained on ' . $equipmentNames->join(', ')),
+                                Kit::mrkdwnText($trainee.' is already trained on '.$equipmentNames->join(', ')),
                             ],
                         ),
                     );
@@ -226,7 +226,7 @@ class EquipmentAuthorization implements ModalInterface
                     $modal->modalView->blocks(
                         Kit::context(
                             elements: [
-                                Kit::mrkdwnText($trainer . ' is already a trainer for ' . $equipmentNames->join(', ')),
+                                Kit::mrkdwnText($trainer.' is already a trainer for '.$equipmentNames->join(', ')),
                             ],
                         ),
                     );

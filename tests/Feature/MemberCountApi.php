@@ -8,7 +8,8 @@ use Tests\TestCase;
 
 class MemberCountApi extends TestCase
 {
-    #[Test] public function test_no_members(): void
+    #[Test]
+    public function test_no_members(): void
     {
         Customer::truncate();
 
@@ -16,11 +17,12 @@ class MemberCountApi extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                "members" => 0,
+                'members' => 0,
             ]);
     }
 
-    #[Test] public function with_some_members(): void
+    #[Test]
+    public function with_some_members(): void
     {
         Customer::truncate();
 
@@ -32,7 +34,7 @@ class MemberCountApi extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                "members" => 3,
+                'members' => 3,
             ]);
     }
 }

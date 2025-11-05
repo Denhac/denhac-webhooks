@@ -2,10 +2,7 @@
 
 namespace App\External\Slack\Api;
 
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 
 class UsersAdminApi
 {

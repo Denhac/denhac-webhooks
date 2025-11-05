@@ -26,7 +26,7 @@ class RemoveFromChannel
     {
         $slackId = $this->slackIdFromGeneralId($userId);
         $channelId = $channel;  // Temporary workaround to prevent rate limit issues.
-//        $channelId = $this->channelIdFromChannel($channel);
+        //        $channelId = $this->channelIdFromChannel($channel);
 
         $response = $this->slackApi->conversations->kick($slackId, $channelId);
 

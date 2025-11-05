@@ -2,7 +2,6 @@
 
 namespace App\Issues\Checkers\InternalConsistency;
 
-
 use App\DataCache\WooCommerceMembershipPlans;
 use App\Issues\Checkers\IssueCheck;
 use App\Issues\Checkers\IssueCheckTrait;
@@ -15,9 +14,7 @@ class TrainableEquipment implements IssueCheck
 
     public function __construct(
         private readonly WooCommerceMembershipPlans $membershipPlans
-    )
-    {
-    }
+    ) {}
 
     protected function generateIssues(): void
     {
@@ -30,15 +27,15 @@ class TrainableEquipment implements IssueCheck
         foreach ($equipmentList as $equipment) {
             $missingIds = [];
 
-            if(! $plans->has($equipment->user_plan_id)) {
+            if (! $plans->has($equipment->user_plan_id)) {
                 $missingIds[] = $equipment->user_plan_id;
             }
 
-            if(! $plans->has($equipment->trainer_plan_id)) {
+            if (! $plans->has($equipment->trainer_plan_id)) {
                 $missingIds[] = $equipment->trainer_plan_id;
             }
 
-            if(count($missingIds) == 0) {
+            if (count($missingIds) == 0) {
                 continue;
             }
 

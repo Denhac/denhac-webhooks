@@ -112,7 +112,7 @@ class CustomerProjectorTest extends TestCase
         $builder->first_name = $this->faker->firstName();
         $builder->last_name = $this->faker->lastName();
         $builder->github_username = $this->faker->userName();
-        $builder->slack_id = 'U' . $this->faker->randomNumber();
+        $builder->slack_id = 'U'.$this->faker->randomNumber();
         $builder->birthday = $this->faker->date();
         $builder->access_card_temporary_code = strval($this->faker->randomNumber(6));
 

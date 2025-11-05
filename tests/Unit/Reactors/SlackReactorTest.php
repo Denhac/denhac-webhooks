@@ -5,14 +5,12 @@ namespace Tests\Unit\Reactors;
 use App\Actions\SetUltraRestrictedUser;
 use App\Actions\Slack\AddToChannel;
 use App\Actions\Slack\SetRegularUser;
-use App\External\Slack\Channels;
 use App\Models\Customer;
 use App\Models\TrainableEquipment;
 use App\Reactors\SlackReactor;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
 use App\StorableEvents\WooCommerce\UserMembershipCreated;
-use Illuminate\Support\Facades\Queue;
 use Tests\AssertsActions;
 use Tests\TestCase;
 

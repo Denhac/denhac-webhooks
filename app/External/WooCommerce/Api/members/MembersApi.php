@@ -42,7 +42,7 @@ class MembersApi
             RequestOptions::JSON => [
                 'customer_id' => $woo_id,
                 'plan_id' => $plan_id,
-                'meta_data' => $meta_data
+                'meta_data' => $meta_data,
             ],
             RequestOptions::HTTP_ERRORS => false,
         ]);

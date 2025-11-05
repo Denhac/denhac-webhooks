@@ -5,7 +5,6 @@ namespace App\External\WooCommerce\Api\members;
 use App\External\WooCommerce\Api\WooCommerceApiMixin;
 use GuzzleHttp\Client;
 
-
 /**
  * Class WooCommerceApi.
  *
