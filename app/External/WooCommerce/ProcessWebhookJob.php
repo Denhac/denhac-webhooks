@@ -59,10 +59,12 @@ class ProcessWebhookJob extends \Spatie\WebhookClient\Jobs\ProcessWebhookJob
                 } else {
                     $customerId = $this->customerIdFromUserMembershipId($payload['id']);
                 }
-                MembershipAggregate::make($customerId)
-                    ->updateUserMembership($payload)
-                    ->persist();
-                break;
+                if(! is_null($customerId)) {
+                    MembershipAggregate::make($customerId)
+                        ->updateUserMembership($payload)
+                        ->persist();
+                    break;
+                }
             case 'user_membership.deleted':
                 $customerId = $this->customerIdFromUserMembershipId($payload['id']);
 
