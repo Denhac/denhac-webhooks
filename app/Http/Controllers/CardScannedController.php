@@ -15,12 +15,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Psr\Log\LoggerInterface;
 
 class CardScannedController extends Controller
 {
-    public function __invoke(Request $request)
+    private readonly LoggerInterface $log;
+
+    public function __construct()
     {
-        Log::info($request->getContent());
+        $this->log = Log::channel('card-access');
+    }
+
+    public function __invoke(Request $request): void
+    {
+        $this->log->info($request->getContent());
         $cardNumber = $request->get('card_num');
         /** @var Collection $cards */
         $cards = Card::where('number', $cardNumber)
@@ -39,7 +47,7 @@ class CardScannedController extends Controller
         /** @var Card $card */
         $card = $cards->first();
         if (is_null($card)) {
-            Log::info("Couldn't find that card in our database");
+            $this->log->info("Couldn't find that card in our database");
 
             return;
         }
@@ -50,21 +58,21 @@ class CardScannedController extends Controller
         $customer = $card->customer;
 
         if (is_null($customer)) {
-            Log::info("Couldn't find that customer for that card");
+            $this->log->info("Couldn't find that customer for that card");
 
             return;
         }
 
         if ($customer->member) {
-            Log::info("They're a member!");
+            $this->log->info("They're a member!");
             if (! $accessAllowed) {
-                Log::info('No access though.');
+                $this->log->info('No access though.');
                 // They weren't given access
 
                 $door = Door::byDSXDeviceId($device);
 
                 if (is_null($door)) {
-                    Log::info("We don't know about this door {$device}");
+                    $this->log->info("We don't know about this door {$device}");
 
                     // We don't know about this door. Do nothing
                     return;

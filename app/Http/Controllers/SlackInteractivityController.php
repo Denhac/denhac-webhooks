@@ -12,8 +12,7 @@ class SlackInteractivityController extends Controller
 {
     public function __invoke(SlackRequest $request)
     {
-        //        Log::info("Interactive request!");
-        //        Log::info(print_r($request->payload(), true));
+        Log::channel('slack-interactive')->info($request->getContent());
 
         $payload = $request->payload();
         $type = $payload['type'];
@@ -31,9 +30,6 @@ class SlackInteractivityController extends Controller
 
     private function viewSubmission(SlackRequest $request)
     {
-        //        Log::info("View submitted!");
-        //        Log::info(print_r($request->payload(), true));
-
         $view = $request->payload()['view'];
         $callbackId = $view['callback_id'];
 
@@ -48,9 +44,6 @@ class SlackInteractivityController extends Controller
 
     private function shortcut(SlackRequest $request)
     {
-        Log::info('Shortcut!');
-        Log::info(print_r($request->payload(), true));
-
         $callbackId = $request->payload()['callback_id'];
         $shortcutClass = ClassFinder::getShortcut($callbackId);
 
