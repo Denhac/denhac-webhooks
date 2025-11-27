@@ -12,7 +12,7 @@ class SlackInteractivityController extends Controller
 {
     public function __invoke(SlackRequest $request)
     {
-        Log::channel('slack-interactive')->info($request->getContent());
+        Log::channel('slack-interactive')->info(print_r($request->getPayload(), true));
 
         $payload = $request->payload();
         $type = $payload['type'];
