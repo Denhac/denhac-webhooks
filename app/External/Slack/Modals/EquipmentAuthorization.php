@@ -78,18 +78,20 @@ class EquipmentAuthorization implements ModalInterface
                             ':heavy_check_mark: The listed member(s) will be authorized to use this equipment.'
                         )
                     ),
-                Kit::input(
+                Kit::actions(
                     blockId: self::TRAINER_CHECK,
-                    element: Kit::checkboxes(
-                        actionId: self::TRAINER_CHECK,
-                        options: Kit::optionSet([
-                            Kit::option(
-                                text: 'Make Trainer(s)',
-                                value: true,
-                                description: 'Also make these members trainers for this equipment.',
-                            ),
-                        ]),
-                    ),
+                    elements: [
+                        Kit::checkboxes(
+                            actionId: self::TRAINER_CHECK,
+                            options: Kit::optionSet([
+                                Kit::option(
+                                    text: 'Make Trainer(s)',
+                                    value: true,
+                                    description: 'Also make these members trainers for this equipment.',
+                                ),
+                            ]),
+                        ),
+                    ],
                 ),
             ],
         );
@@ -130,6 +132,7 @@ class EquipmentAuthorization implements ModalInterface
         return [
             self::blockActionUpdate(self::EQUIPMENT_DROPDOWN),
             self::blockActionUpdate(self::PERSON_DROPDOWN),
+            self::blockActionDoNothing(self::TRAINER_CHECK),
         ];
     }
 
