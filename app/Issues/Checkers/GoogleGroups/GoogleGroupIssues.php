@@ -52,6 +52,15 @@ class GoogleGroupIssues implements IssueCheck
 
             $membersInGroup->each(function ($groupMember) use ($group, &$emailsToGroups) {
                 $groupMember = GmailEmailHelper::handleGmail(Str::lower($groupMember));
+                // TODO handle excluded emails in a better way
+                if(in_array($groupMember, [
+                    "youtube@denhac.org",
+                ])) {
+                    // These emails don't belong to members, are not themselves groups, but should remain in the group
+                    // they have membership to.
+                    return;
+                }
+
                 $groupsForEmail = $emailsToGroups->get($groupMember, collect());
                 $groupsForEmail->add($group);
                 $emailsToGroups->put($groupMember, $groupsForEmail);
