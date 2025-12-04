@@ -15,7 +15,7 @@ use Spatie\LaravelData\Data;
 class MemberData extends Data
 {
     public function __construct(
-        public int|string $id,  // TODO string only because PayPal
+        public int $id,
         public string $first_name,
         public string $last_name,
         public string $primaryEmail,
