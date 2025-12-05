@@ -105,6 +105,5 @@ class IdentifyIssues extends Command
     {
         // Bind the output interface to our actual output so our data cache and issue checker can use it.
         app()->instance(OutputInterface::class, $output);
-        $this->line();
     }
 }
