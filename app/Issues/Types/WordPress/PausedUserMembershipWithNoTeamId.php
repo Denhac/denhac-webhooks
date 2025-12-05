@@ -5,7 +5,7 @@ namespace App\Issues\Types\WordPress;
 use App\DataCache\MemberData;
 use App\Issues\Types\IssueBase;
 
-class PausedMembershipWithNoTeamId extends IssueBase
+class PausedUserMembershipWithNoTeamId extends IssueBase
 {
     public function __construct(
         private readonly MemberData $memberData,
@@ -19,7 +19,7 @@ class PausedMembershipWithNoTeamId extends IssueBase
 
     public static function getIssueTitle(): string
     {
-        return 'Word Press: Paused membership with no team id';
+        return 'Word Press: Paused user membership with no team id';
     }
 
     public function getIssueText(): string

@@ -51,8 +51,6 @@ trait WooCommerceApiMixin
             throw new ApiCallFailed('API call failed', 0, $ex);
         }
 
-        $this->handleError($initialResponse);
-
         $responseData = $this->jsonOrError($initialResponse);
 
         $totalPages = (int) $initialResponse->getHeader('X-WP-TotalPages')[0];

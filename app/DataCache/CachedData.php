@@ -28,11 +28,9 @@ abstract class CachedData
         /** @var Container $app */
         $app = app();
         $class_name = get_class($this);
-        if (! $app->resolved($class_name)) {
-            $app->scoped($class_name, function () {
-                return $this;
-            });
-        }
+        $app->scopedIf($class_name, function () {
+            return $this;
+        });
 
         $this->cache = collect();
     }
