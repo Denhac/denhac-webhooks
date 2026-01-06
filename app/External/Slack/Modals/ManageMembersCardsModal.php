@@ -16,12 +16,30 @@ class ManageMembersCardsModal implements ModalInterface
     private const CARD_NUM = 'card-num';
 
     /**
-     * @param  int  $customerId  The customer's Woo Commerce ID
+     * @param int $customerId The customer's Woo Commerce ID
      */
     public function __construct(int $customerId)
     {
         /** @var Customer $customer */
         $customer = Customer::find($customerId);
+
+        if (! $customer->id_checked) {
+            $this->modalView = Kit::modal(
+                title: "Not a member",
+                callbackId: self::callbackId(),
+                clearOnClose: true,
+                close: 'Close',
+                privateMetadata: $customerId,
+                blocks: [
+                    Kit::richText([
+                        Kit::richTextSection([
+                            Kit::text("This person is not a member, please go through the sign up first.")
+                        ]),
+                    ]),
+                ],
+            );
+            return;
+        }
 
         // The implode here to make it comma separate is so members with 2 cards will show up as a comma-separated list,
         // but the user won't be able to submit it this way. They'll have to reduce it down to one card.
@@ -58,7 +76,7 @@ class ManageMembersCardsModal implements ModalInterface
     public static function handle(SlackRequest $request): JsonResponse
     {
         if (! $request->customer()->canIDcheck()) {
-            Log::warning('ManageMembersCardsModal: Rejecting unauthorized submission from user '.$request->customer()->id);
+            Log::warning('ManageMembersCardsModal: Rejecting unauthorized submission from user ' . $request->customer()->id);
             throw new \Exception('Unauthorized');
         }
 
