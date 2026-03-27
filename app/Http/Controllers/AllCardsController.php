@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 
 class AllCardsController extends Controller
 {
-    private const DENHAC_ACCESS = 'denhac';
+    private const string DENHAC_ACCESS = 'denhac';
 
-    private const SERVER_ROOM_ACCESS = 'Server Room';
+    private const string SERVER_ROOM_ACCESS = 'Server Room';
 
-    private const CAN_OPEN_HOUSE_UDF = 'dh_can_open_house';
+    private const string CAN_OPEN_HOUSE_UDF = 'dh_can_open_house';
 
     public function __invoke(Request $request)
     {
