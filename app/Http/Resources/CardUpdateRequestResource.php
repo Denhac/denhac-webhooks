@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class CardUpdateRequestResource extends JsonResource
 {
-    private const COMPANY_DENHAC = 'DenHac'; // This is how it exists in the card access system
+    private const string COMPANY_DENHAC = 'DenHac'; // This is how it exists in the card access system
 
     /**
      * Transform the resource into an array.

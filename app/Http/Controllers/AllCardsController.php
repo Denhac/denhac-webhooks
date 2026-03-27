@@ -15,6 +15,8 @@ class AllCardsController extends Controller
 
     private const string CAN_OPEN_HOUSE_UDF = 'dh_can_open_house';
 
+    private const string COMPANY_DENHAC = 'DenHac'; // This is how it exists in the card access system
+
     public function __invoke(Request $request)
     {
         return Customer::with(['cards', 'memberships'])
@@ -54,6 +56,7 @@ class AllCardsController extends Controller
                     'id' => $customer->id,
                     'first_name' => $customer->first_name,
                     'last_name' => $customer->last_name,
+                    'company' => self::COMPANY_DENHAC,
                     'cards' => $cards,
                     'extra' => $extra,
                 ];
