@@ -45,7 +45,8 @@ class AllCardsController extends Controller
                             'card_num' => $card->number,
                             'access' => $access,
                         ];
-                    })->all();
+                    })
+                    ->all();
 
                 $extra = [];
                 if ($customer->isABoardMember() || $customer->isAManager()) {
@@ -57,7 +58,7 @@ class AllCardsController extends Controller
                     'first_name' => $customer->first_name,
                     'last_name' => $customer->last_name,
                     'company' => self::COMPANY_DENHAC,
-                    'cards' => $cards,
+                    'cards' => array_values($cards),
                     'extra' => $extra,
                 ];
             });
