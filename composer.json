@@ -17,7 +17,7 @@
         "hashids/hashids": "^5.0",
         "laravel/framework": "^12.50",
         "laravel/horizon": "^5.43",
-        "laravel/passport": "^12.4",
+        "laravel/passport": "^13.7",
         "laravel/reverb": "^1.7",
         "laravel/tinker": "^2.10.1",
         "php-http/curl-client": "^2.4",
