@@ -1,6 +1,11 @@
 <?php
 
 use App\Aggregates\CardNotifierAggregate;
+use App\Console\Commands\ClearOutFailedGitHubInvites;
+use App\Console\Commands\QuickBooks\GenerateVendingNetJournalEntryCommand;
+use App\Console\Commands\QuickBooks\RefreshAccessToken;
+use App\Console\Commands\SlackProfileFieldsUpdate;
+use App\Console\Commands\Stripe\TopUpIssuingBalance;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -14,18 +19,18 @@ Schedule::call(function () {
 })
     ->weeklyOn(6, '13:00');  // Saturday
 
-Schedule::command('denhac:slack-profile-fields-update')->daily();
+Schedule::command(SlackProfileFieldsUpdate::class)->daily();
 
 Schedule::command('passport:purge')->hourly();
 
-Schedule::command('denhac:clear-out-failed-git-hub-invites')->daily();
+Schedule::command(ClearOutFailedGitHubInvites::class)->daily();
 
 // QuickBooks tokens expire every hour. Every half should prevent any issues with a job running right as a token expires.
-Schedule::command('quickbooks:refresh-access-token')->everyThirtyMinutes();
+Schedule::command(RefreshAccessToken::class)->everyThirtyMinutes();
 
 // daily at noon because the cron is in UTC but I grab Denver timezone minus one day. This makes the date string
 // for searching orders as well as the date used for the QuickBooks entry correct regardless of if it's daylight
 // savings time or not.
-Schedule::command('quickbooks:generate-vending-net-journal-entry')->dailyAt('12:00');
+Schedule::command(GenerateVendingNetJournalEntryCommand::class)->dailyAt('12:00');
 
-Schedule::command('stripe:top-up-issuing-balance')->daily();
+Schedule::command(TopUpIssuingBalance::class)->daily();
