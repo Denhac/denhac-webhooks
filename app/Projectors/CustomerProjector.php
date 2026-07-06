@@ -10,7 +10,7 @@ use App\StorableEvents\WooCommerce\CustomerCreated;
 use App\StorableEvents\WooCommerce\CustomerDeleted;
 use App\StorableEvents\WooCommerce\CustomerImported;
 use App\StorableEvents\WooCommerce\CustomerUpdated;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;

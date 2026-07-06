@@ -11,7 +11,7 @@ use App\Notifications\CardAccessDeniedBadDoor;
 use App\Notifications\CardAccessDeniedBecauseNotAMember;
 use App\Notifications\CardAccessDeniedButWereWorkingOnIt;
 use App\Notifications\CardAccessDeniedNoWaiver;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;

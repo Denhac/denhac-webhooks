@@ -5,7 +5,7 @@ namespace App\Actions\QuickBooks;
 use App\External\QuickBooks\QuickBookReferences;
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use QuickBooksOnline\API\Data\IPPJournalEntry;
 use QuickBooksOnline\API\Data\IPPJournalEntryLineDetail;
