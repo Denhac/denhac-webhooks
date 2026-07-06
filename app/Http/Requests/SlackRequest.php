@@ -16,9 +16,7 @@ class SlackRequest extends Request
         if (is_null($this->payload_json)) {
             $this->payload_json = json_decode($this->get('payload'), true);
 
-            if (is_null($this->payload_json)) {
-                throw new \Exception('Slack request has no payload');
-            }
+            throw_if(is_null($this->payload_json), new \Exception('Slack request has no payload'));
         }
 
         return $this->payload_json;
@@ -29,9 +27,7 @@ class SlackRequest extends Request
         if (is_null($this->event_json)) {
             $this->event_json = $this->json('event');
 
-            if (is_null($this->event_json)) {
-                throw new \Exception('Slack request has no event');
-            }
+            throw_if(is_null($this->event_json), new \Exception('Slack request has no event'));
         }
 
         return $this->event_json;

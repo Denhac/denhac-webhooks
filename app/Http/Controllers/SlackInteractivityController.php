@@ -35,9 +35,7 @@ class SlackInteractivityController extends Controller
 
         $modalClass = ClassFinder::getModal($callbackId);
 
-        if (is_null($modalClass)) {
-            throw new \Exception("Slack interactive view submission had unknown callback id: $callbackId");
-        }
+        throw_if(is_null($modalClass), new \Exception("Slack interactive view submission had unknown callback id: $callbackId"));
 
         return $modalClass::handle($request);
     }
@@ -47,9 +45,7 @@ class SlackInteractivityController extends Controller
         $callbackId = $request->payload()['callback_id'];
         $shortcutClass = ClassFinder::getShortcut($callbackId);
 
-        if (is_null($shortcutClass)) {
-            throw new \Exception("Slack interactive shortcut had unknown callback id: $callbackId");
-        }
+        throw_if(is_null($shortcutClass), new \Exception("Slack interactive shortcut had unknown callback id: $callbackId"));
 
         return $shortcutClass::handle($request);
     }
@@ -91,9 +87,7 @@ class SlackInteractivityController extends Controller
             /** @var BlockActionStatic $blockAction */
             $blockAction = ClassFinder::getBlockAction($blockId, $actionId);
 
-            if (is_null($blockAction)) {
-                throw new \Exception("No block action handled for {$blockId} and {$actionId}");
-            }
+            throw_if(is_null($blockAction), new \Exception("No block action handled for {$blockId} and {$actionId}"));
 
             return $blockAction::handle($request);
         }

@@ -5,7 +5,7 @@ namespace App\Actions\Slack;
 use App\Actions\StaticAction;
 use App\External\Slack\SlackApi;
 use App\External\Slack\SlackRateLimit;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Spatie\QueueableAction\QueueableAction;

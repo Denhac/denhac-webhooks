@@ -9,9 +9,7 @@ class HorizonSignedUrlController extends Controller
 {
     public function __invoke(Request $request)
     {
-        if (! $request->hasValidSignature()) {
-            abort(401);
-        }
+        abort_unless($request->hasValidSignature(), 401);
 
         return response('success')->cookie(Cookie::create(
             'horizon',

@@ -14,7 +14,7 @@ use App\Issues\Types\AccessCards\NonMemberHasActiveCard;
 use App\Issues\Types\AccessCards\UnknownActiveCardForMember;
 use App\Models\ActiveCardHolderUpdate;
 use App\Models\Card;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class ActiveCardIssues /*implements IssueCheck*/

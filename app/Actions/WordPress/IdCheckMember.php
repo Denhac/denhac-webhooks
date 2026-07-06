@@ -3,7 +3,7 @@
 namespace App\Actions\WordPress;
 
 use App\External\WooCommerce\Api\WooCommerceApi;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Spatie\QueueableAction\QueueableAction;
 
 class IdCheckMember

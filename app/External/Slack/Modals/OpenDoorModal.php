@@ -66,9 +66,7 @@ class OpenDoorModal implements ModalInterface
             ->filter(fn ($door) => $selectedOption['value'] == 'device-'.$door->dsxDeviceId)
             ->first();
 
-        if (is_null($door)) {
-            throw new \Exception("The door for {$selectedOption['value']} was null");
-        }
+        throw_if(is_null($door), new \Exception("The door for {$selectedOption['value']} was null"));
 
         /** @var SlackApi $slackApi */
         $slackApi = app(SlackApi::class);

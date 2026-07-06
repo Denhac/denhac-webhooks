@@ -5,7 +5,7 @@ namespace App\Actions\QuickBooks;
 use App\External\QuickBooks\QuickBookReferences;
 use App\External\QuickBooks\QuickBooksAuthSettings;
 use App\External\WooCommerce\Api\WooCommerceApi;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use QuickBooksOnline\API\Data\IPPJournalEntry;
 use QuickBooksOnline\API\Data\IPPJournalEntryLineDetail;
@@ -127,9 +127,7 @@ class GenerateVendingNetJournalEntry
             return;
         }
         $error = $dataService->getLastError();
-        if ($error) {
-            throw new \Exception("Error creating journal entry: {$error->getHttpStatusCode()} {$error->getOAuthHelperError()} {$error->getResponseBody()}");
-        }
+        throw_if($error, new \Exception("Error creating journal entry: {$error->getHttpStatusCode()} {$error->getOAuthHelperError()} {$error->getResponseBody()}"));
     }
 
     protected function updateProducts(VendingOrderData $vendingOrderData): void

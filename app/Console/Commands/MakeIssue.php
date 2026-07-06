@@ -54,9 +54,7 @@ class MakeIssue extends GeneratorCommand
             throw new \Exception("No namespace given, please use one of: $namespaceOptionString");
         }
 
-        if (! array_key_exists($nameSpaceType, self::NamespaceOffset)) {
-            throw new \Exception("Unknown namespace type \"$nameSpaceType\". Please add new offsets into NamespaceOffset in App\Console\Commands\MakeIssue");
-        }
+        throw_unless(array_key_exists($nameSpaceType, self::NamespaceOffset), new \Exception("Unknown namespace type \"$nameSpaceType\". Please add new offsets into NamespaceOffset in App\Console\Commands\MakeIssue"));
 
         parent::makeDirectory($path);
 
