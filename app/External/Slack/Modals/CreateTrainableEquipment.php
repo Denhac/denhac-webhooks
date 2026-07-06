@@ -210,9 +210,7 @@ class CreateTrainableEquipment implements ModalInterface
         $initialTrainerValue = $values[self::INITIAL_TRAINER][self::INITIAL_TRAINER]['selected_option']['value'];
         $matches = [];
         $result = preg_match('/customer-(\d+)/', $initialTrainerValue, $matches);
-        if (! $result) {
-            throw new \Exception("Option wasn't valid for customer: $initialTrainerValue");
-        }
+        throw_unless($result, new \Exception("Option wasn't valid for customer: $initialTrainerValue"));
         return $matches[1];
     }
 

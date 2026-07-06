@@ -127,9 +127,7 @@ class GenerateVendingNetJournalEntry
             return;
         }
         $error = $dataService->getLastError();
-        if ($error) {
-            throw new \Exception("Error creating journal entry: {$error->getHttpStatusCode()} {$error->getOAuthHelperError()} {$error->getResponseBody()}");
-        }
+        throw_if($error, new \Exception("Error creating journal entry: {$error->getHttpStatusCode()} {$error->getOAuthHelperError()} {$error->getResponseBody()}"));
     }
 
     protected function updateProducts(VendingOrderData $vendingOrderData): void
