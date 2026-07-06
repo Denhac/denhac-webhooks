@@ -23,7 +23,7 @@ class NeedIdCheckModal implements ModalInterface
             ->where('id_checked', false)
             ->whereRelation('memberships', 'status', 'paused')
             ->whereRelation('memberships', 'plan_id', UserMembership::MEMBERSHIP_FULL_MEMBER)
-            ->orderBy('id', 'desc')  // Latest sign ups end up appearing first
+            ->orderByDesc('id')  // Latest sign ups end up appearing first
             ->get();
 
         foreach ($customersNeedingIdCheck as $customer) {
