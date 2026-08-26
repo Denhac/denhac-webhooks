@@ -40,7 +40,7 @@ class WooCommerceApi
                 config('denhac.rest.secret'),
             ],
             'handler' => $stack,
-            'timeout' => 5.0,
+            'timeout' => 60.0,
         ]);
     }
 
