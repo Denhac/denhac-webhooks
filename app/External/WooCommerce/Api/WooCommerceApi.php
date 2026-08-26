@@ -7,6 +7,8 @@ use App\External\WooCommerce\Api\members\MembershipApi;
 use App\External\WooCommerce\Api\subscriptions\SubscriptionsApi;
 use App\External\WooCommerce\Api\webhook\WebhookApi;
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleRetry\GuzzleRetryMiddleware;
 
 /**
  * Class WooCommerceApi.
@@ -25,12 +27,20 @@ class WooCommerceApi
 
     public function __construct()
     {
+        $stack = HandlerStack::create();
+
+        $stack->push(GuzzleRetryMiddleware::factory([
+            'max_retry_attempts' => 5
+        ]));
+
         $this->guzzleClient = new Client([
             'base_uri' => config('denhac.url'),
             'auth' => [
                 config('denhac.rest.key'),
                 config('denhac.rest.secret'),
             ],
+            'handler' => $stack,
+            'timeout' => 5.0,
         ]);
     }
 
