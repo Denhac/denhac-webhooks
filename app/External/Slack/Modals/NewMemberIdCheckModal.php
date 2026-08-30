@@ -6,7 +6,7 @@ use App\Actions\WordPress\IdCheckMember;
 use App\External\Slack\BlockActions\RespondsToBlockActions;
 use App\Http\Requests\SlackRequest;
 use App\Models\Customer;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\JsonResponse;
 use SlackPhp\BlockKit\Kit;
 

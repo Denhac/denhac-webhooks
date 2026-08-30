@@ -4,7 +4,7 @@ namespace App\Console\Commands\QuickBooks;
 
 use App\Actions\QuickBooks\GenerateVendingNetJournalEntry;
 use App\External\QuickBooks\QuickBooksAuthSettings;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 
 class GenerateVendingNetJournalEntryCommand extends Command

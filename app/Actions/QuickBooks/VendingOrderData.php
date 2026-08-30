@@ -79,16 +79,12 @@ class VendingOrderData extends Data
 
         /** @var Charge $charge */
         $charge = $paymentIntent->latest_charge;
-        if (! $charge->paid) {
-            throw new \Exception("Charge for $this->stripeIntentId is not paid");
-        }
+        throw_unless($charge->paid, new \Exception("Charge for $this->stripeIntentId is not paid"));
         $balanceTxId = $charge->balance_transaction;
         $balanceTx = $stripeClient->balanceTransactions->retrieve($balanceTxId);
 
         $actualSpent = $this->productPricing->values()->sum() * 100;  // Stripe uses units of pennies
-        if ($balanceTx->amount != $actualSpent) {
-            throw new \Exception("For $this->stripeIntentId, balance says $balanceTx->amount, actual is $actualSpent");
-        }
+        throw_if($balanceTx->amount != $actualSpent, new \Exception("For $this->stripeIntentId, balance says $balanceTx->amount, actual is $actualSpent"));
 
         $vendingSpent = $this->productPricing
             ->filter(fn ($v, $k) => $products->keys()->contains($k))

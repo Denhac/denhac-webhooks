@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Database\Factories\CustomerFactory;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Builder;

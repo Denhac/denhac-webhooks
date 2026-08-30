@@ -31,13 +31,9 @@ class SlackOptionsController extends Controller
         $callback_id = $payload['view']['callback_id'];
 
         $modalClassName = ClassFinder::getModal($callback_id);
-        if (is_null($modalClassName)) {
-            throw new \Exception("Slack options payload has unknown callback id: $callback_id");
-        }
+        throw_if(is_null($modalClassName), new \Exception("Slack options payload has unknown callback id: $callback_id"));
         $reflect = new ReflectionClass($modalClassName);
-        if (! array_key_exists(HasExternalOptions::class, $reflect->getTraits())) {
-            throw new \Exception('Requested external options from Slack modal that does not implement the external options trait.');
-        }
+        throw_unless(array_key_exists(HasExternalOptions::class, $reflect->getTraits()), new \Exception('Requested external options from Slack modal that does not implement the external options trait.'));
 
         /** @var HasExternalOptions $modalClassName */
 

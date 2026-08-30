@@ -3,7 +3,7 @@
 namespace App\Console\Commands\Stripe;
 
 use App\Actions\Stripe\SetIssuingBalanceToValue;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 
 class TopUpIssuingBalance extends Command

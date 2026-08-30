@@ -57,9 +57,7 @@ class SelectAMemberModal implements ModalInterface
         $matches = [];
         $result = preg_match('/customer-(\d+)/', $selectedOption, $matches);
 
-        if (! $result) {
-            throw new \Exception("Option wasn't valid for customer: $selectedOption");
-        }
+        throw_unless($result, new \Exception("Option wasn't valid for customer: $selectedOption"));
 
         $customer_id = $matches[1];
         $nextCallbackId = $request->payload()['view']['private_metadata'];

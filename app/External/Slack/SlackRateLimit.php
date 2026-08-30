@@ -56,9 +56,7 @@ class SlackRateLimit
 
     public static function __callStatic(string $name, array $arguments)
     {
-        if (! array_key_exists($name, self::$apiCall)) {
-            throw new \Exception("Unknown api call $name");
-        }
+        throw_unless(array_key_exists($name, self::$apiCall), new \Exception("Unknown api call $name"));
 
         $tier = self::$apiCall[$name];
 
@@ -66,9 +64,7 @@ class SlackRateLimit
             return app(SlackPostMessageRateLimit::class);
         }
 
-        if (! array_key_exists($tier, self::$tierPerMinute)) {
-            throw new \Exception("Unknown tier level $tier for api method $name");
-        }
+        throw_unless(array_key_exists($tier, self::$tierPerMinute), new \Exception("Unknown tier level $tier for api method $name"));
 
         return self::limit($tier, $name);
     }

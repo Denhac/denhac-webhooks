@@ -25,9 +25,7 @@ class SetRegularUser
 
     public function execute(Customer $customer): void
     {
-        if (is_null($customer->slack_id)) {
-            throw new \Exception("Slack ID was null on customer $customer->id");
-        }
+        throw_if(is_null($customer->slack_id), new \Exception("Slack ID was null on customer $customer->id"));
 
         $this->slackApi->users->admin->setRegular($customer->slack_id);
 

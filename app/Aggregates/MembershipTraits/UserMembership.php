@@ -26,10 +26,8 @@ trait UserMembership
 
     public function handleUserMembershipDeleted($userMembershipId): void
     {
-        if (! array_key_exists($userMembershipId, $this->userMembershipIdToPlanId)) {
-            // This shouldn't happen, but we'd like to report the exception just in case so someone can investigate.
-            throw new \Exception("Did not find deleted user membership: $userMembershipId");
-        }
+        // This shouldn't happen, but we'd like to report the exception just in case so someone can investigate.
+        throw_unless(array_key_exists($userMembershipId, $this->userMembershipIdToPlanId), new \Exception("Did not find deleted user membership: $userMembershipId"));
 
         $planId = $this->userMembershipIdToPlanId[$userMembershipId];
         if ($planId == \App\Models\UserMembership::MEMBERSHIP_FULL_MEMBER) {

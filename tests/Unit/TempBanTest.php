@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\TempBan;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class TempBanTest extends TestCase

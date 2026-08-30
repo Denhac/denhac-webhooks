@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use App\External\WinDSX\Door;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
