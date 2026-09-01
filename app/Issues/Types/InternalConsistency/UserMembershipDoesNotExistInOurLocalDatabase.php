@@ -2,10 +2,15 @@
 
 namespace App\Issues\Types\InternalConsistency;
 
+use App\Aggregates\MembershipAggregate;
+use App\External\WooCommerce\Api\WooCommerceApi;
+use App\Issues\Types\ICanFixThem;
 use App\Issues\Types\IssueBase;
 
 class UserMembershipDoesNotExistInOurLocalDatabase extends IssueBase
 {
+    use ICanFixThem;
+
     private $userMembershipId;
 
     public function __construct($userMembershipId)
@@ -27,5 +32,22 @@ class UserMembershipDoesNotExistInOurLocalDatabase extends IssueBase
     public function getIssueText(): string
     {
         return "User Membership $this->userMembershipId doesn't exist in our local database";
+    }
+
+    public function fix(): bool
+    {
+        return $this->issueFixChoice()
+            ->option('Import User Membership from WordPress', function () {
+                /** @var WooCommerceApi $wooCommerceApi */
+                $wooCommerceApi = app(WooCommerceApi::class);
+                $userMembership = $wooCommerceApi->membership->members->get($this->userMembershipId)->toArray();
+
+                MembershipAggregate::make($userMembership['customer_id'])
+                    ->importUserMembership($userMembership)
+                    ->persist();
+
+                return true;
+            })
+            ->run();
     }
 }
