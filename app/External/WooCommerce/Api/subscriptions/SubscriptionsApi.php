@@ -47,4 +47,14 @@ class SubscriptionsApi
 
         return $this->jsonOrError($response);
     }
+
+    /**
+     * @throws ApiCallFailed
+     */
+    public function orders($woo_id): Collection
+    {
+        $response = $this->client->get("/wp-json/wc/v1/subscriptions/$woo_id/orders");
+
+        return $this->jsonOrError($response);
+    }
 }
