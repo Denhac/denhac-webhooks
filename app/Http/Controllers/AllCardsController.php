@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Card;
 use App\Models\Customer;
 use App\Models\UserMembership;
+use App\Models\Waiver;
 use Illuminate\Http\Request;
 
 class AllCardsController extends Controller
@@ -20,20 +21,21 @@ class AllCardsController extends Controller
     public function __invoke(Request $request)
     {
         return Customer::with(['cards', 'memberships'])
+            ->withExists(['waivers as has_membership_waiver' => fn ($query) => $query
+                ->where('template_id', Waiver::getValidMembershipWaiverId()),
+            ])
             ->paginate(100)
             ->through(function ($customer) {
                 /** @var Customer $customer */
+                $shouldHaveAccess = $customer->member && $customer->has_membership_waiver;
+
                 $cards = $customer->cards
                     ->filter(fn ($card) => $card->member_has_card)
-                    ->map(function ($card) use ($customer) {
+                    ->map(function ($card) use ($customer, $shouldHaveAccess) {
                         /** @var Card $card */
 
-                        // Their card should only be active if it's already set to active, they have it, and they're a
-                        // member. We already filter out cards that the member for sure does not have.
-                        $activeCard = $card->active && $customer->member;
-
                         $access = [];
-                        if ($activeCard) {
+                        if ($shouldHaveAccess) {
                             $access[] = self::DENHAC_ACCESS;
 
                             if ($customer->hasMembership(UserMembership::SERVER_ROOM_ACCESS)) {
