@@ -48,9 +48,13 @@ trait Cards
 
         if ($status == CardUpdateRequest::STATUS_SUCCESS) {
             if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
+                // Read first, since applying CardActivated sets this. For cards activated before the
+                // CardActivatedForTheFirstTime event existed, CardActivated is the only marker we have.
+                $anyCardEverActivated = $this->anyCardEverActivated;
+
                 $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
 
-                if (! $this->anyCardEverActivated) {
+                if (! $anyCardEverActivated) {
                     $this->recordThat(new CardActivatedForTheFirstTime($this->customerId, $cardUpdateRequest->card));
                 }
             } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
@@ -138,6 +142,7 @@ trait Cards
     protected function applyCardActivated(CardActivated $event): void
     {
         $this->cardsSentForActivation->forget($event->cardNumber);
+        $this->anyCardEverActivated = true;
     }
 
     protected function applyCardRemoved(CardRemoved $event): void

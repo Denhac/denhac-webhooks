@@ -333,6 +333,54 @@ class AccessCardTest extends TestCase
     }
 
     /** @test */
+    public function card_activated_before_the_first_time_event_existed_does_not_get_activated_for_first_time_event(): void
+    {
+        $card = '42424';
+        $customer = $this->customer()->access_card($card);
+        $pausedUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('paused');
+        $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
+            ->status('active');
+
+        $cardActivationRequest = CardUpdateRequest::create([
+            'customer_id' => $customer->id,
+            'type' => CardUpdateRequest::ACTIVATION_TYPE,
+            'card' => $card,
+        ]);
+
+        // This history is what a member who got their card before we started emitting
+        // CardActivatedForTheFirstTime looks like: a CardActivated with no first time event after it.
+        MembershipAggregate::fakeCustomer($customer)
+            ->given([
+                new CustomerCreated($customer),
+                new CardAdded($customer->id, $card),
+                new IdWasChecked($customer->id),
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new WaiverAssignedToCustomer($this->membershipWaiver->waiver_id, $customer->id),
+                new CardSentForActivation($customer->id, $card),
+                new CardActivated($customer->id, $card),
+                new UserMembershipUpdated($pausedUserMembership),
+                new MembershipDeactivated($customer->id),
+                new CardSentForDeactivation($customer->id, $card),
+                new CardDeactivated($customer->id, $card),
+                new UserMembershipUpdated($activeUserMembership),
+                new MembershipActivated($customer->id),
+                new CardSentForActivation($customer->id, $card),
+            ])
+            ->updateCardStatus($cardActivationRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->assertRecorded([
+                new CardStatusUpdated(
+                    CardUpdateRequest::ACTIVATION_TYPE,
+                    $customer->id,
+                    $card
+                ),
+                new CardActivated($customer->id, $card),
+            ])
+            ->assertNotRecorded(CardActivatedForTheFirstTime::class);
+    }
+
+    /** @test */
     public function member_getting_a_new_card_does_not_get_activated_for_first_time_event(): void
     {
         $oldCard = '42424';
