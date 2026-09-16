@@ -3,7 +3,6 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\Models\CardUpdateRequest;
 use App\StorableEvents\WooCommerce\CustomerIsNoEventTestUser;
 use Illuminate\Support\Facades\Event;
 use Spatie\EventSourcing\Facades\Projectionist;
@@ -101,15 +100,9 @@ class NoEventUserTest extends TestCase
     {
         $customer = $this->customer();
 
-        $cardUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
-            'card' => '42424',
-        ]);
-
         MembershipAggregate::fakeCustomer($customer->id)
             ->given(new CustomerIsNoEventTestUser($customer->id))
-            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->recordCardStatus('42424', false)
             ->assertNothingRecorded();
     }
 }

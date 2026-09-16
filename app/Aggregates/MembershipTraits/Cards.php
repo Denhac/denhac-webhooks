@@ -2,7 +2,6 @@
 
 namespace App\Aggregates\MembershipTraits;
 
-use App\Models\CardUpdateRequest;
 use App\StorableEvents\AccessCards\CardActivated;
 use App\StorableEvents\AccessCards\CardActivatedForTheFirstTime;
 use App\StorableEvents\AccessCards\CardAdded;
@@ -10,8 +9,6 @@ use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\AccessCards\CardRemoved;
 use App\StorableEvents\AccessCards\CardSentForActivation;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
-use App\StorableEvents\AccessCards\CardStatusUpdated;
-use Exception;
 use Illuminate\Support\Collection;
 
 trait Cards
@@ -34,40 +31,26 @@ trait Cards
         $this->cardsSentForDeactivation = collect();
     }
 
-    public function updateCardStatus(CardUpdateRequest $cardUpdateRequest, $status)
+    public function recordCardStatus(string $card, bool $active): static
     {
         if (! $this->respondToEvents) {
             return $this;
         }
 
-        $this->recordThat(new CardStatusUpdated(
-            $cardUpdateRequest->type,
-            $cardUpdateRequest->customer_id,
-            $cardUpdateRequest->card
-        ));
+        if (! $active) {
+            $this->recordThat(new CardDeactivated($this->customerId, $card));
 
-        if ($status == CardUpdateRequest::STATUS_SUCCESS) {
-            if ($cardUpdateRequest->type == CardUpdateRequest::ACTIVATION_TYPE) {
-                // Read first, since applying CardActivated sets this. For cards activated before the
-                // CardActivatedForTheFirstTime event existed, CardActivated is the only marker we have.
-                $anyCardEverActivated = $this->anyCardEverActivated;
+            return $this;
+        }
 
-                $this->recordThat(new CardActivated($this->customerId, $cardUpdateRequest->card));
+        // Read first, since applying CardActivated sets this. For cards activated before the
+        // CardActivatedForTheFirstTime event existed, CardActivated is the only marker we have.
+        $anyCardEverActivated = $this->anyCardEverActivated;
 
-                if (! $anyCardEverActivated) {
-                    $this->recordThat(new CardActivatedForTheFirstTime($this->customerId, $cardUpdateRequest->card));
-                }
-            } elseif ($cardUpdateRequest->type == CardUpdateRequest::DEACTIVATION_TYPE) {
-                $this->recordThat(new CardDeactivated($this->customerId, $cardUpdateRequest->card));
-            } else {
-                $message = "Card update request type wasn't one of the expected values: {$cardUpdateRequest->type}";
-                throw new Exception($message);
-            }
-        } else {
-            $message = "Card update (Customer: $cardUpdateRequest->customer_id, "
-                ."Card: $cardUpdateRequest->card, Type: $cardUpdateRequest->type) "
-                .'not successful';
-            throw new Exception($message);
+        $this->recordThat(new CardActivated($this->customerId, $card));
+
+        if (! $anyCardEverActivated) {
+            $this->recordThat(new CardActivatedForTheFirstTime($this->customerId, $card));
         }
 
         return $this;

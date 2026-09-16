@@ -47,6 +47,22 @@ class AllCardsControllerTest extends TestCase
         return $cards[$cardNumber]['access'];
     }
 
+    /**
+     * What we currently believe WinDSX has for the given card number. This allows us to be updated by the card server
+     * if there is a discrepancy.
+     */
+    protected function weThinkActiveFor(TestResponse $response, string $cardNumber): bool
+    {
+        $cards = collect($response->json('data'))
+            ->flatMap(fn ($customer) => $customer['cards'])
+            ->keyBy('card_num');
+
+        $this->assertArrayHasKey($cardNumber, $cards->all(), "Card $cardNumber was not in the response");
+        $this->assertArrayHasKey('we_think_active', $cards[$cardNumber], "Card $cardNumber had no we_think_active");
+
+        return $cards[$cardNumber]['we_think_active'];
+    }
+
     protected function signMembershipWaiver(Customer $customer): Waiver
     {
         return $this->signWaiver($customer, $this->membershipWaiverTemplateId);
@@ -66,16 +82,6 @@ class AllCardsControllerTest extends TestCase
         ]);
     }
 
-    protected function card(Customer $customer, string $number, bool $active, bool $memberHasCard = true): Card
-    {
-        return Card::create([
-            'number' => $number,
-            'active' => $active,
-            'member_has_card' => $memberHasCard,
-            'customer_id' => $customer->id,
-        ]);
-    }
-
     #[Test] public function a_customer_with_no_cards_has_an_empty_card_list(): void
     {
         $customer = Customer::factory()->member()->create();
@@ -90,7 +96,8 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::factory()->member()->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: false);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->create();
 
         $this->getAllCards()
             ->assertJsonPath('data.0', [
@@ -100,8 +107,9 @@ class AllCardsControllerTest extends TestCase
                 'company' => 'DenHac',
                 'cards' => [
                     [
-                        'card_num' => '373',
+                        'card_num' => $card->number,
                         'access' => ['denhac'],
+                        'we_think_active' => false,
                     ],
                 ],
                 'extra' => [],
@@ -113,7 +121,7 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::factory()->member()->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: true, memberHasCard: false);
+        Card::factory()->for($customer)->active()->returned()->create();
 
         $this->getAllCards()
             ->assertJsonPath('data.0.cards', []);
@@ -128,9 +136,13 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::factory()->member()->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: false);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->create();
 
-        $this->assertEquals(['denhac'], $this->accessFor($this->getAllCards(), '373'));
+        $response = $this->getAllCards();
+
+        $this->assertEquals(['denhac'], $this->accessFor($response, $card->number));
+        $this->assertFalse($this->weThinkActiveFor($response, $card->number));
     }
 
     #[Test] public function a_card_believed_active_for_a_non_member_is_not_granted_access(): void
@@ -138,19 +150,27 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::factory()->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: true);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->active()->create();
+
+        $response = $this->getAllCards();
 
         $this->assertFalse($customer->member);
-        $this->assertEquals([], $this->accessFor($this->getAllCards(), '373'));
+        $this->assertEquals([], $this->accessFor($response, $card->number));
+        $this->assertTrue($this->weThinkActiveFor($response, $card->number));
     }
 
     #[Test] public function a_card_believed_active_without_a_signed_waiver_is_not_granted_access(): void
     {
         /** @var Customer $customer */
         $customer = Customer::factory()->member()->create();
-        $this->card($customer, '373', active: true);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->active()->create();
 
-        $this->assertEquals([], $this->accessFor($this->getAllCards(), '373'));
+        $response = $this->getAllCards();
+
+        $this->assertEquals([], $this->accessFor($response, $card->number));
+        $this->assertTrue($this->weThinkActiveFor($response, $card->number));
     }
 
     #[Test] public function some_other_waiver_does_not_count_as_the_membership_waiver(): void
@@ -158,9 +178,13 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::factory()->member()->create();
         $this->signWaiver($customer, $this->faker->uuid());
-        $this->card($customer, '373', active: true);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->active()->create();
 
-        $this->assertEquals([], $this->accessFor($this->getAllCards(), '373'));
+        $response = $this->getAllCards();
+
+        $this->assertEquals([], $this->accessFor($response, $card->number));
+        $this->assertTrue($this->weThinkActiveFor($response, $card->number));
     }
 
     #[Test] public function another_customers_waiver_does_not_count_as_this_customers_waiver(): void
@@ -170,9 +194,13 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $otherCustomer */
         $otherCustomer = Customer::factory()->member()->create();
         $this->signMembershipWaiver($otherCustomer);
-        $this->card($customer, '373', active: true);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->active()->create();
 
-        $this->assertEquals([], $this->accessFor($this->getAllCards(), '373'));
+        $response = $this->getAllCards();
+
+        $this->assertEquals([], $this->accessFor($response, $card->number));
+        $this->assertTrue($this->weThinkActiveFor($response, $card->number));
     }
 
     #[Test] public function an_already_active_card_remains_in_the_access_list(): void
@@ -180,9 +208,13 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::factory()->member()->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: true);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->active()->create();
 
-        $this->assertEquals(['denhac'], $this->accessFor($this->getAllCards(), '373'));
+        $response = $this->getAllCards();
+
+        $this->assertEquals(['denhac'], $this->accessFor($response, $card->number));
+        $this->assertTrue($this->weThinkActiveFor($response, $card->number));
     }
 
     /**
@@ -194,13 +226,18 @@ class AllCardsControllerTest extends TestCase
         /** @var Customer $customer */
         $customer = Customer::factory()->member()->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: true);
-        $this->card($customer, '1974', active: false);
+        /** @var Card $activeCard */
+        $activeCard = Card::factory()->for($customer)->active()->create();
+        /** @var Card $inactiveCard */
+        $inactiveCard = Card::factory()->for($customer)->create();
 
         $response = $this->getAllCards();
 
-        $this->assertEquals(['denhac'], $this->accessFor($response, '373'));
-        $this->assertEquals(['denhac'], $this->accessFor($response, '1974'));
+        $this->assertEquals(['denhac'], $this->accessFor($response, $activeCard->number));
+        $this->assertTrue($this->weThinkActiveFor($response, $activeCard->number));
+
+        $this->assertEquals(['denhac'], $this->accessFor($response, $inactiveCard->number));
+        $this->assertFalse($this->weThinkActiveFor($response, $inactiveCard->number));
     }
 
     #[Test] public function server_room_access_is_added_for_a_member_with_that_membership(): void
@@ -211,9 +248,13 @@ class AllCardsControllerTest extends TestCase
             ->has(UserMembership::factory()->state(['plan_id' => UserMembership::SERVER_ROOM_ACCESS]), 'memberships')
             ->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: false);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->create();
 
-        $this->assertEquals(['denhac', 'Server Room'], $this->accessFor($this->getAllCards(), '373'));
+        $response = $this->getAllCards();
+
+        $this->assertEquals(['denhac', 'Server Room'], $this->accessFor($response, $card->number));
+        $this->assertFalse($this->weThinkActiveFor($response, $card->number));
     }
 
     #[Test] public function server_room_access_is_not_added_when_the_card_should_not_be_active(): void
@@ -223,29 +264,34 @@ class AllCardsControllerTest extends TestCase
             ->has(UserMembership::factory()->state(['plan_id' => UserMembership::SERVER_ROOM_ACCESS]), 'memberships')
             ->create();
         $this->signMembershipWaiver($customer);
-        $this->card($customer, '373', active: true);
+        /** @var Card $card */
+        $card = Card::factory()->for($customer)->active()->create();
 
         $this->assertFalse($customer->member);
-        $this->assertEquals([], $this->accessFor($this->getAllCards(), '373'));
+
+        $response = $this->getAllCards();
+
+        $this->assertEquals([], $this->accessFor($response, $card->number));
+        $this->assertTrue($this->weThinkActiveFor($response, $card->number));
     }
 
     #[Test] public function the_waiver_check_does_not_add_a_query_per_customer(): void
     {
-        $makeCustomer = function (string $cardNumber) {
+        $makeCustomer = function () {
             /** @var Customer $customer */
             $customer = Customer::factory()->member()->create();
             $this->signMembershipWaiver($customer);
-            $this->card($customer, $cardNumber, active: false);
+            Card::factory()->for($customer)->create();
         };
 
-        $makeCustomer('373');
+        $makeCustomer();
 
         DB::enableQueryLog();
         $this->getAllCards();
         $withOneCustomer = count(DB::getQueryLog());
 
-        foreach (['1974', '2216', '28991', '20943'] as $cardNumber) {
-            $makeCustomer($cardNumber);
+        foreach (range(1, 4) as $ignored) {
+            $makeCustomer();
         }
 
         DB::flushQueryLog();

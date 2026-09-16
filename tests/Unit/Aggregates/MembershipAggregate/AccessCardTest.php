@@ -3,7 +3,6 @@
 namespace Tests\Unit\Aggregates\MembershipAggregate;
 
 use App\Aggregates\MembershipAggregate;
-use App\Models\CardUpdateRequest;
 use App\Models\UserMembership;
 use App\Models\Waiver;
 use App\StorableEvents\AccessCards\CardActivated;
@@ -13,7 +12,6 @@ use App\StorableEvents\AccessCards\CardDeactivated;
 use App\StorableEvents\AccessCards\CardRemoved;
 use App\StorableEvents\AccessCards\CardSentForActivation;
 use App\StorableEvents\AccessCards\CardSentForDeactivation;
-use App\StorableEvents\AccessCards\CardStatusUpdated;
 use App\StorableEvents\Membership\IdWasChecked;
 use App\StorableEvents\Membership\MembershipActivated;
 use App\StorableEvents\Membership\MembershipDeactivated;
@@ -26,6 +24,7 @@ use App\StorableEvents\WooCommerce\UserMembershipUpdated;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\EventSourcing\Facades\Projectionist;
 use Tests\TestCase;
 
@@ -62,7 +61,7 @@ class AccessCardTest extends TestCase
         Projectionist::withoutEventHandlers();
     }
 
-    /** @test */
+    #[Test]
     public function access_card_is_not_sent_for_activation_when_membership_is_activated_if_waiver_is_not_signed(): void
     {
         $card = '42424';
@@ -87,7 +86,7 @@ class AccessCardTest extends TestCase
             ->assertNotRecorded(CardSentForActivation::class);
     }
 
-    /** @test */
+    #[Test]
     public function access_card_is_sent_for_activation_when_membership_is_activated_if_waiver_is_signed(): void
     {
         $card = '42424';
@@ -113,7 +112,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function access_card_is_sent_for_activation_when_waiver_is_signed_on_membership_activate(): void
     {
         $card = '42424';
@@ -136,7 +135,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function waiver_must_be_correct_template_id(): void
     {
         $card = '42424';
@@ -173,7 +172,7 @@ class AccessCardTest extends TestCase
             ->assertNotRecorded(CardSentForActivation::class);
     }
 
-    /** @test */
+    #[Test]
     public function manual_bootstrapping_deactivates_cards(): void
     {
         $card = '42424';
@@ -198,7 +197,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function manual_bootstrapping_cannot_occur_twice(): void
     {
         $card = '42424';
@@ -222,7 +221,7 @@ class AccessCardTest extends TestCase
             ->assertNothingRecorded();
     }
 
-    /** @test */
+    #[Test]
     public function manual_bootstrapping_does_nothing_if_waiver_is_assigned(): void
     {
         $card = '42424';
@@ -297,7 +296,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function former_member_becoming_a_member_again_sends_card_to_be_activated(): void
     {
         $card = '42424';
@@ -332,7 +331,7 @@ class AccessCardTest extends TestCase
             ->assertNotRecorded(CardActivatedForTheFirstTime::class);
     }
 
-    /** @test */
+    #[Test]
     public function card_activated_before_the_first_time_event_existed_does_not_get_activated_for_first_time_event(): void
     {
         $card = '42424';
@@ -341,12 +340,6 @@ class AccessCardTest extends TestCase
             ->status('paused');
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
-
-        $cardActivationRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-            'card' => $card,
-        ]);
 
         // This history is what a member who got their card before we started emitting
         // CardActivatedForTheFirstTime looks like: a CardActivated with no first time event after it.
@@ -368,19 +361,14 @@ class AccessCardTest extends TestCase
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
             ])
-            ->updateCardStatus($cardActivationRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->recordCardStatus($card, true)
             ->assertRecorded([
-                new CardStatusUpdated(
-                    CardUpdateRequest::ACTIVATION_TYPE,
-                    $customer->id,
-                    $card
-                ),
                 new CardActivated($customer->id, $card),
             ])
             ->assertNotRecorded(CardActivatedForTheFirstTime::class);
     }
 
-    /** @test */
+    #[Test]
     public function member_getting_a_new_card_does_not_get_activated_for_first_time_event(): void
     {
         $oldCard = '42424';
@@ -388,18 +376,6 @@ class AccessCardTest extends TestCase
         $customer = $this->customer()->access_card($oldCard);
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
-
-        $cardDeactivationRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
-            'card' => $oldCard,
-        ]);
-
-        $cardActivationRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-            'card' => $newCard,
-        ]);
 
         MembershipAggregate::fakeCustomer($customer)
             ->given([
@@ -418,26 +394,16 @@ class AccessCardTest extends TestCase
                 new CardRemoved($customer->id, $oldCard),
                 new CardSentForDeactivation($customer->id, $oldCard),
             ])
-            ->updateCardStatus($cardDeactivationRequest, CardUpdateRequest::STATUS_SUCCESS)
-            ->updateCardStatus($cardActivationRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->recordCardStatus($oldCard, false)
+            ->recordCardStatus($newCard, true)
             ->assertRecorded([
-                new CardStatusUpdated(
-                    CardUpdateRequest::DEACTIVATION_TYPE,
-                    $customer->id,
-                    $oldCard
-                ),
                 new CardDeactivated($customer->id, $oldCard),
-                new CardStatusUpdated(
-                    CardUpdateRequest::ACTIVATION_TYPE,
-                    $customer->id,
-                    $newCard
-                ),
                 new CardActivated($customer->id, $newCard),
             ])
             ->assertNotRecorded(CardActivatedForTheFirstTime::class);
     }
 
-    /** @test */
+    #[Test]
     public function updating_access_card_removes_old_cards_and_actives_new_ones(): void
     {
         $oldCard = '42424';
@@ -462,7 +428,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function emptying_access_card_removes_old_cards_and_actives_new_ones(): void
     {
         $oldCard = '42424';
@@ -484,7 +450,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function removing_access_card_removes_old_cards_and_actives_new_ones(): void
     {
         $oldCard = '42424';
@@ -508,7 +474,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function multiple_cards_can_be_used_in_comma_separated_fashion(): void
     {
         $cards = '42424,53535';
@@ -529,7 +495,7 @@ class AccessCardTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function card_is_not_sent_for_activation_if_it_has_already_been_sent(): void
     {
         $card = '42424';
@@ -547,7 +513,7 @@ class AccessCardTest extends TestCase
         $agg->assertNotRecorded(CardSentForActivation::class);
     }
 
-    /** @test */
+    #[Test]
     public function card_is_not_added_if_card_number_is_null(): void
     {
         $customer = $this->customer()
@@ -568,12 +534,6 @@ class AccessCardTest extends TestCase
         $card = '42424';
         $customer = $this->customer();
 
-        $cardUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-            'card' => $card,
-        ]);
-
         MembershipAggregate::fakeCustomer($customer->id)
             ->given([
                 new CustomerCreated($customer),
@@ -581,13 +541,8 @@ class AccessCardTest extends TestCase
                 new CardAdded($customer->id, $card),
                 new CardSentForActivation($customer->id, $card),
             ])
-            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->recordCardStatus($card, true)
             ->assertRecorded([
-                new CardStatusUpdated(
-                    CardUpdateRequest::ACTIVATION_TYPE,
-                    $customer->id,
-                    $card
-                ),
                 new CardActivated($customer->id, $card),
                 new CardActivatedForTheFirstTime($customer->id, $card),
             ]);
@@ -601,12 +556,6 @@ class AccessCardTest extends TestCase
         $card = '42424';
         $customer = $this->customer();
 
-        $cardUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
-            'card' => $card,
-        ]);
-
         MembershipAggregate::fakeCustomer($customer->id)
             ->given([
                 new CustomerCreated($customer),
@@ -614,71 +563,13 @@ class AccessCardTest extends TestCase
                 new CardRemoved($customer->id, $card),
                 new CardSentForDeactivation($customer->id, $card),
             ])
-            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->recordCardStatus($card, false)
             ->assertRecorded([
-                new CardStatusUpdated(
-                    CardUpdateRequest::DEACTIVATION_TYPE,
-                    $customer->id,
-                    $card
-                ),
                 new CardDeactivated($customer->id, $card),
             ]);
     }
 
-    /** @test */
-    public function unknown_update_request_type_throws_exception(): void
-    {
-        $fakeType = 'lol_what_is_a_type_anyway';
-        $card = '42424';
-        $customer = $this->customer();
-
-        $cardUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => $fakeType,
-            'card' => $card,
-        ]);
-
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Card update request type wasn't one of the expected values: $fakeType");
-
-        MembershipAggregate::fakeCustomer($customer->id)
-            ->given([
-                new CustomerCreated($customer),
-                new MembershipActivated($customer->id),
-                new CardRemoved($customer->id, $card),
-                new CardSentForDeactivation($customer->id, $card),
-            ])
-            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS);
-    }
-
-    /** @test */
-    public function non_successful_card_update_request_status_throws_exception(): void
-    {
-        $fakeStatus = 'fake_status_goes_here';
-        $card = '42424';
-        $customer = $this->customer();
-
-        $cardUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-            'card' => $card,
-        ]);
-
-        $this->expectException(Exception::class);
-        $message = "Card update (Customer: {$customer->id}, Card: $card, Type: enable) not successful";
-        $this->expectExceptionMessage($message);
-
-        MembershipAggregate::fakeCustomer($customer->id)
-            ->given([
-                new CustomerCreated($customer),
-                new MembershipActivated($customer->id),
-                new CardRemoved($customer->id, $card),
-                new CardSentForDeactivation($customer->id, $card),
-            ])
-            ->updateCardStatus($cardUpdateRequest, $fakeStatus);
-    }
-
-    /** @test */
+    #[Test]
     public function card_added_adds_to_cards_on_account(): void
     {
         $card = '42424';
@@ -710,7 +601,7 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
     }
 
-    /** @test */
+    #[Test]
     public function card_sent_for_activation_adds_to_cards_sent_for_activation(): void
     {
         $card = '42424';
@@ -751,20 +642,13 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
     }
 
-    /** @test */
+    #[Test]
     public function card_activated_removes_from_other_lists(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
-
-        /** @var CardUpdateRequest $cardUpdateRequest */
-        $cardUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-            'card' => $card,
-        ]);
 
         $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
         /** @var MembershipAggregate $agg */
@@ -785,13 +669,8 @@ class AccessCardTest extends TestCase
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
             ])
-            ->updateCardStatus($cardUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->recordCardStatus($card, true)
             ->assertRecorded([
-                new CardStatusUpdated(
-                    $cardUpdateRequest->type,
-                    $cardUpdateRequest->customer_id,
-                    $cardUpdateRequest->card,
-                ),
                 new CardActivated($customer->id, $card),
                 new CardActivatedForTheFirstTime($customer->id, $card),
             ]);
@@ -803,7 +682,7 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsSentForDeactivation->isEmpty());
     }
 
-    /** @test */
+    #[Test]
     public function card_sent_for_deactivation_adds_to_cards_sent_for_deactivation(): void
     {
         $card = '42424';
@@ -812,13 +691,6 @@ class AccessCardTest extends TestCase
             ->status('cancelled');
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
-
-        /** @var CardUpdateRequest $activationUpdateRequest */
-        $activationUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-            'card' => $card,
-        ]);
 
         $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
         /** @var MembershipAggregate $agg */
@@ -838,11 +710,6 @@ class AccessCardTest extends TestCase
                 new UserMembershipUpdated($activeUserMembership),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
-                new CardStatusUpdated(
-                    $activationUpdateRequest->type,
-                    $activationUpdateRequest->customer_id,
-                    $activationUpdateRequest->card,
-                ),
                 new CardActivated($customer->id, $card),
             ])
             ->updateUserMembership($cancelledUserMembership)
@@ -860,27 +727,13 @@ class AccessCardTest extends TestCase
         $this->assertTrue($agg->cardsSentForDeactivation->has($card));
     }
 
-    /** @test */
+    #[Test]
     public function card_deactivated_removes_from_other_lists(): void
     {
         $card = '42424';
         $customer = $this->customer()->access_card($card);
         $activeUserMembership = $this->userMembership()->plan(UserMembership::MEMBERSHIP_FULL_MEMBER)
             ->status('active');
-
-        /** @var CardUpdateRequest $activationUpdateRequest */
-        $activationUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::ACTIVATION_TYPE,
-            'card' => $card,
-        ]);
-
-        /** @var CardUpdateRequest $deactivationUpdateRequest */
-        $deactivationUpdateRequest = CardUpdateRequest::create([
-            'customer_id' => $customer->id,
-            'type' => CardUpdateRequest::DEACTIVATION_TYPE,
-            'card' => $card,
-        ]);
 
         $fakeAggregateRoot = MembershipAggregate::fakeCustomer($customer);
         /** @var MembershipAggregate $agg */
@@ -900,20 +753,10 @@ class AccessCardTest extends TestCase
                 new UserMembershipUpdated($activeUserMembership),
                 new MembershipActivated($customer->id),
                 new CardSentForActivation($customer->id, $card),
-                new CardStatusUpdated(
-                    $activationUpdateRequest->type,
-                    $activationUpdateRequest->customer_id,
-                    $activationUpdateRequest->card,
-                ),
                 new CardActivated($customer->id, $card),
             ])
-            ->updateCardStatus($deactivationUpdateRequest, CardUpdateRequest::STATUS_SUCCESS)
+            ->recordCardStatus($card, false)
             ->assertRecorded([
-                new CardStatusUpdated(
-                    $deactivationUpdateRequest->type,
-                    $deactivationUpdateRequest->customer_id,
-                    $deactivationUpdateRequest->card,
-                ),
                 new CardDeactivated($customer->id, $card),
             ]);
 

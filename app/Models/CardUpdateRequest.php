@@ -15,19 +15,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class CardUpdateRequest extends Model
 {
-    public const ACTIVATION_TYPE = 'enable';
+    public const string ACTIVATION_TYPE = 'enable';
 
-    public const DEACTIVATION_TYPE = 'disable';
-
-    public const UPDATE_NAME_TYPE = 'update_name';
-
-    public const STATUS_NOT_DONE = 'not_done';
-
-    public const STATUS_SUCCESS = 'success';
-
-    public const STATUS_ERROR_MULTIPLE_CARD_HOLDERS = 'error_multiple_card_holders';
-
-    public const STATUS_DEACTIVATE_CARD_NOT_FOUND = 'deactivate_card_not_found';
+    public const string DEACTIVATION_TYPE = 'disable';
 
     protected $fillable = [
         'type',

@@ -4,27 +4,16 @@ namespace App\StorableEvents\AccessCards;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
+/**
+ * @deprecated No longer required, but we still might see it in an event stream. It doesn't harm anything, so we didn't
+ * want to incur the cost of cleaning and re-verifying the event stream.
+ */
 final class CardStatusUpdated extends ShouldBeStored
 {
-    /**
-     * @var string
-     */
-    public $type;
-
-    /**
-     * @var int
-     */
-    public $customer_id;
-
-    /**
-     * @var string
-     */
-    public $card;
-
-    public function __construct(string $type, int $customer_id, string $card)
+    public function __construct(
+        public readonly string $type,
+        public readonly int $customer_id,
+        public readonly string $card)
     {
-        $this->type = $type;
-        $this->customer_id = $customer_id;
-        $this->card = $card;
     }
 }

@@ -4,7 +4,6 @@ namespace App\Aggregates;
 
 use App\Models\Customer;
 use Ramsey\Uuid\Uuid;
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Spatie\EventSourcing\AggregateRoots\FakeAggregateRoot;
 use Tests\Helpers\Wordpress\CustomerBuilder;
 
@@ -14,7 +13,7 @@ trait CustomerBasedAggregate
 
     public $respondToEvents = true;
 
-    public static function make(int $customerId): AggregateRoot
+    public static function make(int $customerId): static
     {
         $uuid = Uuid::uuid5(UUID::NAMESPACE_OID, $customerId);
         $aggregateRoot = self::retrieve($uuid);

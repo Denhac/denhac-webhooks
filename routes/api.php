@@ -23,6 +23,7 @@ Route::middleware(['auth:api', 'scopes:card:manage'])
     ->group(function () {
         Route::get('/all_cards', AllCardsController::class);
         Route::get('/card_updates', [CardUpdateRequestsController::class, 'index']);
+        Route::post('/card_updates', [CardUpdateRequestsController::class, 'store']);
         Route::post('/card_updates/{card_update_request}/status', [CardUpdateRequestsController::class, 'updateStatus']);
         Route::post('/active_card_holders', [CardUpdateRequestsController::class, 'updateActiveCardHolders']);
 

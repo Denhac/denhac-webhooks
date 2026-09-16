@@ -46,6 +46,7 @@ class AllCardsController extends Controller
                         return [
                             'card_num' => $card->number,
                             'access' => $access,
+                            'we_think_active' => $card->active,
                         ];
                     })
                     ->all();
